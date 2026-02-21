@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>./</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href=""/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/"/>
+    </url>
+    <url>
+        <loc>core_api/01_hello_world/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="core_api/01_hello_world/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/core_api/01_hello_world/"/>
+    </url>
+    <url>
+        <loc>core_api/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="core_api/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/core_api/"/>
+    </url>
+    <url>
+        <loc>importer_exporter/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="importer_exporter/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/importer_exporter/"/>
+    </url>
+    <url>
+        <loc>introduction/tutorial_list/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="introduction/tutorial_list/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/introduction/tutorial_list/"/>
+    </url>
+    <url>
+        <loc>isaac_lab/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="isaac_lab/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/isaac_lab/"/>
+    </url>
+    <url>
+        <loc>motion_generation/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="motion_generation/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/motion_generation/"/>
+    </url>
+    <url>
+        <loc>omnigraph/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="omnigraph/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/omnigraph/"/>
+    </url>
+    <url>
+        <loc>robot_setup/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="robot_setup/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/robot_setup/"/>
+    </url>
+    <url>
+        <loc>ros/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="ros/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/ros/"/>
+    </url>
+    <url>
+        <loc>sensors/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="sensors/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/sensors/"/>
+    </url>
+    <url>
+        <loc>synthetic_data/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="synthetic_data/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/synthetic_data/"/>
+    </url>
+    <url>
+        <loc>ja/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/"/>
+        <xhtml:link rel="alternate" hreflang="en" href=""/>
+    </url>
+    <url>
+        <loc>ja/core_api/01_hello_world/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/core_api/01_hello_world/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="core_api/01_hello_world/"/>
+    </url>
+    <url>
+        <loc>ja/core_api/02_hello_robot/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/core_api/02_hello_robot/"/>
+    </url>
+    <url>
+        <loc>ja/core_api/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/core_api/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="core_api/"/>
+    </url>
+    <url>
+        <loc>ja/importer_exporter/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/importer_exporter/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="importer_exporter/"/>
+    </url>
+    <url>
+        <loc>ja/introduction/tutorial_list/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/introduction/tutorial_list/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="introduction/tutorial_list/"/>
+    </url>
+    <url>
+        <loc>ja/isaac_lab/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/isaac_lab/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="isaac_lab/"/>
+    </url>
+    <url>
+        <loc>ja/motion_generation/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/motion_generation/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="motion_generation/"/>
+    </url>
+    <url>
+        <loc>ja/omnigraph/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/omnigraph/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="omnigraph/"/>
+    </url>
+    <url>
+        <loc>ja/robot_setup/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/robot_setup/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="robot_setup/"/>
+    </url>
+    <url>
+        <loc>ja/ros/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/ros/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="ros/"/>
+    </url>
+    <url>
+        <loc>ja/sensors/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/sensors/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="sensors/"/>
+    </url>
+    <url>
+        <loc>ja/synthetic_data/</loc>
+        <lastmod>2026-02-21</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="ja/synthetic_data/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="synthetic_data/"/>
+    </url>
+</urlset>

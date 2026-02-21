@@ -1,0 +1,148 @@
+site_name: Isaac Sim Tutorials
+site_url: ""
+site_description: Isaac Sim チュートリアル集 / Isaac Sim Tutorial Collection
+site_author: IR Lab
+
+theme:
+  name: material
+  language: en
+  custom_dir: docs/overrides
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: green
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: green
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: Noto Sans JP
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+  icon:
+    logo: material/robot-industrial
+    repo: fontawesome/brands/github
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - def_list
+  - footnotes
+
+plugins:
+  - search:
+      lang:
+        - en
+        - ja
+  - tags
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      languages:
+        - locale: ja
+          default: false
+          name: 日本語
+          build: true
+          nav:
+            - ホーム: index.md
+            - はじめに:
+              - チュートリアル一覧: introduction/tutorial_list.md
+            - Core API:
+              - core_api/index.md
+              - Hello World: core_api/01_hello_world.md
+            - ロボットセットアップ:
+              - robot_setup/index.md
+            - インポート・エクスポート:
+              - importer_exporter/index.md
+            - Isaac Lab:
+              - isaac_lab/index.md
+            - ROS 2:
+              - ros/index.md
+            - 合成データ生成:
+              - synthetic_data/index.md
+            - センサー:
+              - sensors/index.md
+            - モーション生成:
+              - motion_generation/index.md
+            - OmniGraph:
+              - omnigraph/index.md
+        - locale: en
+          default: true
+          name: English
+          build: true
+          nav:
+            - Home: index.md
+            - Introduction:
+              - Tutorial List: introduction/tutorial_list.md
+            - Core API:
+              - core_api/index.md
+              - Hello World: core_api/01_hello_world.md
+            - Robot Setup:
+              - robot_setup/index.md
+            - Import & Export:
+              - importer_exporter/index.md
+            - Isaac Lab:
+              - isaac_lab/index.md
+            - ROS 2:
+              - ros/index.md
+            - Synthetic Data:
+              - synthetic_data/index.md
+            - Sensors:
+              - sensors/index.md
+            - Motion Generation:
+              - motion_generation/index.md
+            - OmniGraph:
+              - omnigraph/index.md
+
+extra:
+  alternate:
+    - name: English
+      link: /
+      lang: en
+    - name: 日本語
+      link: /ja/
+      lang: ja
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/
+  generator: false
