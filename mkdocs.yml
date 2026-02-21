@@ -135,13 +135,6 @@ plugins:
               - omnigraph/index.md
 
 extra:
-  alternate:
-    - name: English
-      link: /
-      lang: en
-    - name: 日本語
-      link: /ja/
-      lang: ja
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/
