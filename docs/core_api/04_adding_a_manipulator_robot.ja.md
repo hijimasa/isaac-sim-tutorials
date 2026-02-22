@@ -136,7 +136,7 @@ class HelloWorld(BaseSample):
         self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
         # グリッパーを開いた状態に設定
         self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        # 非同期ワークフローでは async 版の play を使う
+        # 非同期ワークフロー（Extension Worlflowなど）では async 版の play を使う
         await self._world.play_async()
         return
 
@@ -188,7 +188,72 @@ class HelloWorld(BaseSample):
 
 タスクをモジュール化することで、同じタスクを異なるロボットやシーンで再利用できるようになります。
 
-### タスクの実装例
+### 既存の PickPlace タスクを利用する
+
+まずは Isaac Sim に用意されている既存のタスクを使って、タスクの基本的な使い方を学びましょう。Franka の場合、`PickPlace` タスクを使うことで、前のセクションと同等の処理をより整理されたコードで実現できます。
+
+既存タスクの特徴：
+
+- `get_params()` でタスクのパラメータ（ロボット名、キューブ名など）を動的に取得可能
+- `set_params()` でシミュレーション中にパラメータを変更可能
+- `world.get_observations()` でタスクが提供する観測情報を一括取得可能
+
+```python linenums="1" hl_lines="2-3 11 17-20 22-23"
+from isaacsim.examples.interactive.base_sample import BaseSample
+from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace        # 既存のタスク
+from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController
+
+
+class HelloWorld(BaseSample):
+    def __init__(self) -> None:
+        super().__init__()
+        return
+
+    def setup_scene(self):
+        world = self.get_world()
+        # 既存の PickPlace タスクを追加
+        world.add_task(PickPlace(name="awesome_task"))
+        return
+
+    async def setup_post_load(self):
+        self._world = self.get_world()
+        # タスクからパラメータを動的に取得
+        # {"task_param_name": {"value": [value], "modifiable": [True/False]}}
+        task_params = self._world.get_task("awesome_task").get_params()
+        self._franka = self._world.scene.get_object(task_params["robot_name"]["value"])
+        self._cube_name = task_params["cube_name"]["value"]
+        self._controller = PickPlaceController(
+            name="pick_place_controller",
+            gripper=self._franka.gripper,
+            robot_articulation=self._franka,
+        )
+        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
+        await self._world.play_async()
+        return
+
+    async def setup_post_reset(self):
+        self._controller.reset()
+        await self._world.play_async()
+        return
+
+    def physics_step(self, step_size):
+        current_observations = self._world.get_observations()
+        actions = self._controller.forward(
+            picking_position=current_observations[self._cube_name]["position"],
+            placing_position=current_observations[self._cube_name]["target_position"],
+            current_joint_positions=current_observations[self._franka.name]["joint_positions"],
+        )
+        self._franka.apply_action(actions)
+        if self._controller.is_done():
+            self._world.pause()
+        return
+```
+
+前のセクションのコードと比較すると、`setup_scene` がシンプルになっていることがわかります。シーンの構築（Franka やキューブの配置）はタスク内部で自動的に行われるため、`HelloWorld` クラスではタスクの追加とコントローラの実行に集中できます。
+
+## カスタムタスクの作成
+
+既存タスクの使い方がわかったところで、次は `BaseTask` を継承して独自のタスクを作成してみましょう。カスタムタスクを作ることで、タスク達成の判定やビジュアルフィードバックなど、独自のロジックを追加できます。
 
 以下のコードでは `FrankaPlaying` タスクを定義し、キューブが目標位置に到達したら色を緑に変える機能を追加しています。
 
@@ -306,77 +371,7 @@ class HelloWorld(BaseSample):
         return
 ```
 
-タスクを使うことで、`HelloWorld` クラスがシンプルになりました。シーンの構築やタスク達成判定のロジックは `FrankaPlaying` に分離され、`HelloWorld` はコントローラの実行に集中できます。
-
-## 既存の PickPlace タスクを利用する
-
-Isaac Sim のロボット拡張機能には、あらかじめ定義されたタスククラスも用意されています。Franka の場合、`PickPlace` タスクを使うことで、上記のカスタムタスクと同等の処理をさらに少ないコードで実現できます。
-
-既存タスクの特徴：
-
-- `get_params()` でタスクのパラメータ（ロボット名、キューブ名など）を動的に取得可能
-- `set_params()` でシミュレーション中にパラメータを変更可能
-- 目標位置には `target_position` というキーでアクセスする（カスタムタスクの `goal_position` とは異なる点に注意）
-
-```python linenums="1" hl_lines="2-3 11 17-20 22-23"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace        # 既存のタスク
-from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController
-
-
-class HelloWorld(BaseSample):
-    def __init__(self) -> None:
-        super().__init__()
-        return
-
-    def setup_scene(self):
-        world = self.get_world()
-        # 既存の PickPlace タスクを追加
-        world.add_task(PickPlace(name="awesome_task"))
-        return
-
-    async def setup_post_load(self):
-        self._world = self.get_world()
-        # タスクからパラメータを動的に取得
-        # {"task_param_name": {"value": [value], "modifiable": [True/False]}}
-        task_params = self._world.get_task("awesome_task").get_params()
-        self._franka = self._world.scene.get_object(task_params["robot_name"]["value"])
-        self._cube_name = task_params["cube_name"]["value"]
-        self._controller = PickPlaceController(
-            name="pick_place_controller",
-            gripper=self._franka.gripper,
-            robot_articulation=self._franka,
-        )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
-
-    async def setup_post_reset(self):
-        self._controller.reset()
-        await self._world.play_async()
-        return
-
-    def physics_step(self, step_size):
-        current_observations = self._world.get_observations()
-        actions = self._controller.forward(
-            picking_position=current_observations[self._cube_name]["position"],
-            placing_position=current_observations[self._cube_name]["target_position"],  # 既存タスクでは target_position
-            current_joint_positions=current_observations[self._franka.name]["joint_positions"],
-        )
-        self._franka.apply_action(actions)
-        if self._controller.is_done():
-            self._world.pause()
-        return
-```
-
-### カスタムタスク vs 既存タスクの比較
-
-| 特徴 | カスタムタスク | 既存タスク（`PickPlace`） |
-|---|---|---|
-| シーン構築 | `set_up_scene` で自前実装 | タスクが自動的に構築 |
-| パラメータ | ハードコード | `get_params()` / `set_params()` で動的管理 |
-| 再利用性 | 特定のシーンに依存 | パラメータ変更で柔軟に対応可能 |
-| コード量 | 多い | 少ない |
+カスタムタスクでは、既存タスクにはない独自の機能（`pre_step` でのキューブの色変更など）を追加できます。一方、シーン構築や観測情報の定義を自前で実装する必要があります。
 
 ## まとめ
 
@@ -384,8 +379,8 @@ class HelloWorld(BaseSample):
 
 1. **Franka Panda** マニピュレータロボットのシーンへの追加
 2. **PickPlaceController** を使ったピック＆プレース動作の実装
-3. **BaseTask** を継承したタスクのモジュール化と観測情報の管理
-4. 既存の **PickPlace** タスクを使った効率的な実装
+3. 既存の **PickPlace** タスクを使ったタスクの基本的な利用方法
+4. **BaseTask** を継承したカスタムタスクの作成と独自ロジックの追加
 
 ## 次のステップ
 

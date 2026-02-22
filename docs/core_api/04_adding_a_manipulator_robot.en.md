@@ -136,7 +136,7 @@ class HelloWorld(BaseSample):
         self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
         # Set the gripper to the open position
         self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        # In async workflow, use the async version of play
+        # In async workflow (Extension Worlflow etc.), use the async version of play
         await self._world.play_async()
         return
 
@@ -188,7 +188,72 @@ A **Task** is a mechanism for modularizing specific work within the scene. By de
 
 By modularizing tasks, you can reuse the same task across different robots and scenes.
 
-### Task Implementation Example
+### Using the Pre-built PickPlace Task
+
+Let's first learn the basics of tasks by using a pre-built task provided by Isaac Sim. For Franka, the `PickPlace` task achieves the same functionality as the previous section with more organized code.
+
+Key features of pre-built tasks:
+
+- Dynamically retrieve task parameters (robot name, cube name, etc.) via `get_params()`
+- Modify parameters during simulation via `set_params()`
+- Retrieve all task observations at once via `world.get_observations()`
+
+```python linenums="1" hl_lines="2-3 11 17-20 22-23"
+from isaacsim.examples.interactive.base_sample import BaseSample
+from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace        # Pre-built task
+from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController
+
+
+class HelloWorld(BaseSample):
+    def __init__(self) -> None:
+        super().__init__()
+        return
+
+    def setup_scene(self):
+        world = self.get_world()
+        # Add the pre-built PickPlace task
+        world.add_task(PickPlace(name="awesome_task"))
+        return
+
+    async def setup_post_load(self):
+        self._world = self.get_world()
+        # Dynamically retrieve task parameters
+        # {"task_param_name": {"value": [value], "modifiable": [True/False]}}
+        task_params = self._world.get_task("awesome_task").get_params()
+        self._franka = self._world.scene.get_object(task_params["robot_name"]["value"])
+        self._cube_name = task_params["cube_name"]["value"]
+        self._controller = PickPlaceController(
+            name="pick_place_controller",
+            gripper=self._franka.gripper,
+            robot_articulation=self._franka,
+        )
+        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
+        await self._world.play_async()
+        return
+
+    async def setup_post_reset(self):
+        self._controller.reset()
+        await self._world.play_async()
+        return
+
+    def physics_step(self, step_size):
+        current_observations = self._world.get_observations()
+        actions = self._controller.forward(
+            picking_position=current_observations[self._cube_name]["position"],
+            placing_position=current_observations[self._cube_name]["target_position"],
+            current_joint_positions=current_observations[self._franka.name]["joint_positions"],
+        )
+        self._franka.apply_action(actions)
+        if self._controller.is_done():
+            self._world.pause()
+        return
+```
+
+Compared to the previous section's code, notice how `setup_scene` has become simpler. Scene construction (placing Franka and the cube) is handled automatically inside the task, allowing the `HelloWorld` class to focus on task registration and controller execution.
+
+## Creating a Custom Task
+
+Now that you understand how to use tasks, let's create your own by inheriting from `BaseTask`. Custom tasks allow you to add unique logic such as task completion detection and visual feedback.
 
 The following code defines a `FrankaPlaying` task that changes the cube's color to green when it reaches the goal position.
 
@@ -306,77 +371,7 @@ class HelloWorld(BaseSample):
         return
 ```
 
-By using a Task, the `HelloWorld` class becomes much simpler. The scene construction and task completion logic are separated into `FrankaPlaying`, allowing `HelloWorld` to focus on controller execution.
-
-## Using the Pre-built PickPlace Task
-
-Isaac Sim's robot extensions also provide pre-defined task classes. For Franka, the `PickPlace` task achieves the same functionality as the custom task above with even less code.
-
-Key features of pre-built tasks:
-
-- Dynamically retrieve task parameters (robot name, cube name, etc.) via `get_params()`
-- Modify parameters during simulation via `set_params()`
-- The goal position is accessed with the key `target_position` (note: this differs from `goal_position` in our custom task)
-
-```python linenums="1" hl_lines="2-3 11 17-20 22-23"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace        # Pre-built task
-from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController
-
-
-class HelloWorld(BaseSample):
-    def __init__(self) -> None:
-        super().__init__()
-        return
-
-    def setup_scene(self):
-        world = self.get_world()
-        # Add the pre-built PickPlace task
-        world.add_task(PickPlace(name="awesome_task"))
-        return
-
-    async def setup_post_load(self):
-        self._world = self.get_world()
-        # Dynamically retrieve task parameters
-        # {"task_param_name": {"value": [value], "modifiable": [True/False]}}
-        task_params = self._world.get_task("awesome_task").get_params()
-        self._franka = self._world.scene.get_object(task_params["robot_name"]["value"])
-        self._cube_name = task_params["cube_name"]["value"]
-        self._controller = PickPlaceController(
-            name="pick_place_controller",
-            gripper=self._franka.gripper,
-            robot_articulation=self._franka,
-        )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
-
-    async def setup_post_reset(self):
-        self._controller.reset()
-        await self._world.play_async()
-        return
-
-    def physics_step(self, step_size):
-        current_observations = self._world.get_observations()
-        actions = self._controller.forward(
-            picking_position=current_observations[self._cube_name]["position"],
-            placing_position=current_observations[self._cube_name]["target_position"],  # Pre-built task uses target_position
-            current_joint_positions=current_observations[self._franka.name]["joint_positions"],
-        )
-        self._franka.apply_action(actions)
-        if self._controller.is_done():
-            self._world.pause()
-        return
-```
-
-### Custom Task vs Pre-built Task
-
-| Feature | Custom Task | Pre-built Task (`PickPlace`) |
-|---|---|---|
-| Scene construction | Self-implemented in `set_up_scene` | Automatically built by the task |
-| Parameters | Hardcoded | Dynamically managed via `get_params()` / `set_params()` |
-| Reusability | Depends on specific scene | Flexible through parameter changes |
-| Code volume | More | Less |
+With a custom task, you can add unique features not available in pre-built tasks (such as changing the cube's color in `pre_step`). On the other hand, you need to implement scene construction and observation definitions yourself.
 
 ## Summary
 
@@ -384,8 +379,8 @@ This tutorial covered the following topics:
 
 1. Adding the **Franka Panda** manipulator robot to the scene
 2. Implementing pick-and-place operations using the **PickPlaceController**
-3. Modularizing tasks by inheriting from **BaseTask** and managing observations
-4. Efficient implementation using the pre-built **PickPlace** task
+3. Using the pre-built **PickPlace** task to learn the basics of task usage
+4. Creating a custom task by inheriting from **BaseTask** and adding custom logic
 
 ## Next Steps
 
