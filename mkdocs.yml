@@ -91,6 +91,8 @@ plugins:
               - core_api/index.md
               - Hello World: core_api/01_hello_world.md
               - Hello Robot: core_api/02_hello_robot.md
+              - コントローラの追加: core_api/03_adding_a_controller.md
+              - マニピュレータロボットの追加: core_api/04_adding_a_manipulator_robot.md
             - ロボットセットアップ:
               - robot_setup/index.md
             - インポート・エクスポート:
@@ -119,6 +121,8 @@ plugins:
               - core_api/index.md
               - Hello World: core_api/01_hello_world.md
               - Hello Robot: core_api/02_hello_robot.md
+              - Adding a Controller: core_api/03_adding_a_controller.md
+              - Adding a Manipulator Robot: core_api/04_adding_a_manipulator_robot.md
             - Robot Setup:
               - robot_setup/index.md
             - Import & Export:

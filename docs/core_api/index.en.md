@@ -29,3 +29,9 @@ This tutorial introduces the concepts of the core API and how to use it. We star
 
 !!! example "[Tutorial 2: Hello Robot](02_hello_robot.md)"
     Learn how to load robot assets from the Nucleus server and control robots using the Robot and WheeledRobot classes.
+
+!!! example "[Tutorial 3: Adding a Controller](03_adding_a_controller.md)"
+    Learn how to create custom controllers and use the built-in controllers available in Isaac Sim.
+
+!!! example "[Tutorial 4: Adding a Manipulator Robot](04_adding_a_manipulator_robot.md)"
+    Learn how to add a Franka Panda manipulator to the scene, use the pick-and-place controller, and modularize tasks.

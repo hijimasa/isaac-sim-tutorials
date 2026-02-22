@@ -29,3 +29,9 @@ NVIDIA Omniverse™ Kit は、アプリケーション構築に必要な GUI、�
 
 !!! example "[チュートリアル 2: Hello Robot](02_hello_robot.md)"
     Nucleus サーバーからロボットアセットを読み込み、Robot クラスや WheeledRobot クラスを使ってロボットを制御する方法を学びます。
+
+!!! example "[チュートリアル 3: コントローラの追加](03_adding_a_controller.md)"
+    カスタムコントローラの作成方法と、Isaac Sim に用意されている既存コントローラの利用方法を学びます。
+
+!!! example "[チュートリアル 4: マニピュレータロボットの追加](04_adding_a_manipulator_robot.md)"
+    Franka Panda マニピュレータのシーンへの追加、ピック＆プレースコントローラ、タスクのモジュール化を学びます。
