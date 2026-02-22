@@ -27,5 +27,5 @@ This tutorial introduces the concepts of the core API and how to use it. We star
 !!! example "[Tutorial 1: Hello World](01_hello_world.md)"
     Learn how to create Worlds and Scenes defined by the Core API, add rigid bodies to Stages, and run simulations.
 
-!!! example "Tutorial 2: Working with the USD Stage"
-    **Coming soon** - Learn how to create and manipulate USD Prims.
+!!! example "[Tutorial 2: Hello Robot](02_hello_robot.md)"
+    Learn how to load robot assets from the Nucleus server and control robots using the Robot and WheeledRobot classes.

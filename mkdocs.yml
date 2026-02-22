@@ -90,6 +90,7 @@ plugins:
             - Core API:
               - core_api/index.md
               - Hello World: core_api/01_hello_world.md
+              - Hello Robot: core_api/02_hello_robot.md
             - ロボットセットアップ:
               - robot_setup/index.md
             - インポート・エクスポート:
@@ -117,6 +118,7 @@ plugins:
             - Core API:
               - core_api/index.md
               - Hello World: core_api/01_hello_world.md
+              - Hello Robot: core_api/02_hello_robot.md
             - Robot Setup:
               - robot_setup/index.md
             - Import & Export:

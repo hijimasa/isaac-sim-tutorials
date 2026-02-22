@@ -27,5 +27,5 @@ NVIDIA Omniverse™ Kit は、アプリケーション構築に必要な GUI、�
 !!! example "[チュートリアル 1: Hello World](01_hello_world.md)"
     Core API で定義される World と Scene の作成方法、Stage への剛体追加とシミュレーション方法を学びます。
 
-!!! example "チュートリアル 2: USD ステージの操作"
-    **準備中** - USD プリム（Prim）の作成・操作方法を学びます。
+!!! example "[チュートリアル 2: Hello Robot](02_hello_robot.md)"
+    Nucleus サーバーからロボットアセットを読み込み、Robot クラスや WheeledRobot クラスを使ってロボットを制御する方法を学びます。
