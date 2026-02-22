@@ -25,6 +25,16 @@ title: Hello Robot
 
 約 10〜15 分
 
+### ソースコードの準備
+
+このチュートリアルでは、引き続き Hello World サンプルの `hello_world.py` を編集していきます。前回のチュートリアルから続けて作業している場合はそのまま進めてください。別の日に作業を再開する場合は、以下の手順でソースコードを開いてください。
+
+1. **Windows > Examples > Robotics Examples** をアクティブにして、Robotics Examples タブを開きます。
+2. **Robotics Examples > General > Hello World** をクリックします。
+3. **Open Source Code** ボタンをクリックし、Visual Studio Code で `hello_world.py` を開きます。
+
+詳しい手順は [Hello World の「サンプルを開く」セクション](01_hello_world.md#hello-world_1)を参照してください。
+
 ## ロボットをシーンに追加する
 
 前回のチュートリアルでは立方体をシーンに追加しましたが、今回はロボットを追加します。ここでは NVIDIA の **Jetbot**（2輪の差動駆動ロボット）を使用します。
@@ -47,7 +57,15 @@ title: Hello Robot
 
 ロボットアセットは Omniverse Nucleus サーバーに格納されています。`get_assets_root_path()` でアセットのルートパスを取得し、`add_reference_to_stage()` でアセットを USD Stage に読み込みます。
 
-読み込んだロボットを `Robot` クラスでラップし、`world.scene.add()` で Scene に登録することで、高レベル API（位置取得・関節制御など）が利用可能になります。
+ただし、`add_reference_to_stage()` だけではロボットの 3D モデルと物理プロパティが Stage 上に配置されるだけで、関節の位置取得や速度指令といった**ロボットとしての制御**はできません。制御するには低レベルな USD API や PhysX API を直接操作する必要があります。
+
+そこで、読み込んだロボットのプリムを `Robot` クラスでラップし、`world.scene.add()` で Scene に登録します。`Robot` クラスは既存のプリムを**参照するだけ**で、プリムのコピーや変換は行いません。同じ `/World/Fancy_Robot` プリムに対して、`get_joint_positions()` や `apply_action()` などの高レベル API を提供する Python オブジェクトを作成します。
+
+| 処理 | 役割 |
+|---|---|
+| `add_reference_to_stage()` | USD Stage 上にロボットのプリムを作成する |
+| `Robot(prim_path=...)` | 既存のプリムを参照し、高レベル API を提供する Python ラッパーを作成する |
+| `world.scene.add()` | ラッパーを Scene に登録し、World のライフサイクル（reset/step）と連携させる |
 
 ```python linenums="1" hl_lines="2-4 17-30 33-37"
 from isaacsim.examples.interactive.base_sample import BaseSample
@@ -99,6 +117,9 @@ class HelloWorld(BaseSample):
         return
 ```
 
+!!! info "参照（Reference）について"
+    `add_reference_to_stage()` は USD ファイルを**参照（Reference）**として Stage に追加します。元のファイルへのリンクを保持するため、アセットの変更が自動的に反映されます。USD の内容を Stage に直接コピーする方法もありますが、ロボットアセットの読み込みでは参照方式が一般的です。
+
 コードを保存してシミュレーションを確認します：
 
 1. **Ctrl+S** を押してコードを保存し、Isaac Sim をホットリロードします。
@@ -122,7 +143,18 @@ class HelloWorld(BaseSample):
 
 次に、Jetbot の車輪に速度指令を送って動かします。
 
-ロボットの動作制御には **ArticulationController**（アーティキュレーションコントローラ）を使用します。これは暗黙的な PD コントローラとして動作し、PD ゲインの設定、アクションの適用、制御モードの切り替えなどを行えます。
+ロボットの動作制御には **ArticulationController**（アーティキュレーションコントローラ）を使用します。これは**暗黙的な PD コントローラ**として動作し、PD ゲインの設定、アクションの適用、制御モードの切り替えなどを行えます。
+
+??? info "暗黙的な PD コントローラとは（クリックで展開）"
+    実際のロボットでは、モータに「目標位置」や「目標速度」を指定すると、モータドライバ内の制御器が目標値と現在値の差に応じて電流（トルク）を計算し、関節を動かします。
+
+    Isaac Sim の物理エンジン（PhysX）でも同様の仕組みが内部に組み込まれています。`joint_positions` や `joint_velocities` で目標値を指定すると、PhysX が内部で **PD 制御（比例-微分制御）** を行い、目標に追従するために必要な力を自動計算します。
+
+    $$
+    F = K_p \cdot (x_{\text{target}} - x_{\text{current}}) + K_d \cdot (\dot{x}_{\text{target}} - \dot{x}_{\text{current}})
+    $$
+
+    この PD コントローラはユーザーが明示的に実装するのではなく、物理エンジンに**暗黙的に**組み込まれているため、「暗黙的な PD コントローラ」と呼ばれます。$K_p$（比例ゲイン）と $K_d$（微分ゲイン）は `ArticulationController` を通じて調整できます。
 
 `ArticulationAction` には以下の3つのパラメータを指定できます：
 
@@ -187,6 +219,16 @@ class HelloWorld(BaseSample):
         )
         return
 ```
+
+!!! note "2つの `apply_action` の使い分け"
+    コード中のコメントにある通り、同じ処理は `self._jetbot.apply_action(...)` でも呼び出せます。それぞれの特徴は以下の通りです：
+
+    | 呼び出し方 | 特徴 |
+    |---|---|
+    | `robot.get_articulation_controller().apply_action()` | PD ゲインの変更や制御モードの切り替えなど、ArticulationController の詳細な設定にアクセスできる |
+    | `robot.apply_action()` | 簡潔に書ける。内部で ArticulationController を呼び出しているため動作は同じ |
+
+    PD ゲインの調整が不要な場合は `robot.apply_action()` で十分です。次のチュートリアルからはこちらの簡潔な書き方を使用します。
 
 コードを保存してシミュレーションを確認します：
 
@@ -295,7 +337,7 @@ class HelloWorld(BaseSample):
 
 ## 次のステップ
 
-次のチュートリアル「Adding a Controller」に進み、ロボットにコントローラを追加してより高度な動作を実現する方法を学びましょう。
+次のチュートリアル「[コントローラの追加](03_adding_a_controller.md)」に進み、ロボットにコントローラを追加してより高度な動作を実現する方法を学びましょう。
 
 !!! note "注釈"
-    以降のチュートリアルでも主に Extension Workflow を使用して開発を進めます。Standalone Workflow への変換方法は [Hello World](01_hello_world.md) で学んだ手順と同様です。
+    以降のチュートリアルでも主に Extension Workflow を使用して開発を進めます。Standalone Workflow への変換方法は [Hello World](01_hello_world.md#_11) で学んだ手順と同様です。

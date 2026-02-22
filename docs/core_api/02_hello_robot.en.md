@@ -25,6 +25,16 @@ After completing this tutorial, you will have learned:
 
 Approximately 10-15 minutes.
 
+### Preparing the Source Code
+
+This tutorial continues editing the `hello_world.py` file from the Hello World sample. If you are continuing from the previous tutorial, you can proceed as-is. If you are resuming on a different day, follow these steps to open the source code:
+
+1. Activate **Windows > Examples > Robotics Examples** to open the Robotics Examples tab.
+2. Click **Robotics Examples > General > Hello World**.
+3. Click the **Open Source Code** button to open `hello_world.py` in Visual Studio Code.
+
+For detailed instructions, refer to the ["Opening the Hello World Sample" section](01_hello_world.md#opening-the-hello-world-sample) in Hello World.
+
 ## Adding a Robot to the Scene
 
 In the previous tutorial, we added a cube to the scene. This time, we will add a robot. We will use NVIDIA's **Jetbot**, a two-wheeled differential drive robot.
@@ -47,7 +57,15 @@ In the previous tutorial, we added a cube to the scene. This time, we will add a
 
 Robot assets are stored on the Omniverse Nucleus server. We use `get_assets_root_path()` to get the root path of assets, and `add_reference_to_stage()` to load the asset into the USD Stage.
 
-By wrapping the loaded robot with the `Robot` class and registering it with `world.scene.add()`, high-level APIs (position retrieval, joint control, etc.) become available.
+However, `add_reference_to_stage()` alone only places the robot's 3D model and physics properties on the Stage. It does not provide **robot-level control** such as querying joint positions or sending velocity commands. To do that, you would need to directly manipulate low-level USD or PhysX APIs.
+
+To enable high-level control, we wrap the loaded robot prim with the `Robot` class and register it with `world.scene.add()`. The `Robot` class **only references** the existing prim — it does not copy or transform it. It creates a Python object that provides high-level APIs like `get_joint_positions()` and `apply_action()` for the same `/World/Fancy_Robot` prim.
+
+| Operation | Role |
+|---|---|
+| `add_reference_to_stage()` | Creates the robot prim on the USD Stage |
+| `Robot(prim_path=...)` | Creates a Python wrapper that references the existing prim and provides high-level APIs |
+| `world.scene.add()` | Registers the wrapper with the Scene, enabling integration with the World lifecycle (reset/step) |
 
 ```python linenums="1" hl_lines="2-4 17-30 33-37"
 from isaacsim.examples.interactive.base_sample import BaseSample
@@ -100,14 +118,15 @@ class HelloWorld(BaseSample):
         return
 ```
 
+!!! info "About References"
+    `add_reference_to_stage()` adds the USD file as a **Reference** to the Stage. It maintains a link to the original file, so any changes to the asset are automatically reflected. While it is also possible to directly copy USD content into the Stage, the reference approach is standard practice for loading robot assets.
+
 Save the code and verify the simulation:
 
 1. Press **Ctrl+S** to save the code and hot-reload Isaac Sim.
 2. Reopen the Hello World sample extension window.
 3. Click **File > New From Stage Template > Empty** to create a new world, then click **LOAD**.
 4. Check the terminal output.
-
-![Jetbot added to the scene](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/core_api_tutorials_2_1.webp)
 
 ### Important Note on Physics Handles
 
@@ -125,7 +144,18 @@ Notice that the `num_dof` (number of degrees of freedom) value differs between `
 
 Next, we will send velocity commands to the Jetbot's wheels to make it move.
 
-Robot motion control uses the **ArticulationController**. It acts as an implicit PD controller, enabling PD gain settings, action application, and control mode switching.
+Robot motion control uses the **ArticulationController**. It acts as an **implicit PD controller**, enabling PD gain settings, action application, and control mode switching.
+
+??? info "What is an implicit PD controller? (click to expand)"
+    On a real robot, when you specify a "target position" or "target velocity" to a motor, a controller inside the motor driver computes the current (torque) based on the error between the target and current values to move the joint.
+
+    The physics engine in Isaac Sim (PhysX) has the same mechanism built in. When you specify target values via `joint_positions` or `joint_velocities`, PhysX internally performs **PD control (Proportional-Derivative control)** and automatically computes the forces needed to track the target.
+
+    $$
+    F = K_p \cdot (x_{\text{target}} - x_{\text{current}}) + K_d \cdot (\dot{x}_{\text{target}} - \dot{x}_{\text{current}})
+    $$
+
+    This PD controller is not explicitly implemented by the user but is **implicitly** built into the physics engine — hence the term "implicit PD controller." The gains $K_p$ (proportional) and $K_d$ (derivative) can be tuned through the `ArticulationController`.
 
 `ArticulationAction` accepts the following three parameters:
 
@@ -190,6 +220,16 @@ class HelloWorld(BaseSample):
         )
         return
 ```
+
+!!! note "Choosing between the two `apply_action` methods"
+    As noted in the code comments, the same operation can be performed via `self._jetbot.apply_action(...)`. Here is a comparison:
+
+    | Method | Characteristics |
+    |---|---|
+    | `robot.get_articulation_controller().apply_action()` | Provides access to detailed ArticulationController settings such as PD gain tuning and control mode switching |
+    | `robot.apply_action()` | More concise. Internally calls the ArticulationController, so behavior is identical |
+
+    If you don't need to adjust PD gains, `robot.apply_action()` is sufficient. The following tutorials will use this more concise form.
 
 Save the code and verify the simulation:
 
@@ -298,7 +338,7 @@ This tutorial covered the following topics:
 
 ## Next Steps
 
-Proceed to the next tutorial, "Adding a Controller," to learn how to add controllers to your robot for more advanced motion.
+Proceed to the next tutorial, "[Adding a Controller](03_adding_a_controller.md)," to learn how to add controllers to your robot for more advanced motion.
 
 !!! note "Note"
     The following tutorials continue to use the Extension Workflow for development. Converting to the Standalone Workflow follows the same approach as learned in [Hello World](01_hello_world.md#converting-to-a-standalone-application).
