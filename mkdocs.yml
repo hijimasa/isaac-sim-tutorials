@@ -97,6 +97,8 @@ plugins:
               - Hello Robot: core_api/02_hello_robot.md
               - コントローラの追加: core_api/03_adding_a_controller.md
               - マニピュレータロボットの追加: core_api/04_adding_a_manipulator_robot.md
+              - 複数ロボットの追加: core_api/05_adding_multiple_robots.md
+              - 複数タスクの実行: core_api/06_multiple_tasks.md
             - ロボットセットアップ:
               - robot_setup/index.md
             - インポート・エクスポート:
@@ -127,6 +129,8 @@ plugins:
               - Hello Robot: core_api/02_hello_robot.md
               - Adding a Controller: core_api/03_adding_a_controller.md
               - Adding a Manipulator Robot: core_api/04_adding_a_manipulator_robot.md
+              - Adding Multiple Robots: core_api/05_adding_multiple_robots.md
+              - Multiple Tasks: core_api/06_multiple_tasks.md
             - Robot Setup:
               - robot_setup/index.md
             - Import & Export:

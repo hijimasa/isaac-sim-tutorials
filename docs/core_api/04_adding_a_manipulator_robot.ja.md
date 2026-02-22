@@ -183,8 +183,10 @@ class HelloWorld(BaseSample):
 |---|---|
 | `set_up_scene` | タスクに必要なアセットをシーンに配置 |
 | `get_observations` | タスクの解決に必要な観測情報を返す |
-| `pre_step` | 各物理ステップの前に実行される処理（タスク達成判定など） |
+| `pre_step(control_index, simulation_time)` | 各物理ステップの前に実行される処理（タスク達成判定など） |
 | `post_reset` | リセット後の初期化処理 |
+
+`pre_step` の引数 `control_index` は物理ステップごとに自動でインクリメントされるインデックス（0, 1, 2, ...）、`simulation_time` はシミュレーション開始からの経過時間（秒）です。いずれも World が自動的に渡すため、ユーザーが手動で管理する必要はありません。
 
 タスクをモジュール化することで、同じタスクを異なるロボットやシーンで再利用できるようになります。
 
@@ -384,7 +386,7 @@ class HelloWorld(BaseSample):
 
 ## 次のステップ
 
-次のチュートリアルに進み、シミュレーション環境をさらに発展させましょう。
+次のチュートリアル「[複数ロボットの追加](05_adding_multiple_robots.md)」に進み、複数のロボットが連携するシミュレーションの構築方法を学びましょう。
 
 !!! note "注釈"
     以降のチュートリアルでも主に Extension Workflow を使用して開発を進めます。Standalone Workflow への変換方法は [Hello World](01_hello_world.md#_11) で学んだ手順と同様です。

@@ -30,7 +30,7 @@ This tutorial continues editing the `hello_world.py` file from the Hello World s
 2. Click **Robotics Examples > General > Hello World**.
 3. Click the **Open Source Code** button to open `hello_world.py` in Visual Studio Code.
 
-For detailed instructions, refer to the ["Opening the Hello World Sample" section](01_hello_world.md) in Hello World.
+For detailed instructions, refer to the ["Opening the Hello World Sample" section](01_hello_world.md#opening-the-hello-world-sample) in Hello World.
 
 ## Creating a Custom Controller
 
@@ -238,4 +238,4 @@ This tutorial covered the following topics:
 Proceed to the next tutorial, "[Adding a Manipulator Robot](04_adding_a_manipulator_robot.md)," to learn how to add a manipulator robot to the simulation.
 
 !!! note "Note"
-    The following tutorials continue to use the Extension Workflow for development. Converting to the Standalone Workflow follows the same approach as learned in [Hello World](01_hello_world.md).
+    The following tutorials continue to use the Extension Workflow for development. Converting to the Standalone Workflow follows the same approach as learned in [Hello World](01_hello_world.md#converting-to-a-standalone-application).

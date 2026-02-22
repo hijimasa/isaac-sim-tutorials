@@ -35,3 +35,9 @@ NVIDIA Omniverse™ Kit は、アプリケーション構築に必要な GUI、�
 
 !!! example "[チュートリアル 4: マニピュレータロボットの追加](04_adding_a_manipulator_robot.md)"
     Franka Panda マニピュレータのシーンへの追加、ピック＆プレースコントローラ、タスクのモジュール化を学びます。
+
+!!! example "[チュートリアル 5: 複数ロボットの追加](05_adding_multiple_robots.md)"
+    Jetbot と Franka の2台のロボットを連携させ、サブタスクやタスクイベントを使ったマルチロボットシミュレーションを構築します。
+
+!!! example "[チュートリアル 6: 複数タスクの実行](06_multiple_tasks.md)"
+    offset パラメータによるタスクの空間配置と、同じタスクの複数インスタンスを並列実行する方法を学びます。

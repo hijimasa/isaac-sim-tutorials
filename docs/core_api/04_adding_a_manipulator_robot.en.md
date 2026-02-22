@@ -31,7 +31,7 @@ This tutorial continues editing the `hello_world.py` file from the Hello World s
 2. Click **Robotics Examples > General > Hello World**.
 3. Click the **Open Source Code** button to open `hello_world.py` in Visual Studio Code.
 
-For detailed instructions, refer to the ["Opening the Hello World Sample" section](01_hello_world.md) in Hello World.
+For detailed instructions, refer to the ["Opening the Hello World Sample" section](01_hello_world.md#opening-the-hello-world-sample) in Hello World.
 
 !!! warning "Warning"
     Pressing **STOP** then **PLAY** may not properly reset the world. Use the **RESET** button to restart the simulation.
@@ -183,8 +183,10 @@ A **Task** is a mechanism for modularizing specific work within the scene. By de
 |---|---|
 | `set_up_scene` | Place assets needed for the task in the scene |
 | `get_observations` | Return observation data needed to solve the task |
-| `pre_step` | Logic executed before each physics step (e.g., task completion check) |
+| `pre_step(control_index, simulation_time)` | Logic executed before each physics step (e.g., task completion check) |
 | `post_reset` | Initialization logic after reset |
+
+The `pre_step` arguments `control_index` is an index that auto-increments with each physics step (0, 1, 2, ...), and `simulation_time` is the elapsed time in seconds since the simulation started. Both are passed automatically by the World, so you do not need to manage them manually.
 
 By modularizing tasks, you can reuse the same task across different robots and scenes.
 
@@ -384,7 +386,7 @@ This tutorial covered the following topics:
 
 ## Next Steps
 
-Proceed to the next tutorial to further develop your simulation environment.
+Proceed to the next tutorial, "[Adding Multiple Robots](05_adding_multiple_robots.md)," to learn how to build a simulation where multiple robots cooperate.
 
 !!! note "Note"
-    The following tutorials continue to use the Extension Workflow for development. Converting to the Standalone Workflow follows the same approach as learned in [Hello World](01_hello_world.md).
+    The following tutorials continue to use the Extension Workflow for development. Converting to the Standalone Workflow follows the same approach as learned in [Hello World](01_hello_world.md#converting-to-a-standalone-application).

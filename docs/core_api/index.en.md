@@ -35,3 +35,9 @@ This tutorial introduces the concepts of the core API and how to use it. We star
 
 !!! example "[Tutorial 4: Adding a Manipulator Robot](04_adding_a_manipulator_robot.md)"
     Learn how to add a Franka Panda manipulator to the scene, use the pick-and-place controller, and modularize tasks.
+
+!!! example "[Tutorial 5: Adding Multiple Robots](05_adding_multiple_robots.md)"
+    Build a multi-robot simulation where Jetbot and Franka cooperate, using subtasks and task events to coordinate their actions.
+
+!!! example "[Tutorial 6: Multiple Tasks](06_multiple_tasks.md)"
+    Learn how to spatially arrange tasks using the offset parameter and run multiple instances of the same task in parallel.
