@@ -39,7 +39,9 @@ The formulas are as follows:
 | $v$ | Forward velocity (`command[0]`) |
 | $\omega$ | Angular velocity (`command[1]`) |
 | $r$ | Wheel radius (`wheel_radius`) |
-| $L$ | Wheel base distance (`wheel_base`) |
+| $L$ | Distance between left and right wheels = tread (`wheel_base`)[^1] |
+
+[^1]: Strictly speaking, the distance between the left and right wheels is called the "tread" (or "track width"), but the Isaac Sim API uses the parameter name `wheel_base`.
 
 $$
 v_{\text{left}} = \frac{2v - \omega L}{2r}, \quad v_{\text{right}} = \frac{2v + \omega L}{2r}
@@ -63,7 +65,7 @@ class CoolController(BaseController):
         super().__init__(name="my_cool_controller")
         # An open-loop controller based on the unicycle model
         self._wheel_radius = 0.03    # Wheel radius [m]
-        self._wheel_base = 0.1125    # Distance between wheels [m]
+        self._wheel_base = 0.1125    # Distance between left and right wheels (tread) [m]
         return
 
     def forward(self, command):
@@ -185,7 +187,7 @@ class HelloWorld(BaseSample):
             open_loop_wheel_controller=DifferentialController(
                 name="simple_control",
                 wheel_radius=0.03,      # Wheel radius [m]
-                wheel_base=0.1125       # Distance between wheels [m]
+                wheel_base=0.1125       # Distance between left and right wheels (tread) [m]
             ),
             is_holonomic=False  # Jetbot is non-holonomic (cannot move sideways)
         )
@@ -212,14 +214,6 @@ Save the code and verify the simulation:
 3. Press the **PLAY** button and observe the Jetbot autonomously moving toward the goal position (0.8, 0.8).
 
 ![Moving to goal position with built-in controllers](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/core_api_tutorials_3_2.webp)
-
-### Comparison with Custom Controller
-
-| Feature | Custom Controller | Built-in Controllers |
-|---|---|---|
-| Input | Forward velocity and angular velocity | Goal position (robot computes path automatically) |
-| Behavior | Constant arc driving (open-loop) | Autonomous navigation to goal (closed-loop) |
-| Implementation effort | Implement kinematics yourself | Parameter configuration only |
 
 ## Summary
 

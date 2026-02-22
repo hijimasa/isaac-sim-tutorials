@@ -39,7 +39,9 @@ title: コントローラの追加
 | $v$ | 前進速度（`command[0]`） |
 | $\omega$ | 旋回角速度（`command[1]`） |
 | $r$ | 車輪の半径（`wheel_radius`） |
-| $L$ | 車輪間の距離（`wheel_base`） |
+| $L$ | 左右車輪間の距離＝トレッド（`wheel_base`）[^1] |
+
+[^1]: 厳密には左右の車輪間距離は「トレッド（tread）」と呼ばれますが、Isaac Sim の API ではパラメータ名として `wheel_base` が使用されています。
 
 $$
 v_{\text{left}} = \frac{2v - \omega L}{2r}, \quad v_{\text{right}} = \frac{2v + \omega L}{2r}
@@ -63,7 +65,7 @@ class CoolController(BaseController):
         super().__init__(name="my_cool_controller")
         # ユニサイクルモデルに基づくオープンループコントローラ
         self._wheel_radius = 0.03    # 車輪の半径 [m]
-        self._wheel_base = 0.1125    # 車輪間の距離 [m]
+        self._wheel_base = 0.1125    # 左右車輪間の距離（トレッド） [m]
         return
 
     def forward(self, command):
@@ -185,7 +187,7 @@ class HelloWorld(BaseSample):
             open_loop_wheel_controller=DifferentialController(
                 name="simple_control",
                 wheel_radius=0.03,      # 車輪の半径 [m]
-                wheel_base=0.1125       # 車輪間の距離 [m]
+                wheel_base=0.1125       # 左右車輪間の距離（トレッド） [m]
             ),
             is_holonomic=False  # Jetbot は非ホロノミック（横移動不可）
         )
@@ -212,14 +214,6 @@ class HelloWorld(BaseSample):
 3. **PLAY** ボタンを押して、Jetbot が目標位置 (0.8, 0.8) に向かって自律的に移動する様子を確認します。
 
 ![既存コントローラによる目標位置への移動](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/core_api_tutorials_3_2.webp)
-
-### カスタムコントローラとの比較
-
-| 特徴 | カスタムコントローラ | 既存コントローラ |
-|---|---|---|
-| 入力 | 前進速度・旋回速度 | 目標位置（ロボットが自動で経路計算） |
-| 動作 | 一定の速度で円弧走行（オープンループ） | 目標に到達するまで自律移動（クローズドループ） |
-| 実装コスト | 運動学の計算を自前で実装 | パラメータ設定のみ |
 
 ## まとめ
 
