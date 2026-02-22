@@ -23,6 +23,16 @@ title: マニピュレータロボットの追加
 
 約 15〜20 分
 
+### ソースコードの準備
+
+このチュートリアルでは、引き続き Hello World サンプルの `hello_world.py` を編集していきます。前回のチュートリアルから続けて作業している場合はそのまま進めてください。別の日に作業を再開する場合は、以下の手順でソースコードを開いてください。
+
+1. **Windows > Examples > Robotics Examples** をアクティブにして、Robotics Examples タブを開きます。
+2. **Robotics Examples > General > Hello World** をクリックします。
+3. **Open Source Code** ボタンをクリックし、Visual Studio Code で `hello_world.py` を開きます。
+
+詳しい手順は [Hello World の「サンプルを開く」セクション](01_hello_world.md)を参照してください。
+
 !!! warning "注意"
     **STOP** → **PLAY** の操作ではワールドが正しくリセットされない場合があります。シミュレーションをやり直す場合は、**RESET** ボタンを使用してください。
 

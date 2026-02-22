@@ -22,6 +22,16 @@ title: コントローラの追加
 
 約 10 分
 
+### ソースコードの準備
+
+このチュートリアルでは、引き続き Hello World サンプルの `hello_world.py` を編集していきます。前回のチュートリアルから続けて作業している場合はそのまま進めてください。別の日に作業を再開する場合は、以下の手順でソースコードを開いてください。
+
+1. **Windows > Examples > Robotics Examples** をアクティブにして、Robotics Examples タブを開きます。
+2. **Robotics Examples > General > Hello World** をクリックします。
+3. **Open Source Code** ボタンをクリックし、Visual Studio Code で `hello_world.py` を開きます。
+
+詳しい手順は [Hello World の「サンプルを開く」セクション](01_hello_world.md)を参照してください。
+
 ## カスタムコントローラの作成
 
 前回のチュートリアルでは、各車輪に直接速度を指定してロボットを動かしました。しかし実際のロボット制御では、「前進速度」や「旋回速度」といった高レベルなコマンドで操作したい場面がほとんどです。

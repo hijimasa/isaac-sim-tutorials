@@ -22,6 +22,16 @@ After completing this tutorial, you will have learned:
 
 Approximately 10 minutes.
 
+### Preparing the Source Code
+
+This tutorial continues editing the `hello_world.py` file from the Hello World sample. If you are continuing from the previous tutorial, you can proceed as-is. If you are resuming on a different day, follow these steps to open the source code:
+
+1. Activate **Windows > Examples > Robotics Examples** to open the Robotics Examples tab.
+2. Click **Robotics Examples > General > Hello World**.
+3. Click the **Open Source Code** button to open `hello_world.py` in Visual Studio Code.
+
+For detailed instructions, refer to the ["Opening the Hello World Sample" section](01_hello_world.md) in Hello World.
+
 ## Creating a Custom Controller
 
 In the previous tutorial, we moved the robot by directly specifying velocities for each wheel. In practice, however, you usually want to control the robot with high-level commands such as "forward velocity" and "angular velocity."
