@@ -31,7 +31,7 @@ title: マニピュレータロボットの追加
 2. **Robotics Examples > General > Hello World** をクリックします。
 3. **Open Source Code** ボタンをクリックし、Visual Studio Code で `hello_world.py` を開きます。
 
-詳しい手順は [Hello World の「サンプルを開く」セクション](01_hello_world.md)を参照してください。
+詳しい手順は [Hello World の「サンプルを開く」セクション](01_hello_world.md#hello-world_1)を参照してください。
 
 !!! warning "注意"
     **STOP** → **PLAY** の操作ではワールドが正しくリセットされない場合があります。シミュレーションをやり直す場合は、**RESET** ボタンを使用してください。

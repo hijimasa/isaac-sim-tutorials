@@ -30,7 +30,7 @@ title: コントローラの追加
 2. **Robotics Examples > General > Hello World** をクリックします。
 3. **Open Source Code** ボタンをクリックし、Visual Studio Code で `hello_world.py` を開きます。
 
-詳しい手順は [Hello World の「サンプルを開く」セクション](01_hello_world.md)を参照してください。
+詳しい手順は [Hello World の「サンプルを開く」セクション](01_hello_world.md#hello-world_1)を参照してください。
 
 ## カスタムコントローラの作成
 
