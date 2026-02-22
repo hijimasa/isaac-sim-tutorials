@@ -29,6 +29,22 @@ Approximately 10-15 minutes.
 
 In the previous tutorial, we added a cube to the scene. This time, we will add a robot. We will use NVIDIA's **Jetbot**, a two-wheeled differential drive robot.
 
+??? info "Adding a robot via GUI (click to expand)"
+    You can also add a robot to the scene by dragging and dropping from the Isaac Sim Assets browser, without writing any Python code.
+
+    1. Click **Window > Browsers > Isaac Sim Assets** to enable the Isaac Sim Assets window.<br>
+       ![Enable the Isaac Sim Assets window](images/09_isaac_sim_assets_browser.png)
+
+        !!! warning "First launch note"
+            When opening the Isaac Sim Assets window for the first time, asset data will be downloaded, which may take a significant amount of time. Depending on your network environment, this could take several minutes or more.
+
+    2. Type "Jetbot" in the search bar and drag and drop the Jetbot asset into the viewport.<br>
+       ![Drag and drop Jetbot](images/10_drag_and_drop_jetbot.webp)
+
+    This method is convenient for quickly placing robots, but learning the Python API approach allows you to dynamically add and control robots programmatically. The following sections explain the Python API approach.
+
+### Adding a Robot via Python API
+
 Robot assets are stored on the Omniverse Nucleus server. We use `get_assets_root_path()` to get the root path of assets, and `add_reference_to_stage()` to load the asset into the USD Stage.
 
 By wrapping the loaded robot with the `Robot` class and registering it with `world.scene.add()`, high-level APIs (position retrieval, joint control, etc.) become available.
@@ -189,15 +205,20 @@ Since random velocities (in the range 0-5) are applied to the left and right whe
 
 Try the following exercises to deepen your understanding of robot control.
 
-!!! question "Exercises"
-    1. **Move backwards** — Make the Jetbot move in reverse.
-    2. **Turn right** — Make the Jetbot turn to the right.
-    3. **Stop after 5 seconds** — Make the Jetbot stop 5 seconds after the simulation starts.
+**Exercise 1: Move backwards** — Make the Jetbot move in reverse.
 
-??? tip "Hints (click to expand)"
-    - **Move backwards**: Set the wheel velocities to negative values.
-    - **Turn right**: Set different velocities for the left and right wheels (faster on the left, slower on the right).
-    - **Stop after 5 seconds**: Accumulate `step_size` each step to calculate elapsed time, and use a conditional to stop the robot.
+??? tip "Hint (click to expand)"
+    Set the wheel velocities to negative values.
+
+**Exercise 2: Turn right** — Make the Jetbot turn to the right.
+
+??? tip "Hint (click to expand)"
+    Set different velocities for the left and right wheels (faster on the left, slower on the right).
+
+**Exercise 3: Stop after 5 seconds** — Make the Jetbot stop 5 seconds after the simulation starts.
+
+??? tip "Hint (click to expand)"
+    Accumulate `step_size` each step to calculate elapsed time, and use a conditional to stop the robot.
 
 ## Using the WheeledRobot Class
 
