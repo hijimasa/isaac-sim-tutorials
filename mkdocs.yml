@@ -44,6 +44,8 @@ extra_css:
 
 extra_javascript:
   - javascripts/extra.js
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 markdown_extensions:
   - admonition
@@ -66,6 +68,8 @@ markdown_extensions:
       permalink: true
   - pymdownx.tasklist:
       custom_checkbox: true
+  - pymdownx.arithmatex:
+      generic: true
   - def_list
   - footnotes
 
