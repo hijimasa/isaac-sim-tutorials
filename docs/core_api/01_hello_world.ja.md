@@ -117,7 +117,16 @@ class HelloWorld(BaseSample):
 
 ## シングルトン・ワールド
 
-World はシングルトンです。つまり、NVIDIA Isaac Sim の実行中に存在できる World は1つだけです。以下のコードは、異なるファイルや拡張機能間で現在の World インスタンスを取得する方法を示しています。
+World はシングルトンです。つまり、NVIDIA Isaac Sim の実行中に存在できる World は1つだけです。
+
+前のセクションでは `self.get_world()` を使って World を取得しましたが、`World.instance()` でも同じインスタンスを取得できます。両者は同一のオブジェクトを返しますが、使い分けの目安は以下の通りです：
+
+| 取得方法 | 使いどころ |
+|---|---|
+| `self.get_world()` | `BaseSample` を継承したクラス内（通常のチュートリアル開発） |
+| `World.instance()` | `BaseSample` を継承していない別のファイルや拡張機能からアクセスする場合 |
+
+以下のコードは、`World.instance()` を使ったアクセス方法を示しています。`BaseSample` を継承していないクラスや別の拡張機能からでも、この方法で現在の World にアクセスできます。
 
 ```python linenums="1" hl_lines="2 9"
 from isaacsim.examples.interactive.base_sample import BaseSample
@@ -284,7 +293,24 @@ class HelloWorld(BaseSample):
 
 [Workflow](#workflow) で述べたように、**Standalone Workflow** では Python から Isaac Sim を直接起動し、物理演算とレンダリングのタイミングを完全に制御できます。
 
-新しい `my_application.py` ファイルを作成し、以下のコードを記述します：
+Standalone スクリプトは Isaac Sim 同梱の Python インタプリタ（`python.sh`）で実行する必要があります。このインタプリタは Isaac Sim のインストールディレクトリ直下にあります。
+
+スクリプトの配置場所は任意ですが、Hello World サンプルと同じ `user_examples` ディレクトリに置くのが分かりやすいです：
+
+```
+<Isaac Sim インストールディレクトリ>/
+├── python.sh                    # Isaac Sim 同梱の Python インタプリタ
+└── exts/
+    └── isaacsim.examples.interactive/
+        └── isaacsim/examples/interactive/
+            └── user_examples/
+                └── my_application.py   # ← ここに作成
+```
+
+!!! tip "ヒント"
+    `python.sh`（Windows では `python.bat`）は Isaac Sim に必要なすべての依存関係を含む専用の Python 環境です。システムにインストールされた Python で実行するとモジュールが見つからずエラーになります。
+
+新しい `my_application.py` ファイルを上記のディレクトリに作成し、以下のコードを記述します：
 
 ```python linenums="1" hl_lines="1-4 20-22 30-32 34"
 # Isaac Sim を他のインポートより先に起動する（Standalone の必須手順）
@@ -323,9 +349,10 @@ for i in range(500):
 simulation_app.close() # Isaac Sim を終了
 ```
 
-以下のコマンドで作成したスクリプトを実行します：
+Isaac Sim のインストールディレクトリに移動し、以下のコマンドでスクリプトを実行します：
 
 ```bash
+cd <Isaac Sim インストールディレクトリ>
 ./python.sh ./exts/isaacsim.examples.interactive/isaacsim/examples/interactive/user_examples/my_application.py
 ```
 
@@ -341,7 +368,7 @@ simulation_app.close() # Isaac Sim を終了
 
 ## 次のステップ
 
-次のチュートリアル「Hello Robot」に進み、シミュレーションにロボットを追加する方法を学びましょう。
+次のチュートリアル「[Hello Robot](02_hello_robot.md)」に進み、シミュレーションにロボットを追加する方法を学びましょう。
 
 !!! note "注釈"
     次のチュートリアルでは主に Extension Workflow を使用して開発を進めます。ただし、本チュートリアルで扱った内容を踏まえれば、他の Workflow への変換も同様の手順で行えます。

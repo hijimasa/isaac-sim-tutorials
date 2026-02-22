@@ -117,7 +117,16 @@ class HelloWorld(BaseSample):
 
 ## Singleton World
 
-World is a singleton. This means only one World can exist while NVIDIA Isaac Sim is running. The following code shows how to retrieve the current World instance across different files and extensions.
+World is a singleton. This means only one World can exist while NVIDIA Isaac Sim is running.
+
+In the previous section, we used `self.get_world()` to retrieve the World, but `World.instance()` also returns the same instance. Both return the identical object, but here is a guideline for when to use each:
+
+| Method | When to Use |
+|---|---|
+| `self.get_world()` | Inside classes that inherit from `BaseSample` (typical tutorial development) |
+| `World.instance()` | Accessing from separate files or extensions that do not inherit from `BaseSample` |
+
+The following code shows how to access the World using `World.instance()`. This approach allows you to access the current World even from classes or extensions that do not inherit from `BaseSample`.
 
 ```python linenums="1" hl_lines="2 9"
 from isaacsim.examples.interactive.base_sample import BaseSample
@@ -284,7 +293,24 @@ To return objects to their initial state during simulation, use the **RESET** bu
 
 As mentioned in the [Workflow](#workflow) section, the **Standalone Workflow** launches Isaac Sim directly from Python, giving you full control over physics and rendering timing.
 
-Create a new `my_application.py` file with the following code:
+Standalone scripts must be run using Isaac Sim's bundled Python interpreter (`python.sh`), located in the Isaac Sim installation directory.
+
+You can place the script anywhere, but for simplicity, we recommend placing it in the same `user_examples` directory as the Hello World sample:
+
+```
+<Isaac Sim installation directory>/
+├── python.sh                    # Isaac Sim's bundled Python interpreter
+└── exts/
+    └── isaacsim.examples.interactive/
+        └── isaacsim/examples/interactive/
+            └── user_examples/
+                └── my_application.py   # ← Create here
+```
+
+!!! tip "Tip"
+    `python.sh` (or `python.bat` on Windows) is a dedicated Python environment that includes all dependencies required by Isaac Sim. Running with your system Python will result in module-not-found errors.
+
+Create a new `my_application.py` file in the directory shown above with the following code:
 
 ```python linenums="1" hl_lines="1-4 20-22 30-32 34"
 # Launch Isaac Sim before any other imports (required for Standalone)
@@ -323,9 +349,10 @@ for i in range(500):
 simulation_app.close() # Close Isaac Sim
 ```
 
-Run the script with the following command:
+Navigate to the Isaac Sim installation directory and run the script with the following command:
 
 ```bash
+cd <Isaac Sim installation directory>
 ./python.sh ./exts/isaacsim.examples.interactive/isaacsim/examples/interactive/user_examples/my_application.py
 ```
 
@@ -341,7 +368,7 @@ This tutorial covered the following topics:
 
 ## Next Steps
 
-Proceed to the next tutorial, "Hello Robot," to learn how to add a robot to the simulation.
+Proceed to the next tutorial, "[Hello Robot](02_hello_robot.md)," to learn how to add a robot to the simulation.
 
 !!! note "Note"
     The following tutorials primarily use the Extension Workflow for development. However, based on what you learned in this tutorial, converting to other Workflows follows the same approach.
