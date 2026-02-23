@@ -45,13 +45,16 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
 まず、新しいステージを作成してオブジェクトを配置します。
 
-1. **File > New Stage** をクリックして新しいステージを作成します。
+1. **File > New** をクリックして新しいステージを作成します。<br>
+   ![新規作成](images/11_new_stage.png)
 
-2. Content Browser で **Isaac Sim > Props > Rubiks_Cube > rubiks_cube.usd** に移動し、USD ファイルをビューポートにドラッグ＆ドロップします。
+2. Content Browser で **Isaac Sim > Props > Rubiks_Cube > rubiks_cube.usd** に移動し、USD ファイルをビューポートにドラッグ＆ドロップします。<br>
+   ![ルービックキューブを置く](images/12_put_rubiks_cube.webp)
 
-3. ルービックキューブを左クリックして選択し、Properties パネルで **Position** を `(0, 0, 0.1)` に設定します。
+3. ルービックキューブを左クリックして選択し、Properties パネルで **Translate** を `(0, 0, 0.1)` に設定します。
 
-4. ステージ上で右クリックし、**Create > Isaac > Environment > Flat Grid** を選択して地面を作成します。
+4. ステージ上で右クリックし、**Create > Isaac > Environment > Flat Grid** を選択して地面を作成します。<br>
+   ![平面の作成](images/13_create_flat_grid.png)
 
 5. **PLAY** ボタンを押してシミュレーションを開始します。
 
@@ -63,7 +66,11 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
 ### 剛体属性（Rigid Body）の追加
 
-1. ルービックキューブを右クリックし、**Add > Physics > Rigid Body** を選択します。
+1. ステージ上でXformのルービックキューブを右クリックし、**Add > Physics > Rigid Body** を選択します。<br>
+   ![剛体の追加](images/14_add_rigid_body.png)
+
+!!! warning "注意"
+    以降の手順でビューポート上のルーピックキューブをクリックして選択されるMeshのルーピックキューブに属性を付与すると、うまくいかなくなるので注意すること。
 
 2. **PLAY** ボタンを押します。
 
@@ -75,7 +82,7 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
 ### コリジョン属性の追加
 
-1. ルービックキューブを右クリックし、**Add > Physics > Collider Presets** を選択します。
+1. ステージ上でXformのルービックキューブを右クリックし、**Add > Physics > Collider Presets** を選択します。
 
 2. **PLAY** ボタンを押します。
 
@@ -87,7 +94,7 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
 ### 質量（Mass）の追加
 
-1. ルービックキューブを右クリックし、**Add > Physics > Mass** を選択します。
+1. ステージ上でXformのルービックキューブを右クリックし、**Add > Physics > Mass** を選択します。
 
 2. Properties パネルで **Mass** セクションまでスクロールし、**Mass** を `0.1`（100グラム）に設定します。
 
@@ -99,6 +106,7 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 コリジョン形状は通常は見えませんが、デバッグ用に可視化できます。
 
 1. ビューポート左上の **Eye アイコン**を右クリックし、**Show By Type > Physics > Colliders > All** を選択します。
+   ![コリジョン形状の可視化設定の場所](images/15_show_colliders.png)
 
     **結果:** シーン内のすべてのオブジェクトのコリジョン形状が表示されます。
 
@@ -138,9 +146,10 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
 反発係数（Restitution）を設定して、オブジェクトが弾む動作を実現します。
 
-1. ルービックキューブを左クリックし、Properties パネルで **Position** を `(0, 0, 1)` に変更します（高い位置から落とすため）。
+1. ステージ上でXformのルービックキューブを左クリックし、Properties パネルで **Translate** を `(0, 0, 1)` に変更します（高い位置から落とすため）。
 
-2. ルービックキューブを右クリックし、**Create > Physics > Physics Material** を選択します。作成されたマテリアルを `World/rubiks_cube/Looks` フォルダにドラッグ＆ドロップします。
+2. ステージ上でXformのルービックキューブを右クリックし、**Create > Physics > Physics Material** を選択します。ポップアップではRigid Body Materialにチェックを入れてOKを選択します。作成されたマテリアルを `World/rubiks_cube/Looks` フォルダにドラッグ＆ドロップします。
+   ![物理マテリアルの作成](images/16_create_physics_material.png)
 
 3. Properties パネルで **Physics Material** セクションまでスクロールし、**Restitution** を `1` に設定します（完全弾性衝突）。
 

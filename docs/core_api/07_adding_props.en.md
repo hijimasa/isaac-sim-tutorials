@@ -45,13 +45,16 @@ Objects participating in physics simulation in Isaac Sim need the following attr
 
 First, create a new stage and place an object.
 
-1. Click **File > New Stage** to create a new stage.
+1. Click **File > New** to create a new stage.<br>
+   ![New stage](images/11_new_stage.png)
 
-2. In the Content Browser, navigate to **Isaac Sim > Props > Rubiks_Cube > rubiks_cube.usd** and drag-and-drop the USD file into the viewport.
+2. In the Content Browser, navigate to **Isaac Sim > Props > Rubiks_Cube > rubiks_cube.usd** and drag-and-drop the USD file into the viewport.<br>
+   ![Place Rubik's Cube](images/12_put_rubiks_cube.webp)
 
-3. Left-click the Rubik's Cube to select it, and set the **Position** to `(0, 0, 0.1)` in the Properties panel.
+3. Left-click the Rubik's Cube to select it, and set the **Translate** to `(0, 0, 0.1)` in the Properties panel.
 
-4. Right-click on the stage and select **Create > Isaac > Environment > Flat Grid** to create a ground plane.
+4. Right-click on the stage and select **Create > Isaac > Environment > Flat Grid** to create a ground plane.<br>
+   ![Create Flat Grid](images/13_create_flat_grid.png)
 
 5. Press the **PLAY** button to start the simulation.
 
@@ -63,7 +66,11 @@ First, create a new stage and place an object.
 
 ### Adding Rigid Body Properties
 
-1. Right-click the Rubik's Cube and select **Add > Physics > Rigid Body**.
+1. Right-click the Xform Rubik's Cube on the stage and select **Add > Physics > Rigid Body**.<br>
+   ![Add Rigid Body](images/14_add_rigid_body.png)
+
+!!! warning "Warning"
+    In the following steps, be careful not to click the Rubik's Cube in the viewport and add attributes to the Mesh node. Attributes must be added to the Xform node, otherwise the simulation will not work correctly.
 
 2. Press the **PLAY** button.
 
@@ -75,7 +82,7 @@ First, create a new stage and place an object.
 
 ### Adding Collision Properties
 
-1. Right-click the Rubik's Cube and select **Add > Physics > Collider Presets**.
+1. Right-click the Xform Rubik's Cube on the stage and select **Add > Physics > Collider Presets**.
 
 2. Press the **PLAY** button.
 
@@ -87,7 +94,7 @@ First, create a new stage and place an object.
 
 ### Adding Mass
 
-1. Right-click the Rubik's Cube and select **Add > Physics > Mass**.
+1. Right-click the Xform Rubik's Cube on the stage and select **Add > Physics > Mass**.
 
 2. In the Properties panel, scroll to the **Mass** section and set **Mass** to `0.1` (100 grams).
 
@@ -99,6 +106,7 @@ First, create a new stage and place an object.
 Collision shapes are normally invisible, but they can be visualized for debugging.
 
 1. Right-click the **Eye icon** in the top-left of the viewport and select **Show By Type > Physics > Colliders > All**.
+   ![Show Colliders setting location](images/15_show_colliders.png)
 
     **Result:** Collision shapes for all objects in the scene are displayed.
 
@@ -138,9 +146,10 @@ Let's replace the default collision shape (mesh approximation) with a simpler sp
 
 Set the restitution to make the object bounce.
 
-1. Left-click the Rubik's Cube and change the **Position** to `(0, 0, 1)` in the Properties panel (to drop it from a higher position).
+1. Left-click the Xform Rubik's Cube on the stage and change the **Translate** to `(0, 0, 1)` in the Properties panel (to drop it from a higher position).
 
-2. Right-click the Rubik's Cube and select **Create > Physics > Physics Material**. Drag-and-drop the created material into the `World/rubiks_cube/Looks` folder.
+2. Right-click the Xform Rubik's Cube on the stage and select **Create > Physics > Physics Material**. In the popup, check **Rigid Body Material** and click OK. Drag-and-drop the created material into the `World/rubiks_cube/Looks` folder.<br>
+   ![Create Physics Material](images/16_create_physics_material.png)
 
 3. In the Properties panel, scroll to the **Physics Material** section and set **Restitution** to `1` (perfectly elastic collision).
 
