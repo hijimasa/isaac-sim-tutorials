@@ -41,3 +41,9 @@ This tutorial introduces the concepts of the core API and how to use it. We star
 
 !!! example "[Tutorial 6: Multiple Tasks](06_multiple_tasks.md)"
     Learn how to spatially arrange tasks using the offset parameter and run multiple instances of the same task in parallel.
+
+!!! example "[Tutorial 7: Adding Props](07_adding_props.md)"
+    Learn how to configure Rigid Body, Collider, Mass, and Physics Material attributes on objects via the GUI.
+
+!!! example "[Tutorial 8: Data Logging](08_data_logging.md)"
+    Learn how to record, save, and replay simulation data using the DataLogger class.

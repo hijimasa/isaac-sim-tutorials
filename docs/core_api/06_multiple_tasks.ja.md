@@ -462,5 +462,9 @@ class HelloWorld(BaseSample):
 !!! tip "発展"
     異なる種類のタスクを組み合わせて実行する例は、Isaac Sim に付属のスタンドアロンサンプル `standalone_examples/api/isaacsim.robot.manipulators/universal_robots/multiple_tasks.py` を参照してください。
 
+## 次のステップ
+
+次のチュートリアル「[属性の追加](07_adding_props.md)」に進み、GUI 操作でオブジェクトに物理属性を設定する方法を学びましょう。
+
 !!! note "注釈"
     以降のチュートリアルでも主に Extension Workflow を使用して開発を進めます。Standalone Workflow への変換方法は [Hello World](01_hello_world.md) で学んだ手順と同様です。

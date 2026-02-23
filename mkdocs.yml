@@ -99,6 +99,8 @@ plugins:
               - マニピュレータロボットの追加: core_api/04_adding_a_manipulator_robot.md
               - 複数ロボットの追加: core_api/05_adding_multiple_robots.md
               - 複数タスクの実行: core_api/06_multiple_tasks.md
+              - 属性の追加: core_api/07_adding_props.md
+              - データロギング: core_api/08_data_logging.md
             - ロボットセットアップ:
               - robot_setup/index.md
             - インポート・エクスポート:
@@ -131,6 +133,8 @@ plugins:
               - Adding a Manipulator Robot: core_api/04_adding_a_manipulator_robot.md
               - Adding Multiple Robots: core_api/05_adding_multiple_robots.md
               - Multiple Tasks: core_api/06_multiple_tasks.md
+              - Adding Props: core_api/07_adding_props.md
+              - Data Logging: core_api/08_data_logging.md
             - Robot Setup:
               - robot_setup/index.md
             - Import & Export:

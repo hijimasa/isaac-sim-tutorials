@@ -462,5 +462,9 @@ This tutorial covered the following topics:
 !!! tip "Further Reading"
     For an example of combining different types of tasks, refer to the standalone sample included with Isaac Sim: `standalone_examples/api/isaacsim.robot.manipulators/universal_robots/multiple_tasks.py`.
 
+## Next Steps
+
+Proceed to the next tutorial, "[Adding Props](07_adding_props.md)", to learn how to configure physics attributes on objects via the GUI.
+
 !!! note "Note"
     The following tutorials continue to use the Extension Workflow for development. Converting to the Standalone Workflow follows the same approach as learned in [Hello World](01_hello_world.md).
