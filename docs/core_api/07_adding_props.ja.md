@@ -124,8 +124,8 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
 1. `World/rubiks_cube/RubikCube` メッシュを左クリックし、**Physics/Collider** セクションで **×** ボタンを押して既存のコリジョンを削除します。
 
-2. RubikCube メッシュを選択した状態で、**Create > Shape > Sphere** を選択してスフィア形状を追加します。
-   RubikCubeのXformの直下に生成されないことがあるので、適宜Sphereメッシュをドラッグ&ドロップで移動させる必要があります。
+2. ステージ上でXformのルービックキューブを右クリックして、**Create > Shape > Sphere** を選択してスフィア形状を追加します。
+   RubikCubeのXformのツリーの配下にSphereメッシュがあることを確認してください。配下に生成できていない場合、適宜Sphereメッシュをドラッグ&ドロップで移動させる必要があります。
    ![Sphrereメッシュの場所](images/17_sphere_mesh_location.png)
 
 3. **Geometry** セクションで **Radius** を `0.07` に設定します（キューブに合うサイズ）。

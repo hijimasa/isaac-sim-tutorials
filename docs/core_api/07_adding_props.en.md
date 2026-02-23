@@ -124,8 +124,8 @@ Let's replace the default collision shape (mesh approximation) with a simpler sp
 
 1. Left-click the `World/rubiks_cube/RubikCube` mesh and press the **×** button in the **Physics/Collider** section to delete the existing collider.
 
-2. With the RubikCube mesh selected, select **Create > Shape > Sphere** to add a sphere shape.
-   The Sphere mesh may not be created directly under the RubikCube Xform, so you may need to drag-and-drop the Sphere mesh to move it to the correct location.
+2. Right-click the Xform Rubik's Cube on the stage and select **Create > Shape > Sphere** to add a sphere shape.
+   Verify that the Sphere mesh is under the RubikCube Xform tree. If it was not created under the Xform, drag-and-drop the Sphere mesh to move it to the correct location.
    ![Sphere mesh location](images/17_sphere_mesh_location.png)
 
 3. In the **Geometry** section, set the **Radius** to `0.07` (sized to match the cube).
