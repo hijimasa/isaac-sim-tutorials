@@ -103,8 +103,25 @@ plugins:
               - データロギング: core_api/08_data_logging.md
             - ロボットセットアップ:
               - robot_setup/index.md
+              - ステージのセットアップ: robot_setup/01_stage_setup.md
+              - シンプルなロボットの組み立て: robot_setup/02_assemble_robot.md
+              - 基本ロボットのアーティキュレーション: robot_setup/03_articulate_robot.md
+              - カメラとセンサーの追加: robot_setup/04_camera_sensors.md
+              - モバイルロボットのリギング: robot_setup/05_rig_mobile_robot.md
+              - マニピュレータのセットアップ: robot_setup/06_setup_manipulator.md
+              - マニピュレータの設定: robot_setup/07_configure_manipulator.md
+              - ロボット設定ファイルの生成: robot_setup/08_generate_robot_config.md
+              - ピック＆プレースの例: robot_setup/09_pick_and_place.md
+              - 閉ループ構造のリギング: robot_setup/10_closed_loop_structures.md
+              - ジョイントドライブゲインの調整: robot_setup/11_joint_tuning.md
+              - アセット最適化: robot_setup/12_asset_optimization.md
+              - 脚ロボットのリギング: robot_setup/13_rig_legged_robot.md
             - インポート・エクスポート:
               - importer_exporter/index.md
+              - URDF インポート: importer_exporter/01_import_urdf.md
+              - URDF エクスポート: importer_exporter/02_export_urdf.md
+              - MJCF インポート: importer_exporter/03_import_mjcf.md
+              - ShapeNet インポーター: importer_exporter/04_shapenet_importer.md
             - Isaac Lab:
               - isaac_lab/index.md
             - ROS 2:
@@ -137,8 +154,25 @@ plugins:
               - Data Logging: core_api/08_data_logging.md
             - Robot Setup:
               - robot_setup/index.md
+              - Stage Setup: robot_setup/01_stage_setup.md
+              - Assemble a Simple Robot: robot_setup/02_assemble_robot.md
+              - Articulate a Basic Robot: robot_setup/03_articulate_robot.md
+              - Add Camera and Sensors: robot_setup/04_camera_sensors.md
+              - Rig a Mobile Robot: robot_setup/05_rig_mobile_robot.md
+              - Setup a Manipulator: robot_setup/06_setup_manipulator.md
+              - Configure a Manipulator: robot_setup/07_configure_manipulator.md
+              - Generate Robot Configuration File: robot_setup/08_generate_robot_config.md
+              - Pick and Place Example: robot_setup/09_pick_and_place.md
+              - Rig Closed-Loop Structures: robot_setup/10_closed_loop_structures.md
+              - Tuning Joint Drive Gains: robot_setup/11_joint_tuning.md
+              - Asset Optimization: robot_setup/12_asset_optimization.md
+              - Rig a Legged Robot: robot_setup/13_rig_legged_robot.md
             - Import & Export:
               - importer_exporter/index.md
+              - Import URDF: importer_exporter/01_import_urdf.md
+              - Export URDF: importer_exporter/02_export_urdf.md
+              - Import MJCF: importer_exporter/03_import_mjcf.md
+              - ShapeNet Importer: importer_exporter/04_shapenet_importer.md
             - Isaac Lab:
               - isaac_lab/index.md
             - ROS 2:
