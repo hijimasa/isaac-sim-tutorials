@@ -93,6 +93,11 @@ The `PickPlaceController` operates as a state machine, automatically executing t
 3. Move to the goal position
 4. Open the gripper to place the cube
 
+??? info "`events_dt` parameter (execution speed for each state)"
+    Internally, `PickPlaceController` subdivides the 4 steps above into **10 finer states** (move, descend, close, lift, move, descend, open, lift, etc.). The `events_dt` parameter is a list that controls the execution speed (interpolation amount per step) for each state.
+
+    Default values are provided, so you don't normally need to specify this. However, you can set it explicitly when running multiple robots simultaneously or when you want to adjust motion speed. We will use this in [Tutorial 6](06_multiple_tasks.md).
+
 ```python linenums="1" hl_lines="4 33-38 40-41 50-56 58-59"
 from isaacsim.examples.interactive.base_sample import BaseSample
 from isaacsim.robot.manipulators.examples.franka import Franka

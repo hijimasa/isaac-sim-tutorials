@@ -93,6 +93,11 @@ class HelloWorld(BaseSample):
 3. 目標位置まで移動
 4. グリッパーを開いてキューブを配置
 
+??? info "`events_dt` パラメータ（各ステートの実行速度）"
+    `PickPlaceController` は内部的に上記の4ステップをさらに細かい **10 個のステート**（移動、下降、閉じ、持ち上げ、移動、下降、開き、持ち上げなど）に分割しています。`events_dt` パラメータは各ステートの実行速度（1 ステップあたりの補間量）を制御するリストです。
+
+    デフォルト値が設定されているため通常は指定不要ですが、複数ロボットを同時に動かす場合や動作速度を調整したい場合に明示的に指定できます。詳しくは [チュートリアル 6](06_multiple_tasks.md) で使用します。
+
 ```python linenums="1" hl_lines="4 33-38 40-41 50-56 58-59"
 from isaacsim.examples.interactive.base_sample import BaseSample
 from isaacsim.robot.manipulators.examples.franka import Franka

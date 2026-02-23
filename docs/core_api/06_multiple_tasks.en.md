@@ -100,14 +100,18 @@ class RobotsPlaying(BaseTask):
                 position=np.array([0, 0.3, 0]),
             )
         )
-        # Register in _task_objects so offset is applied
+        # ── (A) Register Jetbot in _task_objects (for offset application later) ──
         self._task_objects[self._jetbot.name] = self._jetbot
+
+        # ── (B) Adjust position of Franka created by the subtask ──
+        # PickPlace subtask already placed Franka, but shift X+1.0 to separate from Jetbot
         pick_place_params = self._pick_place_task.get_params()
         self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
         current_position, _ = self._franka.get_world_pose()
         self._franka.set_world_pose(position=current_position + np.array([1.0, 0, 0]))
         self._franka.set_default_state(position=current_position + np.array([1.0, 0, 0]))
-        # Apply offset to all registered task objects
+
+        # ── (C) Apply offset to all objects registered in _task_objects ──
         self._move_task_objects_to_their_frame()
         return
 
@@ -220,6 +224,15 @@ class HelloWorld(BaseSample):
         return
 ```
 
+Note that `set_up_scene` deals with **two categories** of offset application:
+
+| Target | How Offset is Applied | Description |
+|---|---|---|
+| Subtask objects (Franka, cube) | Pass `offset` to `PickPlace` **(done in the constructor)** | The subtask applies the offset internally via its own `_task_objects` and `_move_task_objects_to_their_frame()` |
+| This task's objects (Jetbot) | Register in `_task_objects` → `_move_task_objects_to_their_frame()` **(A, C)** | Objects you add yourself must be registered and offset by yourself |
+
+Step **(B)** is separate from offset application — it shifts Franka an additional 1.0 along the X axis so it doesn't overlap with Jetbot. This is an extra adjustment on top of the offset already applied by the subtask.
+
 Save the code and verify the simulation:
 
 1. Press **Ctrl+S** to save, then do **File > New From Stage Template > Empty** and click **LOAD**.
@@ -284,12 +297,15 @@ class RobotsPlaying(BaseTask):
                 position=np.array([0, 0.3, 0]),
             )
         )
+        # (A) Register Jetbot in _task_objects
         self._task_objects[self._jetbot.name] = self._jetbot
+        # (B) Shift Franka created by subtask X+1.0 to separate from Jetbot
         pick_place_params = self._pick_place_task.get_params()
         self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
         current_position, _ = self._franka.get_world_pose()
         self._franka.set_world_pose(position=current_position + np.array([1.0, 0, 0]))
         self._franka.set_default_state(position=current_position + np.array([1.0, 0, 0]))
+        # (C) Apply offset to all objects registered in _task_objects
         self._move_task_objects_to_their_frame()
         return
 
@@ -422,6 +438,9 @@ class HelloWorld(BaseSample):
         self._cube_names = []
         return
 ```
+
+!!! note "Explicitly specifying `events_dt`"
+    As explained in [Tutorial 4](04_adding_a_manipulator_robot.md), `events_dt` is a list that controls the execution speed of each state in `PickPlaceController`. When multiple Frankas operate simultaneously, the default values may cause timing mismatches and unstable behavior, so here we explicitly specify the values to synchronize the motion speed across all robots.
 
 Save the code and verify the simulation:
 

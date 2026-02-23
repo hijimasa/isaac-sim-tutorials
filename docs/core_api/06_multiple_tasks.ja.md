@@ -100,14 +100,18 @@ class RobotsPlaying(BaseTask):
                 position=np.array([0, 0.3, 0]),
             )
         )
-        # _task_objects に登録して、オフセット適用の対象にする
+        # ── (A) Jetbot を _task_objects に登録（後でオフセットを適用するため）──
         self._task_objects[self._jetbot.name] = self._jetbot
+
+        # ── (B) サブタスクが作成した Franka の位置を追加調整 ──
+        # PickPlace サブタスクが Franka を配置済みだが、Jetbot と離すために X+1.0 ずらす
         pick_place_params = self._pick_place_task.get_params()
         self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
         current_position, _ = self._franka.get_world_pose()
         self._franka.set_world_pose(position=current_position + np.array([1.0, 0, 0]))
         self._franka.set_default_state(position=current_position + np.array([1.0, 0, 0]))
-        # _task_objects に登録したオブジェクトにオフセットを適用
+
+        # ── (C) _task_objects に登録されたオブジェクトにオフセットを一括適用 ──
         self._move_task_objects_to_their_frame()
         return
 
@@ -220,6 +224,15 @@ class HelloWorld(BaseSample):
         return
 ```
 
+`set_up_scene` 内では、オフセットの適用対象が **2 種類** あることに注意してください：
+
+| 対象 | オフセットの適用方法 | 説明 |
+|---|---|---|
+| サブタスク内のオブジェクト（Franka, キューブ） | `PickPlace` に `offset` を渡す **(コンストラクタで実行済み)** | サブタスク自身が `_task_objects` と `_move_task_objects_to_their_frame()` でオフセットを適用 |
+| 自タスクのオブジェクト（Jetbot） | `_task_objects` に登録 → `_move_task_objects_to_their_frame()` **(A, C)** | 自分で追加したオブジェクトは自分で登録・適用する |
+
+**(B)** の Franka の位置調整はオフセットとは別の処理で、Jetbot と Franka が重ならないよう X 方向に追加で 1.0 ずらしています。これはサブタスク側でオフセット適用済みの位置に対する追加の調整です。
+
 コードを保存してシミュレーションを確認します：
 
 1. **Ctrl+S** を押して保存し、**File > New From Stage Template > Empty** → **LOAD** を実行します。
@@ -284,12 +297,15 @@ class RobotsPlaying(BaseTask):
                 position=np.array([0, 0.3, 0]),
             )
         )
+        # (A) Jetbot を _task_objects に登録
         self._task_objects[self._jetbot.name] = self._jetbot
+        # (B) サブタスクが作成した Franka を Jetbot と離すために X+1.0 追加調整
         pick_place_params = self._pick_place_task.get_params()
         self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
         current_position, _ = self._franka.get_world_pose()
         self._franka.set_world_pose(position=current_position + np.array([1.0, 0, 0]))
         self._franka.set_default_state(position=current_position + np.array([1.0, 0, 0]))
+        # (C) _task_objects に登録されたオブジェクトにオフセットを一括適用
         self._move_task_objects_to_their_frame()
         return
 
@@ -422,6 +438,9 @@ class HelloWorld(BaseSample):
         self._cube_names = []
         return
 ```
+
+!!! note "`events_dt` の明示的な指定"
+    [チュートリアル 4](04_adding_a_manipulator_robot.md) で説明した通り、`events_dt` は `PickPlaceController` の各ステートの実行速度を制御するリストです。複数の Franka が同時に動作する場合、デフォルト値ではタイミングが合わず動作が不安定になることがあるため、ここでは明示的に値を指定して各ロボットの動作速度を揃えています。
 
 コードを保存してシミュレーションを確認します：
 
