@@ -8,11 +8,11 @@ title: Assemble a Simple Robot
 
 After completing this tutorial, you will have learned:
 
-- How to create a robot body and wheels using primitive shapes
-- How to configure Rigid Body and Collider physics properties
-- How to examine collision meshes
-- How to set friction and restitution parameters
-- How to apply materials for visual appearance
+- How to add and manipulate basic shapes on the stage
+- How to enable physics properties on objects
+- How to examine collision properties
+- How to edit physics properties such as friction
+- How to edit material properties such as color and reflectivity
 
 ## Getting Started
 
@@ -26,61 +26,105 @@ Approximately 15-20 minutes.
 
 ### Overview
 
-In this tutorial, you will use GUI operations to build the basic structure of a two-wheeled robot using primitive shapes (cubes, cylinders). You will learn how to configure physics properties, examine collision meshes, and apply materials.
+In this tutorial, you will use GUI operations to build the basic structure of a simple two-wheeled robot using primitive shapes (cubes, cylinders). You will create the robot body and two wheels, then learn how to configure physics properties, examine collision meshes, and apply materials.
+
+## Preparation
+
+1. Create a new **Stage** from the menu bar via **File > New**.
+2. Generate a ground plane via **Create > Physics > Ground Plane** from the menu bar.
 
 ## Adding Objects to the Scene
 
-1. Create an Xform for the body and add a Cube geometry.
+### Creating the Robot Body
 
-2. Create two Xforms for the wheels and add Cylinder geometry to each.
+1. Right-click on the stage and select **Create > Xform**.
+2. Right-click the created Xform and select **Rename**, then rename it to **body**.
+3. In the Property panel, set **Transform > Translate** to **(0, 0, 1)**.
+4. Click **Create > Shape > Cube** from the menu bar to create a cube.
+5. In the Property panel, set **Transform > Translate** to **(0, 0, 1)**.
+6. In the Property panel, set **Transform > Scale** to **(1, 2, 0.5)**.
+7. Drag and drop the cube into the **body** Xform to make it a child element.
 
-3. Adjust the position and scale of each component.
+   ![Creating the robot body](images/03_make_robot_body.png)
 
-    ![Robot body](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_simple_objs_body.png)
+### Creating the Wheels
+
+1. Right-click on the stage and select **Create > Xform**. In the Property panel, set **Translate** to **(1.5, 0, 1)** and **Orient** to **(0, 90, 0)**.
+2. Rename it to **wheel_left**.
+3. Right-click **wheel_left** on the stage, then click **Create > Shape > Cylinder** to create a cylinder.
+4. Scroll down to the **Geometry** section in the Property panel.
+5. Change **Radius** to **0.5** and **Height** to **1.0**.
+7. Rename the cylinder to **wheel_left**.
+8. Right-click the **wheel_left** Xform and select **Duplicate**.
+9. Move the duplicated wheel's **Translate** x value to **-1.5**.
+10. Rename the duplicated Xform to **wheel_right**.
+11. Rename the duplicated cylinder to **wheel_right**.
+
+    ![Creating the wheels](images/04_make_robot_wheel.png)
 
 ## Adding Physics Properties
 
-1. Apply **Rigid Body with Colliders Preset** to each object.
+### Applying Rigid Body Physics
 
-2. Verify that gravity simulation is enabled.
+1. Select the cube and both cylinders using **Ctrl+Shift** or **Shift** keys.
+2. Click the **+ Add** button in the **Property** tab.
+3. Select **Physics > Rigid Body with Colliders Preset**.
+4. Press **Play** to verify that the objects fall to the ground.
 
-    ![Physics properties](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_simple_objs_physics.webp)
+!!! note "About Rigid Body with Colliders Preset"
+    Selecting "Rigid Body with Colliders Preset" automatically applies both the **Rigid Body API** (gravity and simulation dynamics) and the **Collision API** (collision detection).
 
-## Examining Collision Meshes
+![Applying Rigid Body](images/05_adding_rigid_body_and_collider.webp)
 
-1. Enable collision outline display in the viewport settings.
+### Examining Collision Meshes
 
-2. Verify the collision shapes on all objects.
+1. Click the ![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_eyecon.png) at the top of the viewport.
+2. Select **Show By Type > Physics > Colliders > All**.
+3. Purple outlines appear around static objects with the Collision API applied (in this case, the ground plane). Green outlines appear around dynamic objects (in this case, the cube and two cylinders).
 
-    ![Collision](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_collision.png)
+    ![Collision](images/06_show_colliders.png)
 
-## Adding Contact and Friction Parameters
+### Adding Contact and Friction Parameters
 
-1. Create a Physics Material.
-
-2. Adjust friction coefficients and restitution.
-
-3. Assign the material to rigid bodies.
+1. From the menu bar, click **Create > Physics > Physics Material**.
+2. Select **Rigid Body Material** in the popup.
+3. Tune parameters such as friction coefficients and restitution in the Property tab.
+4. Select an object in the stage tree.
+5. Find **Materials on Selected Model** in the **Property** tab.
+6. Select the desired material from the dropdown menu to assign it.
 
     ![Materials](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_materials.png)
 
 ## Setting Material Properties
 
-1. Create OmniPBR materials for visual appearance.
+### Creating and Assigning Visual Materials
 
-2. Assign distinct colors to the body and wheels.
+1. Click **Create > Materials > OmniPBR** from the menu bar three times to create three materials.
+2. Right-click the newly created materials and rename them to **ground**, **body**, and **wheel** respectively.
+3. Select the **body** material and change the **base color** to **RGB: (0.2, 0.2, 0.8)** in the **Material and Shader / Albedo** section of the **Property** tab.
+4. Adjust reflectivity, roughness, and other properties as needed.
+5. Select the **wheel** material and change the **base color** to **RGB: (0.8, 0.2, 0.1)** in the **Material and Shader / Albedo** section of the **Property** tab.
+6. Adjust reflectivity, roughness, and other properties as needed.
+7. Select the **GroundPlane** Xform and assign the **ground** material from **Materials on selected models** in the **Property** tab.
+8. Select the **body** Xform and assign the **body** material from **Materials on selected models** in the **Property** tab.
+9. Select the **wheel_left** Xform and assign the **wheel** material from **Materials on selected models** in the **Property** tab.
+9. Select the **wheel_right** Xform and assign the **wheel** material from **Materials on selected models** in the **Property** tab.
+10. Verify that color changes appear on the corresponding robot parts.
 
-    ![New materials](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_new_materials.png)
+    ![Applying visual materials](images/07_apply_visual_materials.png)
 
 ## Summary
 
 This tutorial covered the following topics:
 
-1. Building a robot structure using **primitive shapes**
-2. Configuring **Rigid Body and Collider** physics properties
+1. Building a robot structure using **primitive shapes** (Cube, Cylinder)
+2. Configuring physics with **Rigid Body with Colliders Preset**
 3. Visualizing and examining **collision meshes**
-4. Setting **friction and restitution** parameters
-5. Applying **visual materials**
+4. Setting friction and restitution with **Physics Material**
+5. Configuring visual appearance with **OmniPBR materials**
+
+!!! tip "Reference Asset"
+    The completed robot is similar to the `mock_robot_no_joints` asset found in the **Samples > Rigging > MockRobot** folder in the Content tab at the bottom right of the screen.
 
 ## Next Steps
 

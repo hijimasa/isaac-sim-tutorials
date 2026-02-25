@@ -8,11 +8,11 @@ title: シンプルなロボットの組み立て
 
 このチュートリアルを修了すると、以下の内容を習得できます：
 
-- プリミティブ形状を使ったロボットボディと車輪の作成
-- Rigid Body と Collider の物理プロパティ設定
-- コリジョンメッシュの確認方法
-- 摩擦係数・反発係数の設定
-- マテリアル（外観）の適用
+- ステージへの基本形状の追加と操作
+- オブジェクトへの物理プロパティの有効化
+- コリジョンプロパティの確認
+- 摩擦などの物理プロパティの編集
+- 色や反射率などのマテリアルプロパティの編集
 
 ## はじめに
 
@@ -26,61 +26,105 @@ title: シンプルなロボットの組み立て
 
 ### 概要
 
-このチュートリアルでは、GUI 操作でプリミティブ形状（キューブ、シリンダー）を使い、二輪ロボットの基本構造を組み立てます。物理プロパティの設定、コリジョンメッシュの確認、マテリアルの適用を学びます。
+このチュートリアルでは、GUI 操作でプリミティブ形状（キューブ、シリンダー）を使い、シンプルな二輪ロボットの基本構造を組み立てます。ロボットのボディと2つの車輪を作成し、物理プロパティの設定、コリジョンメッシュの確認、マテリアルの適用を学びます。
 
-## オブジェクトの追加
+## 準備
 
-1. ボディ用の Xform を作成し、Cube ジオメトリを追加します。
+1. メニューバーの**File > New** から新しい**Stage**を作成してください。
+2. メニューバーの**Create > Physics > Ground Plane**でグラウンドプレーンを生成してください。
 
-2. 車輪用の Xform を2つ作成し、それぞれ Cylinder ジオメトリを追加します。
+## シーンへのオブジェクト追加
 
-3. 各コンポーネントの位置とスケールを調整します。
+### ロボットボディの作成
 
-    ![ロボットボディ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_simple_objs_body.png)
+1. ステージ上で右クリックし、**Create > Xform** を選択します。
+2. 作成された Xform を右クリックして **Rename** を選び、**body** にリネームします。
+3. Property パネルの **Transform > Translate** で位置を **(0, 0, 1)** に設定します。
+4. メニューバーの **Create > Shape > Cube** をクリックしてキューブを作成します。
+5. Property パネルの **Transform > Translate** で位置を **(0, 0, 1)** に設定します。
+6. Property パネルの **Transform > Scale** で **(1, 2, 0.5)** に設定します。
+7. キューブを **body** Xform の中にドラッグ＆ドロップして子要素にします。
+
+   ![ロボットボディの作成](images/03_make_robot_body.png)
+
+### 車輪の作成
+
+1. ステージ上で右クリックし、**Create > Xform** を選択します。Property パネルで **Translate** を **(1.5, 0, 1)**、**Orient** を **(0, 90, 0)** に設定します。
+2. **wheel_left** にリネームします。
+3. ステージ上の**wheel_left**を右クリックして、 **Create > Shape > Cylinder** をクリックしてシリンダーを作成します。
+4. Property パネルの **Geometry** セクションまでスクロールします。
+5. **Radius** を **0.5**、**Height** を **1.0** に変更します。
+7. シリンダーを **wheel_left** にリネームします。
+8. **wheel_left** Xform を右クリックして **Duplicate** を選択します。
+9. 複製された車輪の **Translate** の x 値を **-1.5** に移動します。
+10. 複製された Xform を **wheel_right** にリネームします。
+11. 複製されたシリンダーも **wheel_right** にリネームします。
+
+    ![車輪の作成](images/04_make_robot_wheel.png)
 
 ## 物理プロパティの追加
 
-1. 各オブジェクトに **Rigid Body with Colliders Preset** を適用します。
+### Rigid Body の適用
 
-2. 重力シミュレーションが有効であることを確認します。
+1. キューブと2つのシリンダーを **Ctrl+Shift** キーまたは **Shift** キーを使って全て選択します。
+2. **Property** タブの **+ Add** ボタンをクリックします。
+3. **Physics > Rigid Body with Colliders Preset** を選択します。
+4. **Play** ボタンを押して、オブジェクトが地面に落下することを確認します。
 
-    ![物理プロパティ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_simple_objs_physics.webp)
+!!! note "Rigid Body with Colliders Preset について"
+    「Rigid Body with Colliders Preset」を選択すると、**Rigid Body API**（重力やシミュレーション上の動き）と **Collision API**（衝突判定）の両方が自動的に適用されます。
 
-## コリジョンメッシュの確認
+![Rigid Bodyの適用](images/05_adding_rigid_body_and_collider.webp)
 
-1. ビューポートの設定でコリジョンのアウトラインを表示します。
+### コリジョンメッシュの確認
 
-2. すべてのオブジェクトのコリジョン形状を確認します。
+1. ビューポート上部の![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_eyecon.png)をクリックします。
+2. **Show By Type > Physics > Colliders > All** を選択します。
+3. Collision API が適用された静的オブジェクト（今回はグラウンドプレーン）の周りに紫色のアウトラインが表示されます。動的オブジェクト（今回はキューブと2つのシリンダー）には緑色のアウトラインが表示されます。
 
-    ![コリジョン](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_collision.png)
+    ![コリジョン](images/06_show_colliders.png)
 
-## 摩擦・反発パラメータの追加
+### 摩擦・反発パラメータの追加
 
-1. Physics Material を作成します。
-
-2. 摩擦係数と反発係数を調整します。
-
-3. リジッドボディにマテリアルを割り当てます。
+1. メニューバーの **Create > Physics > Physics Material** をクリックします。
+2. ポップアップで **Rigid Body Material** を選択します。
+3. Property タブで摩擦係数（friction coefficients）や反発係数（restitution）などのパラメータを調整します。
+4. ステージツリーでオブジェクトを選択します。
+5. **Property** タブ内の **Materials on Selected Model** を見つけます。
+6. ドロップダウンメニューから作成したマテリアルを選択して割り当てます。
 
     ![マテリアル](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_materials.png)
 
 ## 外観マテリアルの設定
 
-1. OmniPBR マテリアルを作成して外観を設定します。
+### ビジュアルマテリアルの作成と割り当て
 
-2. ボディと車輪にそれぞれ異なる色を割り当てます。
+1. メニューバーの **Create > Materials > OmniPBR** をクリックする動作を3セット行って、3つのマテリアルを作成します。
+2. 作成されたマテリアルを右クリックして、それぞれ **ground** と **body** 、 **wheel** にリネームします。
+3. 作成した**body**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **base color** を**RGB: (0.2, 0.2, 0.8)**変更します。
+4. 反射率（reflectivity）、粗さ（roughness）などのプロパティも必要に応じて調整します。
+5. 作成した**wheel**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **base color** を**RGB: (0.8, 0.2, 0.1)**変更します。
+6. 反射率（reflectivity）、粗さ（roughness）などのプロパティも必要に応じて調整します。
+7. **GroundPlane** Xfromを選択し、**Property** タブの **Materials on selected models** から**ground**マテリアルを割り当てます。
+8. **body** Xfromを選択し、**Property** タブの **Materials on selected models** から**body**マテリアルを割り当てます。
+9. **wheel_left** Xfromを選択し、**Property** タブの **Materials on selected models** から**wheel**マテリアルを割り当てます。
+9. **wheel_right** Xfromを選択し、**Property** タブの **Materials on selected models** から**wheel**マテリアルを割り当てます。
+10. 対応するロボットパーツに色の変更が反映されることを確認します。
 
-    ![新規マテリアル](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_new_materials.png)
+    ![ビジュアルマテリアルの適用](images/07_apply_visual_materials.png)
 
 ## まとめ
 
 このチュートリアルでは以下のトピックを扱いました：
 
-1. **プリミティブ形状**を使ったロボット構造の構築
-2. **Rigid Body と Collider** の物理プロパティ設定
+1. **プリミティブ形状**（Cube、Cylinder）を使ったロボット構造の構築
+2. **Rigid Body with Colliders Preset** による物理プロパティの設定
 3. **コリジョンメッシュ**の可視化と確認
-4. **摩擦・反発係数**の設定
-5. **外観マテリアル**の適用
+4. **Physics Material** による摩擦・反発係数の設定
+5. **OmniPBR マテリアル**による外観の設定
+
+!!! tip "参考アセット"
+    完成したロボットは、画面右下のContentタブの**Samples > Rigging > MockRobot** フォルダ内の `mock_robot_no_joints` アセットと同様のものになります。
 
 ## 次のステップ
 
