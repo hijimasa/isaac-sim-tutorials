@@ -42,21 +42,21 @@ In this tutorial, you will use GUI operations to build the basic structure of a 
 3. In the Property panel, set **Transform > Translate** to **(0, 0, 1)**.
 4. Click **Create > Shape > Cube** from the menu bar to create a cube.
 5. In the Property panel, set **Transform > Translate** to **(0, 0, 1)**.
-6. In the Property panel, set **Transform > Scale** to **(1, 2, 0.5)**.
+6. In the Property panel, set **Transform > Scale** to **(2, 1, 0.5)**.
 7. Drag and drop the cube into the **body** Xform to make it a child element.
 
    ![Creating the robot body](images/03_make_robot_body.png)
 
 ### Creating the Wheels
 
-1. Right-click on the stage and select **Create > Xform**. In the Property panel, set **Translate** to **(1.5, 0, 1)** and **Orient** to **(0, 90, 0)**.
+1. Right-click on the stage and select **Create > Xform**. In the Property panel, set **Translate** to **(0, 1.5, 1)** and **Orient** to **(90, 0, 0)**.
 2. Rename it to **wheel_left**.
 3. Right-click **wheel_left** on the stage, then click **Create > Shape > Cylinder** to create a cylinder.
 4. Scroll down to the **Geometry** section in the Property panel.
 5. Change **Radius** to **0.5** and **Height** to **1.0**.
 7. Rename the cylinder to **wheel_left**.
 8. Right-click the **wheel_left** Xform and select **Duplicate**.
-9. Move the duplicated wheel's **Translate** x value to **-1.5**.
+9. Move the duplicated wheel's **Translate** y value to **-1.5**.
 10. Rename the duplicated Xform to **wheel_right**.
 11. Rename the duplicated cylinder to **wheel_right**.
 
@@ -101,9 +101,9 @@ In this tutorial, you will use GUI operations to build the basic structure of a 
 
 1. Click **Create > Materials > OmniPBR** from the menu bar three times to create three materials.
 2. Right-click the newly created materials and rename them to **ground**, **body**, and **wheel** respectively.
-3. Select the **body** material and change the **base color** to **RGB: (0.2, 0.2, 0.8)** in the **Material and Shader / Albedo** section of the **Property** tab.
+3. Select the **body** material and change the **base color** to **RGB: (0.1, 1.0, 0.1)** in the **Material and Shader / Albedo** section of the **Property** tab.
 4. Adjust reflectivity, roughness, and other properties as needed.
-5. Select the **wheel** material and change the **base color** to **RGB: (0.8, 0.2, 0.1)** in the **Material and Shader / Albedo** section of the **Property** tab.
+5. Select the **wheel** material and change the **base color** to **RGB: (0.1, 0.1, 1.0)** in the **Material and Shader / Albedo** section of the **Property** tab.
 6. Adjust reflectivity, roughness, and other properties as needed.
 7. Select the **GroundPlane** Xform and assign the **ground** material from **Materials on selected models** in the **Property** tab.
 8. Select the **body** Xform and assign the **body** material from **Materials on selected models** in the **Property** tab.

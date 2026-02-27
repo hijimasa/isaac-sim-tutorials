@@ -42,21 +42,21 @@ title: シンプルなロボットの組み立て
 3. Property パネルの **Transform > Translate** で位置を **(0, 0, 1)** に設定します。
 4. メニューバーの **Create > Shape > Cube** をクリックしてキューブを作成します。
 5. Property パネルの **Transform > Translate** で位置を **(0, 0, 1)** に設定します。
-6. Property パネルの **Transform > Scale** で **(1, 2, 0.5)** に設定します。
+6. Property パネルの **Transform > Scale** で **(2, 1, 0.5)** に設定します。
 7. キューブを **body** Xform の中にドラッグ＆ドロップして子要素にします。
 
    ![ロボットボディの作成](images/03_make_robot_body.png)
 
 ### 車輪の作成
 
-1. ステージ上で右クリックし、**Create > Xform** を選択します。Property パネルで **Translate** を **(1.5, 0, 1)**、**Orient** を **(0, 90, 0)** に設定します。
+1. ステージ上で右クリックし、**Create > Xform** を選択します。Property パネルで **Translate** を **(0, 1.5, 1)**、**Orient** を **(90, 0, 0)** に設定します。
 2. **wheel_left** にリネームします。
 3. ステージ上の**wheel_left**を右クリックして、 **Create > Shape > Cylinder** をクリックしてシリンダーを作成します。
 4. Property パネルの **Geometry** セクションまでスクロールします。
 5. **Radius** を **0.5**、**Height** を **1.0** に変更します。
 7. シリンダーを **wheel_left** にリネームします。
 8. **wheel_left** Xform を右クリックして **Duplicate** を選択します。
-9. 複製された車輪の **Translate** の x 値を **-1.5** に移動します。
+9. 複製された車輪の **Translate** の y 値を **-1.5** に移動します。
 10. 複製された Xform を **wheel_right** にリネームします。
 11. 複製されたシリンダーも **wheel_right** にリネームします。
 
@@ -101,9 +101,9 @@ title: シンプルなロボットの組み立て
 
 1. メニューバーの **Create > Materials > OmniPBR** をクリックする動作を3セット行って、3つのマテリアルを作成します。
 2. 作成されたマテリアルを右クリックして、それぞれ **ground** と **body** 、 **wheel** にリネームします。
-3. 作成した**body**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **base color** を**RGB: (0.2, 0.2, 0.8)**変更します。
+3. 作成した**body**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **base color** を**RGB: (0.1, 1.0, 0.1)**変更します。
 4. 反射率（reflectivity）、粗さ（roughness）などのプロパティも必要に応じて調整します。
-5. 作成した**wheel**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **base color** を**RGB: (0.8, 0.2, 0.1)**変更します。
+5. 作成した**wheel**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **base color** を**RGB: (0.1, 0.1, 1.0)**変更します。
 6. 反射率（reflectivity）、粗さ（roughness）などのプロパティも必要に応じて調整します。
 7. **GroundPlane** Xfromを選択し、**Property** タブの **Materials on selected models** から**ground**マテリアルを割り当てます。
 8. **body** Xfromを選択し、**Property** タブの **Materials on selected models** から**body**マテリアルを割り当てます。
