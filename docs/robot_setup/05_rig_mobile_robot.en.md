@@ -27,7 +27,9 @@ Approximately 30 minutes.
 
 ### Overview
 
-In this tutorial, you will convert an **unrigged forklift USD asset** into a fully articulated mobile robot. This is a hands-on exercise that applies the fundamentals learned in Tutorials 2-3 (Rigid Body, collisions, joints, articulations) to a real robot asset.
+**Rigging** is the process of setting up joints, collisions, physics properties, and other components on a 3D model to make it movable in simulation. While the term originates from 3DCG and animation, in Isaac Sim it refers to the overall process of building a physics-ready robot model.
+
+In this tutorial, you will convert an **unrigged (no joints or physics properties configured) forklift USD asset** into a fully articulated mobile robot. This is a hands-on exercise that applies the fundamentals learned in Tutorials 2-3 (Rigid Body, collisions, joints, articulations) to a real robot asset.
 
 ### Assets Used
 
