@@ -87,7 +87,14 @@ Right-click the root Xform (**SMV_Forklift_B01_01**) and create the following 6 
 
 Set each Xform's **Translate** to match the rotation center of its corresponding mesh.
 
-The correct position is the **sum** of the mesh's **Translate** and **Translate:pivot** shown in the **Property** tab. The values are summarized in the table below:
+When you select a mesh and look at the **Property** tab, you may notice a **Translate:pivot** value displayed in addition to **Translate**.
+
+!!! note "What is Translate:pivot?"
+    **Translate:pivot** is a USD transform operation that specifies the **center point (pivot)** for rotation and scaling. Normally, rotation and scaling are performed around the object's local origin `(0, 0, 0)`, but 3D models exported from DCC tools (Blender, Maya, etc.) often have geometry origins that do not align with the rotation center. In such cases, **Translate:pivot** is set to specify the correct rotation center.
+
+    In other words, the **actual rotation center** of a mesh is at **Translate + Translate:pivot**.
+
+Since the joint rotation axis is placed at the Xform origin, each Xform's **Translate** must be set to the **sum** of the mesh's **Translate** and **Translate:pivot**. The values are summarized in the table below:
 
 | Xform Name | Corresponding Mesh | Translate Value |
 |---|---|---|
