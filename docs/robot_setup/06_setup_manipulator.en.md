@@ -332,6 +332,7 @@ After the connection is complete, verify the operation in simulation.
 1. Press the **Play** button to start simulation.
 2. Verify that the robot arm and gripper operate as a single unit.
 3. Confirm that the gripper does not detach from the robot arm or exhibit unnatural movement.
+4. Save the asset by going to **File > Save As**.
 
 ![Verify operation](images/31_simulate_manipulator.webp)
 
