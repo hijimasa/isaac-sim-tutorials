@@ -1,0 +1,3432 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Isaac Sim チュートリアル集 / Isaac Sim Tutorial Collection">
+      
+      
+        <meta name="author" content="IR Lab">
+      
+      
+        <link rel="canonical" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/05_rig_mobile_robot/">
+      
+      
+        <link rel="prev" href="../04_camera_sensors/">
+      
+      
+        <link rel="next" href="../06_setup_manipulator/">
+      
+      
+        
+          <link rel="alternate" href="../../ja/robot_setup/05_rig_mobile_robot/" hreflang="ja">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+    
+    
+      
+        <title>Rig a Mobile Robot - Isaac Sim Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans JP";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#rig-a-mobile-robot" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-header__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Isaac Sim Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Rig a Mobile Robot
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../ja/robot_setup/05_rig_mobile_robot/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/tutorial_list/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Introduction
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core_api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Core API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Robot Setup
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../importer_exporter/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Import & Export
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../isaac_lab/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Isaac Lab
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ros/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ROS 2
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../synthetic_data/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Synthetic Data
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sensors/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sensors
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../motion_generation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Motion Generation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../omnigraph/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  OmniGraph
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../troubleshooting/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Troubleshooting
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-nav__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    Isaac Sim Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Introduction
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/tutorial_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../core_api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core API
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/01_hello_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello World
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/02_hello_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/03_adding_a_controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/04_adding_a_manipulator_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Manipulator Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/05_adding_multiple_robots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Multiple Robots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/06_multiple_tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiple Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/07_adding_props/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Props
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/08_data_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Logging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Robot Setup
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Robot Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_stage_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_assemble_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assemble a Simple Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_articulate_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articulate a Basic Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_camera_sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add Camera and Sensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Mobile Robot
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Mobile Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assets-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-identifying-the-joints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Identifying the Joints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-organizing-the-usd-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Organizing the USD Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Organizing the USD Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#organizing-body-and-lift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organizing Body and Lift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#organizing-the-wheels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organizing the Wheels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Organizing the Wheels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-creating-wheel-xforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Creating Wheel Xforms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-setting-xform-transforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Setting Xform Transforms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-moving-meshes-under-xforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Moving Meshes Under Xforms
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applying-rigid-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Applying Rigid Body
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-assigning-collision-meshes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Assigning Collision Meshes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Assigning Collision Meshes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#body-and-lift-collisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Body and Lift Collisions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wheel-collisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wheel Collisions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wheel Collisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#front-rollers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Front Rollers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rear-wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rear Wheel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-adding-joints-and-drives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Adding Joints and Drives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Adding Joints and Drives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prismatic-joint-for-the-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prismatic Joint for the Fork
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revolute-joints-for-front-rollers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revolute Joints for Front Rollers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revolute-joints-for-the-rear-wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revolute Joints for the Rear Wheel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Revolute Joints for the Rear Wheel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#driving-joint-back_wheel_swivel-back_wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Driving Joint (back_wheel_swivel ↔ back_wheel)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#steering-joint-body-back_wheel_swivel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steering Joint (body ↔ back_wheel_swivel)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-adding-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Adding Articulation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-asset-unit-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Asset Unit Conversion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-in-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing in Simulation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_setup_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_configure_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configure a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_generate_robot_config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generate Robot Configuration File
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_pick_and_place/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pick and Place Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_closed_loop_structures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig Closed-Loop Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_joint_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tuning Joint Drive Gains
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_asset_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_rig_legged_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Legged Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../importer_exporter/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import & Export
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Import & Export
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/01_import_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/02_export_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Export URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/03_import_mjcf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import MJCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/04_shapenet_importer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ShapeNet Importer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../isaac_lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isaac Lab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Isaac Lab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ros/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS 2
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ROS 2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../synthetic_data/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synthetic Data
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Synthetic Data
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sensors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sensors
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sensors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../motion_generation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Motion Generation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Motion Generation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../omnigraph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OmniGraph
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OmniGraph
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../troubleshooting/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Troubleshooting
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assets-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-identifying-the-joints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Identifying the Joints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-organizing-the-usd-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Organizing the USD Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Organizing the USD Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#organizing-body-and-lift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organizing Body and Lift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#organizing-the-wheels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organizing the Wheels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Organizing the Wheels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-creating-wheel-xforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Creating Wheel Xforms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-setting-xform-transforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Setting Xform Transforms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-moving-meshes-under-xforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Moving Meshes Under Xforms
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#applying-rigid-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Applying Rigid Body
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-assigning-collision-meshes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Assigning Collision Meshes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Assigning Collision Meshes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#body-and-lift-collisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Body and Lift Collisions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wheel-collisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wheel Collisions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wheel Collisions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#front-rollers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Front Rollers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rear-wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rear Wheel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-adding-joints-and-drives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Adding Joints and Drives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Adding Joints and Drives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prismatic-joint-for-the-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prismatic Joint for the Fork
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revolute-joints-for-front-rollers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revolute Joints for Front Rollers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revolute-joints-for-the-rear-wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revolute Joints for the Rear Wheel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Revolute Joints for the Rear Wheel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#driving-joint-back_wheel_swivel-back_wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Driving Joint (back_wheel_swivel ↔ back_wheel)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#steering-joint-body-back_wheel_swivel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steering Joint (body ↔ back_wheel_swivel)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-adding-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Adding Articulation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-asset-unit-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Asset Unit Conversion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-in-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing in Simulation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="rig-a-mobile-robot">Rig a Mobile Robot<a class="headerlink" href="#rig-a-mobile-robot" title="Permanent link">&para;</a></h1>
+<h2 id="learning-objectives">Learning Objectives<a class="headerlink" href="#learning-objectives" title="Permanent link">&para;</a></h2>
+<p>After completing this tutorial, you will have learned:</p>
+<ul>
+<li>How to analyze the joint configuration of a robot asset</li>
+<li>How to organize a USD hierarchy and group with Xform</li>
+<li>How to assign collision approximations (Convex Decomposition, cylinders, etc.)</li>
+<li>How to add Prismatic Joints / Revolute Joints and configure drives</li>
+<li>How to add articulations</li>
+<li>How to handle asset unit conversion</li>
+</ul>
+<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Complete <a href="../03_articulate_robot/">Tutorial 3: Articulate a Basic Robot</a> before starting this tutorial.</li>
+</ul>
+<h3 id="estimated-time">Estimated Time<a class="headerlink" href="#estimated-time" title="Permanent link">&para;</a></h3>
+<p>Approximately 30 minutes.</p>
+<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+<p><strong>Rigging</strong> is the process of setting up joints, collisions, physics properties, and other components on a 3D model to make it movable in simulation. While the term originates from 3DCG and animation, in Isaac Sim it refers to the overall process of building a physics-ready robot model.</p>
+<p>In this tutorial, you will convert an <strong>unrigged (no joints or physics properties configured) forklift USD asset</strong> into a fully articulated mobile robot. This is a hands-on exercise that applies the fundamentals learned in Tutorials 2-3 (Rigid Body, collisions, joints, articulations) to a real robot asset.</p>
+<h3 id="assets-used">Assets Used<a class="headerlink" href="#assets-used" title="Permanent link">&para;</a></h3>
+<p>This tutorial uses the forklift assets included with Isaac Sim. You can access them from the <strong>Content</strong> tab at the bottom right of the screen:</p>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Path</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unrigged (working copy)</strong></td>
+<td><code>Samples &gt; Rigging &gt; Forklift &gt; forklift_b_unrigged_cm</code></td>
+<td>Asset to edit in this tutorial</td>
+</tr>
+<tr>
+<td><strong>Rigged (reference)</strong></td>
+<td><code>Samples &gt; Rigging &gt; Forklift &gt; forklift_b_rigged_cm</code></td>
+<td>Reference of the completed asset</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">How to Load the Asset</p>
+<p>When loading the asset, open it as a <strong>File (not as a reference)</strong>. Since this tutorial makes direct changes to the asset, it must be opened as a file rather than a reference.</p>
+</div>
+<h2 id="step-1-identifying-the-joints">Step 1: Identifying the Joints<a class="headerlink" href="#step-1-identifying-the-joints" title="Permanent link">&para;</a></h2>
+<p>Before starting the rigging process, analyze what joints the forklift needs.</p>
+<p>This forklift has <strong>7 degrees of freedom (DOF)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Joint Type</th>
+<th>Actuated</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Front rollers x 4</td>
+<td>Revolute Joint</td>
+<td>No</td>
+<td>Rollers that rotate freely on contact with the ground</td>
+</tr>
+<tr>
+<td>Fork</td>
+<td>Prismatic Joint</td>
+<td>Yes</td>
+<td>Vertical movement of the fork</td>
+</tr>
+<tr>
+<td>Rear wheel</td>
+<td>Revolute Joint</td>
+<td>Yes</td>
+<td>Wheel rotation for driving</td>
+</tr>
+<tr>
+<td>Rear wheel swivel</td>
+<td>Revolute Joint</td>
+<td>Yes</td>
+<td>Pivot rotation for steering</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Forklift appearance" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_1.png" /></p>
+<h2 id="step-2-organizing-the-usd-hierarchy">Step 2: Organizing the USD Hierarchy<a class="headerlink" href="#step-2-organizing-the-usd-hierarchy" title="Permanent link">&para;</a></h2>
+<p>Before adding joints, you need to group meshes into logical groups. Create Xforms to organize related meshes.</p>
+<h3 id="organizing-body-and-lift">Organizing Body and Lift<a class="headerlink" href="#organizing-body-and-lift" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Right-click the root Xform (<strong>SMV_Forklift_B01_01</strong>) in the stage tree and create two Xforms via <strong>Create &gt; Xform</strong>.</li>
+<li>Rename them to <strong>body</strong> and <strong>lift</strong> respectively.</li>
+<li>Drag and drop the meshes corresponding to the forklift body (chassis) into the <strong>body</strong> Xform.</li>
+<li>Drag and drop the meshes corresponding to the fork (lift) into the <strong>lift</strong> Xform.</li>
+</ol>
+<p><img alt="Organizing body and lift" src="../images/19_sort_body_and_lift.png" /></p>
+<h3 id="organizing-the-wheels">Organizing the Wheels<a class="headerlink" href="#organizing-the-wheels" title="Permanent link">&para;</a></h3>
+<p>When creating Xforms for wheels, the Xform origin must be aligned with the actual position of each wheel mesh to <strong>correctly position the joint rotation center</strong>.</p>
+<h4 id="1-creating-wheel-xforms">1. Creating Wheel Xforms<a class="headerlink" href="#1-creating-wheel-xforms" title="Permanent link">&para;</a></h4>
+<p>Right-click the root Xform (<strong>SMV_Forklift_B01_01</strong>) and create the following 6 Xforms via <strong>Create &gt; Xform</strong>, then rename them:</p>
+<ul>
+<li><strong>roller_front_left</strong>, <strong>roller_front_right</strong>, <strong>roller_back_left</strong>, <strong>roller_back_right</strong></li>
+<li><strong>back_wheel</strong> (driving wheel)</li>
+<li><strong>back_wheel_swivel</strong> (steering swivel)</li>
+</ul>
+<h4 id="2-setting-xform-transforms">2. Setting Xform Transforms<a class="headerlink" href="#2-setting-xform-transforms" title="Permanent link">&para;</a></h4>
+<p>Set each Xform's <strong>Translate</strong> to match the rotation center of its corresponding mesh.</p>
+<p>When you select a mesh and look at the <strong>Property</strong> tab, you may notice a <strong>Translate:pivot</strong> value displayed in addition to <strong>Translate</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">What is Translate:pivot?</p>
+<p><strong>Translate:pivot</strong> is a USD transform operation that specifies the <strong>center point (pivot)</strong> for rotation and scaling. Normally, rotation and scaling are performed around the object's local origin <code>(0, 0, 0)</code>, but 3D models exported from DCC tools (Blender, Maya, etc.) often have geometry origins that do not align with the rotation center. In such cases, <strong>Translate:pivot</strong> is set to specify the correct rotation center.</p>
+<p>In other words, the <strong>actual rotation center</strong> of a mesh is at <strong>Translate + Translate:pivot</strong>.</p>
+</div>
+<p>Since the joint rotation axis is placed at the Xform origin, each Xform's <strong>Translate</strong> must be set to the <strong>sum</strong> of the mesh's <strong>Translate</strong> and <strong>Translate:pivot</strong>. The values are summarized in the table below:</p>
+<table>
+<thead>
+<tr>
+<th>Xform Name</th>
+<th>Corresponding Mesh</th>
+<th>Translate Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>roller_front_left</strong></td>
+<td>Front roller left mesh</td>
+<td>(49.90, -91.01, 7.83)</td>
+</tr>
+<tr>
+<td><strong>roller_front_right</strong></td>
+<td>Front roller right mesh</td>
+<td>(-49.90, -91.01, 7.83)</td>
+</tr>
+<tr>
+<td><strong>roller_back_left</strong></td>
+<td>Rear roller left mesh</td>
+<td>(49.90, -71.75, 7.83)</td>
+</tr>
+<tr>
+<td><strong>roller_back_right</strong></td>
+<td>Rear roller right mesh</td>
+<td>(-49.90, -71.75, 7.83)</td>
+</tr>
+<tr>
+<td><strong>back_wheel</strong></td>
+<td>Rear wheel mesh</td>
+<td>(0.76, 57.99, 15.80)</td>
+</tr>
+<tr>
+<td><strong>back_wheel_swivel</strong></td>
+<td>Rear wheel swivel mesh</td>
+<td>(-7.87, 57.75, 35.57)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">How to Check Translate:pivot</p>
+<p>Select the mesh and check the <strong>Transform</strong> section in the <strong>Property</strong> tab. <strong>Translate:pivot</strong> is displayed below <strong>Translate</strong>. Add these two values together for each axis (X, Y, Z) and set the result as the Xform's <strong>Translate</strong>.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Auto-calculate with Script Editor</p>
+<p>Instead of calculating manually, you can run the following script in <strong>Window &gt; Script Editor</strong> to automatically compute the correct Xform positions:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pxr</span><span class="w"> </span><span class="kn">import</span> <span class="n">UsdGeom</span><span class="p">,</span> <span class="n">Gf</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">stage</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">get_stage</span><span class="p">()</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># List target mesh paths (replace with actual paths)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">mesh_paths</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_LeadWheelsFrontLeft_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_LeadWheelsFrontRight_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_LeadWheelsBackLeft_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_LeadWheelsBackRight_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_BackWheel_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_BackWheelbase_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="p">]</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">mesh_paths</span><span class="p">:</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">prim</span> <span class="o">=</span> <span class="n">stage</span><span class="o">.</span><span class="n">GetPrimAtPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="n">xformable</span> <span class="o">=</span> <span class="n">UsdGeom</span><span class="o">.</span><span class="n">Xformable</span><span class="p">(</span><span class="n">prim</span><span class="p">)</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="n">translate</span> <span class="o">=</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="n">pivot</span> <span class="o">=</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">xformable</span><span class="o">.</span><span class="n">GetOrderedXformOps</span><span class="p">():</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">GetOpName</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;xformOp:translate&quot;</span><span class="p">:</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>            <span class="n">translate</span> <span class="o">=</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3d</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">Get</span><span class="p">())</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        <span class="k">elif</span> <span class="n">op</span><span class="o">.</span><span class="n">GetOpName</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;xformOp:translate:pivot&quot;</span><span class="p">:</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>            <span class="n">pivot</span> <span class="o">=</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3d</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">Get</span><span class="p">())</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">translate</span> <span class="o">+</span> <span class="n">pivot</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">: Xform Translate = </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>You can directly use the output values as each Xform's <strong>Translate</strong>.</p>
+</div>
+<h4 id="3-moving-meshes-under-xforms">3. Moving Meshes Under Xforms<a class="headerlink" href="#3-moving-meshes-under-xforms" title="Permanent link">&para;</a></h4>
+<p>Drag and drop each corresponding mesh into its respective Xform.</p>
+<div class="admonition note">
+<p class="admonition-title">Adjusting Mesh Translate</p>
+<p>After moving a mesh under an Xform, set the mesh's <strong>Translate</strong> to <strong>-Translate:pivot</strong> (the negated value of Translate:pivot). This keeps the mesh's visual position unchanged while correctly positioning the Xform origin at the joint rotation center. If the Xform transform was set correctly in the previous step, the mesh's <strong>Translate</strong> should already be approximately equal to <strong>-Translate:pivot</strong>.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Verify Values with the Rigged Asset</p>
+<p>If you are unsure about the values, you can open the <code>forklift_b_rigged_cm</code> (rigged) asset to check and compare the Xform transform values.</p>
+</div>
+<p><img alt="Organizing the wheels" src="../images/20_sort_wheels.png" /></p>
+<h3 id="applying-rigid-body">Applying Rigid Body<a class="headerlink" href="#applying-rigid-body" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Select all created Xforms (<strong>body</strong>, <strong>lift</strong>, four rollers, <strong>back_wheel</strong>, <strong>back_wheel_swivel</strong>).</li>
+<li>Apply <strong>Physics &gt; Rigid Body</strong> from the <strong>+ Add</strong> button in the <strong>Property</strong> tab.</li>
+</ol>
+<p><img alt="Applying Rigid Body" src="../images/21_add_rigid_body.png" /></p>
+<p><img alt="Forklift after hierarchy organization" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_2.png" /></p>
+<h2 id="step-3-assigning-collision-meshes">Step 3: Assigning Collision Meshes<a class="headerlink" href="#step-3-assigning-collision-meshes" title="Permanent link">&para;</a></h2>
+<p>Assign collision meshes for physics simulation to each part.</p>
+<div class="admonition note">
+<p class="admonition-title">About the Provided Asset's Collisions</p>
+<p>The provided forklift asset already has collision properties configured. Here you will learn the types of collision approximations and how to set them up.</p>
+</div>
+<h3 id="body-and-lift-collisions">Body and Lift Collisions<a class="headerlink" href="#body-and-lift-collisions" title="Permanent link">&para;</a></h3>
+<p>Use <strong>Convex Decomposition</strong> approximation for complex-shaped meshes.</p>
+<ol>
+<li>Select a body or lift mesh (in the figure below, <strong>SM_Forklift_Lift_B01_01</strong>).</li>
+<li>Right-click and select <strong>Add &gt; Physics &gt; Collider Preset</strong>.</li>
+<li>In the <strong>Collision</strong> section of the <strong>Property</strong> tab, change <strong>Approximation</strong> to <strong>Convex Decomposition</strong>.</li>
+</ol>
+<p>Default (Convex Hull)
+<img alt="Convex Hull" src="../images/22_convex_hull.png" /></p>
+<p>Convex Decomposition
+<img alt="Convex Decomposition" src="../images/23_convex_decomposition.png" /></p>
+<h3 id="wheel-collisions">Wheel Collisions<a class="headerlink" href="#wheel-collisions" title="Permanent link">&para;</a></h3>
+<p>Use <strong>cylinder approximation</strong> for wheels. Instead of attaching colliders directly to meshes, place dedicated cylinder primitives.</p>
+<h4 id="front-rollers">Front Rollers<a class="headerlink" href="#front-rollers" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Create a cylinder mesh directly under each roller Xform (<strong>Create &gt; Shape &gt; Cylinder</strong>).</li>
+<li>Set the following in the cylinder's <strong>Property</strong> tab:<ul>
+<li><strong>Scale</strong>: <strong>(0.16, 0.16, 0.08)</strong></li>
+<li><strong>Orient</strong>: Rotate Y axis by <strong>90</strong> degrees</li>
+<li><strong>Translate</strong>: Set all to <strong>0</strong></li>
+</ul>
+</li>
+<li>Add a <strong>Collider</strong> to the cylinder.</li>
+</ol>
+<h4 id="rear-wheel">Rear Wheel<a class="headerlink" href="#rear-wheel" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Create a cylinder mesh directly under the <strong>back_wheel</strong> Xform.</li>
+<li>Set the following in the cylinder's <strong>Property</strong> tab:<ul>
+<li><strong>Scale</strong>: <strong>(0.3, 0.3, 0.1)</strong></li>
+<li><strong>Orient</strong>: Rotate Y axis by <strong>90</strong> degrees</li>
+<li><strong>Translate</strong>: Set all to <strong>0</strong></li>
+</ul>
+</li>
+<li>Add a <strong>Collider</strong> to the cylinder.</li>
+</ol>
+<p><img alt="Cylinder collision approximation" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_5.png" /></p>
+<h2 id="step-4-adding-joints-and-drives">Step 4: Adding Joints and Drives<a class="headerlink" href="#step-4-adding-joints-and-drives" title="Permanent link">&para;</a></h2>
+<h3 id="prismatic-joint-for-the-fork">Prismatic Joint for the Fork<a class="headerlink" href="#prismatic-joint-for-the-fork" title="Permanent link">&para;</a></h3>
+<p>Add a Prismatic Joint to enable vertical movement of the fork.</p>
+<ol>
+<li>
+<p>Select <strong>body</strong> in the stage tree, then hold <strong>Ctrl</strong> and select <strong>lift</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Selection Order</p>
+<p>As with Revolute Joints, the first selected <strong>body</strong> becomes <strong>Body 0</strong> (parent: fixed side), and the second selected <strong>lift</strong> becomes <strong>Body 1</strong> (child: moving side).</p>
+</div>
+</li>
+<li>
+<p>Right-click and select <strong>Create &gt; Physics &gt; Joints &gt; Prismatic Joint</strong>.</p>
+</li>
+<li>Set the following in the <strong>Property</strong> tab:<ul>
+<li><strong>Axis</strong>: <strong>Z</strong> (vertical direction)</li>
+<li><strong>Lower Limit</strong>: <strong>-15</strong></li>
+<li><strong>Upper Limit</strong>: <strong>200</strong></li>
+</ul>
+</li>
+<li>Add <strong>Physics &gt; Linear Drive</strong> via <strong>+ Add</strong> and set the following:<ul>
+<li><strong>Target Position</strong>: <strong>-15</strong></li>
+<li><strong>Damping</strong>: <strong>10000</strong></li>
+<li><strong>Stiffness</strong>: <strong>100000</strong></li>
+</ul>
+</li>
+<li>Rename the joint to <strong>lift_joint</strong> and place it inside an organizing Scope.</li>
+</ol>
+<p><img alt="Prismatic Joint" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_6.png" /></p>
+<h3 id="revolute-joints-for-front-rollers">Revolute Joints for Front Rollers<a class="headerlink" href="#revolute-joints-for-front-rollers" title="Permanent link">&para;</a></h3>
+<p>The front rollers are unactuated (no drive) revolute joints.</p>
+<ol>
+<li>Select <strong>body</strong> in the stage tree, then hold <strong>Ctrl</strong> and select a roller Xform (e.g., <strong>roller_front_left</strong>).</li>
+<li>Right-click and select <strong>Create &gt; Physics &gt; Joints &gt; Revolute Joint</strong>.</li>
+<li>Set <strong>Axis</strong> to <strong>X</strong> in the <strong>Property</strong> tab.</li>
+<li>Repeat the same procedure for the remaining three rollers (<strong>roller_front_right</strong>, <strong>roller_back_left</strong>, <strong>roller_back_right</strong>).</li>
+<li>Organize the created joints inside a <strong>roller_joints</strong> Scope.</li>
+</ol>
+<h3 id="revolute-joints-for-the-rear-wheel">Revolute Joints for the Rear Wheel<a class="headerlink" href="#revolute-joints-for-the-rear-wheel" title="Permanent link">&para;</a></h3>
+<p>The rear wheel requires two joints: one for driving rotation and one for steering swivel.</p>
+<h4 id="driving-joint-back_wheel_swivel-back_wheel">Driving Joint (back_wheel_swivel ↔ back_wheel)<a class="headerlink" href="#driving-joint-back_wheel_swivel-back_wheel" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Select <strong>back_wheel_swivel</strong> in the stage tree, then hold <strong>Ctrl</strong> and select <strong>back_wheel</strong>.</li>
+<li>Select <strong>Create &gt; Physics &gt; Joints &gt; Revolute Joint</strong>.</li>
+<li>Add <strong>Physics &gt; Angular Drive</strong> via <strong>+ Add</strong> and set the following:<ul>
+<li><strong>Damping</strong>: <strong>10000</strong></li>
+<li><strong>Stiffness</strong>: <strong>100</strong></li>
+</ul>
+</li>
+</ol>
+<h4 id="steering-joint-body-back_wheel_swivel">Steering Joint (body ↔ back_wheel_swivel)<a class="headerlink" href="#steering-joint-body-back_wheel_swivel" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Select <strong>body</strong> in the stage tree, then hold <strong>Ctrl</strong> and select <strong>back_wheel_swivel</strong>.</li>
+<li>Select <strong>Create &gt; Physics &gt; Joints &gt; Revolute Joint</strong>.</li>
+<li>Set the following in the <strong>Property</strong> tab:<ul>
+<li><strong>Axis</strong>: <strong>Z</strong> (vertical swivel)</li>
+<li><strong>Lower Limit</strong>: <strong>-60</strong> (degrees)</li>
+<li><strong>Upper Limit</strong>: <strong>60</strong> (degrees)</li>
+</ul>
+</li>
+<li>Add <strong>Physics &gt; Angular Drive</strong> via <strong>+ Add</strong> and set the following:<ul>
+<li><strong>Damping</strong>: <strong>100</strong></li>
+<li><strong>Stiffness</strong>: <strong>100000</strong></li>
+</ul>
+</li>
+<li>Organize the created joints inside a <strong>back_wheel_joints</strong> Scope.</li>
+</ol>
+<p><img alt="Revolute Joint" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_7.png" /></p>
+<h2 id="step-5-adding-articulation">Step 5: Adding Articulation<a class="headerlink" href="#step-5-adding-articulation" title="Permanent link">&para;</a></h2>
+<p>Set up an articulation root to treat all joints as a single physics solver chain.</p>
+<ol>
+<li>Right-click the root Xform (<strong>SMV_Forklift_B01_01</strong>) in the stage tree.</li>
+<li>Select <strong>Add &gt; Physics &gt; Articulation Root</strong>. If the option is not available, the Articulation Root may already be set by default.</li>
+<li>Disable the <strong>Self Collision</strong> checkbox in the <strong>Property</strong> tab.</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Disabling Self Collision</p>
+<p>If collision meshes overlap between adjacent parts, self-collision can cause simulation instability. Disable Self Collision to prevent this.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Where to Place the Articulation Root</p>
+<p>For mobile robots, place the Articulation Root on the robot's root Xform (chassis/base). For robot arms, the best practice is to place it on the fixed joint.</p>
+</div>
+<h2 id="step-6-asset-unit-conversion">Step 6: Asset Unit Conversion<a class="headerlink" href="#step-6-asset-unit-conversion" title="Permanent link">&para;</a></h2>
+<p>The provided forklift asset is created in <strong>centimeter</strong> units. Since the default Isaac Sim Stage uses <strong>meter</strong> units, unit conversion is needed.</p>
+<div class="admonition note">
+<p class="admonition-title">Automatic Unit Conversion</p>
+<p>When adding a centimeter-based asset to a meter-based Stage, Isaac Sim's <strong>Metrics Assembler</strong> extension automatically converts the scale. Manual conversion is usually not required.</p>
+</div>
+<h2 id="testing-in-simulation">Testing in Simulation<a class="headerlink" href="#testing-in-simulation" title="Permanent link">&para;</a></h2>
+<p>Test whether the rigging has been done correctly.</p>
+<ol>
+<li>Select the rear wheel joint (driving) and set the <strong>Angular Drive</strong>'s <strong>Target Velocity</strong> to <strong>-200</strong>.</li>
+<li>Press <strong>Play</strong> to start the simulation.</li>
+<li>Verify that the forklift moves forward.</li>
+</ol>
+<p><img alt="Testing in simulation" src="../images/24_simulate_forklift.webp" /></p>
+<div class="admonition warning">
+<p class="admonition-title">If the Robot 'Explodes' During Simulation</p>
+<p>If robot parts fly apart when the simulation starts, collision meshes between connected parts may be overlapping (interpenetrating). Check the shape and size of collision meshes and adjust them so there is no interference between parts.</p>
+</div>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This tutorial covered the following topics:</p>
+<ol>
+<li>Analyzing the <strong>joint configuration</strong> (7 DOF) of a robot asset</li>
+<li>Organizing the USD hierarchy and grouping meshes using <strong>Xform</strong></li>
+<li>Assigning collision meshes with <strong>Convex Decomposition</strong> and <strong>cylinder approximation</strong></li>
+<li>Adding <strong>Prismatic Joints</strong> and <strong>Revolute Joints</strong>, configuring <strong>Linear Drives</strong> and <strong>Angular Drives</strong></li>
+<li>Adding an <strong>Articulation Root</strong> and configuring Self Collision</li>
+<li>Handling asset <strong>unit conversion</strong> with <strong>Metrics Assembler</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Reference Asset</p>
+<p>The completed forklift can be compared with the <code>forklift_b_rigged_cm</code> asset in the <strong>Samples &gt; Rigging &gt; Forklift</strong> folder in the <strong>Content</strong> tab.</p>
+</div>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Proceed to the next tutorial, "<a href="../06_setup_manipulator/">Setup a Manipulator</a>", to learn how to import a robot arm from URDF and connect a gripper.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/extra.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

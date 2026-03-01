@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/core_api/01_hello_world/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/01_hello_world/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/01_hello_world/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/core_api/02_hello_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/02_hello_robot/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/02_hello_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/core_api/03_adding_a_controller/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/03_adding_a_controller/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/03_adding_a_controller/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/core_api/04_adding_a_manipulator_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/04_adding_a_manipulator_robot/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/04_adding_a_manipulator_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/core_api/05_adding_multiple_robots/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/05_adding_multiple_robots/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/05_adding_multiple_robots/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/core_api/06_multiple_tasks/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/06_multiple_tasks/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/06_multiple_tasks/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/core_api/07_adding_props/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/07_adding_props/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/07_adding_props/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/core_api/08_data_logging/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/08_data_logging/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/08_data_logging/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/core_api/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/01_import_urdf/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/01_import_urdf/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/01_import_urdf/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/02_export_urdf/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/02_export_urdf/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/02_export_urdf/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/03_import_mjcf/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/03_import_mjcf/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/03_import_mjcf/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/04_shapenet_importer/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/04_shapenet_importer/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/04_shapenet_importer/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/introduction/tutorial_list/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/introduction/tutorial_list/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/introduction/tutorial_list/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/isaac_lab/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/isaac_lab/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/isaac_lab/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/motion_generation/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/motion_generation/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/motion_generation/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/omnigraph/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/omnigraph/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/omnigraph/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/01_stage_setup/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/01_stage_setup/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/01_stage_setup/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/02_assemble_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/02_assemble_robot/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/02_assemble_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/03_articulate_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/03_articulate_robot/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/03_articulate_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/04_camera_sensors/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/04_camera_sensors/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/04_camera_sensors/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/05_rig_mobile_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/05_rig_mobile_robot/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/05_rig_mobile_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/06_setup_manipulator/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/06_setup_manipulator/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/06_setup_manipulator/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/07_configure_manipulator/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/07_configure_manipulator/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/07_configure_manipulator/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/08_generate_robot_config/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/08_generate_robot_config/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/08_generate_robot_config/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/09_pick_and_place/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/09_pick_and_place/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/09_pick_and_place/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/10_closed_loop_structures/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/10_closed_loop_structures/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/10_closed_loop_structures/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/11_joint_tuning/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/11_joint_tuning/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/11_joint_tuning/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/12_asset_optimization/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/12_asset_optimization/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/12_asset_optimization/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/13_rig_legged_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/13_rig_legged_robot/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/13_rig_legged_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ros/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/ros/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/ros/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/sensors/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/sensors/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/sensors/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/synthetic_data/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/synthetic_data/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/synthetic_data/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/troubleshooting/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/troubleshooting/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/troubleshooting/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/01_hello_world/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/01_hello_world/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/01_hello_world/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/02_hello_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/02_hello_robot/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/02_hello_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/03_adding_a_controller/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/03_adding_a_controller/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/03_adding_a_controller/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/04_adding_a_manipulator_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/04_adding_a_manipulator_robot/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/04_adding_a_manipulator_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/05_adding_multiple_robots/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/05_adding_multiple_robots/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/05_adding_multiple_robots/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/06_multiple_tasks/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/06_multiple_tasks/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/06_multiple_tasks/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/07_adding_props/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/07_adding_props/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/07_adding_props/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/08_data_logging/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/08_data_logging/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/08_data_logging/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/core_api/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/core_api/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/01_import_urdf/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/01_import_urdf/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/01_import_urdf/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/02_export_urdf/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/02_export_urdf/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/02_export_urdf/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/03_import_mjcf/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/03_import_mjcf/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/03_import_mjcf/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/04_shapenet_importer/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/04_shapenet_importer/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/04_shapenet_importer/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/importer_exporter/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/importer_exporter/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/introduction/tutorial_list/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/introduction/tutorial_list/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/introduction/tutorial_list/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/isaac_lab/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/isaac_lab/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/isaac_lab/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/motion_generation/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/motion_generation/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/motion_generation/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/omnigraph/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/omnigraph/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/omnigraph/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/01_stage_setup/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/01_stage_setup/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/01_stage_setup/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/02_assemble_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/02_assemble_robot/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/02_assemble_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/03_articulate_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/03_articulate_robot/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/03_articulate_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/04_camera_sensors/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/04_camera_sensors/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/04_camera_sensors/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/05_rig_mobile_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/05_rig_mobile_robot/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/05_rig_mobile_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/06_setup_manipulator/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/06_setup_manipulator/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/06_setup_manipulator/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/07_configure_manipulator/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/07_configure_manipulator/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/07_configure_manipulator/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/08_generate_robot_config/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/08_generate_robot_config/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/08_generate_robot_config/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/09_pick_and_place/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/09_pick_and_place/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/09_pick_and_place/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/10_closed_loop_structures/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/10_closed_loop_structures/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/10_closed_loop_structures/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/11_joint_tuning/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/11_joint_tuning/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/11_joint_tuning/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/12_asset_optimization/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/12_asset_optimization/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/12_asset_optimization/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/13_rig_legged_robot/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/13_rig_legged_robot/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/13_rig_legged_robot/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/ros/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/ros/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/ros/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/sensors/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/sensors/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/sensors/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/synthetic_data/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/synthetic_data/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/synthetic_data/"/>
+    </url>
+    <url>
+        <loc>https://hijimasa.github.io/isaac-sim-tutorials/ja/troubleshooting/</loc>
+        <lastmod>2026-03-01</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/troubleshooting/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://hijimasa.github.io/isaac-sim-tutorials/troubleshooting/"/>
+    </url>
+</urlset>

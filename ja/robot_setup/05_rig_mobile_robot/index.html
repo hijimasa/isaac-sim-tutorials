@@ -1,0 +1,3432 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Isaac Sim チュートリアル集 / Isaac Sim Tutorial Collection">
+      
+      
+        <meta name="author" content="IR Lab">
+      
+      
+        <link rel="canonical" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/05_rig_mobile_robot/">
+      
+      
+        <link rel="prev" href="../04_camera_sensors/">
+      
+      
+        <link rel="next" href="../06_setup_manipulator/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+          <link rel="alternate" href="../../../robot_setup/05_rig_mobile_robot/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+    
+    
+      
+        <title>モバイルロボットのリギング - Isaac Sim Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans JP";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../" title="Isaac Sim Tutorials" class="md-header__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Isaac Sim Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              モバイルロボットのリギング
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../robot_setup/05_rig_mobile_robot/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/tutorial_list/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  はじめに
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core_api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Core API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ロボットセットアップ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../importer_exporter/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インポート・エクスポート
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../isaac_lab/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Isaac Lab
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ros/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ROS 2
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../synthetic_data/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  合成データ生成
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sensors/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  センサー
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../motion_generation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  モーション生成
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../omnigraph/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  OmniGraph
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../troubleshooting/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  トラブルシューティング
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="Isaac Sim Tutorials" class="md-nav__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    Isaac Sim Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    はじめに
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    はじめに
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/tutorial_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    チュートリアル一覧
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../core_api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core API
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/01_hello_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello World
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/02_hello_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/03_adding_a_controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    コントローラの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/04_adding_a_manipulator_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    マニピュレータロボットの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/05_adding_multiple_robots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    複数ロボットの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/06_multiple_tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    複数タスクの実行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/07_adding_props/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    属性の追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/08_data_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    データロギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ロボットセットアップ
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ロボットセットアップ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_stage_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ステージのセットアップ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_assemble_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    シンプルなロボットの組み立て
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_articulate_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基本ロボットのアーティキュレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_camera_sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    カメラとセンサーの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    モバイルロボットのリギング
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    モバイルロボットのリギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学習目標
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="はじめに">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前提条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所要時間
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概要
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用するアセット
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 1：ジョイントの特定
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2usd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 2：USD 階層の整理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 2：USD 階層の整理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ボディとリフトの整理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        車輪の整理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="車輪の整理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-xform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 車輪用 Xform の作成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-xform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Xform のトランスフォーム設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-xform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. メッシュを Xform の配下に移動
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigid-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rigid Body の適用
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 3：コリジョンメッシュの割り当て
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 3：コリジョンメッシュの割り当て">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ボディ・リフトのコリジョン
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        車輪のコリジョン
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="車輪のコリジョン">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前輪ローラーの場合
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        後輪の場合
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 4：ジョイントとドライブの追加
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 4：ジョイントとドライブの追加">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prismatic-joint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        フォーク用の Prismatic Joint（直動ジョイント）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revolute-joint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前輪ローラー用の Revolute Joint（回転ジョイント）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revolute-joint_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        後輪用の Revolute Joint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="後輪用の Revolute Joint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#back_wheel_swivel-back_wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        走行用ジョイント（back_wheel_swivel ↔ back_wheel）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#body-back_wheel_swivel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        操舵用ジョイント（body ↔ back_wheel_swivel）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 5：アーティキュレーションの追加
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 6：アセット単位の変換
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        シミュレーションでのテスト
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_setup_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    マニピュレータのセットアップ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_configure_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    マニピュレータの設定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_generate_robot_config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ロボット設定ファイルの生成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_pick_and_place/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ピック＆プレースの例
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_closed_loop_structures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    閉ループ構造のリギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_joint_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ジョイントドライブゲインの調整
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_asset_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アセット最適化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_rig_legged_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    脚ロボットのリギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../importer_exporter/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インポート・エクスポート
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インポート・エクスポート
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/01_import_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF インポート
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/02_export_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF エクスポート
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/03_import_mjcf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MJCF インポート
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/04_shapenet_importer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ShapeNet インポーター
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../isaac_lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isaac Lab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Isaac Lab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ros/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS 2
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ROS 2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../synthetic_data/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    合成データ生成
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    合成データ生成
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sensors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    センサー
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    センサー
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../motion_generation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    モーション生成
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    モーション生成
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../omnigraph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OmniGraph
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OmniGraph
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../troubleshooting/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    トラブルシューティング
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    トラブルシューティング
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学習目標
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="はじめに">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前提条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所要時間
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概要
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用するアセット
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 1：ジョイントの特定
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2usd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 2：USD 階層の整理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 2：USD 階層の整理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ボディとリフトの整理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        車輪の整理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="車輪の整理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-xform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 車輪用 Xform の作成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-xform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Xform のトランスフォーム設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-xform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. メッシュを Xform の配下に移動
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rigid-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rigid Body の適用
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 3：コリジョンメッシュの割り当て
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 3：コリジョンメッシュの割り当て">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ボディ・リフトのコリジョン
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        車輪のコリジョン
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="車輪のコリジョン">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前輪ローラーの場合
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        後輪の場合
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 4：ジョイントとドライブの追加
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 4：ジョイントとドライブの追加">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prismatic-joint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        フォーク用の Prismatic Joint（直動ジョイント）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revolute-joint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前輪ローラー用の Revolute Joint（回転ジョイント）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revolute-joint_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        後輪用の Revolute Joint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="後輪用の Revolute Joint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#back_wheel_swivel-back_wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        走行用ジョイント（back_wheel_swivel ↔ back_wheel）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#body-back_wheel_swivel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        操舵用ジョイント（body ↔ back_wheel_swivel）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 5：アーティキュレーションの追加
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 6：アセット単位の変換
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        シミュレーションでのテスト
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">モバイルロボットのリギング<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">学習目標<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>このチュートリアルを修了すると、以下の内容を習得できます：</p>
+<ul>
+<li>ロボットアセットのジョイント構成の分析方法</li>
+<li>USD 階層の整理と Xform によるグループ化</li>
+<li>コリジョン近似の割り当て（Convex Decomposition、シリンダーなど）</li>
+<li>Prismatic Joint（直動ジョイント）/ Revolute Joint（回転ジョイント）の追加とドライブ設定</li>
+<li>アーティキュレーションの追加</li>
+<li>アセットの単位変換</li>
+</ul>
+<h2 id="_3">はじめに<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="_4">前提条件<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../03_articulate_robot/">チュートリアル 3: 基本ロボットのアーティキュレーション</a> を完了していること</li>
+</ul>
+<h3 id="_5">所要時間<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>約 30 分</p>
+<h3 id="_6">概要<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p><strong>リギング（Rigging）</strong> とは、3Dモデルにジョイント（関節）やコリジョン（衝突判定）、物理プロパティなどを設定し、シミュレーション上で動かせる状態にする作業のことです。元々は3DCG・アニメーション分野の用語ですが、Isaac Sim では物理シミュレーション用のロボットモデルを構築する工程全般を指します。</p>
+<p>このチュートリアルでは、<strong>リギングされていない（＝ジョイントや物理プロパティが未設定の）フォークリフトの USD アセット</strong>を、完全にアーティキュレーションされたモバイルロボットに変換します。チュートリアル 2〜3 で学んだ基本（Rigid Body、コリジョン、ジョイント、アーティキュレーション）を、実際のロボットアセットに適用する実践的な内容です。</p>
+<h3 id="_7">使用するアセット<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>Isaac Sim に同梱されているフォークリフトアセットを使用します。画面右下の <strong>Content</strong> タブから以下のパスでアクセスできます：</p>
+<table>
+<thead>
+<tr>
+<th>アセット</th>
+<th>パス</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>リギングなし（作業用）</strong></td>
+<td><code>Samples &gt; Rigging &gt; Forklift &gt; forklift_b_unrigged_cm</code></td>
+<td>このチュートリアルで編集するアセット</td>
+</tr>
+<tr>
+<td><strong>リギング済み（参考用）</strong></td>
+<td><code>Samples &gt; Rigging &gt; Forklift &gt; forklift_b_rigged_cm</code></td>
+<td>完成形の参考アセット</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">アセットのロード方法</p>
+<p>アセットをロードする際は、<strong>File（参照ではなくファイルとして）</strong> で開いてください。このチュートリアルではアセットに直接変更を加えるため、参照ではなくファイルとして開く必要があります。</p>
+</div>
+<h2 id="1">ステップ 1：ジョイントの特定<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>リギングを始める前に、フォークリフトにどのようなジョイント（関節）が必要かを分析します。</p>
+<p>このフォークリフトには <strong>7つの自由度（Degree of Freedom）</strong> があります：</p>
+<table>
+<thead>
+<tr>
+<th>パーツ</th>
+<th>ジョイントの種類</th>
+<th>駆動</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前輪ローラー × 4</td>
+<td>Revolute Joint（回転）</td>
+<td>非駆動</td>
+<td>地面との接触で自由に回転するローラー</td>
+</tr>
+<tr>
+<td>フォーク</td>
+<td>Prismatic Joint（直動）</td>
+<td>駆動</td>
+<td>フォークの上下移動</td>
+</tr>
+<tr>
+<td>後輪</td>
+<td>Revolute Joint（回転）</td>
+<td>駆動</td>
+<td>走行用の車輪回転</td>
+</tr>
+<tr>
+<td>後輪スイベル</td>
+<td>Revolute Joint（回転）</td>
+<td>駆動</td>
+<td>操舵用のピボット回転</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="フォークリフトの外観" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_1.png" /></p>
+<h2 id="2usd">ステップ 2：USD 階層の整理<a class="headerlink" href="#2usd" title="Permanent link">&para;</a></h2>
+<p>ジョイントを追加する前に、メッシュを論理的なグループにまとめる必要があります。Xform を作成して関連するメッシュを整理します。</p>
+<h3 id="_8">ボディとリフトの整理<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<ol>
+<li>ステージツリーのルート Xform（<strong>SMV_Forklift_B01_01</strong>）上で右クリックし、<strong>Create &gt; Xform</strong> を2つ作成します。</li>
+<li>それぞれ <strong>body</strong> と <strong>lift</strong> にリネームします。</li>
+<li>フォークリフトのボディ（車体）に該当するメッシュを <strong>body</strong> Xform の中にドラッグ＆ドロップします。</li>
+<li>フォーク（リフト）に該当するメッシュを <strong>lift</strong> Xform の中にドラッグ＆ドロップします。</li>
+</ol>
+<p><img alt="ボディとリフトの整理" src="../../../robot_setup/images/19_sort_body_and_lift.png" /></p>
+<h3 id="_9">車輪の整理<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>車輪用の Xform を作成する際、<strong>ジョイントの回転中心を正しく配置する</strong>ために、Xform の原点を車輪メッシュの実際の位置に合わせる必要があります。</p>
+<h4 id="1-xform">1. 車輪用 Xform の作成<a class="headerlink" href="#1-xform" title="Permanent link">&para;</a></h4>
+<p>ルート Xform（<strong>SMV_Forklift_B01_01</strong>）を右クリックし、<strong>Create &gt; Xform</strong> で以下の6つの Xform を作成してリネームします：</p>
+<ul>
+<li><strong>roller_front_left</strong>、<strong>roller_front_right</strong>、<strong>roller_back_left</strong>、<strong>roller_back_right</strong></li>
+<li><strong>back_wheel</strong>（走行用の車輪）</li>
+<li><strong>back_wheel_swivel</strong>（操舵用のスイベル部分）</li>
+</ul>
+<h4 id="2-xform">2. Xform のトランスフォーム設定<a class="headerlink" href="#2-xform" title="Permanent link">&para;</a></h4>
+<p>各 Xform の <strong>Translate</strong> を、対応するメッシュの回転中心に合わせて設定します。</p>
+<p>メッシュを選択して <strong>Property</strong> タブを見ると、<strong>Translate</strong> の他に <strong>Translate:pivot</strong> という値が表示されていることがあります。</p>
+<div class="admonition note">
+<p class="admonition-title">Translate:pivot とは</p>
+<p><strong>Translate:pivot</strong> は、回転やスケールの<strong>中心点（ピボット）</strong>を指定するための USD のトランスフォーム操作です。通常、回転やスケールはオブジェクトのローカル原点 <code>(0, 0, 0)</code> を中心に行われますが、DCC ツール（Blender、Maya など）からエクスポートされた3Dモデルでは、メッシュのジオメトリ原点が回転中心と一致しないことがあります。その場合、正しい回転中心を指定するために <strong>Translate:pivot</strong> が設定されます。</p>
+<p>つまり、メッシュの<strong>実際の回転中心の位置</strong>は、<strong>Translate + Translate:pivot</strong> の合計値になります。</p>
+</div>
+<p>ジョイントの回転軸は Xform の原点に配置されるため、各 Xform の <strong>Translate</strong> にはメッシュの <strong>Translate</strong> と <strong>Translate:pivot</strong> の<strong>合計値</strong>を設定する必要があります。以下の表にまとめています：</p>
+<table>
+<thead>
+<tr>
+<th>Xform 名</th>
+<th>対応メッシュ</th>
+<th>Translate の設定値</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>roller_front_left</strong></td>
+<td>前輪ローラー左メッシュ</td>
+<td>(49.90, -91.01, 7.83)</td>
+</tr>
+<tr>
+<td><strong>roller_front_right</strong></td>
+<td>前輪ローラー右メッシュ</td>
+<td>(-49.90, -91.01, 7.83)</td>
+</tr>
+<tr>
+<td><strong>roller_back_left</strong></td>
+<td>後輪ローラー左メッシュ</td>
+<td>(49.90, -71.75, 7.83)</td>
+</tr>
+<tr>
+<td><strong>roller_back_right</strong></td>
+<td>後輪ローラー右メッシュ</td>
+<td>(-49.90, -71.75, 7.83)</td>
+</tr>
+<tr>
+<td><strong>back_wheel</strong></td>
+<td>後輪メッシュ</td>
+<td>(0.76, 57.99, 15.80)</td>
+</tr>
+<tr>
+<td><strong>back_wheel_swivel</strong></td>
+<td>後輪スイベルメッシュ</td>
+<td>(-7.87, 57.75, 35.57)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Translate:pivot の確認方法</p>
+<p>メッシュを選択し、<strong>Property</strong> タブの <strong>Transform</strong> セクションを確認します。<strong>Translate</strong> の下に <strong>Translate:pivot</strong> が表示されています。この2つの値を各軸（X, Y, Z）ごとに足し合わせた値を、Xform の <strong>Translate</strong> に設定してください。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Script Editor で自動計算する</p>
+<p>手動で計算する代わりに、<strong>Window &gt; Script Editor</strong> で以下のスクリプトを実行すると、各メッシュの正しい Xform 位置を自動で算出できます：</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pxr</span><span class="w"> </span><span class="kn">import</span> <span class="n">UsdGeom</span><span class="p">,</span> <span class="n">Gf</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">stage</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">get_stage</span><span class="p">()</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># 対象メッシュのパスを列挙（実際のパスに置き換えてください）</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">mesh_paths</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_LeadWheelsFrontLeft_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_LeadWheelsFrontRight_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_LeadWheelsBackLeft_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_LeadWheelsBackRight_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_BackWheel_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="s2">&quot;/SMV_Forklift_B01_01/SM_Forklift_BackWheelbase_B01_01&quot;</span><span class="p">,</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="p">]</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">mesh_paths</span><span class="p">:</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">prim</span> <span class="o">=</span> <span class="n">stage</span><span class="o">.</span><span class="n">GetPrimAtPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="n">xformable</span> <span class="o">=</span> <span class="n">UsdGeom</span><span class="o">.</span><span class="n">Xformable</span><span class="p">(</span><span class="n">prim</span><span class="p">)</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="n">translate</span> <span class="o">=</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="n">pivot</span> <span class="o">=</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3d</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">xformable</span><span class="o">.</span><span class="n">GetOrderedXformOps</span><span class="p">():</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">GetOpName</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;xformOp:translate&quot;</span><span class="p">:</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>            <span class="n">translate</span> <span class="o">=</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3d</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">Get</span><span class="p">())</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        <span class="k">elif</span> <span class="n">op</span><span class="o">.</span><span class="n">GetOpName</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;xformOp:translate:pivot&quot;</span><span class="p">:</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>            <span class="n">pivot</span> <span class="o">=</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3d</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">Get</span><span class="p">())</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">translate</span> <span class="o">+</span> <span class="n">pivot</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">: Xform Translate = </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>出力された値をそのまま各 Xform の <strong>Translate</strong> に設定できます。</p>
+</div>
+<h4 id="3-xform">3. メッシュを Xform の配下に移動<a class="headerlink" href="#3-xform" title="Permanent link">&para;</a></h4>
+<p>対応する各メッシュを、それぞれの Xform の中にドラッグ＆ドロップします。</p>
+<div class="admonition note">
+<p class="admonition-title">メッシュの Translate の調整</p>
+<p>メッシュを Xform の配下に移動した後、メッシュの <strong>Translate</strong> を <strong>-Translate:pivot</strong> の値（Translate:pivot の符号を反転した値）に設定してください。これにより、メッシュの見た目の位置は変わらず、Xform の原点がジョイントの回転中心に正しく配置されます。直前のXform のトランスフォーム設定でXformが正しく設定できていれば、メッシュの <strong>Translate</strong> が <strong>-Translate:pivot</strong> の値（Translate:pivot の符号を反転した値）とほぼ同じになっているはずです。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">リギング済みアセットで値を確認</p>
+<p>設定値に迷った場合は、<code>forklift_b_rigged_cm</code>（リギング済み）アセットを開いて、各 Xform のトランスフォーム値を確認・比較できます。</p>
+</div>
+<p><img alt="車輪の整理" src="../../../robot_setup/images/20_sort_wheels.png" /></p>
+<h3 id="rigid-body">Rigid Body の適用<a class="headerlink" href="#rigid-body" title="Permanent link">&para;</a></h3>
+<ol>
+<li>作成した各 Xform（<strong>body</strong>、<strong>lift</strong>、4つのローラー、<strong>back_wheel</strong>、<strong>back_wheel_swivel</strong>）をすべて選択します。</li>
+<li><strong>Property</strong> タブの <strong>+ Add</strong> ボタンから <strong>Physics &gt; Rigid Body</strong> を適用します。</li>
+</ol>
+<p><img alt="Rigid Bodyの適用" src="../../../robot_setup/images/21_add_rigid_body.png" /></p>
+<p><img alt="階層整理後のフォークリフト" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_2.png" /></p>
+<h2 id="3">ステップ 3：コリジョンメッシュの割り当て<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>各パーツに物理シミュレーション用のコリジョン（衝突判定）メッシュを割り当てます。</p>
+<div class="admonition note">
+<p class="admonition-title">提供アセットのコリジョンについて</p>
+<p>提供されているフォークリフトアセットには既にコリジョンプロパティが設定されています。ここではコリジョン近似の種類と設定方法を学びます。</p>
+</div>
+<h3 id="_10">ボディ・リフトのコリジョン<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p>複雑な形状のメッシュには <strong>Convex Decomposition（凸分割）</strong> 近似を使用します。</p>
+<ol>
+<li>ボディまたはリフトのメッシュを選択します（以下の図では<strong>SM_Forklift_Lift_B01_01</strong>）。</li>
+<li>右クリックして <strong>Add &gt; Physics &gt; Collider Preset</strong> を選択します。</li>
+<li><strong>Property</strong> タブの <strong>Collision</strong> セクションで、<strong>Approximation</strong> を <strong>Convex Decomposition</strong> に変更します。</li>
+</ol>
+<p>デフォルト(Convex Hull)の場合
+<img alt="Convex Hull" src="../../../robot_setup/images/22_convex_hull.png" /></p>
+<p>Convex Decomposition（凸分割）の場合
+<img alt="Convex Decomposition" src="../../../robot_setup/images/23_convex_decomposition.png" /></p>
+<h3 id="_11">車輪のコリジョン<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p>車輪には<strong>シリンダー近似</strong>を使用します。メッシュに直接コリジョンを付けるのではなく、専用のシリンダープリミティブを配置します。</p>
+<h4 id="_12">前輪ローラーの場合<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h4>
+<ol>
+<li>各ローラー Xform の直下にシリンダーメッシュを作成します（<strong>Create &gt; Shape &gt; Cylinder</strong>）。</li>
+<li>シリンダーの <strong>Property</strong> タブで以下を設定します：<ul>
+<li><strong>Scale</strong>: <strong>(0.16, 0.16, 0.08)</strong></li>
+<li><strong>Orient</strong>: Y 軸を <strong>90</strong> 度回転</li>
+<li><strong>Translate</strong>: すべて <strong>0</strong> に設定</li>
+</ul>
+</li>
+<li>シリンダーに <strong>Collider</strong> を追加します。</li>
+</ol>
+<h4 id="_13">後輪の場合<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>back_wheel</strong> Xform の直下にシリンダーメッシュを作成します。</li>
+<li>シリンダーの <strong>Property</strong> タブで以下を設定します：<ul>
+<li><strong>Scale</strong>: <strong>(0.3, 0.3, 0.1)</strong></li>
+<li><strong>Orient</strong>: Y 軸を <strong>90</strong> 度回転</li>
+<li><strong>Translate</strong>: すべて <strong>0</strong> に設定</li>
+</ul>
+</li>
+<li>シリンダーに <strong>Collider</strong> を追加します。</li>
+</ol>
+<p><img alt="シリンダーコリジョン近似" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_5.png" /></p>
+<h2 id="4">ステップ 4：ジョイントとドライブの追加<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<h3 id="prismatic-joint">フォーク用の Prismatic Joint（直動ジョイント）<a class="headerlink" href="#prismatic-joint" title="Permanent link">&para;</a></h3>
+<p>フォークの上下移動を実現するために Prismatic Joint を追加します。</p>
+<ol>
+<li>
+<p>ステージツリーで <strong>body</strong> を選択し、次に <strong>Ctrl</strong> キーを押しながら <strong>lift</strong> を選択します。</p>
+<div class="admonition note">
+<p class="admonition-title">選択順序</p>
+<p>回転ジョイントと同様に、最初に選択した <strong>body</strong> が <strong>Body 0</strong>（親：固定側）、2番目の <strong>lift</strong> が <strong>Body 1</strong>（子：移動側）になります。</p>
+</div>
+</li>
+<li>
+<p>右クリックして <strong>Create &gt; Physics &gt; Joints &gt; Prismatic Joint</strong> を選択します。</p>
+</li>
+<li><strong>Property</strong> タブで以下を設定します：<ul>
+<li><strong>Axis</strong>: <strong>Z</strong>（上下方向）</li>
+<li><strong>Lower Limit</strong>: <strong>-15</strong></li>
+<li><strong>Upper Limit</strong>: <strong>200</strong></li>
+</ul>
+</li>
+<li><strong>+ Add</strong> から <strong>Physics &gt; Linear Drive</strong> を追加し、以下を設定します：<ul>
+<li><strong>Target Position</strong>: <strong>-15</strong></li>
+<li><strong>Damping</strong>: <strong>10000</strong></li>
+<li><strong>Stiffness</strong>: <strong>100000</strong></li>
+</ul>
+</li>
+<li>ジョイントを <strong>lift_joint</strong> にリネームし、整理用の Scope 内に配置します。</li>
+</ol>
+<p><img alt="Prismatic Joint" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_6.png" /></p>
+<h3 id="revolute-joint">前輪ローラー用の Revolute Joint（回転ジョイント）<a class="headerlink" href="#revolute-joint" title="Permanent link">&para;</a></h3>
+<p>前輪ローラーは非駆動（ドライブなし）の回転ジョイントです。</p>
+<ol>
+<li>ステージツリーで <strong>body</strong> を選択し、次に <strong>Ctrl</strong> キーを押しながらローラー Xform（例：<strong>roller_front_left</strong>）を選択します。</li>
+<li>右クリックして <strong>Create &gt; Physics &gt; Joints &gt; Revolute Joint</strong> を選択します。</li>
+<li><strong>Property</strong> タブで <strong>Axis</strong> を <strong>X</strong> に設定します。</li>
+<li>同様の手順を残り3つのローラー（<strong>roller_front_right</strong>、<strong>roller_back_left</strong>、<strong>roller_back_right</strong>）にも繰り返します。</li>
+<li>作成したジョイントを <strong>roller_joints</strong> Scope 内に整理します。</li>
+</ol>
+<h3 id="revolute-joint_1">後輪用の Revolute Joint<a class="headerlink" href="#revolute-joint_1" title="Permanent link">&para;</a></h3>
+<p>後輪は2つのジョイントが必要です：走行用の回転と操舵用のスイベルです。</p>
+<h4 id="back_wheel_swivel-back_wheel">走行用ジョイント（back_wheel_swivel ↔ back_wheel）<a class="headerlink" href="#back_wheel_swivel-back_wheel" title="Permanent link">&para;</a></h4>
+<ol>
+<li>ステージツリーで <strong>back_wheel_swivel</strong> を選択し、<strong>Ctrl</strong> キーを押しながら <strong>back_wheel</strong> を選択します。</li>
+<li><strong>Create &gt; Physics &gt; Joints &gt; Revolute Joint</strong> を選択します。</li>
+<li><strong>+ Add</strong> から <strong>Physics &gt; Angular Drive</strong> を追加し、以下を設定します：<ul>
+<li><strong>Damping</strong>: <strong>10000</strong></li>
+<li><strong>Stiffness</strong>: <strong>100</strong></li>
+</ul>
+</li>
+</ol>
+<h4 id="body-back_wheel_swivel">操舵用ジョイント（body ↔ back_wheel_swivel）<a class="headerlink" href="#body-back_wheel_swivel" title="Permanent link">&para;</a></h4>
+<ol>
+<li>ステージツリーで <strong>body</strong> を選択し、<strong>Ctrl</strong> キーを押しながら <strong>back_wheel_swivel</strong> を選択します。</li>
+<li><strong>Create &gt; Physics &gt; Joints &gt; Revolute Joint</strong> を選択します。</li>
+<li><strong>Property</strong> タブで以下を設定します：<ul>
+<li><strong>Axis</strong>: <strong>Z</strong>（垂直方向に旋回）</li>
+<li><strong>Lower Limit</strong>: <strong>-60</strong>（度）</li>
+<li><strong>Upper Limit</strong>: <strong>60</strong>（度）</li>
+</ul>
+</li>
+<li><strong>+ Add</strong> から <strong>Physics &gt; Angular Drive</strong> を追加し、以下を設定します：<ul>
+<li><strong>Damping</strong>: <strong>100</strong></li>
+<li><strong>Stiffness</strong>: <strong>100000</strong></li>
+</ul>
+</li>
+<li>作成したジョイントを <strong>back_wheel_joints</strong> Scope 内に整理します。</li>
+</ol>
+<p><img alt="Revolute Joint" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_7.png" /></p>
+<h2 id="5">ステップ 5：アーティキュレーションの追加<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<p>すべてのジョイントを単一の物理ソルバーチェーンとして扱うために、アーティキュレーションルートを設定します。</p>
+<ol>
+<li>ステージツリーのルート Xform（<strong>SMV_Forklift_B01_01</strong>）を右クリックします。</li>
+<li><strong>Add &gt; Physics &gt; Articulation Root</strong> を選択します。選択できないときはデフォルトでArticulation Rootが設定されている可能性があります。</li>
+<li><strong>Property</strong> タブで <strong>Self Collision</strong> のチェックボックスを<strong>無効</strong>にします。</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Self Collision の無効化</p>
+<p>隣接するパーツ間でコリジョンメッシュが重なっている場合、自己衝突が発生してシミュレーションが不安定になることがあります。これを防ぐために Self Collision を無効にします。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Articulation Root の配置場所</p>
+<p>モバイルロボットの場合、Articulation Root はロボット全体のルート Xform（シャーシ / ベース）に配置します。ロボットアームの場合は、固定ジョイントに配置するのがベストプラクティスです。</p>
+</div>
+<h2 id="6">ステップ 6：アセット単位の変換<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<p>提供されているフォークリフトアセットは<strong>センチメートル</strong>単位で作成されています。Isaac Sim のデフォルトの Stage は<strong>メートル</strong>単位のため、単位変換が必要です。</p>
+<div class="admonition note">
+<p class="admonition-title">自動単位変換</p>
+<p>メートル単位の Stage にセンチメートル単位のアセットを追加すると、Isaac Sim の <strong>Metrics Assembler</strong> 拡張機能が自動的にスケールを変換します。手動での変換は通常不要です。</p>
+</div>
+<h2 id="_14">シミュレーションでのテスト<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<p>リギングが正しく行われたかテストします。</p>
+<ol>
+<li>後輪のジョイント（走行用）を選択し、<strong>Angular Drive</strong> の <strong>Target Velocity</strong> を <strong>-200</strong> に設定します。</li>
+<li><strong>Play</strong> ボタンを押してシミュレーションを開始します。</li>
+<li>フォークリフトが前進することを確認します。</li>
+</ol>
+<p><img alt="シミュレーションでのテスト" src="../../../robot_setup/images/24_simulate_forklift.webp" /></p>
+<div class="admonition warning">
+<p class="admonition-title">シミュレーション時にロボットが「爆発」する場合</p>
+<p>シミュレーション開始時にロボットのパーツが飛び散る場合は、接続されたパーツ間でコリジョンメッシュが重なり合っている（貫通している）可能性があります。コリジョンメッシュの形状とサイズを確認し、パーツ間で干渉が起きないように調整してください。</p>
+</div>
+<h2 id="_15">まとめ<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<p>このチュートリアルでは以下のトピックを扱いました：</p>
+<ol>
+<li>ロボットアセットの<strong>ジョイント構成</strong>（7自由度）の分析</li>
+<li><strong>Xform</strong> を使った USD 階層の整理とメッシュのグループ化</li>
+<li><strong>Convex Decomposition</strong> と<strong>シリンダー近似</strong>によるコリジョンメッシュの割り当て</li>
+<li><strong>Prismatic Joint</strong> と <strong>Revolute Joint</strong> の追加、<strong>Linear Drive</strong> と <strong>Angular Drive</strong> の設定</li>
+<li><strong>Articulation Root</strong> の追加と Self Collision の設定</li>
+<li><strong>Metrics Assembler</strong> によるアセット<strong>単位変換</strong>への対応</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">参考アセット</p>
+<p>完成したフォークリフトは、<strong>Content</strong> タブの <strong>Samples &gt; Rigging &gt; Forklift</strong> フォルダ内の <code>forklift_b_rigged_cm</code> アセットと比較して確認できます。</p>
+</div>
+<h2 id="_16">次のステップ<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<p>次のチュートリアル「<a href="../06_setup_manipulator/">マニピュレータのセットアップ</a>」に進み、URDF からロボットアームをインポートしてグリッパーを接続する方法を学びましょう。</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

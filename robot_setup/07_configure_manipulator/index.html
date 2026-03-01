@@ -1,0 +1,3353 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Isaac Sim チュートリアル集 / Isaac Sim Tutorial Collection">
+      
+      
+        <meta name="author" content="IR Lab">
+      
+      
+        <link rel="canonical" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/07_configure_manipulator/">
+      
+      
+        <link rel="prev" href="../06_setup_manipulator/">
+      
+      
+        <link rel="next" href="../08_generate_robot_config/">
+      
+      
+        
+          <link rel="alternate" href="../../ja/robot_setup/07_configure_manipulator/" hreflang="ja">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+    
+    
+      
+        <title>Configure a Manipulator - Isaac Sim Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans JP";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configure-a-manipulator" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-header__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Isaac Sim Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configure a Manipulator
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../ja/robot_setup/07_configure_manipulator/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/tutorial_list/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Introduction
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core_api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Core API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Robot Setup
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../importer_exporter/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Import & Export
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../isaac_lab/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Isaac Lab
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ros/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ROS 2
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../synthetic_data/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Synthetic Data
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sensors/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sensors
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../motion_generation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Motion Generation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../omnigraph/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  OmniGraph
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../troubleshooting/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Troubleshooting
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-nav__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    Isaac Sim Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Introduction
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/tutorial_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../core_api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core API
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/01_hello_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello World
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/02_hello_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/03_adding_a_controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/04_adding_a_manipulator_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Manipulator Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/05_adding_multiple_robots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Multiple Robots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/06_multiple_tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiple Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/07_adding_props/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Props
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/08_data_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Logging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Robot Setup
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Robot Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_stage_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_assemble_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assemble a Simple Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_articulate_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articulate a Basic Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_camera_sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add Camera and Sensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_rig_mobile_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Mobile Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_setup_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configure a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configure a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assets-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-adjust-the-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Adjust the Articulation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Adjust the Articulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-open-the-ur10e-physics-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. Open the UR10e Physics Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-enable-and-configure-the-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Enable and Configure the Articulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-add-physics-materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Add Physics Materials
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Add Physics Materials">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1-open-the-robotiq-2f-140-physics-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. Open the Robotiq 2F-140 Physics Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-create-a-physics-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Create a Physics Material
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-configure-friction-coefficients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Configure Friction Coefficients
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-apply-the-material-to-the-gripper-fingertips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Apply the Material to the Gripper Fingertips
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-configure-joint-effort-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Configure Joint Effort Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-inspect-the-robot-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Inspect the Robot Articulation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Inspect the Robot Articulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-open-the-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Open the Asset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-launch-physics-inspector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Launch Physics Inspector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-verify-the-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. Verify the Articulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-tune-gains-with-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Tune Gains with Gain Tuner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Tune Gains with Gain Tuner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-launch-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Launch Gain Tuner
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2-select-the-robot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. Select the Robot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-3-adjust-gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-3. Adjust Gains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-4-test-the-gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-4. Test the Gains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-5-gain-tuning-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-5. Gain Tuning Tips
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_generate_robot_config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generate Robot Configuration File
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_pick_and_place/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pick and Place Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_closed_loop_structures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig Closed-Loop Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_joint_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tuning Joint Drive Gains
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_asset_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_rig_legged_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Legged Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../importer_exporter/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import & Export
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Import & Export
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/01_import_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/02_export_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Export URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/03_import_mjcf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import MJCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/04_shapenet_importer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ShapeNet Importer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../isaac_lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isaac Lab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Isaac Lab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ros/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS 2
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ROS 2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../synthetic_data/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synthetic Data
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Synthetic Data
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sensors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sensors
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sensors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../motion_generation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Motion Generation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Motion Generation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../omnigraph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OmniGraph
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OmniGraph
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../troubleshooting/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Troubleshooting
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assets-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-adjust-the-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Adjust the Articulation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Adjust the Articulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-open-the-ur10e-physics-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. Open the UR10e Physics Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-enable-and-configure-the-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Enable and Configure the Articulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-add-physics-materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Add Physics Materials
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Add Physics Materials">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1-open-the-robotiq-2f-140-physics-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. Open the Robotiq 2F-140 Physics Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-create-a-physics-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Create a Physics Material
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-configure-friction-coefficients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Configure Friction Coefficients
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-apply-the-material-to-the-gripper-fingertips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Apply the Material to the Gripper Fingertips
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-configure-joint-effort-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Configure Joint Effort Limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-inspect-the-robot-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Inspect the Robot Articulation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Inspect the Robot Articulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-open-the-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Open the Asset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-launch-physics-inspector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Launch Physics Inspector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-verify-the-articulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. Verify the Articulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-tune-gains-with-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Tune Gains with Gain Tuner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Tune Gains with Gain Tuner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-launch-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Launch Gain Tuner
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2-select-the-robot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. Select the Robot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-3-adjust-gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-3. Adjust Gains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-4-test-the-gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-4. Test the Gains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-5-gain-tuning-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-5. Gain Tuning Tips
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="configure-a-manipulator">Configure a Manipulator<a class="headerlink" href="#configure-a-manipulator" title="Permanent link">&para;</a></h1>
+<h2 id="learning-objectives">Learning Objectives<a class="headerlink" href="#learning-objectives" title="Permanent link">&para;</a></h2>
+<p>After completing this tutorial, you will have learned:</p>
+<ul>
+<li>How to adjust articulation solver settings</li>
+<li>How to create and apply physics materials (friction)</li>
+<li>How to set joint effort limits (Max Force)</li>
+<li>How to inspect articulations using Physics Inspector</li>
+<li>How to tune joint drive gains using Gain Tuner</li>
+</ul>
+<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Complete <a href="../06_setup_manipulator/">Tutorial 6: Setup a Manipulator</a> before starting this tutorial.</li>
+</ul>
+<h3 id="estimated-time">Estimated Time<a class="headerlink" href="#estimated-time" title="Permanent link">&para;</a></h3>
+<p>Approximately 30 minutes.</p>
+<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+<p>In the previous tutorial, we imported the UR10e robot arm and Robotiq 2F-140 gripper and connected them as a single articulation. However, the default settings are not sufficient for simulation accuracy and stability.</p>
+<p>In this tutorial, we will adjust the following physics parameters to enable stable manipulation tasks (grasping, carrying objects, etc.):</p>
+<ul>
+<li><strong>Solver iteration counts</strong>: Improve simulation accuracy</li>
+<li><strong>Friction coefficients</strong>: Ensure the gripper can firmly grasp objects</li>
+<li><strong>Joint effort limits</strong>: Configure appropriate gripping force</li>
+<li><strong>Joint gains</strong>: Optimize target position tracking</li>
+</ul>
+<h3 id="assets-used">Assets Used<a class="headerlink" href="#assets-used" title="Permanent link">&para;</a></h3>
+<p>We will use the assets created in Tutorial 6. If you have not completed it yet, you can use the sample assets included with Isaac Sim. Access them from the <strong>Content</strong> tab at the bottom-right of the screen:</p>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Path</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>UR10e + Gripper (connected)</strong></td>
+<td><code>Samples &gt; Rigging &gt; Manipulator &gt; import_manipulator &gt; ur10e &gt; ur &gt; ur_gripper.usd</code></td>
+<td>Completed asset from Tutorial 6</td>
+</tr>
+<tr>
+<td><strong>Fully configured (reference)</strong></td>
+<td><code>Samples &gt; Rigging &gt; Manipulator &gt; configure_manipulator &gt; ur10e &gt; ur &gt; ur_gripper.usd</code></td>
+<td>Completed asset for this tutorial (reference)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="step-1-adjust-the-articulation">Step 1: Adjust the Articulation<a class="headerlink" href="#step-1-adjust-the-articulation" title="Permanent link">&para;</a></h2>
+<p>In manipulation tasks, numerous joints and mimic joints work in coordination, so the default solver settings may lack sufficient accuracy. In this step, we will adjust solver iteration counts and sleep conditions to improve simulation accuracy and stability.</p>
+<h3 id="1-1-open-the-ur10e-physics-layer">1-1. Open the UR10e Physics Layer<a class="headerlink" href="#1-1-open-the-ur10e-physics-layer" title="Permanent link">&para;</a></h3>
+<p>If you imported from URDF in Tutorial 6, a <strong>Physics Layer</strong> file with a <code>_physics</code> suffix (e.g., <code>ur10e_physics.usd</code>) was generated in the UR10e asset folder. Open this file in Isaac Sim.</p>
+<div class="admonition warning">
+<p class="admonition-title">Why do you need to open the Physics Layer directly?</p>
+<p>USD is a file format with a layered structure. When importing from URDF, the robot asset is split into a <strong>main layer</strong> (visuals and hierarchy) and a <strong>Physics Layer</strong> (physics properties and joint drives).</p>
+<p>When you modify parameters through Isaac Sim's GUI (Property panel), the changes are written to the <strong>currently open layer</strong>. If you open the top-level USD file (such as <code>ur_gripper.usd</code>) and modify physics parameters, the changes will be written to the top-level layer and will not be reflected in the Physics Layer.</p>
+<p>To save physics settings in the correct location, you must <strong>open the target Physics Layer file directly</strong> before making changes.</p>
+</div>
+<h3 id="1-2-enable-and-configure-the-articulation">1-2. Enable and Configure the Articulation<a class="headerlink" href="#1-2-enable-and-configure-the-articulation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Select the <code>ur10e/root_joint</code> prim in the <strong>Stage</strong> panel.</p>
+</li>
+<li>
+<p>In the <strong>Property</strong> panel, locate the <strong>Physics &gt; Articulation Root</strong> section.</p>
+</li>
+<li>
+<p>Verify that the <strong>Articulation Enabled</strong> checkbox is checked (it is on by default).</p>
+</li>
+<li>
+<p>Set the following parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Solver Position Iterations Count</strong></td>
+<td>32</td>
+<td><strong>64</strong></td>
+<td>Number of solver iterations for position. Higher values improve joint constraint accuracy</td>
+</tr>
+<tr>
+<td><strong>Solver Velocity Iterations Count</strong></td>
+<td>1</td>
+<td><strong>4</strong></td>
+<td>Number of solver iterations for velocity. Higher values improve velocity control accuracy</td>
+</tr>
+<tr>
+<td><strong>Sleep Threshold</strong></td>
+<td>0.005</td>
+<td><strong>0.00005</strong></td>
+<td>Kinetic energy threshold below which the robot enters sleep state</td>
+</tr>
+<tr>
+<td><strong>Stabilization Threshold</strong></td>
+<td>0.001</td>
+<td><strong>0.00001</strong></td>
+<td>Threshold at which stabilization processing is applied</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Articulation properties" src="../images/32_setting_articulation_property.png" /></p>
+</li>
+<li>
+<p>Save the changes with <strong>Ctrl + S</strong>.</p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Parameter Details</p>
+<ul>
+<li><strong>Solver Position/Velocity Iterations Count</strong>: Increasing iteration counts improves simulation accuracy but also increases computational cost. Robots with many degrees of freedom like the UR10e + gripper, or robots with mimic joints, require higher iteration counts.</li>
+<li><strong>Sleep Threshold / Stabilization Threshold</strong>: Sleep is a feature that pauses simulation for objects with sufficiently small motion to reduce computational load. In manipulation tasks, even subtle movements are important, so we lower the thresholds to prevent the robot from entering sleep mode.</li>
+</ul>
+</div>
+<h2 id="step-2-add-physics-materials">Step 2: Add Physics Materials<a class="headerlink" href="#step-2-add-physics-materials" title="Permanent link">&para;</a></h2>
+<p>Without friction on the gripper fingertips, objects will slip and fall even when grasped. In this step, we will create a physics material (friction coefficients) and apply it to the gripper fingertips.</p>
+<h3 id="2-1-open-the-robotiq-2f-140-physics-layer">2-1. Open the Robotiq 2F-140 Physics Layer<a class="headerlink" href="#2-1-open-the-robotiq-2f-140-physics-layer" title="Permanent link">&para;</a></h3>
+<p>Close the UR10e Physics Layer opened in Step 1, and open the Robotiq 2F-140 gripper's Physics Layer. Open the file with the <code>_physics</code> suffix (e.g., <code>robotiq_2f_140_physics.usd</code>) in the gripper's asset folder.</p>
+<p>If using the Isaac Sim bundled asset, open <code>Samples &gt; Rigging &gt; Manipulator &gt; import_manipulator &gt; robotiq_2f_140 &gt; configuration &gt; robotiq_2f_140_physics.usd</code>.</p>
+<h3 id="2-2-create-a-physics-material">2-2. Create a Physics Material<a class="headerlink" href="#2-2-create-a-physics-material" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Right-click the <code>robotiq_gripper</code> (or <code>robotiq_arg2f_140_model</code> for the bundled asset) prim in the <strong>Stage</strong> panel.</p>
+</li>
+<li>
+<p>Select <strong>Create &gt; Physics &gt; Physics Material &gt; Rigid Body Material</strong>.</p>
+</li>
+<li>
+<p>Move the created <code>PhysicsMaterial</code> prim to the <strong>Looks</strong> folder:</p>
+<ul>
+<li>Drag and drop <code>PhysicsMaterial</code> into the <code>robotiq_arg2f_140_model/Looks</code> folder.</li>
+</ul>
+</li>
+<li>
+<p>Rename the material to <strong>finger</strong> (right-click &gt; Rename).</p>
+</li>
+</ol>
+<h3 id="2-3-configure-friction-coefficients">2-3. Configure Friction Coefficients<a class="headerlink" href="#2-3-configure-friction-coefficients" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Select the created <code>finger</code> material.</p>
+</li>
+<li>
+<p>Set the following friction coefficients in the <strong>Property</strong> panel:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Static Friction</strong></td>
+<td><strong>1.0</strong></td>
+<td>Static friction coefficient. Friction force before the object starts moving</td>
+</tr>
+<tr>
+<td><strong>Dynamic Friction</strong></td>
+<td><strong>1.0</strong></td>
+<td>Dynamic friction coefficient. Friction force while the object is sliding</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">About Friction Coefficient Values</p>
+<p>A friction coefficient of 1.0 represents high friction similar to rubber. Gripper fingertips require high friction — objects cannot be held with low values. Adjust within the range of 0.5 to 2.0 depending on your task.</p>
+</div>
+<h3 id="2-4-apply-the-material-to-the-gripper-fingertips">2-4. Apply the Material to the Gripper Fingertips<a class="headerlink" href="#2-4-apply-the-material-to-the-gripper-fingertips" title="Permanent link">&para;</a></h3>
+<p>Apply the created friction material to the left and right fingertip colliders of the gripper.</p>
+<ol>
+<li>
+<p>Select the <code>colliders/left_inner_finger/mesh_1/box</code> prim in the <strong>Stage</strong> panel.</p>
+</li>
+<li>
+<p>Locate the <strong>Physics &gt; Physics materials on selected models</strong> section in the <strong>Property</strong> panel.</p>
+</li>
+<li>
+<p>Select the material created earlier: <code>/World/robotiq_arg2f_140_model/Looks/finger</code>.</p>
+</li>
+<li>
+<p>Similarly, apply the same material to <code>colliders/right_inner_finger/mesh_1/box</code>.</p>
+</li>
+<li>
+<p>Save the changes with <strong>Ctrl + S</strong>.</p>
+</li>
+</ol>
+<p><img alt="Apply material to gripper fingertips" src="../images/33_apply_finger_material.png" /></p>
+<h2 id="step-3-configure-joint-effort-limits">Step 3: Configure Joint Effort Limits<a class="headerlink" href="#step-3-configure-joint-effort-limits" title="Permanent link">&para;</a></h2>
+<p>The gripper's finger_joint is the main joint that controls the gripper's open/close motion. In this step, we will set the maximum force (torque) that this joint can exert.</p>
+<p>Continue working in the Robotiq 2F-140 Physics Layer opened in Step 2.</p>
+<ol>
+<li>
+<p>Select the <code>robotiq_gripper/joints/finger_joint</code> (or <code>robotiq_arg2f_140_model/joints/finger_joint</code> for the bundled asset) prim in the <strong>Stage</strong> panel.</p>
+</li>
+<li>
+<p>Locate <strong>Max Force</strong> in the <strong>Drive &gt; Angular</strong> section of the <strong>Property</strong> panel.</p>
+</li>
+<li>
+<p>Set <strong>Max Force</strong> to <strong>200</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Max Force</strong></td>
+<td><strong>200</strong></td>
+<td>Maximum torque (N·m) that finger_joint can exert</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Save the changes with <strong>Ctrl + S</strong>.</p>
+</li>
+</ol>
+<p><img alt="Configure joint effort limits" src="../images/34_apply_finger_max_force.png" /></p>
+<div class="admonition warning">
+<p class="admonition-title">About Max Force Values</p>
+<p>Set the Max Force value according to the actual robot's torque specifications. Extremely high values may cause unstable behavior such as objects being penetrated. In such cases, increasing the physics simulation step frequency (reducing the time step) can help improve stability.</p>
+</div>
+<h2 id="step-4-inspect-the-robot-articulation">Step 4: Inspect the Robot Articulation<a class="headerlink" href="#step-4-inspect-the-robot-articulation" title="Permanent link">&para;</a></h2>
+<p>Use the Physics Inspector tool to verify that the settings from the previous steps have been applied correctly.</p>
+<h3 id="4-1-open-the-asset">4-1. Open the Asset<a class="headerlink" href="#4-1-open-the-asset" title="Permanent link">&para;</a></h3>
+<p>Open the top-level UR10e asset created in Tutorial 6 (e.g., <code>ur_gripper.usd</code>). This file references the Physics Layers modified in Steps 1–3, so the changes are automatically reflected.</p>
+<p>If using the Isaac Sim bundled asset, open <code>Samples &gt; Rigging &gt; Manipulator &gt; configure_manipulator &gt; ur10e &gt; ur &gt; ur_gripper.usd</code>.</p>
+<h3 id="4-2-launch-physics-inspector">4-2. Launch Physics Inspector<a class="headerlink" href="#4-2-launch-physics-inspector" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>From the Isaac Sim menu, select <strong>Tools &gt; Physics &gt; Physics Inspector</strong>.</p>
+</li>
+<li>
+<p>The Physics Inspector window will appear.</p>
+</li>
+</ol>
+<p><img alt="Physics Inspector window" src="../images/35_physics_inspector_window.png" /></p>
+<h3 id="4-3-verify-the-articulation">4-3. Verify the Articulation<a class="headerlink" href="#4-3-verify-the-articulation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Select the UR10e articulation (<code>ur10e</code> prim) in the <strong>Stage</strong> panel.</p>
+</li>
+<li>
+<p>Click the <strong>circular refresh icon</strong> <img alt="Refresh icon" src="../images/36_reflesh_icon.png" /> in the Physics Inspector window to load the articulation information.</p>
+</li>
+<li>
+<p>Drag the <strong>blue sliders</strong> for each joint to change the target position. Verify that the DOF (degrees of freedom) positions track the targets.</p>
+<p><img alt="Physics Inspector" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_physics_inspector.png" /></p>
+</li>
+<li>
+<p>Close the Physics Inspector window when verification is complete.</p>
+</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Physics Inspector Caveats</p>
+<p>Physics Inspector partially initializes <code>omni.physx</code>. As a result, running a simulation after using Physics Inspector may cause unexpected behavior. We recommend reloading the stage after closing Physics Inspector before running a simulation.</p>
+</div>
+<h2 id="step-5-tune-gains-with-gain-tuner">Step 5: Tune Gains with Gain Tuner<a class="headerlink" href="#step-5-tune-gains-with-gain-tuner" title="Permanent link">&para;</a></h2>
+<p>Finally, we will adjust the gains (control parameters) for each joint. Gains are important parameters that determine how quickly and accurately joints reach their target positions.</p>
+<div class="admonition note">
+<p class="admonition-title">What Are Gains?</p>
+<p>Gains are parameters for <strong>PD control</strong> (Proportional-Derivative control) of joints.</p>
+<ul>
+<li><strong>Stiffness (P gain)</strong>: Determines how strongly the joint tries to return to its target position when displaced.</li>
+<li><strong>Damping (D gain)</strong>: Determines the strength of the force that suppresses joint oscillations.</li>
+</ul>
+<p>If these values are not properly set, the robot may fail to reach its target position or may oscillate.</p>
+</div>
+<h3 id="5-1-launch-gain-tuner">5-1. Launch Gain Tuner<a class="headerlink" href="#5-1-launch-gain-tuner" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>From the Isaac Sim menu, select <strong>Tools &gt; Robotics &gt; Asset Editors &gt; Gain Tuner</strong>.</p>
+</li>
+<li>
+<p>The Gain Tuner window will appear.</p>
+</li>
+</ol>
+<h3 id="5-2-select-the-robot">5-2. Select the Robot<a class="headerlink" href="#5-2-select-the-robot" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>From the <strong>Robot Selection</strong> dropdown, select the <strong>ur10e</strong> articulation.</p>
+</li>
+<li>
+<p>All robot joints will be displayed in a list.</p>
+</li>
+</ol>
+<h3 id="5-3-adjust-gains">5-3. Adjust Gains<a class="headerlink" href="#5-3-adjust-gains" title="Permanent link">&para;</a></h3>
+<p>In the <strong>Tune Gains</strong> panel, adjust the joint gains. Switch from <strong>Stiffness</strong> (default) to <strong>Natural Frequency</strong> mode to set gains using <strong>Natural Frequency</strong> and <strong>Damping Ratio</strong>.</p>
+<p>The following critical damping configuration is recommended:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Recommended Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nat. Freq.</strong></td>
+<td><strong>100.0</strong></td>
+<td>Natural frequency. Controls response speed</td>
+</tr>
+<tr>
+<td><strong>Damping Ratio</strong></td>
+<td><strong>1.0</strong></td>
+<td>Damping ratio. 1.0 achieves critical damping (fastest response without oscillation)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">What Is Critical Damping?</p>
+<p>A state where Damping Ratio = 1.0 is called <strong>critical damping</strong>. This is the state that reaches the target position the fastest without oscillation. A Damping Ratio below 1.0 causes oscillation (overshoot), while above 1.0 results in slower response.</p>
+</div>
+<p><img alt="Gain tuning" src="../images/37_gain_tuner_setting.png" /></p>
+<h3 id="5-4-test-the-gains">5-4. Test the Gains<a class="headerlink" href="#5-4-test-the-gains" title="Permanent link">&para;</a></h3>
+<p>Test the configured gains in the <strong>Test Gains Settings</strong> panel. With the simulation running (press the <strong>Play</strong> button), click the <strong>RUN TEST</strong> button to test each joint's motion.</p>
+<p><img alt="Gain Tuner" src="../images/38_gain_tuner_test.png" /></p>
+<h3 id="5-5-gain-tuning-tips">5-5. Gain Tuning Tips<a class="headerlink" href="#5-5-gain-tuning-tips" title="Permanent link">&para;</a></h3>
+<p>If gain tuning is not working as expected, refer to the following guidelines:</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does not reach target position (undershoot)</td>
+<td>Slightly increase <strong>Nat. Freq.</strong></td>
+</tr>
+<tr>
+<td>Oscillates past target position (overshoot)</td>
+<td>Decrease <strong>Nat. Freq.</strong> or increase <strong>Damping Ratio</strong></td>
+</tr>
+<tr>
+<td>Movement is too slow</td>
+<td>Increase <strong>Nat. Freq.</strong></td>
+</tr>
+<tr>
+<td>Gain effects are hard to observe</td>
+<td>Disable gravity during testing to make gain effects easier to see</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Effective Testing Methods</p>
+<ul>
+<li>Test joint groups that are expected to move together (e.g., all gripper joints) as a group.</li>
+<li>Adjust the Maximum Speed for slowly-moving joints.</li>
+<li>Use the <strong>Sequence</strong> dropdown to customize the joint testing order.</li>
+</ul>
+</div>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This tutorial covered the following topics:</p>
+<ol>
+<li><strong>Articulation solver settings</strong>: Adjusted iteration counts and sleep thresholds to improve simulation accuracy for multi-DOF robots</li>
+<li><strong>Physics materials (friction)</strong>: Applied high-friction materials to gripper fingertips to stabilize object grasping</li>
+<li><strong>Joint effort limits</strong>: Set Max Force for finger_joint to ensure appropriate gripping force</li>
+<li><strong>Articulation inspection with Physics Inspector</strong>: Visually verified joint target tracking</li>
+<li><strong>Joint gain tuning with Gain Tuner</strong>: Optimized PD gains using Natural Frequency and Damping Ratio</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Reference Asset</p>
+<p>The fully configured asset can be found in the Content browser at <code>Samples &gt; Rigging &gt; Manipulator &gt; configure_manipulator &gt; ur10e &gt; ur &gt; ur_gripper.usd</code>.</p>
+</div>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Proceed to the next tutorial, "<a href="../08_generate_robot_config/">Generate Robot Configuration File</a>", to learn how to generate configuration files for kinematics solvers.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/extra.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
