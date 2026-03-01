@@ -52,8 +52,8 @@ title: 基本ロボットのアーティキュレーション
 2. 右クリックして **Create > Physics > Joints > Revolute Joint** を選択します。
 3. ステージツリーに追加された **RevoluteJoint** を右クリックして **Rename** を選び、**wheel_joint_left** にリネームします。
 4. **Property** タブで以下を確認します：
-    - **Body 0**: body のキューブ（Cube）が設定されていること
-    - **Body 1**: wheel_left のシリンダー（Cylinder）が設定されていること
+    - **Body 0**: body Xformのパスが設定されていること
+    - **Body 1**: wheel_left Xformのパスが設定されていること
 
 ### ジョイントの回転軸の設定
 
@@ -90,7 +90,7 @@ title: 基本ロボットのアーティキュレーション
 3. **Physics > Angular Drive** を選択します。
 4. 追加された **Angular Drive** セクションで、以下のパラメータを設定します：
     - **Damping**: `1e4`（10000）
-    - **Target Velocity**: `200`（rad/s）
+    - **Target Velocity**: `200`（deg/s）
 
 !!! note "Damping と Stiffness の違い"
     - **Damping（減衰）** を設定すると **速度制御** になります。目標速度に向かって駆動力が働きます。

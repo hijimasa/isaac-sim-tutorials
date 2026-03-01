@@ -89,8 +89,8 @@ title: シンプルなロボットの組み立て
 1. メニューバーの **Create > Physics > Physics Material** をクリックします。
 2. ポップアップで **Rigid Body Material** を選択します。
 3. Property タブで摩擦係数（friction coefficients）や反発係数（restitution）などのパラメータを調整します。
-4. ステージツリーでオブジェクトを選択します。
-5. **Property** タブ内の **Materials on Selected Model** を見つけます。
+4. ステージツリーで先程生成したCubeやCylinderを選択します。
+5. **Property > Physics** タブ内の **Physics materials on selected models** を見つけます。
 6. ドロップダウンメニューから作成したマテリアルを選択して割り当てます。
 
     ![マテリアル](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_materials.png)
@@ -101,9 +101,9 @@ title: シンプルなロボットの組み立て
 
 1. メニューバーの **Create > Materials > OmniPBR** をクリックする動作を3セット行って、3つのマテリアルを作成します。
 2. 作成されたマテリアルを右クリックして、それぞれ **ground** と **body** 、 **wheel** にリネームします。
-3. 作成した**body**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **base color** を**RGB: (0.1, 1.0, 0.1)**変更します。
+3. 作成した**body**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **Albedo Color** を**RGB: (0.1, 1.0, 0.1)**変更します。
 4. 反射率（reflectivity）、粗さ（roughness）などのプロパティも必要に応じて調整します。
-5. 作成した**wheel**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **base color** を**RGB: (0.1, 0.1, 1.0)**変更します。
+5. 作成した**wheel**マテリアルを選択して、**Property** タブの**Material and Shader / Albedo** のセクションで **Albedo Color** を**RGB: (0.1, 0.1, 1.0)**変更します。
 6. 反射率（reflectivity）、粗さ（roughness）などのプロパティも必要に応じて調整します。
 7. **GroundPlane** Xfromを選択し、**Property** タブの **Materials on selected models** から**ground**マテリアルを割り当てます。
 8. **body** Xfromを選択し、**Property** タブの **Materials on selected models** から**body**マテリアルを割り当てます。

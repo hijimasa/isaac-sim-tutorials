@@ -52,8 +52,8 @@ First, create a Scope to organize and store the joints.
 2. Right-click and select **Create > Physics > Joints > Revolute Joint**.
 3. Right-click the **RevoluteJoint** added to the stage tree, select **Rename**, and rename it to **wheel_joint_left**.
 4. Verify the following in the **Property** tab:
-    - **Body 0**: The body's Cube is set
-    - **Body 1**: The wheel_left's Cylinder is set
+    - **Body 0**: The body Xform's path is set
+    - **Body 1**: The wheel_left Xform's path is set
 
 ### Configuring the Joint Rotation Axis
 
@@ -90,7 +90,7 @@ Joint drives provide driving force to joints. Here we add drives to control the 
 3. Select **Physics > Angular Drive**.
 4. In the added **Angular Drive** section, set the following parameters:
     - **Damping**: `1e4` (10000)
-    - **Target Velocity**: `200` (rad/s)
+    - **Target Velocity**: `200` (deg/s)
 
 !!! note "Difference between Damping and Stiffness"
     - Setting **Damping** enables **velocity control**. Driving force is applied toward the target velocity.

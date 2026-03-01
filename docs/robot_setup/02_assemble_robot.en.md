@@ -90,7 +90,7 @@ In this tutorial, you will use GUI operations to build the basic structure of a 
 2. Select **Rigid Body Material** in the popup.
 3. Tune parameters such as friction coefficients and restitution in the Property tab.
 4. Select an object in the stage tree.
-5. Find **Materials on Selected Model** in the **Property** tab.
+5. Find **physics materials on selected models** in the **Property > Physics** tab.
 6. Select the desired material from the dropdown menu to assign it.
 
     ![Materials](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_materials.png)
@@ -101,9 +101,9 @@ In this tutorial, you will use GUI operations to build the basic structure of a 
 
 1. Click **Create > Materials > OmniPBR** from the menu bar three times to create three materials.
 2. Right-click the newly created materials and rename them to **ground**, **body**, and **wheel** respectively.
-3. Select the **body** material and change the **base color** to **RGB: (0.1, 1.0, 0.1)** in the **Material and Shader / Albedo** section of the **Property** tab.
+3. Select the **body** material and change the **Albedo Color** to **RGB: (0.1, 1.0, 0.1)** in the **Material and Shader / Albedo** section of the **Property** tab.
 4. Adjust reflectivity, roughness, and other properties as needed.
-5. Select the **wheel** material and change the **base color** to **RGB: (0.1, 0.1, 1.0)** in the **Material and Shader / Albedo** section of the **Property** tab.
+5. Select the **wheel** material and change the **Albedo Color** to **RGB: (0.1, 0.1, 1.0)** in the **Material and Shader / Albedo** section of the **Property** tab.
 6. Adjust reflectivity, roughness, and other properties as needed.
 7. Select the **GroundPlane** Xform and assign the **ground** material from **Materials on selected models** in the **Property** tab.
 8. Select the **body** Xform and assign the **body** material from **Materials on selected models** in the **Property** tab.
