@@ -141,6 +141,18 @@ Tutorials for creating and editing graphs using OmniGraph.
 
 </div>
 
+<div class="tutorial-card" markdown>
+
+<span class="card-icon">:material-wrench:</span>
+
+### Troubleshooting
+
+Common issues and solutions when using Isaac Sim.
+
+[View Solutions](troubleshooting/index.md){.card-link}
+
+</div>
+
 </div>
 
 ## Quick Start

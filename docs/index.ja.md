@@ -141,6 +141,18 @@ OmniGraph を使ったグラフ作成・編集チュートリアル。
 
 </div>
 
+<div class="tutorial-card" markdown>
+
+<span class="card-icon">:material-wrench:</span>
+
+### トラブルシューティング
+
+Isaac Sim を使用する際によくある問題とその解決方法をまとめています。
+
+[解決方法を見る](troubleshooting/index.md){.card-link}
+
+</div>
+
 </div>
 
 ## クイックスタート

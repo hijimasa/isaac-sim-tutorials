@@ -134,6 +134,8 @@ plugins:
               - motion_generation/index.md
             - OmniGraph:
               - omnigraph/index.md
+            - トラブルシューティング:
+              - troubleshooting/index.md
         - locale: en
           default: true
           name: English
@@ -185,6 +187,8 @@ plugins:
               - motion_generation/index.md
             - OmniGraph:
               - omnigraph/index.md
+            - Troubleshooting:
+              - troubleshooting/index.md
 
 extra:
   social:
