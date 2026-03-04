@@ -201,6 +201,9 @@ Import the URDF files generated in Step 1 into Isaac Sim.
     - Set the **Natural Frequency** to **300** for **finger_joint**
     - Set the **Natural Frequency** to **2500** for all other joints
 
+    !!! warning "Check all joints"
+        Some joints may not be visible in the **Joint Configuration** section, so scroll down and verify that the **Natural Frequency** has been set for all joints including the last one.
+
     !!! note "Automatic Mimic Joint Recognition"
         The Direct URDF Importer automatically reads `<mimic>` tags from the URDF. Mimic joints (joints that follow finger_joint) will have their Target Type automatically set to **"Mimic"**. Reference Joint and gear ratio settings are automatically extracted from the URDF, so no manual configuration is needed.
 

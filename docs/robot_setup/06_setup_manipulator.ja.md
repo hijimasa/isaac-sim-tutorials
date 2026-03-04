@@ -201,6 +201,9 @@ sed -i 's|package://robotiq_description/|../|g' urdf/robotiq_2f_140.urdf
     - **finger_joint** の **Natural Frequency** を **300** に設定
     - **finger_joint** 以外のジョイントの **Natural Frequency** を **2500** に設定
 
+    !!! warning "設定の見落とし注意"
+        **Joint Configuration** セクションで一部のジョイントしか見えないことがあるので、スクロールして最後のジョイントまで **Natural Frequency** が設定されていることを確認してください。
+
     !!! note "Mimic ジョイントの自動認識"
         Direct URDF Importer は、URDF 内の `<mimic>` タグを自動的に読み取ります。Mimic ジョイント（finger_joint に連動するジョイント）は Target Type が自動的に **"Mimic"** に設定されます。Reference Joint やギア比などの設定は URDF から自動的に取得されるため、手動で設定する必要はありません。
 

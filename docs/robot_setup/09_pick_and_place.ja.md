@@ -86,10 +86,23 @@ ur10e_pick_place/
 そこで、Isaac Sim の **Save As** 機能を使い、参照パスが正しく解決される新しい USD ファイルとしてプロジェクトディレクトリに保存します：
 
 1. Isaac Sim で `ur_gripper.usd` を開く
-2. メニューから **File > Save As...** を選択
-3. 保存先をプロジェクトディレクトリ（`ur10e_pick_place/`）に指定し、ファイル名を `ur_gripper.usd` として保存
+2. **Stage** パネルで以下のジョイントの **Target Position** を設定する：
 
-    ! [アセットの配置](images/46_save_copy.png)
+    | ジョイント | Target Position | 説明 |
+    |---|---|---|
+    | `shoulder_lift_joint` | `-10.0` deg | 肩を少し上向きに傾ける |
+    | `elbow_joint` | `10.0` deg | 肘を少し上向きに曲げる |
+
+    ![sholder_lift_jointの設定](images/47_setting_sholder_lift_joint.png)
+
+    ![elbow_jointの設定](images/48_setting_elbow_joint.png)
+
+    これにより、シミュレーション開始時にロボットの肘が地面方向に曲がっていくことを防ぎます。
+
+3. メニューから **File > Save As...** を選択
+4. 保存先をプロジェクトディレクトリ（`ur10e_pick_place/`）に指定し、ファイル名を `ur_gripper.usd` として保存
+
+    ![アセットの配置](images/46_save_copy.png)
 
 Save As で保存すると、参照先ファイル（Physics Layer など）への相対パスが新しい保存先に合わせて自動的に更新されます。
 

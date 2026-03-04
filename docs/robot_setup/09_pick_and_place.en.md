@@ -86,8 +86,17 @@ The `ur_gripper.usd` created in Tutorial 7 references other files (Physics Layer
 Use Isaac Sim's **Save As** function to save a new USD file with correctly resolved reference paths in the project directory:
 
 1. Open `ur_gripper.usd` in Isaac Sim
-2. Select **File > Save As...** from the menu
-3. Set the save location to your project directory (`ur10e_pick_place/`) and save with the filename `ur_gripper.usd`
+2. In the **Stage** panel, set the **Target Position** for the following joints:
+
+    | Joint | Target Position | Description |
+    |---|---|---|
+    | `shoulder_lift_joint` | `-10.0` deg | Tilt the shoulder slightly upward |
+    | `elbow_joint` | `10.0` deg | Bend the elbow slightly upward |
+
+    This prevents the robot's elbow from bending toward the ground when the simulation starts.
+
+3. Select **File > Save As...** from the menu
+4. Set the save location to your project directory (`ur10e_pick_place/`) and save with the filename `ur_gripper.usd`
 
     ![Placing the asset](images/46_save_copy.png)
 
