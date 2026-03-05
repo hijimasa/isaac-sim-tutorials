@@ -95,6 +95,9 @@ Use Isaac Sim's **Save As** function to save a new USD file with correctly resol
 
     This prevents the robot's elbow from bending toward the ground when the simulation starts.
 
+    !!! tip "Incorporating the ground plane into motion planning"
+        RMPFlow provides an API method `rmpflow.add_ground_plane()` that adds the ground plane to the collision world so the motion planner can automatically avoid it. However, as of Isaac Sim 5.1.0, this API does not produce the expected ground avoidance behavior. Therefore, this tutorial uses initial joint angle settings as a workaround.
+
 3. Select **File > Save As...** from the menu
 4. Set the save location to your project directory (`ur10e_pick_place/`) and save with the filename `ur_gripper.usd`
 
