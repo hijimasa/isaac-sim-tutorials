@@ -47,3 +47,6 @@ This tutorial introduces the concepts of the core API and how to use it. We star
 
 !!! example "[Tutorial 8: Data Logging](08_data_logging.md)"
     Learn how to record, save, and replay simulation data using the DataLogger class.
+
+!!! example "[Tutorial 9: Deformable Body](09_deformable_body.md)"
+    Learn how to create deformable objects using the Deformable Body (Beta) feature and configure physics materials.
