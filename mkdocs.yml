@@ -101,6 +101,7 @@ plugins:
               - 複数タスクの実行: core_api/06_multiple_tasks.md
               - 属性の追加: core_api/07_adding_props.md
               - データロギング: core_api/08_data_logging.md
+              - 変形可能物体（Deformable Body）: core_api/09_deformable_body.md
             - ロボットセットアップ:
               - robot_setup/index.md
               - ステージのセットアップ: robot_setup/01_stage_setup.md
@@ -154,6 +155,7 @@ plugins:
               - Multiple Tasks: core_api/06_multiple_tasks.md
               - Adding Props: core_api/07_adding_props.md
               - Data Logging: core_api/08_data_logging.md
+              - Deformable Body: core_api/09_deformable_body.md
             - Robot Setup:
               - robot_setup/index.md
               - Stage Setup: robot_setup/01_stage_setup.md
