@@ -46,6 +46,8 @@ To use Deformable Body, you first need to enable the feature in Isaac Sim's sett
 
 2. In the **Physics > General** section, turn on **Enable Deformable schema Beta (Requires Restart)**.
 
+    ![Enabling Deformable schema](images/19_enable_deformable_schema.png)
+
 3. **Restart** Isaac Sim.
 
 !!! tip "Visualizing Deformable Meshes (Recommended)"
@@ -59,7 +61,7 @@ Create a new stage and prepare it for physics simulation.
 
 2. From the top menu, select **Create > Physics > Ground Plane** to add a ground plane.
 
-3. Select **Create > Physics > Simulation Scene** to add a physics scene (some templates may already include one).
+3. Select **Create > Physics > Physics Scene** to add a physics scene (some templates may already include one).
 
 4. Select the created **PhysicsScene** in the Stage window and configure the following settings in the Properties panel:
 
@@ -85,12 +87,16 @@ First, create the root Xform for the deformable object and a sufficiently subdiv
 
 4. Increase the **U/V/W Verts Scale** values (e.g., `10` to `30`).
 
+    ![Mesh Settings dialog](images/20_mesh_generation_settings.png)
+
     !!! warning "About Mesh Subdivision"
         If the subdivision count is too low, deformation will not be visually noticeable. Start with values around 10-30. You can fine-tune the values with Ctrl + left-click.
 
 5. Click the **Create** button to generate the mesh.
 
 6. **Drag-and-drop** the generated mesh as a child of `/World/DeformPlate`.
+
+    ![Creating the mesh](images/21_create_mesh.png)
 
 ### Step 2: Applying Volume Deformable
 
@@ -100,7 +106,11 @@ Apply deformable physics properties to the created mesh.
 
 8. Right-click and select **Create > Physics > Deformable (beta) > Volume**.
 
+    ![Creating Volume Deformable Body](images/22_add_deformable_attr.png)
+
 9. A dialog will appear. If needed, turn on **Hexahedral Simulation Mesh** (to generate a separate simulation mesh for improved stability).
+
+    ![Create Volume Deformable Body dialog](images/23_deformable_settings.png)
 
 10. Click the **Create** button.
 
@@ -112,6 +122,8 @@ Apply deformable physics properties to the created mesh.
 
     **Result:** The deformable object falls to the ground and deforms upon collision.
 
+    ![Deformable Cube test](images/24_deformable_cube_test.webp)
+
 13. Press the **STOP** button to stop the simulation.
 
 ## Pattern 2: Creating a Deformable Object from an External Mesh
@@ -122,7 +134,9 @@ You can create deformable objects with arbitrary shapes by importing external me
 
 To use an external mesh in Isaac Sim, you first need to convert it to USD format.
 
-1. From the top menu, select **File > Import** and use the CAD Converter to import the mesh file.
+1. From the top menu, select **File > Import** and use the CAD Converter to import the mesh file. The following images and videos use a [sample file](test_mesh/test.gltf).
+
+    ![Import Mesh](images/30_import_settings.png)
 
     !!! note "Checking the Scale"
         STL files often do not contain unit information. After importing, always verify the scale (in meters).
@@ -143,12 +157,16 @@ Use Volume Deformable when the mesh is a closed solid shape (watertight).
 
 5. If needed, specify the target mesh in the **Source Mesh** field of the dialog.
 
+    ![Creating Deformable Body](images/25_create_deformable_body.png)
+
     !!! tip "About Source Mesh"
         You can specify a Source Mesh separate from the rendering mesh for generating the simulation mesh. The Source Mesh can be a mesh located outside the Deformable subtree.
 
 6. Click the **Create** button.
 
 7. Raise the object in the Z direction and press **PLAY** to verify the behavior.
+
+    ![Deformable Mesh test](images/26_deformable_mesh_test.webp)
 
 #### For Thin Membranes or Surface-Only Shapes → Surface Deformable
 
@@ -173,6 +191,8 @@ The physical properties of deformable objects (stiffness, elasticity, etc.) are 
 
 2. In the dialog that appears, select **Deformable Body Material** and click **OK**.
 
+    ![Creating Deformable Material](images/27_create_deformable_material.png)
+
 ### Step 2: Setting Parameters
 
 Adjust the following parameters in the Properties panel of the created physics material:
@@ -192,6 +212,12 @@ Adjust the following parameters in the Properties panel of the created physics m
 3. Select the deformable object (the Deformable root Xform or related Prim).
 
 4. In the Properties panel, select the created Deformable Body Material from the **Physics Materials on Selected …** section to assign it.
+
+    ![Assigning the material](images/28_select_deformable_material.png)
+
+5. Press the **PLAY** button to verify the behavior.
+
+    ![Deformable Material test](images/26_deformable_mesh_test.webp)
 
 ## Summary
 
