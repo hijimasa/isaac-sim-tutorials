@@ -90,10 +90,22 @@ cd Universal_Robots_ROS2_Description
 
 XACRO ファイル内の `$(find ur_description)` は ROS のパッケージ検索機能を使ったパス指定です。ROS 2 がインストールされていない環境では解決できないため、クローンしたリポジトリの絶対パスに置き換えます：
 
-```bash
-# $(find ur_description) をリポジトリの絶対パスに置き換え
-sed -i "s|\$(find ur_description)|$(pwd)|g" urdf/ur.urdf.xacro urdf/ur_macro.xacro
-```
+=== "Linux / macOS"
+
+    ```bash
+    # $(find ur_description) をリポジトリの絶対パスに置き換え
+    sed -i "s|\$(find ur_description)|$(pwd)|g" urdf/ur.urdf.xacro urdf/ur_macro.xacro
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    # $(find ur_description) をリポジトリの絶対パスに置き換え
+    $repoPath = (Get-Location).Path -replace '\\', '/'
+    foreach ($file in @("urdf/ur.urdf.xacro", "urdf/ur_macro.xacro")) {
+        (Get-Content $file) -replace '\$\(find ur_description\)', $repoPath | Set-Content $file
+    }
+    ```
 
 !!! note "\$(find パッケージ名) とは"
     `$(find パッケージ名)` は ROS の XACRO で使われる構文で、指定した ROS パッケージのインストールパスに展開されます。ROS 環境外で XACRO を使う場合は、このように実際のパスに手動で置き換える必要があります。
@@ -108,9 +120,17 @@ xacro urdf/ur.urdf.xacro ur_type:=ur10e name:=ur10e > urdf/ur10e.urdf
 
 生成された URDF ファイル内のメッシュパスは `package://ur_description/...` 形式になっています。Isaac Sim の URDF Importer が正しくメッシュを読み込めるよう、相対パスに変換します：
 
-```bash
-sed -i 's|package://ur_description/|../|g' urdf/ur10e.urdf
-```
+=== "Linux / macOS"
+
+    ```bash
+    sed -i 's|package://ur_description/|../|g' urdf/ur10e.urdf
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    (Get-Content urdf/ur10e.urdf) -replace 'package://ur_description/', '../' | Set-Content urdf/ur10e.urdf
+    ```
 
 変換後、メッシュパスは以下のように相対パスになります：
 
@@ -147,9 +167,20 @@ cd ros2_robotiq_gripper/robotiq_description
 
 UR10e と同様に、`$(find robotiq_description)` をリポジトリの絶対パスに置き換えます：
 
-```bash
-sed -i "s|\$(find robotiq_description)|$(pwd)|g" urdf/robotiq_2f_140_gripper.urdf.xacro urdf/robotiq_2f_140_macro.urdf.xacro
-```
+=== "Linux / macOS"
+
+    ```bash
+    sed -i "s|\$(find robotiq_description)|$(pwd)|g" urdf/robotiq_2f_140_gripper.urdf.xacro urdf/robotiq_2f_140_macro.urdf.xacro
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    $repoPath = (Get-Location).Path -replace '\\', '/'
+    foreach ($file in @("urdf/robotiq_2f_140_gripper.urdf.xacro", "urdf/robotiq_2f_140_macro.urdf.xacro")) {
+        (Get-Content $file) -replace '\$\(find robotiq_description\)', $repoPath | Set-Content $file
+    }
+    ```
 
 #### XACRO から URDF への変換
 
@@ -161,9 +192,17 @@ xacro urdf/robotiq_2f_140_gripper.urdf.xacro include_ros2_control:=false > urdf/
 
 #### メッシュパスの書き換え
 
-```bash
-sed -i 's|package://robotiq_description/|../|g' urdf/robotiq_2f_140.urdf
-```
+=== "Linux / macOS"
+
+    ```bash
+    sed -i 's|package://robotiq_description/|../|g' urdf/robotiq_2f_140.urdf
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    (Get-Content urdf/robotiq_2f_140.urdf) -replace 'package://robotiq_description/', '../' | Set-Content urdf/robotiq_2f_140.urdf
+    ```
 
 !!! tip "変換済み URDF の参考ファイル"
     パス変更が上手くいかない場合は、Isaac Sim の Content ブラウザの `import_manipulator/robotiq_2f_140_urdf/urdf/robotiq_2f_140.urdf` に変換済みの URDF ファイルが用意されています。

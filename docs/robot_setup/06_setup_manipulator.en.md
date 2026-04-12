@@ -90,10 +90,22 @@ cd Universal_Robots_ROS2_Description
 
 The `$(find ur_description)` in the XACRO files uses ROS's package search mechanism. Since ROS 2 is not installed, replace it with the absolute path to the cloned repository:
 
-```bash
-# Replace $(find ur_description) with the repository's absolute path
-sed -i "s|\$(find ur_description)|$(pwd)|g" urdf/ur.urdf.xacro urdf/ur_macro.xacro
-```
+=== "Linux / macOS"
+
+    ```bash
+    # Replace $(find ur_description) with the repository's absolute path
+    sed -i "s|\$(find ur_description)|$(pwd)|g" urdf/ur.urdf.xacro urdf/ur_macro.xacro
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    # Replace $(find ur_description) with the repository's absolute path
+    $repoPath = (Get-Location).Path -replace '\\', '/'
+    foreach ($file in @("urdf/ur.urdf.xacro", "urdf/ur_macro.xacro")) {
+        (Get-Content $file) -replace '\$\(find ur_description\)', $repoPath | Set-Content $file
+    }
+    ```
 
 !!! note "What is \$(find package_name)?"
     `$(find package_name)` is a syntax used in ROS XACRO files that expands to the install path of the specified ROS package. When using XACRO outside a ROS environment, you need to manually replace it with the actual path.
@@ -108,9 +120,17 @@ xacro urdf/ur.urdf.xacro ur_type:=ur10e name:=ur10e > urdf/ur10e.urdf
 
 The mesh paths in the generated URDF file use the `package://ur_description/...` format. Convert them to relative paths so that Isaac Sim's URDF Importer can locate the meshes correctly:
 
-```bash
-sed -i 's|package://ur_description/|../|g' urdf/ur10e.urdf
-```
+=== "Linux / macOS"
+
+    ```bash
+    sed -i 's|package://ur_description/|../|g' urdf/ur10e.urdf
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    (Get-Content urdf/ur10e.urdf) -replace 'package://ur_description/', '../' | Set-Content urdf/ur10e.urdf
+    ```
 
 After conversion, mesh paths will look like this:
 
@@ -147,9 +167,20 @@ cd ros2_robotiq_gripper/robotiq_description
 
 Similar to UR10e, replace `$(find robotiq_description)` with the repository's absolute path:
 
-```bash
-sed -i "s|\$(find robotiq_description)|$(pwd)|g" urdf/robotiq_2f_140_gripper.urdf.xacro urdf/robotiq_2f_140_macro.urdf.xacro
-```
+=== "Linux / macOS"
+
+    ```bash
+    sed -i "s|\$(find robotiq_description)|$(pwd)|g" urdf/robotiq_2f_140_gripper.urdf.xacro urdf/robotiq_2f_140_macro.urdf.xacro
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    $repoPath = (Get-Location).Path -replace '\\', '/'
+    foreach ($file in @("urdf/robotiq_2f_140_gripper.urdf.xacro", "urdf/robotiq_2f_140_macro.urdf.xacro")) {
+        (Get-Content $file) -replace '\$\(find robotiq_description\)', $repoPath | Set-Content $file
+    }
+    ```
 
 #### Convert XACRO to URDF
 
@@ -161,9 +192,17 @@ xacro urdf/robotiq_2f_140_gripper.urdf.xacro include_ros2_control:=false > urdf/
 
 #### Replace Mesh Paths
 
-```bash
-sed -i 's|package://robotiq_description/|../|g' urdf/robotiq_2f_140.urdf
-```
+=== "Linux / macOS"
+
+    ```bash
+    sed -i 's|package://robotiq_description/|../|g' urdf/robotiq_2f_140.urdf
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    (Get-Content urdf/robotiq_2f_140.urdf) -replace 'package://robotiq_description/', '../' | Set-Content urdf/robotiq_2f_140.urdf
+    ```
 
 !!! tip "Pre-converted URDF reference file"
     If you have trouble with the path changes, a pre-converted URDF file is available in Isaac Sim's Content browser at `import_manipulator/robotiq_2f_140_urdf/urdf/robotiq_2f_140.urdf`.
