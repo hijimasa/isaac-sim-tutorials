@@ -206,7 +206,7 @@ for prim in stage.Traverse():
 gripper = ParallelGripper(
     end_effector_prim_path="/ur10e/ee_link/robotiq_140_base_link",
     # If using existing assets:
-    # end_effector_prim_path="/ur10e/ee_link/robotiq_arg2f_base_link",
+    # end_effector_prim_path="/ur/ee_link/robotiq_arg2f_base_link",
     joint_prim_names=["finger_joint"],
     joint_opened_positions=np.array([0]),
     joint_closed_positions=np.array([40]),
@@ -221,7 +221,7 @@ my_ur10 = my_world.scene.add(
         name="ur10_robot",
         end_effector_prim_path="/ur10e/ee_link/robotiq_140_base_link",
         # If using existing assets:
-        # end_effector_prim_path="/ur10e/ee_link/robotiq_arg2f_base_link",
+        # end_effector_prim_path="/ur/ee_link/robotiq_arg2f_base_link",
         gripper=gripper,
     )
 )
@@ -278,7 +278,7 @@ All Isaac Sim standalone scripts start by initializing `SimulationApp`. Setting 
 gripper = ParallelGripper(
     end_effector_prim_path="/ur10e/ee_link/robotiq_140_base_link",
     # If using existing assets:
-    # end_effector_prim_path="/ur10e/ee_link/robotiq_arg2f_base_link",
+    # end_effector_prim_path="/ur/ee_link/robotiq_arg2f_base_link",
     joint_prim_names=["finger_joint"],
     joint_opened_positions=np.array([0]),
     joint_closed_positions=np.array([40]),
@@ -428,7 +428,7 @@ class FollowTarget(tasks.FollowTarget):
         gripper = ParallelGripper(
             end_effector_prim_path="/ur10e/ee_link/robotiq_140_base_link",
             # If using existing assets:
-            # end_effector_prim_path="/ur10e/ee_link/robotiq_arg2f_base_link",
+            # end_effector_prim_path="/ur/ee_link/robotiq_arg2f_base_link",
             joint_prim_names=["finger_joint"],
             joint_opened_positions=np.array([0]),
             joint_closed_positions=np.array([40]),
@@ -441,7 +441,7 @@ class FollowTarget(tasks.FollowTarget):
             name="ur10_robot",
             end_effector_prim_path="/ur10e/ee_link/robotiq_140_base_link",
             # If using existing assets:
-            # end_effector_prim_path="/ur10e/ee_link/robotiq_arg2f_base_link",
+            # end_effector_prim_path="/ur/ee_link/robotiq_arg2f_base_link",
             gripper=gripper,
         )
         return manipulator
@@ -885,7 +885,7 @@ class PickPlace(tasks.PickPlace):
         gripper = ParallelGripper(
             end_effector_prim_path="/ur10e/ee_link/robotiq_140_base_link",
             # If using existing assets:
-            # end_effector_prim_path="/ur10e/ee_link/robotiq_arg2f_base_link",
+            # end_effector_prim_path="/ur/ee_link/robotiq_arg2f_base_link",
             joint_prim_names=["finger_joint"],
             joint_opened_positions=np.array([0]),
             joint_closed_positions=np.array([40]),
@@ -898,7 +898,7 @@ class PickPlace(tasks.PickPlace):
             name="ur10_robot",
             end_effector_prim_path="/ur10e/ee_link/robotiq_140_base_link",
             # If using existing assets:
-            # end_effector_prim_path="/ur10e/ee_link/robotiq_arg2f_base_link",
+            # end_effector_prim_path="/ur/ee_link/robotiq_arg2f_base_link",
             gripper=gripper,
             position=np.array([0, 0, 0.5]),
         )
