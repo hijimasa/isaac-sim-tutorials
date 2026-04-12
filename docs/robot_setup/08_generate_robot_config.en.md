@@ -38,12 +38,12 @@ In this tutorial, we will generate configuration files using two tools:
 
 ### Assets Used
 
-We will use the assets created in Tutorial 7. If you have not completed it yet, you can use the sample assets included with Isaac Sim. Access them from the **Content** tab at the bottom-right of the screen:
+We will use the assets created in Tutorial 7. If you have not completed it yet, you can use the sample assets included with Isaac Sim. Access them from the **Content** tab at the bottom-left of the screen:
 
 | Asset | Path | Purpose |
 |---|---|---|
 | **Configured asset** | `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur > ur_gripper.usd` | Completed asset from Tutorial 7 |
-| **Lula-ready asset** | `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur > ur_gripper_lula.usd` | Asset with Instantiable disabled (used in Step 2) |
+| **Lula-ready asset** | `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur > ur_gripper_lula.usd` | Asset with Instanceable disabled (used in Step 2) |
 
 ## Step 1: Generate the Robot URDF
 
@@ -112,9 +112,9 @@ First, we generate a URDF file from the USD asset. The URDF is required as input
 
 ![Enabling the Lula extension](images/41_enable_lula_extension.png)
 
-### 2-2. Prepare the Asset (Disable Instantiable Meshes)
+### 2-2. Prepare the Asset (Disable Instanceable Meshes)
 
-The Lula Robot Description Editor does not support **Instantiable meshes**. Meshes imported from URDF may have Instantiable enabled, so it must be disabled beforehand.
+The Lula Robot Description Editor does not support **Instanceable meshes**. Meshes imported from URDF may have Instanceable enabled, so it must be disabled beforehand.
 
 1. If not already open, open the `ur_gripper.usd` asset.
 
@@ -123,12 +123,12 @@ The Lula Robot Description Editor does not support **Instantiable meshes**. Mesh
     !!! tip "Efficient selection method"
         Use the search feature in the Stage panel to search for `visuals` or `collisions` to quickly locate the target prims.
 
-3. In the **Property** panel, uncheck the **Instantiable** field.
+3. In the **Property** panel, uncheck the **Instanceable** field.
 
-    ![Disabling Instantiable meshes](images/42_disable_instantiable_mesh.png)
+    ![Disabling Instanceable meshes](images/42_disable_instantiable_mesh.png)
 
-    !!! tip "Can't find the Instantiable field?"
-        The selected meshes may include a mix of prims with Instantiable enabled and disabled. Select carefully to avoid mixing them.
+    !!! tip "Can't find the Instanceable field?"
+        The selected meshes may include a mix of prims with Instanceable enabled and disabled. Select carefully to avoid mixing them.
 
 4. Save the changes with **Ctrl + S**.
 
@@ -182,7 +182,7 @@ In the **Set Joint Properties** section, set the **Joint Status** for each joint
     The gripper and arm are typically controlled separately. The kinematics solver's configuration space (cspace) only needs to include the arm joints. Including gripper joints would add unnecessary computation and could cause the gripper to move during collision checking.
 
 !!! warning "Joint initial values"
-    The default joint values in `cspace_to_urdf_rules` must match the initial pose of the manipulator in the USD. If they do not match, reset the joints during task initialization.
+    The exported robot description file (YAML) records default angles for each joint (in the `cspace_to_urdf_rules` section of the YAML). These default angles are taken directly from the joint positions in the Lula Robot Description Editor at the time of export. They must match the initial pose of the manipulator in the USD. If they do not match, reset the joints during task initialization.
 
 !!! warning "Do not stop the simulation"
     The simulation is also required for the next step (generating collision spheres). Do not close the Lula Robot Description Editor or stop the simulation.
@@ -277,7 +277,7 @@ Once all exports are complete, click the **Stop** button on the toolbar to stop 
 This tutorial covered the following topics:
 
 1. Generating a URDF file with the **USD to URDF Exporter**
-2. Setting up the **Lula Robot Description Editor** and preparing the asset (disabling Instantiable)
+2. Setting up the **Lula Robot Description Editor** and preparing the asset (disabling Instanceable)
 3. **Configuring joint status**: Setting arm joints to Active and gripper joints to Fixed
 4. **Generating collision spheres**: Placing and adjusting spheres for each link
 5. Exporting the **Lula robot description file (YAML)**
