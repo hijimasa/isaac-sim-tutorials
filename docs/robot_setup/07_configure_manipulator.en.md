@@ -35,6 +35,13 @@ In this tutorial, we will adjust the following physics parameters to enable stab
 - **Joint effort limits**: Configure appropriate gripping force
 - **Joint gains**: Optimize target position tracking
 
+!!! note "Schemas Auto-applied During URDF Import"
+    When you imported the robot from URDF in [Tutorial 6](06_setup_manipulator.md), the Isaac Sim URDF importer automatically applied the **Robot Schema** (`IsaacRobotAPI`, `IsaacLinkAPI`, `IsaacJointAPI`, etc.) to the prims. The Robot Schema is metadata that Asset Editor tools (such as the **Gain Tuner**, **Grasp Editor**, and **XRDF Editor**) consult to recognize and operate on a robot.
+
+    This is distinct from the **Articulation Root API** that you configure in this step, but as long as you stay on the URDF import path, the Robot Schema is applied without your intervention, so no extra action is needed. The mechanism becomes relevant later when you use the Gain Tuner in [Tutorial 11](11_joint_tuning.md).
+
+    For the concept of the Robot Schema and how to apply it to a robot rigged manually (without going through URDF), see [Tutorial 5a: Applying the Robot Schema](05a_apply_robot_schema.md).
+
 ### Assets Used
 
 We will use the assets created in Tutorial 6. If you have not completed it yet, you can use the sample assets included with Isaac Sim. Access them from the **Content** tab at the bottom-right of the screen:

@@ -321,4 +321,6 @@ This tutorial covered the following topics:
 
 ## Next Steps
 
-Proceed to the next tutorial, "[Setup a Manipulator](06_setup_manipulator.md)", to learn how to import a robot arm from URDF and connect a gripper.
+To make the forklift you just rigged usable from Asset Editor tools such as the **Gain Tuner** and **Grasp Editor**, you need to additionally apply the **Robot Schema**. Proceed to the next tutorial, "[Applying the Robot Schema](05a_apply_robot_schema.md)", to learn how to apply the Robot Schema to a manually rigged robot.
+
+If you intend to move on to URDF-imported manipulators instead, the Robot Schema is applied automatically, so you may skip ahead to "[Setup a Manipulator](06_setup_manipulator.md)".
