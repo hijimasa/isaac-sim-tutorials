@@ -109,6 +109,7 @@ plugins:
               - 基本ロボットのアーティキュレーション: robot_setup/03_articulate_robot.md
               - カメラとセンサーの追加: robot_setup/04_camera_sensors.md
               - モバイルロボットのリギング: robot_setup/05_rig_mobile_robot.md
+              - Robot Schema の適用: robot_setup/05a_apply_robot_schema.md
               - マニピュレータのセットアップ: robot_setup/06_setup_manipulator.md
               - マニピュレータの設定: robot_setup/07_configure_manipulator.md
               - ロボット設定ファイルの生成: robot_setup/08_generate_robot_config.md
@@ -163,6 +164,7 @@ plugins:
               - Articulate a Basic Robot: robot_setup/03_articulate_robot.md
               - Add Camera and Sensors: robot_setup/04_camera_sensors.md
               - Rig a Mobile Robot: robot_setup/05_rig_mobile_robot.md
+              - Applying the Robot Schema: robot_setup/05a_apply_robot_schema.md
               - Setup a Manipulator: robot_setup/06_setup_manipulator.md
               - Configure a Manipulator: robot_setup/07_configure_manipulator.md
               - Generate Robot Configuration File: robot_setup/08_generate_robot_config.md

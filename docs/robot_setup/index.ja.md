@@ -33,6 +33,9 @@ title: ロボットセットアップチュートリアル
 !!! example "[チュートリアル 5: モバイルロボットのリギング](05_rig_mobile_robot.md)"
     フォークリフト USD アセットを完全にアーティキュレーションされたモバイルロボットに変換する方法を学びます。
 
+!!! example "[チュートリアル 5a: Robot Schema の適用](05a_apply_robot_schema.md)"
+    手動リギングしたロボットに Robot Schema（IsaacRobotAPI など）を適用し、Gain Tuner などの Asset Editor 系ツールから認識されるようにする方法を学びます。URDF インポート経由のロボットでは自動適用されるためスキップ可能です。
+
 ## 中級：マニピュレータのセットアップ
 
 <span class="badge badge-intermediate">Intermediate</span>

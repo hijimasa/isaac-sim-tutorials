@@ -33,6 +33,9 @@ Learn fundamental concepts that apply to all robot types. Starting from stage se
 !!! example "[Tutorial 5: Rig a Mobile Robot](05_rig_mobile_robot.md)"
     Learn how to convert a forklift USD asset into a fully articulated mobile robot.
 
+!!! example "[Tutorial 5a: Applying the Robot Schema](05a_apply_robot_schema.md)"
+    Learn how to apply the Robot Schema (IsaacRobotAPI and friends) to a manually rigged robot so that Asset Editor tools such as the Gain Tuner can recognize it. This step is unnecessary for robots imported from URDF, where the schema is applied automatically.
+
 ## Intermediate: Setup a Manipulator
 
 <span class="badge badge-intermediate">Intermediate</span>

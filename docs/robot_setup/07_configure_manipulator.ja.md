@@ -35,6 +35,13 @@ title: マニピュレータの設定
 - **ジョイントの力制限**：グリッパーが適切な力で閉じるように設定
 - **ジョイントゲイン**：目標位置への追従性を最適化
 
+!!! note "URDF インポートで自動適用されるスキーマ"
+    [チュートリアル 6](06_setup_manipulator.md) で URDF からロボットをインポートした際、Isaac Sim の URDF インポーターは **Robot Schema**（`IsaacRobotAPI`、`IsaacLinkAPI`、`IsaacJointAPI` など）を自動的にプリムに適用しています。Robot Schema は、各種 Asset Editor 系ツール（**Gain Tuner**、**Grasp Editor**、**XRDF Editor** など）がロボットを認識・操作するために参照するメタデータです。
+
+    本ステップで設定する **Articulation Root API** とは別物ですが、URDF 経由でインポートしている限り、Robot Schema は意識せずとも適用されているため追加の操作は不要です。後続の[チュートリアル 11](11_joint_tuning.md) で Gain Tuner を使う際にこの仕組みが効いてきます。
+
+    Robot Schema の概念や、URDF を経由せず手動でリギングしたロボットへの適用方法については、[チュートリアル 5a: Robot Schema の適用](05a_apply_robot_schema.md) を参照してください。
+
 ### 使用するアセット
 
 チュートリアル 6 で作成したアセットを使用します。まだ完了していない場合は、Isaac Sim に同梱されているサンプルアセットを代わりに使用できます。画面右下の **Content** タブから以下のパスでアクセスできます：

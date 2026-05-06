@@ -321,4 +321,6 @@ Convex Decomposition（凸分割）の場合
 
 ## 次のステップ
 
-次のチュートリアル「[マニピュレータのセットアップ](06_setup_manipulator.md)」に進み、URDF からロボットアームをインポートしてグリッパーを接続する方法を学びましょう。
+ここで作成したフォークリフトを **Gain Tuner** や **Grasp Editor** などの Asset Editor 系ツールから扱えるようにするには、追加で **Robot Schema** を適用する必要があります。次のチュートリアル「[Robot Schema の適用](05a_apply_robot_schema.md)」に進み、手動リギングしたロボットに Robot Schema を適用する方法を学びましょう。
+
+URDF インポート経由のマニピュレータに進む場合は、Robot Schema は自動適用されるためスキップして「[マニピュレータのセットアップ](06_setup_manipulator.md)」に進んでも構いません。
