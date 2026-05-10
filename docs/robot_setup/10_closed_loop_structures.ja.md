@@ -296,7 +296,7 @@ CAD からインポートされたジョイントでは、回転軸の向きが 
 
 ### 4-2. Python スクリプトによる自動セットアップ
 
-上記の構成は、以下の Python スクリプトを Isaac Sim の Script Editor で実行することで一括構築できます：
+上記の構成は、以下の Python スクリプトを Isaac Sim のメニューバーの `Window` から立ち上げられる Script Editor で実行することで一括構築できます：
 
 ```python
 from pxr import Usd, UsdGeom, UsdPhysics, PhysxSchema, PhysicsSchemaTools, Gf, Sdf
@@ -461,20 +461,24 @@ Robotiq 2F-85 グリッパーには、指先を平行に保つためのスプリ
 !!! warning "この設定を忘れると指のリンクが折れて裏返ります"
     外側の指ジョイントに Drive の Stiffness を設定しないと、シミュレーション開始直後に指のリンク（`outer_finger`）が内側に折れて裏返ったような姿勢になり、グリッパーが正常に閉じなくなります。Drive の Stiffness が「指を平行な姿勢に戻すばね」として機能しているためです。
 
-### 5-4. Physics Inspector による動作確認
+### 5-4. グリッパー単体の動作確認
 
-ここまでの設定でグリッパー単体が正しく動作するか確認します：
+!!! info "ここからは作業ファイルを `Robotiq_2F_85_config.usd` に切り替えます"
+    5-4 以降は動作検証のステップです。`_config.usd` ではテスト足場（プリズマティックジョイント）でグリッパーが固定されているため、シミュレーションを実行しても本体が落下せず、開閉動作の確認がしやすくなります。Layer タブで `_config.usd` を編集ターゲットに切り替えてから操作してください（次節以降の変更は `_config.usd` に入っても構いませんが、ドライブ値の最終調整は `_edit.usd` に戻してから記録します）。
 
-1. **Tools > Physics > Physics Inspector** を開く
-2. Stage パネルでグリッパーのアーティキュレーションルート（`/World/Robotiq_2F_85`）を選択
-3. シミュレーションを開始・停止し、Physics Inspector の**リフレッシュ**ボタンをクリック
-4. `finger_joint` の Drive 関連スライダーで開閉動作を確認：
-    - **Target Velocity** を正の値（例：`+1.0`）にすると指が閉じる
+ここまでの設定でグリッパー単体が正しく動作するか確認します。`Stiffness = 0`（力制御）に設定したため、`Target Position` は無視され、**`Target Velocity` で駆動方向を指定**します。Physics Inspector の Drive Target スライダーは `Target Position` のみを扱い `Target Velocity` を変更できないため、ここでは `finger_joint` の Angular Drive を直接書き換えて動作を確認します：
+
+1. シミュレーションを開始（再生ボタン）
+2. Stage パネルで `finger_joint` を選択
+3. Properties パネルの **Angular Drive** セクションを開く
+4. **Target Velocity** の値を直接変更して開閉動作を確認：
+    - 正の値（例：`+1.0`）にすると指が閉じる
     - 負の値（例：`-1.0`）にすると指が開く
     - ミミック設定により、左右の指が同期して動くことを確認
+5. 確認後はシミュレーションを停止し、Target Velocity を `0.0` に戻す
 
-!!! tip "Target Velocity を使う理由"
-    ステップ 5-1 で `Stiffness = 0`（力制御）に設定したため、`Target Position` は無視され `Target Velocity` で駆動方向を指定します。
+!!! tip "Physics Inspector で位置制御の確認だけ行いたい場合"
+    Physics Inspector の Drive Target スライダーは `Target Position` のみを操作するため、力制御（`Stiffness = 0`）の本構成では指は動きません。スライダーで動作確認したい場合は一時的に `Stiffness` に小さな値（例：`100`）を入れる必要がありますが、本チュートリアルの最終構成は速度制御なので、**Angular Drive の `Target Velocity` を直接変更する手順を推奨します**。
 
 ### 5-5. 物理ステップの最適化
 
@@ -500,8 +504,7 @@ Robotiq 2F-85 グリッパーには、指先を平行に保つためのスプリ
 
 ## ステップ 6：コリジョンメッシュとセルフコリジョン
 
-!!! info "作業ファイル：`Robotiq_2F_85_edit.usd`"
-    コリジョン設定はグリッパーアセットのリギング設定です。引き続き `_edit.usd` で作業してください。
+!!! info "作業ファイルを `Robotiq_2F_85_edit.usd` に戻します"
 
 ### 6-1. コリジョンメッシュの確認
 

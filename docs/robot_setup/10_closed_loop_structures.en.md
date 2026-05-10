@@ -296,7 +296,7 @@ The following elements will be added to the scene. They can be built all at once
 
 ### 4-2. Automatic Setup with a Python Script
 
-The above configuration can be built all at once by running the following Python script in the Isaac Sim Script Editor:
+The above configuration can be built all at once by running the following Python script in the Script Editor, which can be opened from `Window` in the Isaac Sim menu bar:
 
 ```python
 from pxr import Usd, UsdGeom, UsdPhysics, PhysxSchema, PhysicsSchemaTools, Gf, Sdf
@@ -461,20 +461,24 @@ This setting allows the fingertips to remain parallel while the gripper closes, 
 !!! warning "Without this setting, the finger links fold inward"
     Without the Drive Stiffness on the outer finger joints, the outer finger links (`outer_finger`) will fold inward and become inverted immediately after the simulation starts, preventing the gripper from closing properly. The Drive's Stiffness functions as a "spring that returns the fingers to a parallel posture."
 
-### 5-4. Verification with Physics Inspector
+### 5-4. Verifying the Gripper Alone
 
-Verify that the gripper alone operates correctly with the configuration so far:
+!!! info "Switch the working file to `Robotiq_2F_85_config.usd` from here on"
+    Step 5-4 onward is verification work. In `_config.usd`, the gripper is held in place by the test scaffold (prismatic joints), so the body does not fall when the simulation runs and you can more easily verify open/close motion. In the Layer tab, switch the edit target to `_config.usd` before working (changes from this section onward may go into `_config.usd`, but final drive value adjustments should be recorded back in `_edit.usd`).
 
-1. Open **Tools > Physics > Physics Inspector**
-2. In the Stage panel, select the gripper articulation root (`/World/Robotiq_2F_85`)
-3. Start and stop the simulation, then click the **Refresh** button in the Physics Inspector
-4. Use the Drive sliders for `finger_joint` to verify open/close motion:
-    - Setting **Target Velocity** to a positive value (e.g., `+1.0`) closes the fingers
-    - Setting it to a negative value (e.g., `-1.0`) opens the fingers
+Verify that the gripper alone operates correctly with the configuration so far. Because `Stiffness = 0` (force control) is set, `Target Position` is ignored and you **specify the drive direction with `Target Velocity`**. The Physics Inspector's Drive Target slider only manipulates `Target Position` and cannot change `Target Velocity`, so here you directly edit the `finger_joint` Angular Drive to verify operation:
+
+1. Start the simulation (Play button)
+2. Select `finger_joint` in the Stage panel
+3. Open the **Angular Drive** section in the Properties panel
+4. Directly change the **Target Velocity** value to verify open/close motion:
+    - A positive value (e.g., `+1.0`) closes the fingers
+    - A negative value (e.g., `-1.0`) opens the fingers
     - Confirm that the left and right fingers move in sync due to the mimic joint
+5. After verification, stop the simulation and reset Target Velocity to `0.0`
 
-!!! tip "Why use Target Velocity"
-    Because Step 5-1 set `Stiffness = 0` (force control), `Target Position` is ignored and you specify the drive direction with `Target Velocity`.
+!!! tip "If you only want to verify with position control in Physics Inspector"
+    The Physics Inspector's Drive Target slider only manipulates `Target Position`, so the fingers will not move with the force-control configuration here (`Stiffness = 0`). To verify with the slider, you would need to temporarily put a small value (e.g., `100`) in `Stiffness`. However, since the final configuration in this tutorial is velocity control, **the recommended procedure is to directly change the Angular Drive's `Target Velocity`**.
 
 ### 5-5. Optimizing Physics Steps
 
@@ -500,8 +504,7 @@ This is a test for tuning the actual grasping behavior and grip force. **Max For
 
 ## Step 6: Collision Meshes and Self-Collision
 
-!!! info "Working file: `Robotiq_2F_85_edit.usd`"
-    Collision settings are rigging settings for the gripper asset. Continue working in `_edit.usd`.
+!!! info "Switch the working file back to `Robotiq_2F_85_edit.usd`"
 
 ### 6-1. Checking Collision Meshes
 
