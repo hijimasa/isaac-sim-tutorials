@@ -112,6 +112,9 @@ The Jetbot meshes and materials now appear in the viewport. **Because `Jetbot_op
 !!! note "Sublayer vs Reference"
     As covered in [Tutorial 10](10_closed_loop_structures.md), a **sublayer** shares the same prim hierarchy and overrides properties on top of it, whereas a **Reference / Payload** places an external asset as an independent child prim. Here we want to keep the base asset's prim hierarchy and **add an additional, parallel** optimized Xform hierarchy alongside it, so a sublayer is the right fit.
 
+!!! tip "Return to the Stage panel after working in the Layer tab"
+    Once you have finished inserting the sublayer, all subsequent reparenting and prim creation happens in the **Stage** panel. The Layer tab is only for managing layers and switching the edit target — it is not where you select or edit prims directly. Trying to operate on prims from inside the Layer tab is a common way to get lost.
+
 ### 1-4. Create the Optimized Hierarchy
 
 Create the Xform that holds the optimized asset:

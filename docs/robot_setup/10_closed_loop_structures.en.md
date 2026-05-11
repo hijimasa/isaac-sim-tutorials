@@ -97,6 +97,11 @@ This produces a configuration where `_edit.usd` (Root Layer) is layered on top o
 
     On the other hand, properties that are not overridden in the upper layer use the value from the lower layer in the final result. In other words, if you update meshes or materials in `_base.usd`, those updates will automatically be reflected as long as you have not modified the same properties in `_edit.usd`. This is the advantage of the non-destructive editing workflow.
 
+!!! tip "Roles of the Layer tab and the Stage panel"
+    The **Layer** tab is for adding and reordering layers and for switching the **edit target** (which layer your edits are recorded into). Selecting prims and editing them through the Properties panel is still done from the **Stage** panel. If you try to find prims inside the Layer tab, you only see per-layer opinion listings — you cannot edit prims directly from there and it is easy to get lost.
+
+    Later steps switch the edit target back and forth between `_edit.usd` and `_config.usd` depending on the work, but the flow **"activate the target layer in the Layer tab → return to the Stage panel to select a prim"** never changes.
+
 ### 1-4. Creating the Configuration File
 
 Next, create a configuration file for building a test scene. In this file, you will place the edited gripper asset into the scene as a **payload**.
@@ -464,7 +469,7 @@ This setting allows the fingertips to remain parallel while the gripper closes, 
 ### 5-4. Verifying the Gripper Alone
 
 !!! info "Switch the working file to `Robotiq_2F_85_config.usd` from here on"
-    Step 5-4 onward is verification work. In `_config.usd`, the gripper is held in place by the test scaffold (prismatic joints), so the body does not fall when the simulation runs and you can more easily verify open/close motion. In the Layer tab, switch the edit target to `_config.usd` before working (changes from this section onward may go into `_config.usd`, but final drive value adjustments should be recorded back in `_edit.usd`).
+    Step 5-4 onward is verification work. In `_config.usd`, the gripper is held in place by the test scaffold (prismatic joints), so the body does not fall when the simulation runs and you can more easily verify open/close motion. In the Layer tab, switch the edit target to `_config.usd`, then **return to the Stage panel and select prims such as `finger_joint` to operate on them** (changes from this section onward may go into `_config.usd`, but final drive value adjustments should be recorded back in `_edit.usd`).
 
 Verify that the gripper alone operates correctly with the configuration so far. Because `Stiffness = 0` (force control) is set, `Target Position` is ignored and you **specify the drive direction with `Target Velocity`**. The Physics Inspector's Drive Target slider only manipulates `Target Position` and cannot change `Target Velocity`, so here you directly edit the `finger_joint` Angular Drive to verify operation:
 
