@@ -1,0 +1,3715 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Isaac Sim チュートリアル集 / Isaac Sim Tutorial Collection">
+      
+      
+        <meta name="author" content="IR Lab">
+      
+      
+        <link rel="canonical" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/11_joint_tuning/">
+      
+      
+        <link rel="prev" href="../10_closed_loop_structures/">
+      
+      
+        <link rel="next" href="../12_asset_optimization/">
+      
+      
+        
+          <link rel="alternate" href="../../ja/robot_setup/11_joint_tuning/" hreflang="ja">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Tuning Joint Drive Gains - Isaac Sim Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans JP";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tuning-joint-drive-gains" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-header__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Isaac Sim Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tuning Joint Drive Gains
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../ja/robot_setup/11_joint_tuning/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/tutorial_list/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Introduction
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core_api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Core API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Robot Setup
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../importer_exporter/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Import & Export
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../isaac_lab/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Isaac Lab
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ros/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ROS 2
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../synthetic_data/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Synthetic Data
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sensors/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sensors
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../motion_generation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Motion Generation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../omnigraph/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  OmniGraph
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../troubleshooting/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Troubleshooting
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-nav__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    Isaac Sim Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Introduction
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/tutorial_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../core_api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core API
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/01_hello_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello World
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/02_hello_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/03_adding_a_controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/04_adding_a_manipulator_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Manipulator Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/05_adding_multiple_robots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Multiple Robots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/06_multiple_tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiple Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/07_adding_props/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Props
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/08_data_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Logging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/09_deformable_body/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deformable Body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Robot Setup
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Robot Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_stage_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_assemble_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assemble a Simple Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_articulate_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articulate a Basic Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_camera_sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add Camera and Sensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_rig_mobile_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Mobile Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05a_apply_robot_schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applying the Robot Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_setup_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_configure_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configure a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_generate_robot_config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generate Robot Configuration File
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_pick_and_place/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pick and Place Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_closed_loop_structures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig Closed-Loop Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tuning Joint Drive Gains
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tuning Joint Drive Gains
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-launching-the-gain-tuner-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Launching the Gain Tuner Extension
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Launching the Gain Tuner Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-open-the-robot-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. Open the Robot Asset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-open-the-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Open the Gain Tuner
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-ui-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. UI Layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-tuning-position-drive-gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Tuning Position Drive Gains
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Tuning Position Drive Gains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1-the-tuning-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. The Tuning Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-set-damping-to-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Set Damping to Zero
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-increase-stiffness-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Increase Stiffness Step by Step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-add-damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Add Damping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-5-for-robots-with-built-in-gravity-compensation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-5. For Robots With Built-In Gravity Compensation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-6-joint-grouping-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-6. Joint Grouping Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-velocity-limits-and-industrial-robots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Velocity Limits and Industrial Robots
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Velocity Limits and Industrial Robots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1-strengthen-stiffness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. Strengthen Stiffness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2-set-the-maximum-joint-velocity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. Set the Maximum Joint Velocity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3-verify-the-velocity-cap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. Verify the Velocity Cap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-tuning-velocity-drive-gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Tuning Velocity Drive Gains
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Tuning Velocity Drive Gains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-set-stiffness-to-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Set Stiffness to Zero
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-increase-damping-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Increase Damping Step by Step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-accommodating-payload-variation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. Accommodating Payload Variation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-4-setting-output-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-4. Setting Output Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-saving-gains-to-the-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Saving Gains to the Asset
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Saving Gains to the Asset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-save-gains-to-physics-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Save Gains to Physics Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2-when-you-cannot-or-do-not-want-to-save-there" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. When You Cannot or Do Not Want to Save There
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-visualizing-the-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Visualizing the Result
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Visualizing the Result">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6-1-reading-the-plots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-1. Reading the Plots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-2-what-to-read-from-the-plots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-2. What to Read From the Plots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-3-per-joint-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-3. Per-Joint Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_asset_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_rig_legged_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Legged Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../importer_exporter/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import & Export
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Import & Export
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/01_import_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/02_export_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Export URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/03_import_mjcf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import MJCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/04_shapenet_importer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ShapeNet Importer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../isaac_lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isaac Lab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Isaac Lab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ros/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS 2
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ROS 2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../synthetic_data/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synthetic Data
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Synthetic Data
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sensors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sensors
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sensors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../motion_generation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Motion Generation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Motion Generation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../omnigraph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OmniGraph
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OmniGraph
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../troubleshooting/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Troubleshooting
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-launching-the-gain-tuner-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Launching the Gain Tuner Extension
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Launching the Gain Tuner Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-open-the-robot-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. Open the Robot Asset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-open-the-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Open the Gain Tuner
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-ui-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. UI Layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-tuning-position-drive-gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Tuning Position Drive Gains
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Tuning Position Drive Gains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1-the-tuning-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. The Tuning Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-set-damping-to-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Set Damping to Zero
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-increase-stiffness-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Increase Stiffness Step by Step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-add-damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Add Damping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-5-for-robots-with-built-in-gravity-compensation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-5. For Robots With Built-In Gravity Compensation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-6-joint-grouping-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-6. Joint Grouping Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-velocity-limits-and-industrial-robots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Velocity Limits and Industrial Robots
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Velocity Limits and Industrial Robots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1-strengthen-stiffness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. Strengthen Stiffness
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2-set-the-maximum-joint-velocity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. Set the Maximum Joint Velocity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3-verify-the-velocity-cap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. Verify the Velocity Cap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-tuning-velocity-drive-gains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Tuning Velocity Drive Gains
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Tuning Velocity Drive Gains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-set-stiffness-to-zero" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Set Stiffness to Zero
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-increase-damping-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Increase Damping Step by Step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-accommodating-payload-variation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. Accommodating Payload Variation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-4-setting-output-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-4. Setting Output Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-saving-gains-to-the-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Saving Gains to the Asset
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Saving Gains to the Asset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-save-gains-to-physics-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Save Gains to Physics Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2-when-you-cannot-or-do-not-want-to-save-there" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. When You Cannot or Do Not Want to Save There
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-visualizing-the-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Visualizing the Result
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Visualizing the Result">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6-1-reading-the-plots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-1. Reading the Plots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-2-what-to-read-from-the-plots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-2. What to Read From the Plots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-3-per-joint-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-3. Per-Joint Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="tuning-joint-drive-gains">Tuning Joint Drive Gains<a class="headerlink" href="#tuning-joint-drive-gains" title="Permanent link">&para;</a></h1>
+<h2 id="learning-objectives">Learning Objectives<a class="headerlink" href="#learning-objectives" title="Permanent link">&para;</a></h2>
+<p>After completing this tutorial, you will have learned:</p>
+<ul>
+<li>How to launch the <strong>Gain Tuner extension</strong> and use its UI</li>
+<li>How to tune <strong>position drive</strong> gains</li>
+<li>How to configure velocity limits to emulate <strong>industrial robots</strong></li>
+<li>How to tune <strong>velocity drive</strong> gains</li>
+<li>How to save tuned gains back into the asset (USD file)</li>
+<li>How to visualize and evaluate the result with plots</li>
+</ul>
+<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Complete <a href="../07_configure_manipulator/">Tutorial 7: Configure a Manipulator</a> before starting this tutorial.</li>
+<li>Your robot asset must have the following two applied (<strong>both are applied automatically for robots imported from URDF</strong>):<ul>
+<li><strong>Robot Schema</strong> (Robot API): required for the Gain Tuner to recognize the robot</li>
+<li><strong>Articulation Root</strong>: required for the asset to behave as a single articulation in the physics simulation</li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Relationship Between the Gain Tuner and Robot Schema</p>
+<p>The Gain Tuner in Isaac Sim 5.1 uses the <strong>Robot Schema</strong> (<code>IsaacRobotAPI</code>, <code>IsaacLinkAPI</code>, <code>IsaacJointAPI</code>) internally to understand the robot's structure. Specifically, the <strong>Select Robot</strong> dropdown lists <strong>only prims that have Robot API applied</strong>. Assets without the Robot Schema will be invisible to the Gain Tuner even when their articulation is enabled.</p>
+<p>When you import a robot from URDF in <a href="../06_setup_manipulator/">Tutorial 6</a>, the URDF importer applies the Robot Schema <strong>automatically</strong>. So as long as you stay on the URDF import path, no extra action is needed.</p>
+<p>For robots rigged manually as in <a href="../05_rig_mobile_robot/">Tutorial 5</a>, or for existing USD assets that did not come through URDF, you must apply the Robot Schema separately. See <a href="../05a_apply_robot_schema/">Tutorial 5a: Applying the Robot Schema</a> for the procedure.</p>
+</div>
+<h3 id="estimated-time">Estimated Time<a class="headerlink" href="#estimated-time" title="Permanent link">&para;</a></h3>
+<p>Approximately 15-20 minutes.</p>
+<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+<p>To get a robot to behave correctly in Isaac Sim, you need to tune each joint's <strong>drive gains</strong> (the parameters of its PD control). If gains are too low, the robot cannot follow target positions; if they are too high, it oscillates or becomes unstable.</p>
+<p>In <a href="../07_configure_manipulator/">Tutorial 7</a>, you learned the basics of the Gain Tuner using the abstracted <strong>Natural Frequency</strong> and <strong>Damping Ratio</strong> parameters. In this tutorial, you will go further with direct <strong>Stiffness / Damping</strong> tuning, <strong>velocity limits</strong> for industrial robots, <strong>velocity drive</strong> tuning, and the <strong>saving and visualization</strong> of the tuned result. The flow is:</p>
+<ol>
+<li><strong>Launch the Gain Tuner</strong> — open the extension and load the robot</li>
+<li><strong>Tune position drives</strong> — adjust Stiffness and Damping</li>
+<li><strong>Set velocity limits</strong> — emulate the speed caps of industrial robots</li>
+<li><strong>Tune velocity drives</strong> — Damping in velocity-control mode</li>
+<li><strong>Save the gains</strong> — write them back into the asset's physics layer</li>
+<li><strong>Visualize the result</strong> — evaluate behavior on the commanded vs. measured plots</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">What is a Joint Drive?</p>
+<p>A joint drive in Isaac Sim is like a <strong>virtual motor</strong> built into each joint. When you give it a target (position or velocity), an internal <strong>PD controller</strong> (proportional-derivative control) computes the error against the target and produces torque to drive the joint.</p>
+<p>Two parameters matter most in PD control:</p>
+<ul>
+<li><strong>Stiffness (P gain)</strong>: the strength of the <strong>spring</strong> that pulls the joint back to the target position. Higher values reach the target faster, but excessive values cause overshoot or oscillation.</li>
+<li><strong>Damping (D gain)</strong>: the strength of the <strong>friction</strong> that suppresses motion proportional to velocity. It dampens oscillation, but excessive values make the response sluggish.</li>
+</ul>
+<p>A good gain set is one that <strong>reaches the target quickly, with no oscillation and minimal overshoot</strong>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Position Drive vs. Velocity Drive</p>
+<p>Isaac Sim joint drives have two modes:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Control Target</th>
+<th>Primary Parameters</th>
+<th>Use Cases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Position Drive</strong></td>
+<td>Target position</td>
+<td>Stiffness + Damping</td>
+<td>Trajectory tracking and pose holding for manipulators</td>
+</tr>
+<tr>
+<td><strong>Velocity Drive</strong></td>
+<td>Target velocity</td>
+<td>Damping only (Stiffness=0)</td>
+<td>Gripper grasping, wheel rotation</td>
+</tr>
+</tbody>
+</table>
+<p>Which mode to use depends on the role of the joint. This tutorial covers tuning for both.</p>
+</div>
+<h2 id="step-1-launching-the-gain-tuner-extension">Step 1: Launching the Gain Tuner Extension<a class="headerlink" href="#step-1-launching-the-gain-tuner-extension" title="Permanent link">&para;</a></h2>
+<h3 id="1-1-open-the-robot-asset">1-1. Open the Robot Asset<a class="headerlink" href="#1-1-open-the-robot-asset" title="Permanent link">&para;</a></h3>
+<p>Open the robot you want to tune (e.g., the UR10e you configured in Tutorial 7) in Isaac Sim.</p>
+<div class="admonition warning">
+<p class="admonition-title">Verify That the Robot Schema and Articulation Are Applied</p>
+<p>These are applied automatically for robots imported via URDF, but it is worth verifying:</p>
+<ol>
+<li>Select the robot's root prim (e.g., <code>/World/ur10e</code>) in the Stage panel.</li>
+<li>In the search field next to the <strong>Add</strong> button or in <strong>Raw USD Properties</strong> in the Properties panel, confirm the following are applied:<ul>
+<li><strong>IsaacRobotAPI</strong> (Robot Schema): required for the Gain Tuner dropdown to list the robot</li>
+<li><strong>PhysicsArticulationRootAPI</strong> (with <strong>Articulation Enabled</strong> on): required for the robot to be driven as an articulation</li>
+</ul>
+</li>
+</ol>
+<p>If either is missing, redo the URDF import from <a href="../06_setup_manipulator/">Tutorial 6</a>, or follow <a href="../07_configure_manipulator/">Step 1 of Tutorial 7</a> to set up the articulation.</p>
+</div>
+<h3 id="1-2-open-the-gain-tuner">1-2. Open the Gain Tuner<a class="headerlink" href="#1-2-open-the-gain-tuner" title="Permanent link">&para;</a></h3>
+<p>From the menu, click in the following order to open the Gain Tuner window:</p>
+<p><strong>Tools &gt; Robotics &gt; Asset Editors &gt; Gain Tuner</strong></p>
+<p><img alt="Gain Tuner UI" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_gains_tuner_ui.png" /></p>
+<p>Use the <strong>Select Robot</strong> dropdown at the top of the window to pick the robot to tune. Assets with the Robot Schema applied are listed automatically.</p>
+<p>After selection, the joint list on the left shows every joint of the selected robot.</p>
+<div class="admonition tip">
+<p class="admonition-title">If the Gain Tuner Extension Is Not Available</p>
+<p>It is enabled by default, but if it does not appear in the menu, open <strong>Window &gt; Extensions</strong> and search for <code>omni.isaac.gain_tuner</code> to enable it.</p>
+</div>
+<h3 id="1-3-ui-layout">1-3. UI Layout<a class="headerlink" href="#1-3-ui-layout" title="Permanent link">&para;</a></h3>
+<p>The Gain Tuner window is divided into three main areas:</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Joint List</strong> (left)</td>
+<td>Lists all joints of the robot. Selecting a joint targets it for parameter editing and result visualization</td>
+</tr>
+<tr>
+<td><strong>Parameters</strong> (center)</td>
+<td>Edit <strong>Stiffness</strong>, <strong>Damping</strong>, <strong>Max Joint Velocity</strong>, etc., for the selected joint(s)</td>
+</tr>
+<tr>
+<td><strong>Plots</strong> (right / bottom)</td>
+<td>After running a test, shows comparison plots of commanded vs. measured values</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Selecting Multiple Joints</p>
+<p>The joint list on the left supports multi-selection:</p>
+<ul>
+<li><strong>Ctrl + Click</strong>: toggle the clicked joint</li>
+<li><strong>Shift + Click</strong>: range-select from the first selected joint to the current one</li>
+</ul>
+<p>With multiple joints selected, you can set gains in bulk or compare plots side by side.</p>
+</div>
+<h2 id="step-2-tuning-position-drive-gains">Step 2: Tuning Position Drive Gains<a class="headerlink" href="#step-2-tuning-position-drive-gains" title="Permanent link">&para;</a></h2>
+<p>A position drive uses PD control to drive a joint toward a target angle (or position). The goal is to balance <strong>Stiffness</strong> and <strong>Damping</strong>.</p>
+<h3 id="2-1-the-tuning-strategy">2-1. The Tuning Strategy<a class="headerlink" href="#2-1-the-tuning-strategy" title="Permanent link">&para;</a></h3>
+<p>Tune in the following order:</p>
+<ol>
+<li><strong>Set Damping to zero</strong> — observe the response with only the proportional term (Stiffness)</li>
+<li><strong>Increase Stiffness</strong> — find a value at which the joint converges near the target</li>
+<li><strong>Drop Stiffness by one order of magnitude</strong> — leave headroom for overshoot</li>
+<li><strong>Add Damping</strong> — start at one order of magnitude below Stiffness</li>
+<li><strong>Fine tune</strong> — adjust both while watching stability, response speed, and overshoot</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Why This Order?</p>
+<p>If you adjust Stiffness with Damping already engaged, you cannot tell whether oscillation is being suppressed or whether the response is genuinely good. <strong>Find the "barely converges" point with Stiffness alone</strong>, then drop it by one order of magnitude to leave headroom before adding Damping. This is the safe way to converge on good gains.</p>
+</div>
+<h3 id="2-2-set-damping-to-zero">2-2. Set Damping to Zero<a class="headerlink" href="#2-2-set-damping-to-zero" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Select the joint(s) to tune in the joint list on the left (multi-selection supported).</li>
+<li>Enter <code>0</code> in the <strong>Damping</strong> field in the center.</li>
+<li>Set <strong>Stiffness</strong> to a starting value (e.g., <code>100</code>).</li>
+</ol>
+<p><img alt="Gain Tuner setting view" src="../images/37_gain_tuner_setting.png" /></p>
+<h3 id="2-3-increase-stiffness-step-by-step">2-3. Increase Stiffness Step by Step<a class="headerlink" href="#2-3-increase-stiffness-step-by-step" title="Permanent link">&para;</a></h3>
+<p>Run the simulation (click <strong>Play</strong> in the timeline) and observe whether the joint converges to the target position.</p>
+<ul>
+<li>If it does not converge, <strong>multiply Stiffness by 10</strong> and re-run (e.g., 100 → 1,000 → 10,000).</li>
+<li>If it oscillates or runs away near the target, that value is the upper limit guide.</li>
+</ul>
+<p>Once Stiffness is high enough that the joint <strong>roughly converges</strong> near the target, <strong>drop it by one order of magnitude (about 1/10)</strong> to leave stability headroom.</p>
+<p><img alt="Gain Tuner test run" src="../images/38_gain_tuner_test.png" /></p>
+<h3 id="2-4-add-damping">2-4. Add Damping<a class="headerlink" href="#2-4-add-damping" title="Permanent link">&para;</a></h3>
+<p>Once Stiffness is set, enter <strong>about 1/10 of that Stiffness</strong> as the starting <strong>Damping</strong> value.</p>
+<p>Example: with Stiffness = 1,000, start at Damping = 100.</p>
+<p>Run the simulation again and evaluate using these criteria:</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Good State</th>
+<th>Bad State and Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Settling speed</strong></td>
+<td>Reaches the target quickly</td>
+<td>Too slow → raise Stiffness</td>
+</tr>
+<tr>
+<td><strong>Overshoot</strong></td>
+<td>Ideally <strong>within 1%</strong> of the target</td>
+<td>Large → raise Damping</td>
+</tr>
+<tr>
+<td><strong>Oscillation</strong></td>
+<td>Monotonic, no oscillation</td>
+<td>Oscillating → raise Damping</td>
+</tr>
+<tr>
+<td><strong>Sluggishness</strong></td>
+<td>Not over-damped</td>
+<td>Sluggish → lower Damping</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Recommended Performance Target</p>
+<p>The Isaac Sim official guide recommends <strong>keeping the error from the target (including overshoot) within 1%</strong>. For applications with looser accuracy requirements, more relaxed criteria are usually fine in practice.</p>
+</div>
+<h3 id="2-5-for-robots-with-built-in-gravity-compensation">2-5. For Robots With Built-In Gravity Compensation<a class="headerlink" href="#2-5-for-robots-with-built-in-gravity-compensation" title="Permanent link">&para;</a></h3>
+<p>Robots like the UR10e and Franka are designed to be used with <strong>gravity compensation</strong> in their controller. It is common to also disable gravity inside Isaac Sim so the joints do not need to fight gravity:</p>
+<ol>
+<li>Select each link (Rigid Body) in the Stage panel.</li>
+<li>Open the <strong>Physics &gt; Rigid Body</strong> section in the Properties panel.</li>
+<li>Check <strong>Disable Gravity</strong>.</li>
+</ol>
+<p>This removes the need for the drive to produce gravity-compensating torque, letting you focus tuning on tracking accuracy.</p>
+<div class="admonition note">
+<p class="admonition-title">Tuning With Gravity On</p>
+<p>If you do not compensate for gravity, Stiffness must be high enough that the joint can resist gravity. Since the required value depends on link mass and pose, <strong>test in the pose with maximum gravity load</strong> (e.g., the base of an arm extended horizontally) to obtain conservative gains.</p>
+</div>
+<h3 id="2-6-joint-grouping-strategy">2-6. Joint Grouping Strategy<a class="headerlink" href="#2-6-joint-grouping-strategy" title="Permanent link">&para;</a></h3>
+<p>For robots like humanoids whose <strong>arms and legs move independently</strong>, tuning every joint at once is impractical. The efficient approach is to <strong>group joints by function</strong>, tune each group separately, then test all together at the end.</p>
+<p>Example for a humanoid:</p>
+<ul>
+<li>Group 1: 7 joints of the right arm</li>
+<li>Group 2: 7 joints of the left arm</li>
+<li>Group 3: both legs (synchronized for walking)</li>
+<li>Final: move all joints to check for cross-group interference</li>
+</ul>
+<h2 id="step-3-velocity-limits-and-industrial-robots">Step 3: Velocity Limits and Industrial Robots<a class="headerlink" href="#step-3-velocity-limits-and-industrial-robots" title="Permanent link">&para;</a></h2>
+<p>Many industrial robots (UR, ABB, KUKA, etc.) come with <strong>PD control pre-tuned by the manufacturer</strong>, plus <strong>per-joint velocity caps</strong>. To replicate this behavior in Isaac Sim, set a <strong>maximum joint velocity</strong> in addition to the gains.</p>
+<h3 id="3-1-strengthen-stiffness">3-1. Strengthen Stiffness<a class="headerlink" href="#3-1-strengthen-stiffness" title="Permanent link">&para;</a></h3>
+<p>To emulate an industrial robot, <strong>roughly double the Stiffness</strong> you obtained in Step 2. This makes the joint reach the velocity cap quickly and travel at full speed toward the target.</p>
+<p>Example: ordinary Stiffness = 1,000 → industrial-style Stiffness = 2,000.</p>
+<h3 id="3-2-set-the-maximum-joint-velocity">3-2. Set the Maximum Joint Velocity<a class="headerlink" href="#3-2-set-the-maximum-joint-velocity" title="Permanent link">&para;</a></h3>
+<p>Set a velocity cap on each joint:</p>
+<ol>
+<li>Select the target joint in the Stage panel.</li>
+<li>Expand the <strong>Joint &gt; Advanced</strong> section in the Properties panel.</li>
+<li>Enter the per-axis maximum speed (rad/s or deg/s) in <strong>Maximum Joint Velocity</strong>.</li>
+</ol>
+<p>Refer to the manufacturer's datasheet for each axis's maximum angular velocity.</p>
+<div class="admonition tip">
+<p class="admonition-title">USD Defaults Tend to Be Too High</p>
+<p>USD's default values are often well above what real systems use. Lowering them to the <strong>operational limits of the actual hardware</strong> is recommended. This benefits both safety and simulation stability.</p>
+</div>
+<h3 id="3-3-verify-the-velocity-cap">3-3. Verify the Velocity Cap<a class="headerlink" href="#3-3-verify-the-velocity-cap" title="Permanent link">&para;</a></h3>
+<p>Run the simulation and check the Gain Tuner plots to ensure <strong>joint velocity does not exceed the configured cap</strong>. If it does, lower Stiffness; if it never reaches the cap, raise Stiffness, until it <strong>just barely reaches</strong> the cap.</p>
+<h2 id="step-4-tuning-velocity-drive-gains">Step 4: Tuning Velocity Drive Gains<a class="headerlink" href="#step-4-tuning-velocity-drive-gains" title="Permanent link">&para;</a></h2>
+<p>A velocity drive controls the joint to follow a target <strong>velocity</strong>. It is used for gripper grasping and wheel rotation (also used in <a href="../10_closed_loop_structures/">Tutorial 10: Rig Closed-Loop Structures</a>).</p>
+<h3 id="4-1-set-stiffness-to-zero">4-1. Set Stiffness to Zero<a class="headerlink" href="#4-1-set-stiffness-to-zero" title="Permanent link">&para;</a></h3>
+<p>Velocity drives ignore the position target and use only the velocity target:</p>
+<ol>
+<li>Select the target joint(s) in the Joint List.</li>
+<li>Enter <code>0</code> for <strong>Stiffness</strong>.</li>
+<li>Set <strong>Damping</strong> to a starting value (e.g., <code>100</code>).</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Why Stiffness=0 Means 'Velocity Control'</p>
+<p>Internally, an Isaac Sim joint drive is always a PD controller, but <strong>setting Stiffness to 0 removes the proportional (position-error) term, leaving only Damping to determine torque</strong>. Damping produces torque proportional to velocity error, so the result is a controller that tracks the target velocity.</p>
+</div>
+<h3 id="4-2-increase-damping-step-by-step">4-2. Increase Damping Step by Step<a class="headerlink" href="#4-2-increase-damping-step-by-step" title="Permanent link">&para;</a></h3>
+<p>Run the simulation and increase Damping until the joint reaches the target velocity:</p>
+<ol>
+<li>Set the target velocity (<strong>Target Velocity</strong>).</li>
+<li>Run the simulation.</li>
+<li><strong>Multiply Damping by 10</strong> until the measured velocity reaches the target on the plot.</li>
+<li>Stop just where it nearly reaches the target.</li>
+</ol>
+<h3 id="4-3-accommodating-payload-variation">4-3. Accommodating Payload Variation<a class="headerlink" href="#4-3-accommodating-payload-variation" title="Permanent link">&para;</a></h3>
+<p>If the load is expected to vary (grasped objects, transported items), setting Damping <strong>about 10% higher</strong> helps maintain target velocity under load.</p>
+<p>Example: Damping = 5,000 unloaded → 5,500 with payload.</p>
+<h3 id="4-4-setting-output-limits">4-4. Setting Output Limits<a class="headerlink" href="#4-4-setting-output-limits" title="Permanent link">&para;</a></h3>
+<p>Velocity drives let you cap the output via <strong>Maximum Joint Velocity</strong> or <strong>Maximum Joint Force</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Limit</th>
+<th>Where to Set</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Maximum Joint Velocity</strong></td>
+<td>Joint &gt; Advanced</td>
+<td>Caps speed</td>
+</tr>
+<tr>
+<td><strong>Maximum Joint Force</strong></td>
+<td>Drive &gt; Max Force</td>
+<td>Caps drive force</td>
+</tr>
+</tbody>
+</table>
+<p>For grasping, lowering <strong>Max Force</strong> prevents excessive force on the grasped object (see Step 5-6 of <a href="../10_closed_loop_structures/">Tutorial 10</a>).</p>
+<h2 id="step-5-saving-gains-to-the-asset">Step 5: Saving Gains to the Asset<a class="headerlink" href="#step-5-saving-gains-to-the-asset" title="Permanent link">&para;</a></h2>
+<p>Save the tuned gains to a USD file so they persist across sessions.</p>
+<h3 id="5-1-save-gains-to-physics-layer">5-1. Save Gains to Physics Layer<a class="headerlink" href="#5-1-save-gains-to-physics-layer" title="Permanent link">&para;</a></h3>
+<p>Click the <strong>Save Gains to Physics Layer</strong> button in the Gain Tuner window.</p>
+<p>Following the recommended robot asset structure (<a href="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html">Asset Structure Guidelines</a>), this button automatically locates the <strong>layer that holds the physics configuration</strong> and writes the new gains there.</p>
+<div class="admonition note">
+<p class="admonition-title">Why Save to a Dedicated Layer</p>
+<p>Isaac Sim robot assets are recommended to <strong>separate USD layers by role</strong> — meshes, physics, sensors, and so on (see the layer editing workflow in <a href="../10_closed_loop_structures/">Tutorial 10</a>). Centralizing physics parameters in the physics layer means tuning is preserved across mesh updates.</p>
+</div>
+<h3 id="5-2-when-you-cannot-or-do-not-want-to-save-there">5-2. When You Cannot or Do Not Want to Save There<a class="headerlink" href="#5-2-when-you-cannot-or-do-not-want-to-save-there" title="Permanent link">&para;</a></h3>
+<p>If you do not have write permission, or you do not want to alter the original robot asset, record the gain change as an override <strong>in a separate scene file</strong>. The most explicit and safe approach is to use <strong><code>File &gt; Save As</code></strong> to save under a new file name (e.g., <code>my_robot_with_tuned_gains.usd</code>). This way:</p>
+<ul>
+<li>The original robot USD file is left untouched</li>
+<li>The new file references / sublayers the robot asset and writes the gain overrides on top of it</li>
+<li>Opening the new file shows the tuned gains; opening the original asset shows the pre-tuning state</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title"><code>File &gt; Save</code> Overwrites the Root Layer</p>
+<p><code>File &gt; Save</code> overwrites the <strong>Root Layer</strong> of the currently open stage as-is. As a result, <strong>if you have the robot's USD file itself open and run <code>File &gt; Save</code>, you will overwrite the original robot whenever you have write permission</strong>.</p>
+<p>Using <code>Save</code> thinking it will "create a local override" is dangerous. To avoid changing the robot itself, always use <strong><code>Save As</code></strong> to save into a separate file, or open your own scene file that already references the robot (Reference / Payload) before tuning.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Which Save Method to Use</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Recommended Save Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persist gains as part of the original asset</td>
+<td><strong>Save Gains to Physics Layer</strong> (5-1)</td>
+</tr>
+<tr>
+<td>Leave the original asset alone and create a variant for your use</td>
+<td><strong>File &gt; Save As</strong> to a separate file</td>
+</tr>
+<tr>
+<td>You already have your own scene file that references the robot</td>
+<td><strong>File &gt; Save</strong> (changes are written only to the scene file)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="step-6-visualizing-the-result">Step 6: Visualizing the Result<a class="headerlink" href="#step-6-visualizing-the-result" title="Permanent link">&para;</a></h2>
+<h3 id="6-1-reading-the-plots">6-1. Reading the Plots<a class="headerlink" href="#6-1-reading-the-plots" title="Permanent link">&para;</a></h3>
+<p>After running a test, the Gain Tuner plot area shows the following:</p>
+<p><img alt="Gain Tuner plots" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_gains_tuner_plots.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Solid (saturated) line</strong></td>
+<td>Commanded value (Commanded Position / Commanded Velocity)</td>
+</tr>
+<tr>
+<td><strong>Faded line</strong></td>
+<td>Measured value (the actual joint position / velocity)</td>
+</tr>
+<tr>
+<td><strong>Color coding</strong></td>
+<td>One color per joint</td>
+</tr>
+</tbody>
+</table>
+<p>In an ideally tuned state, the faded line (measured) <strong>overlaps the solid line (commanded) without delay</strong>.</p>
+<h3 id="6-2-what-to-read-from-the-plots">6-2. What to Read From the Plots<a class="headerlink" href="#6-2-what-to-read-from-the-plots" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Plot Shape</th>
+<th>Diagnosis</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Measured oscillates before reaching the command</td>
+<td>Stiffness too high</td>
+<td>Lower Stiffness or raise Damping</td>
+</tr>
+<tr>
+<td>Measured cannot catch up to the command</td>
+<td>Stiffness too low</td>
+<td>Raise Stiffness</td>
+</tr>
+<tr>
+<td>Overshoots the target and bounces back</td>
+<td>Overshoot (not enough Damping)</td>
+<td>Raise Damping</td>
+</tr>
+<tr>
+<td>Smooth but slow response</td>
+<td>Over-damped</td>
+<td>Lower Damping</td>
+</tr>
+<tr>
+<td>Plateaus at the velocity cap</td>
+<td>Limited by Maximum Joint Velocity (normal for industrial-style setups)</td>
+<td>Revisit the cap if needed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-3-per-joint-evaluation">6-3. Per-Joint Evaluation<a class="headerlink" href="#6-3-per-joint-evaluation" title="Permanent link">&para;</a></h3>
+<p>Clicking an individual joint in the Joint List on the left shows that joint's plot in detail. With multiple joints selected (Ctrl/Shift click), you can view multiple plots side by side for comparison.</p>
+<div class="admonition tip">
+<p class="admonition-title">Test Results Show Up Only After the Test Finishes</p>
+<p>Plots may not update in real time during simulation. <strong>Stop the simulation first</strong>, then check the plots.</p>
+</div>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The robot does not appear in the Gain Tuner dropdown</td>
+<td><strong>Robot Schema (IsaacRobotAPI)</strong> is not applied</td>
+<td>If imported from URDF, this should be automatic. For manually built assets, apply the Robot Schema or re-import via URDF</td>
+</tr>
+<tr>
+<td>After selection, joints cannot be retrieved or an error occurs</td>
+<td>Articulation is not configured</td>
+<td>Check that the <strong>Articulation Root API</strong> is applied to the root joint and <strong>Articulation Enabled</strong> is on (see <a href="../07_configure_manipulator/">Step 1 of Tutorial 7</a>)</td>
+</tr>
+<tr>
+<td>The joint does not converge to the target</td>
+<td>Stiffness too low / no gravity compensation</td>
+<td>Multiply Stiffness by 10, or enable Disable Gravity</td>
+</tr>
+<tr>
+<td>The simulation diverges immediately on start</td>
+<td>Stiffness too high</td>
+<td>Reduce Stiffness to 1/10</td>
+</tr>
+<tr>
+<td>Fine oscillation</td>
+<td>Damping too low</td>
+<td>Multiply Damping by 2-10</td>
+</tr>
+<tr>
+<td>Sluggish or slow response</td>
+<td>Damping too high</td>
+<td>Halve Damping</td>
+</tr>
+<tr>
+<td>Joint exceeds the industrial maximum velocity</td>
+<td>Maximum Joint Velocity not set</td>
+<td>Set it for each axis under Joint &gt; Advanced</td>
+</tr>
+<tr>
+<td>Warning: <code>Stiffness attribute is unsupported for articulation joints</code></td>
+<td>Stiffness was set on the joint itself</td>
+<td>Use the <strong>Drive-side</strong> Stiffness on that joint instead (see Step 5-3 of <a href="../10_closed_loop_structures/">Tutorial 10</a>)</td>
+</tr>
+<tr>
+<td>Saved, but gains revert on next launch</td>
+<td>Failed to write to the physics layer</td>
+<td>Check the layer's write permission, or save the stage manually</td>
+</tr>
+</tbody>
+</table>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This tutorial covered the following topics:</p>
+<ol>
+<li><strong>Launching the Gain Tuner extension</strong> and its UI layout (Joint List / Parameters / Plots)</li>
+<li><strong>Tuning position drives</strong> (start at Damping=0, find the convergence point with Stiffness, then suppress oscillation with Damping)</li>
+<li><strong>Emulating industrial robots</strong> (stronger Stiffness plus Maximum Joint Velocity caps)</li>
+<li><strong>Tuning velocity drives</strong> (Stiffness=0, track the target with Damping alone)</li>
+<li><strong>Saving gains to the asset</strong> (writing to the physics layer with Save Gains to Physics Layer)</li>
+<li><strong>Plot-based evaluation</strong> (commanded vs. measured)</li>
+</ol>
+<p>With these adjustments in place, the robot will move stably and responsively, providing a solid foundation for higher-level control algorithms to behave as expected.</p>
+<div class="admonition tip">
+<p class="admonition-title">Going Deeper</p>
+<p>For the mathematical background of the Gain Tuner and PD control theory, refer to the Isaac Sim official documentation: <a href="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html">Gain Tuner Extension</a>. To implement a custom controller that writes torque commands directly, the official "Adding a Controller" tutorial is a useful reference.</p>
+</div>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Proceed to the next tutorial, "<a href="../12_asset_optimization/">Asset Optimization</a>", to learn performance optimization techniques for robot assets.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/extra.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

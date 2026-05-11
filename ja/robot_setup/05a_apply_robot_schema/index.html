@@ -1,0 +1,3585 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Isaac Sim チュートリアル集 / Isaac Sim Tutorial Collection">
+      
+      
+        <meta name="author" content="IR Lab">
+      
+      
+        <link rel="canonical" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/05a_apply_robot_schema/">
+      
+      
+        <link rel="prev" href="../05_rig_mobile_robot/">
+      
+      
+        <link rel="next" href="../06_setup_manipulator/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+          <link rel="alternate" href="../../../robot_setup/05a_apply_robot_schema/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Robot Schema の適用 - Isaac Sim Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans JP";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#robot-schema" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../" title="Isaac Sim Tutorials" class="md-header__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Isaac Sim Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Robot Schema の適用
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../robot_setup/05a_apply_robot_schema/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/tutorial_list/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  はじめに
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core_api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Core API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ロボットセットアップ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../importer_exporter/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インポート・エクスポート
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../isaac_lab/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Isaac Lab
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ros/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ROS 2
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../synthetic_data/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  合成データ生成
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sensors/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  センサー
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../motion_generation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  モーション生成
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../omnigraph/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  OmniGraph
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../troubleshooting/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  トラブルシューティング
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="Isaac Sim Tutorials" class="md-nav__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    Isaac Sim Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    はじめに
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    はじめに
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/tutorial_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    チュートリアル一覧
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../core_api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core API
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/01_hello_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello World
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/02_hello_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/03_adding_a_controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    コントローラの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/04_adding_a_manipulator_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    マニピュレータロボットの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/05_adding_multiple_robots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    複数ロボットの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/06_multiple_tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    複数タスクの実行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/07_adding_props/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    属性の追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/08_data_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    データロギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/09_deformable_body/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    変形可能物体（Deformable Body）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ロボットセットアップ
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ロボットセットアップ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_stage_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ステージのセットアップ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_assemble_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    シンプルなロボットの組み立て
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_articulate_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基本ロボットのアーティキュレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_camera_sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    カメラとセンサーの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_rig_mobile_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    モバイルロボットのリギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Robot Schema の適用
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Robot Schema の適用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学習目標
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="はじめに">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前提条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所要時間
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概要
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1robot-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 1：Robot Schema とは
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 1：Robot Schema とは">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-physics-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. なぜ Physics Schema だけでは足りないのか
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-4-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. 4 つの主要 API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-robot-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. ツールはどう Robot Schema を使うのか
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 2：レイヤー構成の準備
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 2：レイヤー構成の準備">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. レイヤー構成の方針
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. 作業ディレクトリの確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3python-robot-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 3：Python による Robot Schema の一括適用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 3：Python による Robot Schema の一括適用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. ベースアセットを開く
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2-script-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. Script Editor を開く
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. 一括適用スクリプトの実行
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-4. 実行結果の確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 4：GUI による適用（補足）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 4：GUI による適用（補足）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-robotapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. RobotAPI の適用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. 属性の編集
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-linkapi-jointapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. LinkAPI / JointAPI の個別適用
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 5：適用結果の確認
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 5：適用結果の確認">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Properties パネルでの確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. Gain Tuner での認識確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-3-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-3. Python によるプログラム的な確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6reference-point" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 6（オプション）：Reference Point の追加
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 6（オプション）：Reference Point の追加">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6-1-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-1. GUI で適用する例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-2-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-2. Python で適用する例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_setup_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    マニピュレータのセットアップ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_configure_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    マニピュレータの設定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_generate_robot_config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ロボット設定ファイルの生成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_pick_and_place/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ピック＆プレースの例
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_closed_loop_structures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    閉ループ構造のリギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_joint_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ジョイントドライブゲインの調整
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_asset_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アセット最適化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_rig_legged_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    脚ロボットのリギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../importer_exporter/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インポート・エクスポート
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インポート・エクスポート
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/01_import_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF インポート
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/02_export_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF エクスポート
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/03_import_mjcf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MJCF インポート
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/04_shapenet_importer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ShapeNet インポーター
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../isaac_lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isaac Lab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Isaac Lab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ros/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS 2
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ROS 2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../synthetic_data/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    合成データ生成
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    合成データ生成
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sensors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    センサー
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    センサー
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../motion_generation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    モーション生成
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    モーション生成
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../omnigraph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OmniGraph
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OmniGraph
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../troubleshooting/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    トラブルシューティング
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    トラブルシューティング
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学習目標
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="はじめに">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前提条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所要時間
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概要
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1robot-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 1：Robot Schema とは
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 1：Robot Schema とは">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-physics-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. なぜ Physics Schema だけでは足りないのか
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-4-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. 4 つの主要 API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-robot-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. ツールはどう Robot Schema を使うのか
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 2：レイヤー構成の準備
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 2：レイヤー構成の準備">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. レイヤー構成の方針
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. 作業ディレクトリの確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3python-robot-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 3：Python による Robot Schema の一括適用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 3：Python による Robot Schema の一括適用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. ベースアセットを開く
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2-script-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. Script Editor を開く
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. 一括適用スクリプトの実行
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-4. 実行結果の確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 4：GUI による適用（補足）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 4：GUI による適用（補足）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-robotapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. RobotAPI の適用
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. 属性の編集
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-linkapi-jointapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. LinkAPI / JointAPI の個別適用
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 5：適用結果の確認
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 5：適用結果の確認">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Properties パネルでの確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. Gain Tuner での認識確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-3-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-3. Python によるプログラム的な確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6reference-point" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 6（オプション）：Reference Point の追加
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 6（オプション）：Reference Point の追加">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6-1-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-1. GUI で適用する例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-2-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-2. Python で適用する例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="robot-schema">Robot Schema の適用<a class="headerlink" href="#robot-schema" title="Permanent link">&para;</a></h1>
+<h2 id="_1">学習目標<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>このチュートリアルを修了すると、以下の内容を習得できます：</p>
+<ul>
+<li><strong>Robot Schema</strong> が何であり、なぜ必要なのか</li>
+<li>4 つの主要 API（<strong>RobotAPI / LinkAPI / JointAPI / ReferencePointAPI</strong>）の役割</li>
+<li>手動でリギングしたロボットに Robot Schema を適用する方法（GUI と Python の両方）</li>
+<li>専用レイヤーに分離して非破壊的に適用するベストプラクティス</li>
+<li>Gain Tuner などの Asset Editor 系ツールでロボットが認識されることの確認方法</li>
+</ul>
+<h2 id="_2">はじめに<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">前提条件<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../05_rig_mobile_robot/">チュートリアル 5: モバイルロボットのリギング</a> を完了していること</li>
+<li>リギング済みの USD アセット（例：<code>SMV_Forklift_B01_01</code>）が手元にあること</li>
+</ul>
+<h3 id="_4">所要時間<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>約 20 分</p>
+<h3 id="_5">概要<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p><a href="../05_rig_mobile_robot/">チュートリアル 5</a> では、フォークリフトに <strong>Articulation Root</strong> を適用してアーティキュレーションとして駆動できる状態まで仕上げました。これだけでも物理シミュレーション自体は動作しますが、Isaac Sim 5.1 以降の高度なツール群——たとえば <strong>Gain Tuner</strong>（<a href="../11_joint_tuning/">チュートリアル 11</a>）、<strong>Grasp Editor</strong>、<strong>XRDF Editor</strong>、<strong>Robot Wizard</strong> など——は、対象アセットを「ロボット」として認識するために <strong>Robot Schema</strong> という追加スキーマが適用されていることを要求します。</p>
+<p>このチュートリアルでは、手動リギングしたロボットに Robot Schema を適用し、後続のツールチェーンで使えるようにする方法を学びます。具体的には以下の流れで進めます：</p>
+<ol>
+<li><strong>Robot Schema とは何か</strong> を理解する</li>
+<li><strong>専用レイヤーの作成</strong> — 非破壊的に Robot Schema を追加</li>
+<li><strong>Python による一括適用</strong> — 公式推奨の方法</li>
+<li><strong>GUI による補足的な適用</strong> — 個別プリムへの追加・微修正</li>
+<li><strong>適用結果の確認</strong> — Properties パネルと Gain Tuner で動作確認</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">URDF / MJCF インポート経由のロボットでは不要</p>
+<p><a href="../06_setup_manipulator/">URDF インポーター</a> や MJCF インポーターを使ってロボットを読み込んだ場合、これら 2 つのインポーターは <strong>Robot Schema を自動的に適用</strong>します。後続の<a href="../06_setup_manipulator/">チュートリアル 6 / 7</a> で扱う UR10e はその例です。本チュートリアルは、<strong>URDF を経由せず手動でリギングしたロボット</strong>（チュートリアル 5 の成果物など）を扱う場合に必要となります。</p>
+</div>
+<h2 id="1robot-schema">ステップ 1：Robot Schema とは<a class="headerlink" href="#1robot-schema" title="Permanent link">&para;</a></h2>
+<p><strong>Robot Schema</strong> は、OpenUSD の <a href="https://openusd.org/release/api/physics_8h_source.html">Physics Schema</a> を補完する形で NVIDIA が定義した、<strong>ロボットを記述するための拡張スキーマ</strong>です。Physics Schema が「剛体・ジョイント・アーティキュレーション」といった<strong>物理の枠組み</strong>を定義するのに対し、Robot Schema は「どのプリムがロボットの中核（Robot）で、どれがリンク／ジョイント／参照点なのか」という<strong>意味づけ</strong>を与えます。</p>
+<h3 id="1-1-physics-schema">1-1. なぜ Physics Schema だけでは足りないのか<a class="headerlink" href="#1-1-physics-schema" title="Permanent link">&para;</a></h3>
+<p>Physics Schema は USD のオープン標準であり、汎用的に使えますが、<strong>「これはロボットだ」と宣言する仕組みは持っていません</strong>。たとえば：</p>
+<ul>
+<li>アーティキュレーションを 1 つのロボットとして列挙する</li>
+<li>名前空間（<code>/robot1</code>、<code>/robot2</code> のような区別）を ROS や OmniGraph に伝える</li>
+<li>DOF のレポート順序、加速度／ジャーク制限などのロボット固有メタデータを記述する</li>
+<li>グリッパーの吸着点（Attachment Point）や工具の参照点（Reference Point）を定義する</li>
+</ul>
+<p>これらは Physics Schema の範囲外です。<strong>Robot Schema はこの不足を埋め</strong>、Asset Editor 系の各種ツールがロボット構造を一貫して扱える共通基盤を提供します。</p>
+<h3 id="1-2-4-api">1-2. 4 つの主要 API<a class="headerlink" href="#1-2-4-api" title="Permanent link">&para;</a></h3>
+<p>Robot Schema は複数の API スキーマから構成されています。本チュートリアルでは特に重要な 4 つを扱います：</p>
+<table>
+<thead>
+<tr>
+<th>API スキーマ</th>
+<th>適用先</th>
+<th>役割</th>
+<th>主な属性／リレーション</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IsaacRobotAPI</strong></td>
+<td>ロボットのルートプリム</td>
+<td>「これがロボット本体」と宣言。各種ツールはここを起点にロボットを認識する</td>
+<td><code>description</code>、<code>namespace</code>、<code>robotType</code>、<code>robotLinks</code>（リレーション）、<code>robotJoints</code>（リレーション）</td>
+</tr>
+<tr>
+<td><strong>IsaacLinkAPI</strong></td>
+<td>各リンク（剛体）プリム</td>
+<td>リンクとしての意味づけ。表示名のオーバーライドなど</td>
+<td><code>nameOverride</code></td>
+</tr>
+<tr>
+<td><strong>IsaacJointAPI</strong></td>
+<td>各ジョイントプリム</td>
+<td>ジョイントとしての意味づけ。DOF オフセットや加速度・ジャーク制限など</td>
+<td><code>nameOverride</code>、<code>Rot_X:DofOffset</code> 〜 <code>Tr_Z:DofOffset</code>、<code>AccelerationLimit</code>、<code>JerkLimit</code></td>
+</tr>
+<tr>
+<td><strong>IsaacReferencePointAPI</strong></td>
+<td>エンドエフェクタや工具取付点などの参照プリム</td>
+<td>ツール取付点・センサー位置などの「ロボット上の意味のある点」を表現する</td>
+<td><code>description</code>、<code>forwardAxis</code></td>
+</tr>
+</tbody>
+</table>
+<p>このほかに、グリッパーの吸着点を表す <code>IsaacAttachmentPointAPI</code> や、サーフェスグリッパー全体を表す <code>IsaacSurfaceGripper</code> プリム型があります。これらは必要に応じて適用します。</p>
+<div class="admonition tip">
+<p class="admonition-title">対応する Python シンボル</p>
+<p>各 API には <code>usd.schema.isaac.robot_schema</code> モジュール経由でアクセスできます：</p>
+<table>
+<thead>
+<tr>
+<th>Python シンボル</th>
+<th>適用関数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Classes.ROBOT_API.value</code>（= <code>"IsaacRobotAPI"</code>）</td>
+<td><code>ApplyRobotAPI(prim)</code></td>
+</tr>
+<tr>
+<td><code>Classes.LINK_API.value</code>（= <code>"IsaacLinkAPI"</code>）</td>
+<td><code>ApplyLinkAPI(prim)</code></td>
+</tr>
+<tr>
+<td><code>Classes.JOINT_API.value</code>（= <code>"IsaacJointAPI"</code>）</td>
+<td><code>ApplyJointAPI(prim)</code></td>
+</tr>
+<tr>
+<td><code>Classes.REFERENCE_POINT_API.value</code>（= <code>"IsaacReferencePointAPI"</code>）</td>
+<td><code>ApplyReferencePointAPI(prim)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="1-3-robot-schema">1-3. ツールはどう Robot Schema を使うのか<a class="headerlink" href="#1-3-robot-schema" title="Permanent link">&para;</a></h3>
+<p>具体例として、Gain Tuner の動作を見てみましょう。Gain Tuner はステージ全体を走査し、<strong><code>IsaacRobotAPI</code> が適用されたプリムだけ</strong>をドロップダウンメニューに列挙します（Isaac Sim 5.1 の <code>isaacsim.robot_setup.gain_tuner</code> 拡張の実装）。Robot Schema が適用されていなければ、たとえ Articulation Root が有効でも Gain Tuner からは「ロボットが見えない」状態になります。</p>
+<p>同様の仕組みで、Grasp Editor は <code>IsaacAttachmentPointAPI</code> を、XRDF Editor は <code>IsaacJointAPI</code> の DOF オフセット情報を、それぞれ参照します。</p>
+<h2 id="2">ステップ 2：レイヤー構成の準備<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>Isaac Sim の<a href="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html">アセット構造ガイドライン</a> では、<strong>Robot Schema を専用レイヤーに分離して保存する</strong>ことが推奨されています。これにより：</p>
+<ul>
+<li>ベースアセット（メッシュやリギング）に手を加えずに Robot Schema を追加できる</li>
+<li>スキーマの将来の更新があってもベースを再生成せずに対応できる</li>
+<li>不要になればレイヤーを切り離すだけで元に戻せる</li>
+</ul>
+<h3 id="2-1">2-1. レイヤー構成の方針<a class="headerlink" href="#2-1" title="Permanent link">&para;</a></h3>
+<p>USD はファイルを<strong>レイヤー</strong>として重ね合わせる仕組みを持っており、ベースアセットを変更せずに別ファイルからプロパティを上書き・追加できます。Robot Schema もこの仕組みを使って専用レイヤーに分離するのが推奨です：</p>
+<table>
+<thead>
+<tr>
+<th>ファイル</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;robot&gt;.usd</code></td>
+<td>ベースのリギング済みアセット（チュートリアル 5 の成果物）</td>
+</tr>
+<tr>
+<td><code>configuration/&lt;robot&gt;_robot_schema.usda</code></td>
+<td><strong>Robot Schema の適用結果のみ</strong> を格納するレイヤー（このチュートリアルで作成）</td>
+</tr>
+</tbody>
+</table>
+<p><code>configuration/</code> サブディレクトリ配下に <code>*_robot_schema.usda</code> という名前で配置するのは Isaac Sim 公式推奨の命名規則です。</p>
+<div class="admonition note">
+<p class="admonition-title">USD レイヤーの考え方</p>
+<p>USD のレイヤーは、Photoshop のレイヤーに似た仕組みです。<strong>ベースとなるファイルの上にもう一つのレイヤーを重ねる</strong>ことで、元のファイルを一切変更せずにプロパティの追加・変更ができます。本チュートリアルでは、ベースアセット（リギング済みフォークリフト）の上に Robot Schema レイヤーを重ねる構成を作ります。</p>
+<p>後段のステップ 3 で実行する Python スクリプトが、このレイヤー構造を自動的に作成します。</p>
+</div>
+<h3 id="2-2">2-2. 作業ディレクトリの確認<a class="headerlink" href="#2-2" title="Permanent link">&para;</a></h3>
+<p>チュートリアル 5 で作成した USD ファイル（例：<code>forklift.usd</code>）が保存されているフォルダを開きます。同じフォルダの中に <code>configuration/</code> サブフォルダがなければ作成しておきます。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>my_forklift/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── forklift.usd                              ← ベースアセット
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>└── configuration/                            ← 新規作成
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    └── forklift_robot_schema.usda            ← このチュートリアルで作成
+</span></code></pre></div>
+<h2 id="3python-robot-schema">ステップ 3：Python による Robot Schema の一括適用<a class="headerlink" href="#3python-robot-schema" title="Permanent link">&para;</a></h2>
+<p>ロボットのリンク数・ジョイント数が多い場合、Python による一括適用が圧倒的に効率的です。Isaac Sim 公式ドキュメントが提供しているスクリプトをそのまま使います。</p>
+<h3 id="3-1">3-1. ベースアセットを開く<a class="headerlink" href="#3-1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Isaac Sim を起動し、チュートリアル 5 で作成した <code>forklift.usd</code> を開きます</li>
+<li>ステージのデフォルトプリムが正しく設定されていることを確認します（<code>/SMV_Forklift_B01_01</code> など、ロボットのルート Xform）</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">デフォルトプリムの確認方法</p>
+<p>Stage パネルでロボットのルート Xform を選択し、<strong>Properties</strong> パネルの <strong>Metadata</strong> セクションで <code>defaultPrim</code> が設定されているか確認します。設定されていない場合は、ルート Xform を右クリックし <strong>Set as Default Prim</strong> を選択してください。</p>
+</div>
+<h3 id="3-2-script-editor">3-2. Script Editor を開く<a class="headerlink" href="#3-2-script-editor" title="Permanent link">&para;</a></h3>
+<ol>
+<li>メニューから <strong>Window &gt; Script Editor</strong> を選択します</li>
+</ol>
+<h3 id="3-3">3-3. 一括適用スクリプトの実行<a class="headerlink" href="#3-3" title="Permanent link">&para;</a></h3>
+<p>以下のスクリプトを Script Editor に貼り付け、<strong>Run</strong>（▶ ボタン）をクリックします：</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pxr</span><span class="w"> </span><span class="kn">import</span> <span class="n">Usd</span><span class="p">,</span> <span class="n">UsdGeom</span><span class="p">,</span> <span class="n">Sdf</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pxr</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">omni.usd</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">usd.schema.isaac.robot_schema</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rs</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">stage</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">get_stage</span><span class="p">()</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1"># Create a configuration/ sublayer in the same directory as the base asset</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">robot_asset_path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stage</span><span class="o">.</span><span class="n">GetRootLayer</span><span class="p">()</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">robot_asset</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stage</span><span class="o">.</span><span class="n">GetRootLayer</span><span class="p">()</span><span class="o">.</span><span class="n">identifier</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">schema_asset</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;configuration/</span><span class="si">{</span><span class="n">robot_asset</span><span class="si">}</span><span class="s2">_robot_schema.usda&quot;</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="n">edit_layer</span> <span class="o">=</span> <span class="n">Sdf</span><span class="o">.</span><span class="n">Layer</span><span class="o">.</span><span class="n">FindOrOpen</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">robot_asset_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">schema_asset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">edit_layer</span><span class="p">:</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="n">edit_layer</span> <span class="o">=</span> <span class="n">Sdf</span><span class="o">.</span><span class="n">Layer</span><span class="o">.</span><span class="n">CreateNew</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">robot_asset_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">schema_asset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="n">stage</span><span class="o">.</span><span class="n">GetRootLayer</span><span class="p">()</span><span class="o">.</span><span class="n">subLayerPaths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">schema_asset</span><span class="p">)</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="c1"># Switch the edit target to the Robot Schema layer and apply APIs in bulk</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="k">with</span> <span class="n">pxr</span><span class="o">.</span><span class="n">Usd</span><span class="o">.</span><span class="n">EditContext</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="n">edit_layer</span><span class="p">):</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="n">default_prim</span> <span class="o">=</span> <span class="n">stage</span><span class="o">.</span><span class="n">GetDefaultPrim</span><span class="p">()</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>    <span class="c1"># (1) Apply RobotAPI to the root prim</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>    <span class="n">rs</span><span class="o">.</span><span class="n">ApplyRobotAPI</span><span class="p">(</span><span class="n">default_prim</span><span class="p">)</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>    <span class="n">robot_links</span> <span class="o">=</span> <span class="n">default_prim</span><span class="o">.</span><span class="n">GetRelationship</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">Relations</span><span class="o">.</span><span class="n">ROBOT_LINKS</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>    <span class="n">robot_joints</span> <span class="o">=</span> <span class="n">default_prim</span><span class="o">.</span><span class="n">GetRelationship</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">Relations</span><span class="o">.</span><span class="n">ROBOT_JOINTS</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    <span class="c1"># (2) Walk all prims and apply Link / Joint APIs</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>    <span class="k">for</span> <span class="n">prim</span> <span class="ow">in</span> <span class="n">Usd</span><span class="o">.</span><span class="n">PrimRange</span><span class="p">(</span><span class="n">default_prim</span><span class="p">):</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>        <span class="c1"># Apply LinkAPI to rigid bodies</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>        <span class="k">if</span> <span class="s2">&quot;PhysicsRigidBodyAPI&quot;</span> <span class="ow">in</span> <span class="n">prim</span><span class="o">.</span><span class="n">GetAppliedSchemas</span><span class="p">():</span>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>            <span class="n">rs</span><span class="o">.</span><span class="n">ApplyLinkAPI</span><span class="p">(</span><span class="n">prim</span><span class="p">)</span>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>            <span class="n">robot_links</span><span class="o">.</span><span class="n">AddTarget</span><span class="p">(</span><span class="n">prim</span><span class="o">.</span><span class="n">GetPath</span><span class="p">())</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>        <span class="c1"># Apply JointAPI to joints</span>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>        <span class="k">if</span> <span class="n">prim</span><span class="o">.</span><span class="n">IsA</span><span class="p">(</span><span class="n">pxr</span><span class="o">.</span><span class="n">UsdPhysics</span><span class="o">.</span><span class="n">Joint</span><span class="p">):</span>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>            <span class="n">rs</span><span class="o">.</span><span class="n">ApplyJointAPI</span><span class="p">(</span><span class="n">prim</span><span class="p">)</span>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>            <span class="c1"># Fixed joints have no DOF, so exclude them from robot_joints</span>
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>            <span class="k">if</span> <span class="ow">not</span> <span class="n">prim</span><span class="o">.</span><span class="n">IsA</span><span class="p">(</span><span class="n">pxr</span><span class="o">.</span><span class="n">UsdPhysics</span><span class="o">.</span><span class="n">FixedJoint</span><span class="p">):</span>
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>                <span class="n">robot_joints</span><span class="o">.</span><span class="n">AddTarget</span><span class="p">(</span><span class="n">prim</span><span class="o">.</span><span class="n">GetPath</span><span class="p">())</span>
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a><span class="c1"># Save the Robot Schema layer and the stage</span>
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="n">edit_layer</span><span class="o">.</span><span class="n">Save</span><span class="p">()</span>
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="n">stage</span><span class="o">.</span><span class="n">Save</span><span class="p">()</span>
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>
+</span><span id="__span-1-44"><a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Robot Schema saved to </span><span class="si">{</span><span class="n">schema_asset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p>このスクリプトは以下を行います：</p>
+<ol>
+<li>ベースアセットと同じディレクトリに <code>configuration/&lt;アセット名&gt;_robot_schema.usda</code> という新規レイヤーを作成し、サブレイヤーとしてアタッチ</li>
+<li>デフォルトプリムに <strong>RobotAPI</strong> を適用、<code>robotLinks</code> と <code>robotJoints</code> のリレーションを生成</li>
+<li>ステージ内の全プリムを走査し、<strong>剛体には LinkAPI</strong>、<strong>ジョイントには JointAPI</strong> を適用</li>
+<li>リンクとジョイント（固定ジョイントを除く）をルートプリムの <code>robotLinks</code> / <code>robotJoints</code> リレーションに登録</li>
+<li>すべての変更を Robot Schema レイヤーに書き込んで保存</li>
+</ol>
+<h3 id="3-4">3-4. 実行結果の確認<a class="headerlink" href="#3-4" title="Permanent link">&para;</a></h3>
+<p>Script Editor の出力に <code>Robot Schema saved to configuration/&lt;...&gt;_robot_schema.usda</code> と表示されれば成功です。</p>
+<p>ファイルマネージャーで <code>configuration/</code> フォルダを開き、新しい <code>*_robot_schema.usda</code> ファイルが作成されていることを確認します。</p>
+<div class="admonition tip">
+<p class="admonition-title">スクリプトの再実行</p>
+<p>すでに Robot Schema が適用されているステージで再実行すると、<code>AddTarget</code> が重複登録される可能性があります。再実行する場合は、まず <code>configuration/*_robot_schema.usda</code> を削除してから行うか、適用済みかどうかをチェックする条件分岐を追加してください。</p>
+</div>
+<h2 id="4gui">ステップ 4：GUI による適用（補足）<a class="headerlink" href="#4gui" title="Permanent link">&para;</a></h2>
+<p>GUI でも Robot Schema を適用できます。少数のプリムだけ追加で API を当てたい場合や、属性を個別に編集したい場合に便利です。</p>
+<h3 id="4-1-robotapi">4-1. RobotAPI の適用<a class="headerlink" href="#4-1-robotapi" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Stage パネルでロボットのルート Xform（例：<code>/SMV_Forklift_B01_01</code>）を選択します</li>
+<li>Properties パネルの <strong>+ Add</strong> ボタンをクリック</li>
+<li>表示されたメニューから <strong>Edit API Schema</strong> を選択</li>
+<li>ダイアログの検索欄に <code>IsaacRobotAPI</code> と入力し、選択して適用</li>
+<li>Properties パネルに紫色の <strong>Robot</strong> セクションが追加されたことを確認</li>
+</ol>
+<h3 id="4-2">4-2. 属性の編集<a class="headerlink" href="#4-2" title="Permanent link">&para;</a></h3>
+<p>追加された Robot セクションでは、以下を設定できます：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>例</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Description</strong></td>
+<td><code>Custom forklift mobile robot rig</code></td>
+<td>ロボットの説明文</td>
+</tr>
+<tr>
+<td><strong>Namespace</strong></td>
+<td><code>forklift</code></td>
+<td>ROS / OmniGraph の名前空間</td>
+</tr>
+<tr>
+<td><strong>Robot Type</strong></td>
+<td><code>mobile_robot</code></td>
+<td>ロボット種別（任意の Token）</td>
+</tr>
+<tr>
+<td><strong>Robot Links</strong>（リレーション）</td>
+<td>各リンクのプリムパス</td>
+<td>ロボットを構成するリンクの順序付きリスト</td>
+</tr>
+<tr>
+<td><strong>Robot Joints</strong>（リレーション）</td>
+<td>各ジョイントのプリムパス</td>
+<td>DOF を持つジョイントの順序付きリスト</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Robot Links / Robot Joints の意味</p>
+<p>これらのリレーションは「ステート報告に含めたいリンク／ジョイントの順序」を指定するものです。リレーションに登録されていないリンクやジョイントもアーティキュレーションには含まれますが、ROS のジョイントステートメッセージなどには出力されません。</p>
+</div>
+<h3 id="4-3-linkapi-jointapi">4-3. LinkAPI / JointAPI の個別適用<a class="headerlink" href="#4-3-linkapi-jointapi" title="Permanent link">&para;</a></h3>
+<ul>
+<li>リンクに対して：剛体プリムを選択 → <strong>+ Add &gt; Edit API Schema &gt; IsaacLinkAPI</strong></li>
+<li>ジョイントに対して：ジョイントプリムを選択 → <strong>+ Add &gt; Edit API Schema &gt; IsaacJointAPI</strong></li>
+</ul>
+<p>ステップ 3 のスクリプトを実行済みであれば、すべてのリンクとジョイントに自動で適用されているため、この手順は通常不要です。</p>
+<h2 id="5">ステップ 5：適用結果の確認<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<h3 id="5-1-properties">5-1. Properties パネルでの確認<a class="headerlink" href="#5-1-properties" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Stage パネルでロボットのルートプリムを選択</li>
+<li>Properties パネルをスクロールし、<strong>紫色の Robot セクション</strong>が表示されることを確認</li>
+<li>各リンク／ジョイントを選択し、それぞれ <strong>Link</strong> / <strong>Joint</strong> セクションが表示されることを確認</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">セクションが表示されない場合</p>
+<p>Properties パネルの上部にある検索欄に <code>Robot</code> と入力するか、フィルタを <strong>All</strong> に切り替えてください。Raw USD Properties 表示にすると <code>apiSchemas = ["IsaacRobotAPI", ...]</code> のように直接確認できます。</p>
+</div>
+<h3 id="5-2-gain-tuner">5-2. Gain Tuner での認識確認<a class="headerlink" href="#5-2-gain-tuner" title="Permanent link">&para;</a></h3>
+<p>Robot Schema が正しく適用されていれば、Gain Tuner からロボットが認識されるはずです：</p>
+<ol>
+<li>メニューから <strong>Tools &gt; Robotics &gt; Asset Editors &gt; Gain Tuner</strong> を開く</li>
+<li><strong>Select Robot</strong> ドロップダウンを開く</li>
+<li>リストにあなたのロボット（例：<code>/SMV_Forklift_B01_01</code>）が表示されていることを確認</li>
+</ol>
+<p>ドロップダウンに表示されなければ、ステップ 3 のスクリプト実行時にエラーが出ていなかったか、ステージを保存後にリロードしたかを確認してください。</p>
+<h3 id="5-3-python">5-3. Python によるプログラム的な確認<a class="headerlink" href="#5-3-python" title="Permanent link">&para;</a></h3>
+<p>Script Editor で以下を実行することでも確認できます：</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">omni.usd</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">usd.schema.isaac.robot_schema</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rs</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">stage</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">get_stage</span><span class="p">()</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">default_prim</span> <span class="o">=</span> <span class="n">stage</span><span class="o">.</span><span class="n">GetDefaultPrim</span><span class="p">()</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Applied schemas:&quot;</span><span class="p">,</span> <span class="n">default_prim</span><span class="o">.</span><span class="n">GetAppliedSchemas</span><span class="p">())</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Has RobotAPI:&quot;</span><span class="p">,</span> <span class="n">default_prim</span><span class="o">.</span><span class="n">HasAPI</span><span class="p">(</span><span class="n">rs</span><span class="o">.</span><span class="n">Classes</span><span class="o">.</span><span class="n">ROBOT_API</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="c1"># Inspect the targets of robotLinks / robotJoints</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="k">for</span> <span class="n">rel_name</span> <span class="ow">in</span> <span class="p">[</span><span class="n">rs</span><span class="o">.</span><span class="n">Relations</span><span class="o">.</span><span class="n">ROBOT_LINKS</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rs</span><span class="o">.</span><span class="n">Relations</span><span class="o">.</span><span class="n">ROBOT_JOINTS</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="n">rel</span> <span class="o">=</span> <span class="n">default_prim</span><span class="o">.</span><span class="n">GetRelationship</span><span class="p">(</span><span class="n">rel_name</span><span class="p">)</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    <span class="n">targets</span> <span class="o">=</span> <span class="n">rel</span><span class="o">.</span><span class="n">GetTargets</span><span class="p">()</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rel_name</span><span class="si">}</span><span class="s2"> target count: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<p><code>Has RobotAPI: True</code> と表示され、リンク・ジョイントが想定通りの数で登録されていれば成功です。</p>
+<h2 id="6reference-point">ステップ 6（オプション）：Reference Point の追加<a class="headerlink" href="#6reference-point" title="Permanent link">&para;</a></h2>
+<p>ロボットアームのエンドエフェクタや、フォークリフトのフォーク先端など、<strong>ロボット上の意味のある参照点</strong>には <code>IsaacReferencePointAPI</code> を適用しておくと、後続のツール（Pick &amp; Place チュートリアル、Grasp Editor など）から参照しやすくなります。</p>
+<div class="admonition warning">
+<p class="admonition-title">参照点プリムは事前に作成しておく必要があります</p>
+<p><code>IsaacReferencePointAPI</code> は<strong>既存のプリムに API を追加する仕組み</strong>であり、プリムを新規生成してくれるわけではありません。対象パスにプリムが存在しないまま API を適用すると、以下のような実行時エラーになります：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>RuntimeError: Accessed invalid null prim
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  ... in ApplyReferencePointAPI
+</span></code></pre></div>
+<p>そのため、まず<strong>参照点となる Xform プリムを作成</strong>し、適切な位置に配置してから API を適用します。</p>
+</div>
+<h3 id="6-1-gui">6-1. GUI で適用する例<a class="headerlink" href="#6-1-gui" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Stage パネルで親プリム（例：<code>/SMV_Forklift_B01_01/lift</code>）を右クリック</li>
+<li><strong>Create &gt; Xform</strong> を選択し、新しい Xform を作成</li>
+<li>作成された Xform を <code>fork_tip</code> にリネーム</li>
+<li>Properties パネルの <strong>Transform</strong> で、参照点として配置したい位置・姿勢を設定（例：フォーク先端の座標）</li>
+<li><code>fork_tip</code> を選択した状態で <strong>+ Add &gt; Edit API Schema &gt; IsaacReferencePointAPI</strong> を選択</li>
+<li><strong>Description</strong> に <code>Fork tip for object insertion</code> などの説明を入力</li>
+<li><strong>Forward Axis</strong> に基準軸（<code>X</code>、<code>Y</code>、<code>Z</code> のいずれか）を設定</li>
+</ol>
+<h3 id="6-2-python">6-2. Python で適用する例<a class="headerlink" href="#6-2-python" title="Permanent link">&para;</a></h3>
+<p>参照点プリムが存在しない場合に新規作成し、適切な位置に配置してから API を適用する完全な例です：</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pxr</span><span class="w"> </span><span class="kn">import</span> <span class="n">Usd</span><span class="p">,</span> <span class="n">UsdGeom</span><span class="p">,</span> <span class="n">Gf</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">omni.usd</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">usd.schema.isaac.robot_schema</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rs</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">stage</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">get_stage</span><span class="p">()</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Create the reference point prim if it does not exist</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">ref_path</span> <span class="o">=</span> <span class="s2">&quot;/SMV_Forklift_B01_01/lift/fork_tip&quot;</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">ref_prim</span> <span class="o">=</span> <span class="n">stage</span><span class="o">.</span><span class="n">GetPrimAtPath</span><span class="p">(</span><span class="n">ref_path</span><span class="p">)</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">ref_prim</span><span class="o">.</span><span class="n">IsValid</span><span class="p">():</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    <span class="n">ref_xform</span> <span class="o">=</span> <span class="n">UsdGeom</span><span class="o">.</span><span class="n">Xform</span><span class="o">.</span><span class="n">Define</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="n">ref_path</span><span class="p">)</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="c1"># Set the local transform (adjust to the actual fork tip position in your asset)</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="n">ref_xform</span><span class="o">.</span><span class="n">AddTranslateOp</span><span class="p">()</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="n">Gf</span><span class="o">.</span><span class="n">Vec3d</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    <span class="n">ref_prim</span> <span class="o">=</span> <span class="n">ref_xform</span><span class="o">.</span><span class="n">GetPrim</span><span class="p">()</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="c1"># Apply ReferencePointAPI</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="n">rs</span><span class="o">.</span><span class="n">ApplyReferencePointAPI</span><span class="p">(</span><span class="n">ref_prim</span><span class="p">)</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="c1"># Set attributes</span>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="n">ref_prim</span><span class="o">.</span><span class="n">GetAttribute</span><span class="p">(</span><span class="s2">&quot;isaac:Description&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;Fork tip for object insertion&quot;</span><span class="p">)</span>
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="n">ref_prim</span><span class="o">.</span><span class="n">GetAttribute</span><span class="p">(</span><span class="s2">&quot;isaac:forwardAxis&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">)</span>
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ReferencePointAPI applied to </span><span class="si">{</span><span class="n">ref_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">既存プリムをそのまま参照点にする場合</p>
+<p>すでに目的の場所に Xform やリンクがある場合は、新規作成せずにそのプリムに直接 <code>ApplyReferencePointAPI</code> を適用するだけで構いません。その場合は、上記スクリプトの <code>if not ref_prim.IsValid():</code> ブロック全体を削除してください。</p>
+<p>リンク（剛体）に Reference Point API を追加することも可能で、その場合は LinkAPI と ReferencePointAPI の両方が同じプリムに適用された状態になります。</p>
+</div>
+<h2 id="_6">トラブルシューティング<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>原因</th>
+<th>解決方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gain Tuner にロボットが表示されない</td>
+<td>RobotAPI 未適用</td>
+<td>ステップ 3 のスクリプトを実行、または GUI で <strong>IsaacRobotAPI</strong> をルートプリムに適用</td>
+</tr>
+<tr>
+<td><code>usd.schema.isaac.robot_schema</code> の import エラー</td>
+<td><code>isaacsim.robot.schema</code> 拡張が無効</td>
+<td><strong>Window &gt; Extensions</strong> で <code>isaacsim.robot.schema</code> を検索して有効化</td>
+</tr>
+<tr>
+<td><code>default_prim</code> が <code>None</code></td>
+<td>デフォルトプリム未設定</td>
+<td>ルート Xform を右クリックし <strong>Set as Default Prim</strong></td>
+</tr>
+<tr>
+<td><code>robotLinks</code> / <code>robotJoints</code> が空</td>
+<td>スクリプト実行時に Default Prim 配下に剛体／ジョイントがない</td>
+<td>プリム階層を確認、または <code>default_prim</code> を正しいルートに変更</td>
+</tr>
+<tr>
+<td>再実行時にリレーションが重複</td>
+<td><code>AddTarget</code> の重複登録</td>
+<td><code>configuration/*_robot_schema.usda</code> を削除してから再実行</td>
+</tr>
+<tr>
+<td>Properties パネルに Robot セクションが出ない</td>
+<td>拡張機能の読み込み失敗 / プリム選択ミス</td>
+<td>Isaac Sim を再起動、ステージを再読み込み、ルートプリムを再選択</td>
+</tr>
+<tr>
+<td><code>RuntimeError: Accessed invalid null prim</code> が <code>ApplyReferencePointAPI</code> などで発生</td>
+<td>対象パスにプリムが存在しない</td>
+<td><code>stage.GetPrimAtPath(...)</code> の戻り値で <code>prim.IsValid()</code> を確認。存在しない場合は <code>UsdGeom.Xform.Define</code> などで先にプリムを作成してから API を適用（ステップ 6-2 参照）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">まとめ<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>このチュートリアルでは以下のトピックを扱いました：</p>
+<ol>
+<li><strong>Robot Schema の概念</strong> — Physics Schema を補完してロボットの意味づけを行う拡張スキーマ</li>
+<li><strong>4 つの主要 API</strong>（RobotAPI / LinkAPI / JointAPI / ReferencePointAPI）の役割と属性</li>
+<li><strong>専用レイヤー（<code>configuration/&lt;robot&gt;_robot_schema.usda</code>）への分離</strong>による非破壊的な適用</li>
+<li><strong>Python による一括適用</strong> — 全リンク・ジョイントへの自動適用</li>
+<li><strong>GUI による補足適用</strong> — 個別プリムへの追加と属性編集</li>
+<li><strong>適用結果の確認</strong> — Properties パネルと Gain Tuner ドロップダウンでの動作確認</li>
+<li><strong>Reference Point の追加</strong> — エンドエフェクタなど意味のある参照点の登録</li>
+</ol>
+<p>これにより、手動リギングしたロボットも URDF インポート経由のロボットと同等に、Gain Tuner や Grasp Editor などの Asset Editor 系ツールから扱えるようになります。</p>
+<div class="admonition tip">
+<p class="admonition-title">公式ドキュメント</p>
+<p>Robot Schema のより詳細な仕様（Surface Gripper、AttachmentPointAPI、ロボットの組み合わせ表現など）は、Isaac Sim 公式ドキュメントの <a href="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/omniverse_usd/robot_schema.html">Robot Schema</a> を参照してください。</p>
+</div>
+<h2 id="_8">次のステップ<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>次のチュートリアル「<a href="../06_setup_manipulator/">マニピュレータのセットアップ</a>」に進み、URDF からロボットアームをインポートする中級編に入りましょう。URDF インポート経由では Robot Schema が自動適用されるため、本チュートリアルで学んだ概念がそのまま活きてきます。</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

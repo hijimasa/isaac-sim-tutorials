@@ -1,0 +1,4681 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Isaac Sim チュートリアル集 / Isaac Sim Tutorial Collection">
+      
+      
+        <meta name="author" content="IR Lab">
+      
+      
+        <link rel="canonical" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/10_closed_loop_structures/">
+      
+      
+        <link rel="prev" href="../09_pick_and_place/">
+      
+      
+        <link rel="next" href="../11_joint_tuning/">
+      
+      
+        
+          <link rel="alternate" href="../../ja/robot_setup/10_closed_loop_structures/" hreflang="ja">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Rigging Closed-Loop Structures - Isaac Sim Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans JP";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#rigging-closed-loop-structures" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-header__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Isaac Sim Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Rigging Closed-Loop Structures
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../ja/robot_setup/10_closed_loop_structures/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/tutorial_list/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Introduction
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core_api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Core API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Robot Setup
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../importer_exporter/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Import & Export
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../isaac_lab/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Isaac Lab
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ros/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ROS 2
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../synthetic_data/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Synthetic Data
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sensors/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sensors
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../motion_generation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Motion Generation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../omnigraph/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  OmniGraph
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../troubleshooting/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Troubleshooting
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-nav__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    Isaac Sim Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Introduction
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/tutorial_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../core_api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core API
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/01_hello_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello World
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/02_hello_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/03_adding_a_controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/04_adding_a_manipulator_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Manipulator Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/05_adding_multiple_robots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Multiple Robots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/06_multiple_tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiple Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/07_adding_props/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Props
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/08_data_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Logging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/09_deformable_body/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deformable Body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Robot Setup
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Robot Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_stage_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_assemble_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assemble a Simple Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_articulate_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articulate a Basic Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_camera_sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add Camera and Sensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_rig_mobile_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Mobile Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05a_apply_robot_schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applying the Robot Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_setup_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_configure_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configure a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_generate_robot_config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generate Robot Configuration File
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_pick_and_place/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pick and Place Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig Closed-Loop Structures
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig Closed-Loop Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asset-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-asset-editing-using-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Asset Editing Using Layers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Asset Editing Using Layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-preparing-the-working-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. Preparing the Working Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-layer-workflow-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Layer Workflow Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-creating-the-edit-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. Creating the Edit Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-4-creating-the-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-4. Creating the Configuration File
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-joint-adjustment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Joint Adjustment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Joint Adjustment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1-joint-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. Joint Visualization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-checking-joint-orientations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Checking Joint Orientations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-fixing-joint-orientations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Fixing Joint Orientations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-setting-joint-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Setting Joint Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-5-creating-fingertip-friction-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-5. Creating Fingertip Friction Material
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-breaking-the-articulation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Breaking the Articulation Loop
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Breaking the Articulation Loop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1-understanding-the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. Understanding the Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2-criteria-for-selecting-a-joint-to-break" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. Criteria for Selecting a Joint to Break
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3-steps-to-break-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. Steps to Break the Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-building-the-test-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Building the Test Environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Building the Test Environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-test-environment-composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Test Environment Composition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-automatic-setup-with-a-python-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Automatic Setup with a Python Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-verifying-the-test-scaffold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. Verifying the Test Scaffold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-configuring-joint-drives-and-mimic-joints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Configuring Joint Drives and Mimic Joints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Configuring Joint Drives and Mimic Joints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-adding-a-drive-to-the-main-drive-joint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Adding a Drive to the Main Drive Joint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2-linking-both-fingers-with-a-mimic-joint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. Linking Both Fingers with a Mimic Joint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-3-spring-to-maintain-finger-parallelism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-3. Spring to Maintain Finger Parallelism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-4-verifying-the-gripper-alone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-4. Verifying the Gripper Alone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-5-optimizing-physics-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-5. Optimizing Physics Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-6-tuning-the-grip-force" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-6. Tuning the Grip Force
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-collision-meshes-and-self-collision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Collision Meshes and Self-Collision
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Collision Meshes and Self-Collision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6-1-checking-collision-meshes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-1. Checking Collision Meshes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-2-adjusting-the-collider-approximation-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-2. Adjusting the Collider Approximation Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-3-enabling-self-collision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-3. Enabling Self-Collision
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-saving-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Saving the Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7: Saving the Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#7-1-reviewing-and-saving-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7-1. Reviewing and Saving Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-gripper-control-with-omnigraph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Gripper Control with OmniGraph
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 8: Gripper Control with OmniGraph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#8-1-creating-an-action-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-1. Creating an Action Graph
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-constructing-the-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2. Constructing the Graph
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8-2. Constructing the Graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#8-2-1-adding-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-1. Adding Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-2-placing-and-connecting-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-2. Placing and Connecting Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-3-configuring-each-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-3. Configuring Each Node
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8-2-3. Configuring Each Node">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on-variable-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On Variable Change
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constant-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constant Float
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-prim-attribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write Prim Attribute
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-4-connection-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-4. Connection Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-5-how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-5. How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-3-verifying-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-3. Verifying Operation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_joint_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tuning Joint Drive Gains
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_asset_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_rig_legged_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Legged Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../importer_exporter/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import & Export
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Import & Export
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/01_import_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/02_export_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Export URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/03_import_mjcf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import MJCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/04_shapenet_importer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ShapeNet Importer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../isaac_lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isaac Lab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Isaac Lab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ros/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS 2
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ROS 2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../synthetic_data/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synthetic Data
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Synthetic Data
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sensors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sensors
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sensors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../motion_generation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Motion Generation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Motion Generation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../omnigraph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OmniGraph
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OmniGraph
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../troubleshooting/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Troubleshooting
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asset-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-asset-editing-using-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Asset Editing Using Layers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Asset Editing Using Layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-preparing-the-working-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. Preparing the Working Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-layer-workflow-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Layer Workflow Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-creating-the-edit-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. Creating the Edit Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-4-creating-the-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-4. Creating the Configuration File
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-joint-adjustment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Joint Adjustment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Joint Adjustment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1-joint-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. Joint Visualization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-checking-joint-orientations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Checking Joint Orientations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-fixing-joint-orientations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Fixing Joint Orientations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-setting-joint-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Setting Joint Limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-5-creating-fingertip-friction-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-5. Creating Fingertip Friction Material
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-breaking-the-articulation-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Breaking the Articulation Loop
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Breaking the Articulation Loop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1-understanding-the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. Understanding the Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2-criteria-for-selecting-a-joint-to-break" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. Criteria for Selecting a Joint to Break
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3-steps-to-break-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. Steps to Break the Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-building-the-test-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Building the Test Environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Building the Test Environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-test-environment-composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Test Environment Composition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-automatic-setup-with-a-python-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Automatic Setup with a Python Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-verifying-the-test-scaffold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. Verifying the Test Scaffold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-configuring-joint-drives-and-mimic-joints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Configuring Joint Drives and Mimic Joints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Configuring Joint Drives and Mimic Joints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-adding-a-drive-to-the-main-drive-joint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Adding a Drive to the Main Drive Joint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2-linking-both-fingers-with-a-mimic-joint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. Linking Both Fingers with a Mimic Joint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-3-spring-to-maintain-finger-parallelism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-3. Spring to Maintain Finger Parallelism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-4-verifying-the-gripper-alone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-4. Verifying the Gripper Alone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-5-optimizing-physics-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-5. Optimizing Physics Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-6-tuning-the-grip-force" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-6. Tuning the Grip Force
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-6-collision-meshes-and-self-collision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Collision Meshes and Self-Collision
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Collision Meshes and Self-Collision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6-1-checking-collision-meshes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-1. Checking Collision Meshes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-2-adjusting-the-collider-approximation-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-2. Adjusting the Collider Approximation Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-3-enabling-self-collision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-3. Enabling Self-Collision
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-saving-the-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Saving the Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7: Saving the Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#7-1-reviewing-and-saving-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7-1. Reviewing and Saving Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-8-gripper-control-with-omnigraph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Gripper Control with OmniGraph
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 8: Gripper Control with OmniGraph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#8-1-creating-an-action-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-1. Creating an Action Graph
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-constructing-the-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2. Constructing the Graph
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8-2. Constructing the Graph">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#8-2-1-adding-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-1. Adding Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-2-placing-and-connecting-nodes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-2. Placing and Connecting Nodes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-3-configuring-each-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-3. Configuring Each Node
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8-2-3. Configuring Each Node">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on-variable-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On Variable Change
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constant-float" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constant Float
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-prim-attribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write Prim Attribute
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-4-connection-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-4. Connection Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-2-5-how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-2-5. How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-3-verifying-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8-3. Verifying Operation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="rigging-closed-loop-structures">Rigging Closed-Loop Structures<a class="headerlink" href="#rigging-closed-loop-structures" title="Permanent link">&para;</a></h1>
+<h2 id="learning-objectives">Learning Objectives<a class="headerlink" href="#learning-objectives" title="Permanent link">&para;</a></h2>
+<p>After completing this tutorial, you will have learned:</p>
+<ul>
+<li>Asset editing workflow using USD layers</li>
+<li>Adjusting joints and creating physics materials</li>
+<li>How to break a closed-loop articulation chain</li>
+<li>Configuring joint drives and mimic joints</li>
+<li>Optimizing collision meshes and self-collision</li>
+<li>Building gripper control with OmniGraph</li>
+</ul>
+<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Complete <a href="../05_rig_mobile_robot/">Tutorial 5: Rig a Mobile Robot</a> before starting this tutorial.</li>
+</ul>
+<h3 id="asset-used">Asset Used<a class="headerlink" href="#asset-used" title="Permanent link">&para;</a></h3>
+<p>This tutorial uses the pre-imported Robotiq 2F-85 gripper asset bundled with Isaac Sim:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Samples/Rigging/Gripper/Robotiq 2F-85
+</span></code></pre></div>
+<h3 id="estimated-time">Estimated Time<a class="headerlink" href="#estimated-time" title="Permanent link">&para;</a></h3>
+<p>Approximately 30 minutes.</p>
+<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+<p>Mechanisms such as robotic grippers often contain structures where links form closed loops. However, articulations (joint chains) in physics simulation must be expressed as a <strong>kinematic tree</strong> (tree structure), and loop structures cannot be handled directly.</p>
+<p>In this tutorial, you will use the <strong>Robotiq 2F-85 parallel gripper</strong> to learn how to correctly rig a robot containing closed-loop structures in Isaac Sim. Specifically, you will work through the following steps:</p>
+<ol>
+<li><strong>Asset editing using layers</strong> — A non-destructive workflow that preserves the original file</li>
+<li><strong>Joint adjustment</strong> — Fixing joint orientations, limits, and setting up friction materials</li>
+<li><strong>Breaking the articulation loop</strong> — Converting the closed loop into a tree structure</li>
+<li><strong>Building the test environment</strong> — Creating a scene to verify gripper operation</li>
+<li><strong>Configuring joint drives and mimic joints</strong> — Adding drive control and mimic linkage to control the gripper fingers</li>
+<li><strong>Optimizing collision meshes</strong> — Adjusting collision shapes for grasping</li>
+<li><strong>Saving the configuration</strong> — Saving changes to each layer</li>
+<li><strong>Gripper control with OmniGraph</strong> — Opening and closing the gripper by toggling a Boolean variable</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">What is a closed-loop structure?</p>
+<p>A closed-loop structure is a mechanism where links and joints are connected in a ring. For example, the two fingers of a parallel gripper are each connected to the body through multiple links, and they form a closed loop when grasping an object at the tip. In contrast, serial robot arms such as the UR10e are connected in a single chain (open loop) from base to end-effector.</p>
+</div>
+<h2 id="step-1-asset-editing-using-layers">Step 1: Asset Editing Using Layers<a class="headerlink" href="#step-1-asset-editing-using-layers" title="Permanent link">&para;</a></h2>
+<p>Instead of editing the original USD file directly, you will learn how to edit it non-destructively using <strong>layers</strong>. With this approach, you can make configuration changes while keeping the original asset file untouched, which makes it easier to update or reuse the asset.</p>
+<div class="admonition note">
+<p class="admonition-title">What are USD layers?</p>
+<p>USD layers work similarly to layers in Photoshop. By stacking an editing layer on top of a base file, you can add or modify properties without changing the original file at all. If the layer changes are no longer needed, simply removing the layer restores the original state.</p>
+</div>
+<h3 id="1-1-preparing-the-working-directory">1-1. Preparing the Working Directory<a class="headerlink" href="#1-1-preparing-the-working-directory" title="Permanent link">&para;</a></h3>
+<p>Since the sample asset is read-only, first copy it to a working folder:</p>
+<ol>
+<li>Create a working folder in any location (e.g., on the desktop) such as <code>Robotiq_2F_85_rigging</code></li>
+<li>
+<p>From the sample asset folder <code>Samples/Rigging/Gripper/Robotiq 2F-85</code>, download the <code>Robotiq_2F_85_base.usd</code> file along with the <code>Materials</code> and <code>parts</code> directories into your working folder</p>
+<p><img alt="Downloading the sample asset" src="../images/49_sample_assets_download.png" /></p>
+</li>
+</ol>
+<h3 id="1-2-layer-workflow-overview">1-2. Layer Workflow Overview<a class="headerlink" href="#1-2-layer-workflow-overview" title="Permanent link">&para;</a></h3>
+<p>In this step, you will create the following three-file structure:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Role</th>
+<th>How to Create</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Robotiq_2F_85_base.usd</code></td>
+<td>Base asset (<strong>do not modify</strong>)</td>
+<td>Already copied from sample</td>
+</tr>
+<tr>
+<td><code>Robotiq_2F_85_edit.usd</code></td>
+<td>Layer that records joint adjustments and rigging settings</td>
+<td><strong>Created by user</strong></td>
+</tr>
+<tr>
+<td><code>Robotiq_2F_85_config.usd</code></td>
+<td>Configuration file that bundles the above for loading</td>
+<td><strong>Created by user</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-3-creating-the-edit-layer">1-3. Creating the Edit Layer<a class="headerlink" href="#1-3-creating-the-edit-layer" title="Permanent link">&para;</a></h3>
+<p>Create an edit layer to record rigging settings. Here, you create a new USD file and load the base asset as a sublayer, providing an environment where you can edit without modifying the original file.</p>
+<ol>
+<li>Create a new stage with <strong>File &gt; New</strong></li>
+<li>Save it as <code>Robotiq_2F_85_edit.usd</code> in the working folder using <strong>File &gt; Save As</strong></li>
+<li>Open the <strong>Layer</strong> tab (if not visible, open it via <strong>Window &gt; Layer</strong>)</li>
+<li>
+<p>From the Content Browser or file manager, drag and drop <code>Robotiq_2F_85_base.usd</code> onto the <strong>Root Layer</strong> in the <strong>Layer</strong> tab</p>
+<p><img alt="Creating a sublayer" src="../images/50_create_sub_layer.png" /></p>
+</li>
+<li>
+<p>Confirm that the gripper from the base asset is displayed in the Stage</p>
+</li>
+</ol>
+<p>This produces a configuration where <code>_edit.usd</code> (Root Layer) is layered on top of <code>_base.usd</code> (sublayer). All subsequent edits are recorded in <code>_edit.usd</code>, leaving the base asset unchanged.</p>
+<div class="admonition note">
+<p class="admonition-title">Layer ordering</p>
+<p>USD sublayers are evaluated with <strong>higher layers taking priority</strong>. In this configuration, opinions from the Root Layer (<code>_edit.usd</code>) override those from the sublayer (<code>_base.usd</code>), so any changes made in <code>_edit.usd</code> override values in <code>_base.usd</code>.</p>
+<p>On the other hand, properties that are not overridden in the upper layer use the value from the lower layer in the final result. In other words, if you update meshes or materials in <code>_base.usd</code>, those updates will automatically be reflected as long as you have not modified the same properties in <code>_edit.usd</code>. This is the advantage of the non-destructive editing workflow.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Roles of the Layer tab and the Stage panel</p>
+<p>The <strong>Layer</strong> tab is for adding and reordering layers and for switching the <strong>edit target</strong> (which layer your edits are recorded into). Selecting prims and editing them through the Properties panel is still done from the <strong>Stage</strong> panel. If you try to find prims inside the Layer tab, you only see per-layer opinion listings — you cannot edit prims directly from there and it is easy to get lost.</p>
+<p>Later steps switch the edit target back and forth between <code>_edit.usd</code> and <code>_config.usd</code> depending on the work, but the flow <strong>"activate the target layer in the Layer tab → return to the Stage panel to select a prim"</strong> never changes.</p>
+</div>
+<h3 id="1-4-creating-the-configuration-file">1-4. Creating the Configuration File<a class="headerlink" href="#1-4-creating-the-configuration-file" title="Permanent link">&para;</a></h3>
+<p>Next, create a configuration file for building a test scene. In this file, you will place the edited gripper asset into the scene as a <strong>payload</strong>.</p>
+<ol>
+<li>Create a new stage with <strong>File &gt; New</strong></li>
+<li>Save it as <code>Robotiq_2F_85_config.usd</code> in the same working folder using <strong>File &gt; Save As</strong></li>
+<li>From the Content Browser or file manager, drag and drop <code>Robotiq_2F_85_edit.usd</code> onto <code>/World</code> in the <strong>Stage</strong> panel</li>
+<li>
+<p>Rename the prim added to the Stage panel (with a blue arrow icon) to <code>Robotiq_2F_85</code></p>
+<div class="admonition tip">
+<p class="admonition-title">Renaming the prim</p>
+<p>The added prim's name may default to <code>Robotiq_2F_85_edit</code> based on the file name. Rename it to <code>Robotiq_2F_85</code> so that it matches the paths used in later steps (such as <code>/World/Robotiq_2F_85/base_link</code>).</p>
+</div>
+</li>
+</ol>
+<p>With this configuration, simply opening <code>_config.usd</code> will load the contents of the base asset plus the edit layer as the gripper in the scene.</p>
+<div class="admonition note">
+<p class="admonition-title">Difference between Payload and Reference</p>
+<p>There are two methods to add an asset to the Stage: <strong>Payload</strong> and <strong>Reference</strong>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Payload</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stage icon</strong></td>
+<td>Blue arrow</td>
+<td>Orange arrow</td>
+</tr>
+<tr>
+<td><strong>How to add</strong></td>
+<td>Drag and drop</td>
+<td>Right-click &gt; Add &gt; Reference</td>
+</tr>
+<tr>
+<td><strong>Lazy loading</strong></td>
+<td>Supported (can be unloaded)</td>
+<td>Not supported (always loaded)</td>
+</tr>
+<tr>
+<td><strong>Main use</strong></td>
+<td>Assets placed into a scene</td>
+<td>Always-required dependency files</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Payload</strong> is a mechanism for temporarily unloading unneeded assets to save memory and improve performance when scenes grow large. You can right-click a prim in the Stage panel and select <strong>Unload</strong> to unload that asset. <strong>Reference</strong> is always loaded and cannot be unloaded.</p>
+<p>For placing an asset into a scene as in this case, <strong>Payload</strong> (drag and drop) is the appropriate choice.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Distinction from sublayers</p>
+<p>USD provides multiple composition methods including sublayers, references, and payloads. This tutorial uses them as follows:</p>
+<ul>
+<li><strong>Sublayer</strong> (<code>_edit.usd</code> → <code>_base.usd</code>): Shares the same prim hierarchy and overrides properties. Suited for <strong>non-destructive asset editing</strong>.</li>
+<li><strong>Payload</strong> (<code>_config.usd</code> → <code>_edit.usd</code>): Places an external asset as an independent prim in the scene. Suited for <strong>scene construction</strong>.</li>
+</ul>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Benefits of layer separation</p>
+<ul>
+<li><strong><code>_edit.usd</code></strong>: Stores only robot rigging settings (joints, drives, collision, etc.)</li>
+<li><strong><code>_config.usd</code></strong>: Stores test scene elements (ground plane, test objects, etc.)</li>
+</ul>
+<p>This separation allows <code>_edit.usd</code> to be reused in other scenes after rigging is complete.</p>
+</div>
+<h2 id="step-2-joint-adjustment">Step 2: Joint Adjustment<a class="headerlink" href="#step-2-joint-adjustment" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Working file: <code>Robotiq_2F_85_edit.usd</code></p>
+<p>All changes in this step are rigging settings for the gripper asset. Work with <code>_edit.usd</code> open.</p>
+</div>
+<p>Joints imported from CAD may have their orientation flipped 180 degrees. Fix these so the simulation operates correctly.</p>
+<h3 id="2-1-joint-visualization">2-1. Joint Visualization<a class="headerlink" href="#2-1-joint-visualization" title="Permanent link">&para;</a></h3>
+<p>To check joint orientations, visualize the joint frames in the viewport:</p>
+<ol>
+<li>Click the <strong>eye icon</strong> at the top of the viewport</li>
+<li>Enable <strong>Show By Type &gt; Physics &gt; Joints</strong></li>
+</ol>
+<p>This displays gizmos at each joint's position and rotation axis in the viewport.</p>
+<div class="admonition note">
+<p class="admonition-title">Reading joint gizmos</p>
+<p>When joints are visualized, coordinate axis arrows appear at each joint's position. For revolute joints, the orientation of the <strong>rotation axis</strong> (typically a specific axis arrow) indicates the joint's positive direction. This positive direction determines which way the link rotates when the joint angle is positive.</p>
+</div>
+<h3 id="2-2-checking-joint-orientations">2-2. Checking Joint Orientations<a class="headerlink" href="#2-2-checking-joint-orientations" title="Permanent link">&para;</a></h3>
+<p>Select each joint in the Stage panel and check the gizmo axis orientation displayed in the viewport.</p>
+<p>In joints imported from CAD, rotation axes may be flipped 180 degrees. A flipped joint has its positive rotation direction pointing opposite to what is expected.</p>
+<h3 id="2-3-fixing-joint-orientations">2-3. Fixing Joint Orientations<a class="headerlink" href="#2-3-fixing-joint-orientations" title="Permanent link">&para;</a></h3>
+<p>Fix the orientations of flipped joints:</p>
+<ol>
+<li>Select the flipped joint in the Stage panel</li>
+</ol>
+<p>Example) finger_joint: you can see it tries to rotate 75 degrees in the opening direction</p>
+<div class="language-text highlight"><pre><span></span><code> ![finger_joint before fix](./images/51_finger_joint_before_fix.png)
+</code></pre></div>
+<ol>
+<li>In the <strong>Rotation</strong> section of the Properties panel, apply a 180-degree offset to the X axis of both <strong>Rotation 0</strong> and <strong>Rotation 1</strong></li>
+<li>Confirm that the gizmo orientation is now correct</li>
+</ol>
+<p>Example) finger_joint: now rotates 75 degrees in the closing direction</p>
+<div class="language-text highlight"><pre><span></span><code> ![finger_joint after fix](./images/52_finger_joint_after_fix.png)
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Joints to fix in this Robotiq 2F-85 asset</p>
+<p>For this asset, <strong>four joints</strong> require orientation fixes: <code>finger_joint</code>, <code>right_outer_knuckle_joint</code>, <code>right_outer_finger_joint</code>, and <code>left_outer_finger_joint</code>. Without fixing these here, the fingers will move opposite to expectations when joint drives are configured in Step 5.</p>
+</div>
+<h3 id="2-4-setting-joint-limits">2-4. Setting Joint Limits<a class="headerlink" href="#2-4-setting-joint-limits" title="Permanent link">&para;</a></h3>
+<p>Set appropriate ranges of motion for each joint (the correct ranges should be set by default):</p>
+<table>
+<thead>
+<tr>
+<th>Joint</th>
+<th>Lower</th>
+<th>Upper</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>left_outer_finger_joint</code></td>
+<td>0°</td>
+<td>180°</td>
+<td>Range of motion of the outer finger link</td>
+</tr>
+<tr>
+<td><code>right_outer_finger_joint</code></td>
+<td>0°</td>
+<td>180°</td>
+<td>Range of motion of the outer finger link</td>
+</tr>
+<tr>
+<td><code>finger_joint</code></td>
+<td>0°</td>
+<td>75°</td>
+<td>Main drive joint</td>
+</tr>
+<tr>
+<td><code>right_outer_knuckle_joint</code></td>
+<td>0°</td>
+<td>75°</td>
+<td>Right outer knuckle</td>
+</tr>
+<tr>
+<td>Other joints</td>
+<td>—</td>
+<td>—</td>
+<td>No limits (leave default)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-5-creating-fingertip-friction-material">2-5. Creating Fingertip Friction Material<a class="headerlink" href="#2-5-creating-fingertip-friction-material" title="Permanent link">&para;</a></h3>
+<p>To improve the gripper's grasping performance, set up a high-friction material for the fingertips:</p>
+<ol>
+<li>From the menu, select <strong>Create &gt; Physics &gt; Physics Material</strong></li>
+<li>Choose <strong>Rigid Body Material</strong> and rename it to <code>fingertip_material</code></li>
+<li>
+<p>Configure the following parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static Friction</td>
+<td><code>0.8</code></td>
+<td>Static friction coefficient (close to rubber)</td>
+</tr>
+<tr>
+<td>Dynamic Friction</td>
+<td><code>0.8</code></td>
+<td>Dynamic friction coefficient</td>
+</tr>
+<tr>
+<td>Friction Combine Mode</td>
+<td><code>Max</code></td>
+<td>Friction combination method (use the larger value)</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Friction settings" src="../images/53_material_setting.png" /></p>
+</li>
+<li>
+<p>Apply the created material to the meshes of <code>right_inner_finger</code> and <code>left_inner_finger</code></p>
+<p><img alt="Applying the material" src="../images/54_finger_material_setting.png" /></p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Disabling the Instanceable property</p>
+<p>When applying the material, if the <strong>Instanceable</strong> property of the Xform is enabled, you may not be able to set the material individually. In that case, disable Instanceable, then apply the material directly to the mesh component.</p>
+</div>
+<h2 id="step-3-breaking-the-articulation-loop">Step 3: Breaking the Articulation Loop<a class="headerlink" href="#step-3-breaking-the-articulation-loop" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Working file: <code>Robotiq_2F_85_edit.usd</code></p>
+<p>Changes in this step are rigging settings for the gripper asset. Continue working in <code>_edit.usd</code>.</p>
+</div>
+<h3 id="3-1-understanding-the-problem">3-1. Understanding the Problem<a class="headerlink" href="#3-1-understanding-the-problem" title="Permanent link">&para;</a></h3>
+<p>If you start the simulation in the current state, the following warning appears:</p>
+<p><img alt="Loop error" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_robotiq_loop_error.png" /></p>
+<p>This is because the articulation (joint chain) forms a loop. Articulations in Isaac Sim must be a <strong>kinematic tree</strong> (tree structure), and closed loops cannot be handled as-is.</p>
+<div class="admonition note">
+<p class="admonition-title">Why loops are a problem</p>
+<p>The articulation solver in physics simulators is designed assuming a <strong>one-way chain</strong> (tree structure) from the base link to the end effector. With a loop, the solver cannot correctly resolve joint constraints.</p>
+</div>
+<h3 id="3-2-criteria-for-selecting-a-joint-to-break">3-2. Criteria for Selecting a Joint to Break<a class="headerlink" href="#3-2-criteria-for-selecting-a-joint-to-break" title="Permanent link">&para;</a></h3>
+<p>To resolve the loop, you <strong>exclude</strong> one joint from the articulation. The excluded joint is treated as a Maximal Coordinate Joint and given lower solver priority.</p>
+<p>Criteria for selecting the optimal joint:</p>
+<ul>
+<li>A position that <strong>minimizes the articulation chain length</strong></li>
+<li>A joint that <strong>does not require limits, friction, or drive</strong></li>
+<li>A joint with <strong>minimal interference with the robot's function</strong></li>
+</ul>
+<h3 id="3-3-steps-to-break-the-loop">3-3. Steps to Break the Loop<a class="headerlink" href="#3-3-steps-to-break-the-loop" title="Permanent link">&para;</a></h3>
+<p>For this Robotiq 2F-85 gripper, the <code>inner_knuckle_joint</code> connecting the inner shaft to the body is the optimal candidate.</p>
+<p><img alt="Breaking the loop" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_robotiq_loop.png" /></p>
+<ol>
+<li>Select <code>left_inner_knuckle_joint</code> in the Stage panel</li>
+<li>In the <strong>Physics</strong> section of the Properties panel, check <strong>Exclude From Articulation</strong></li>
+<li>Apply <strong>Exclude From Articulation</strong> to <code>right_inner_knuckle_joint</code> in the same way</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">What is Exclude From Articulation?</p>
+<p>Enabling this option excludes the joint from the articulation tree. The joint itself still exists physically, but it is processed by the regular joint solver (Maximal Coordinate) instead of the articulation solver. As a result, the loop is resolved and the simulation operates correctly.</p>
+</div>
+<p>Now, when you run the simulation again, the loop-related warning disappears.</p>
+<h2 id="step-4-building-the-test-environment">Step 4: Building the Test Environment<a class="headerlink" href="#step-4-building-the-test-environment" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Working file: <code>Robotiq_2F_85_config.usd</code></p>
+<p>The test environment (ground, cylinder, movement joints, etc.) consists of test-scene-specific elements. Work with <code>_config.usd</code> open.</p>
+</div>
+<p>Build a test scene to verify gripper operation. You will create a structure that allows the gripper to move up/down and forward/backward, then test grasping objects.</p>
+<h3 id="4-1-test-environment-composition">4-1. Test Environment Composition<a class="headerlink" href="#4-1-test-environment-composition" title="Permanent link">&para;</a></h3>
+<p>The following elements will be added to the scene. They can be built all at once by running the Python script in the next section.</p>
+<p><strong>Movement scaffold (structure to move the gripper up/down and forward/backward)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Xform</code> (with Rigid Body API)</td>
+<td>Intermediate prim (reference for Z-axis prismatic)</td>
+</tr>
+<tr>
+<td><code>Xform_1</code> (with Rigid Body API)</td>
+<td>Prim that holds the gripper (reference for X-axis prismatic)</td>
+</tr>
+<tr>
+<td>Fixed Joint</td>
+<td>Fixes World → <code>Xform</code></td>
+</tr>
+<tr>
+<td>Prismatic Joint <code>Joint_Z</code> (Z axis)</td>
+<td><code>Xform</code> → <code>Xform_1</code> (vertical movement)</td>
+</tr>
+<tr>
+<td>Prismatic Joint <code>Joint_X</code> (X axis)</td>
+<td><code>Xform_1</code> → <code>base_link</code> (horizontal movement)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Drive parameters for prismatic joints</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Maximum Joint Velocity</td>
+<td><code>5.0</code></td>
+<td>Maximum joint velocity</td>
+</tr>
+<tr>
+<td>Joint Limits</td>
+<td><code>[0, 1]</code></td>
+<td>Range of motion (meters)</td>
+</tr>
+<tr>
+<td>Damping</td>
+<td><code>10,000</code></td>
+<td>Damping coefficient</td>
+</tr>
+<tr>
+<td>Stiffness</td>
+<td><code>10,000</code></td>
+<td>Stiffness coefficient</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Scene elements</strong>:</p>
+<ul>
+<li><strong>Cylinder (grasp target)</strong>: scale <code>[0.05, 0.05, 0.2]</code>, position X=0.12, mass 0.10 kg</li>
+<li><strong>Ground plane</strong>: position Z=-0.1</li>
+<li><strong>Physics Scene</strong>: GPU Dynamics disabled</li>
+</ul>
+<h3 id="4-2-automatic-setup-with-a-python-script">4-2. Automatic Setup with a Python Script<a class="headerlink" href="#4-2-automatic-setup-with-a-python-script" title="Permanent link">&para;</a></h3>
+<p>The above configuration can be built all at once by running the following Python script in the Script Editor, which can be opened from <code>Window</code> in the Isaac Sim menu bar:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pxr</span><span class="w"> </span><span class="kn">import</span> <span class="n">Usd</span><span class="p">,</span> <span class="n">UsdGeom</span><span class="p">,</span> <span class="n">UsdPhysics</span><span class="p">,</span> <span class="n">PhysxSchema</span><span class="p">,</span> <span class="n">PhysicsSchemaTools</span><span class="p">,</span> <span class="n">Gf</span><span class="p">,</span> <span class="n">Sdf</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">omni.usd</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">stage</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">usd</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span><span class="o">.</span><span class="n">get_stage</span><span class="p">()</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="c1"># Create Xform nodes</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">xform</span> <span class="o">=</span> <span class="n">UsdGeom</span><span class="o">.</span><span class="n">Xform</span><span class="o">.</span><span class="n">Define</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="s2">&quot;/World/Xform&quot;</span><span class="p">)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">xform_1</span> <span class="o">=</span> <span class="n">UsdGeom</span><span class="o">.</span><span class="n">Xform</span><span class="o">.</span><span class="n">Define</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="s2">&quot;/World/Xform_1&quot;</span><span class="p">)</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># Apply Rigid Body API</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="p">[</span><span class="n">xform</span><span class="p">,</span> <span class="n">xform_1</span><span class="p">]:</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">UsdPhysics</span><span class="o">.</span><span class="n">RigidBodyAPI</span><span class="o">.</span><span class="n">Apply</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">GetPrim</span><span class="p">())</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1"># Create the fixed joint</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="n">fixed_joint</span> <span class="o">=</span> <span class="n">UsdPhysics</span><span class="o">.</span><span class="n">FixedJoint</span><span class="o">.</span><span class="n">Define</span><span class="p">(</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="n">stage</span><span class="p">,</span> <span class="n">xform</span><span class="o">.</span><span class="n">GetPath</span><span class="p">()</span><span class="o">.</span><span class="n">AppendChild</span><span class="p">(</span><span class="s2">&quot;fixed_joint&quot;</span><span class="p">)</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="p">)</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="n">fixed_joint</span><span class="o">.</span><span class="n">CreateBody1Rel</span><span class="p">()</span><span class="o">.</span><span class="n">SetTargets</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">xform</span><span class="o">.</span><span class="n">GetPath</span><span class="p">())])</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="c1"># Prismatic joint 1 (Z axis)</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="n">prismatic_joint_1</span> <span class="o">=</span> <span class="n">UsdPhysics</span><span class="o">.</span><span class="n">PrismaticJoint</span><span class="o">.</span><span class="n">Define</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="s2">&quot;/World/Joint_Z&quot;</span><span class="p">)</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="n">prismatic_joint_1</span><span class="o">.</span><span class="n">CreateAxisAttr</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">)</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="n">prismatic_joint_1</span><span class="o">.</span><span class="n">CreateLowerLimitAttr</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="n">prismatic_joint_1</span><span class="o">.</span><span class="n">CreateUpperLimitAttr</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="n">prismatic_joint_1</span><span class="o">.</span><span class="n">CreateBody0Rel</span><span class="p">()</span><span class="o">.</span><span class="n">SetTargets</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">xform</span><span class="o">.</span><span class="n">GetPath</span><span class="p">())])</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="n">prismatic_joint_1</span><span class="o">.</span><span class="n">CreateBody1Rel</span><span class="p">()</span><span class="o">.</span><span class="n">SetTargets</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">xform_1</span><span class="o">.</span><span class="n">GetPath</span><span class="p">())])</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="c1"># Prismatic joint 2 (X axis)</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="n">prismatic_joint_2</span> <span class="o">=</span> <span class="n">UsdPhysics</span><span class="o">.</span><span class="n">PrismaticJoint</span><span class="o">.</span><span class="n">Define</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="s2">&quot;/World/Joint_X&quot;</span><span class="p">)</span>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="n">prismatic_joint_2</span><span class="o">.</span><span class="n">CreateAxisAttr</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="n">prismatic_joint_2</span><span class="o">.</span><span class="n">CreateLowerLimitAttr</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="n">prismatic_joint_2</span><span class="o">.</span><span class="n">CreateUpperLimitAttr</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="n">prismatic_joint_2</span><span class="o">.</span><span class="n">CreateBody0Rel</span><span class="p">()</span><span class="o">.</span><span class="n">SetTargets</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">xform_1</span><span class="o">.</span><span class="n">GetPath</span><span class="p">())])</span>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="n">prismatic_joint_2</span><span class="o">.</span><span class="n">CreateBody1Rel</span><span class="p">()</span><span class="o">.</span><span class="n">SetTargets</span><span class="p">([</span><span class="s2">&quot;/World/Robotiq_2F_85/Robotiq_2F_85/base_link&quot;</span><span class="p">])</span>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="c1"># Add joint drives</span>
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="k">for</span> <span class="n">joint</span> <span class="ow">in</span> <span class="p">[</span><span class="n">prismatic_joint_1</span><span class="p">,</span> <span class="n">prismatic_joint_2</span><span class="p">]:</span>
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>    <span class="n">drive</span> <span class="o">=</span> <span class="n">UsdPhysics</span><span class="o">.</span><span class="n">DriveAPI</span><span class="o">.</span><span class="n">Apply</span><span class="p">(</span><span class="n">joint</span><span class="o">.</span><span class="n">GetPrim</span><span class="p">(),</span> <span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>    <span class="n">drive</span><span class="o">.</span><span class="n">CreateDampingAttr</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>    <span class="n">drive</span><span class="o">.</span><span class="n">CreateStiffnessAttr</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>    <span class="n">px_joint</span> <span class="o">=</span> <span class="n">PhysxSchema</span><span class="o">.</span><span class="n">PhysxJointAPI</span><span class="o">.</span><span class="n">Get</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">joint</span><span class="o">.</span><span class="n">GetPath</span><span class="p">()))</span>
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>    <span class="n">px_joint</span><span class="o">.</span><span class="n">CreateMaxJointVelocityAttr</span><span class="p">()</span><span class="o">.</span><span class="n">Set</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>
+</span><span id="__span-1-44"><a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a><span class="c1"># Add the ground plane</span>
+</span><span id="__span-1-45"><a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a><span class="n">PhysicsSchemaTools</span><span class="o">.</span><span class="n">addGroundPlane</span><span class="p">(</span>
+</span><span id="__span-1-46"><a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a>    <span class="n">stage</span><span class="p">,</span> <span class="s2">&quot;/World/groundPlane&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3f</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">Gf</span><span class="o">.</span><span class="n">Vec3f</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</span><span id="__span-1-47"><a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a><span class="p">)</span>
+</span><span id="__span-1-48"><a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a>
+</span><span id="__span-1-49"><a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a><span class="c1"># Create the cylinder (grasp target)</span>
+</span><span id="__span-1-50"><a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a><span class="n">result</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">omni</span><span class="o">.</span><span class="n">kit</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;CreateMeshPrimCommand&quot;</span><span class="p">,</span> <span class="n">prim_type</span><span class="o">=</span><span class="s2">&quot;Cylinder&quot;</span><span class="p">)</span>
+</span><span id="__span-1-51"><a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a><span class="n">cylinder_prim</span> <span class="o">=</span> <span class="n">stage</span><span class="o">.</span><span class="n">GetPrimAtPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span id="__span-1-52"><a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a><span class="n">cylinder_prim</span><span class="o">.</span><span class="n">GetAttribute</span><span class="p">(</span><span class="s2">&quot;xformOp:scale&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Set</span><span class="p">((</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span>
+</span><span id="__span-1-53"><a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a><span class="n">cylinder_prim</span><span class="o">.</span><span class="n">GetAttribute</span><span class="p">(</span><span class="s2">&quot;xformOp:translate&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Set</span><span class="p">((</span><span class="mf">0.12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</span><span id="__span-1-54"><a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a>
+</span><span id="__span-1-55"><a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="c1"># Add physics attributes to the cylinder</span>
+</span><span id="__span-1-56"><a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a><span class="n">cylinder_body</span> <span class="o">=</span> <span class="n">UsdPhysics</span><span class="o">.</span><span class="n">RigidBodyAPI</span><span class="o">.</span><span class="n">Apply</span><span class="p">(</span><span class="n">cylinder_prim</span><span class="p">)</span>
+</span><span id="__span-1-57"><a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a><span class="n">UsdPhysics</span><span class="o">.</span><span class="n">CollisionAPI</span><span class="o">.</span><span class="n">Apply</span><span class="p">(</span><span class="n">cylinder_prim</span><span class="p">)</span>
+</span><span id="__span-1-58"><a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a><span class="n">massAPI</span> <span class="o">=</span> <span class="n">UsdPhysics</span><span class="o">.</span><span class="n">MassAPI</span><span class="o">.</span><span class="n">Apply</span><span class="p">(</span><span class="n">cylinder_body</span><span class="o">.</span><span class="n">GetPrim</span><span class="p">())</span>
+</span><span id="__span-1-59"><a id="__codelineno-1-59" name="__codelineno-1-59" href="#__codelineno-1-59"></a><span class="n">massAPI</span><span class="o">.</span><span class="n">CreateMassAttr</span><span class="p">(</span><span class="mf">0.10</span><span class="p">)</span>
+</span><span id="__span-1-60"><a id="__codelineno-1-60" name="__codelineno-1-60" href="#__codelineno-1-60"></a>
+</span><span id="__span-1-61"><a id="__codelineno-1-61" name="__codelineno-1-61" href="#__codelineno-1-61"></a><span class="c1"># Create the Physics Scene</span>
+</span><span id="__span-1-62"><a id="__codelineno-1-62" name="__codelineno-1-62" href="#__codelineno-1-62"></a><span class="n">scene</span> <span class="o">=</span> <span class="n">UsdPhysics</span><span class="o">.</span><span class="n">Scene</span><span class="o">.</span><span class="n">Define</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="n">Sdf</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/physicsScene&quot;</span><span class="p">))</span>
+</span><span id="__span-1-63"><a id="__codelineno-1-63" name="__codelineno-1-63" href="#__codelineno-1-63"></a><span class="n">physxSceneAPI</span> <span class="o">=</span> <span class="n">PhysxSchema</span><span class="o">.</span><span class="n">PhysxSceneAPI</span><span class="o">.</span><span class="n">Apply</span><span class="p">(</span><span class="n">scene</span><span class="o">.</span><span class="n">GetPrim</span><span class="p">())</span>
+</span><span id="__span-1-64"><a id="__codelineno-1-64" name="__codelineno-1-64" href="#__codelineno-1-64"></a><span class="n">physxSceneAPI</span><span class="o">.</span><span class="n">CreateEnableGPUDynamicsAttr</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Errors occur when GPU Dynamics is enabled</p>
+<p>If <strong>Enable GPU Dynamics</strong> is enabled on the Physics Scene, joint drive <code>setDriveTarget()</code> cannot be used and the following error occurs:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>PhysX error: PxArticulationJointReducedCoordinate::setDriveTarget(): it is illegal to call this method if PxSceneFlag::eENABLE_DIRECT_GPU_API is enabled!
+</span></code></pre></div>
+<p>The Python script above disables it via <code>CreateEnableGPUDynamicsAttr(False)</code>. However, if you built the test environment manually or settings remain from the previous tutorial (<a href="../../core_api/09_deformable_body/">09: Deformable Body</a>), select the Physics Scene and verify that <strong>Enable GPU Dynamics</strong> is off.</p>
+</div>
+<h3 id="4-3-verifying-the-test-scaffold">4-3. Verifying the Test Scaffold<a class="headerlink" href="#4-3-verifying-the-test-scaffold" title="Permanent link">&para;</a></h3>
+<p>After running the script, verify that the test scaffold (prismatic joints) operates correctly:</p>
+<ol>
+<li>Open <strong>Tools &gt; Physics &gt; Physics Inspector</strong> from the menu</li>
+<li>In the Stage panel, select <code>Xform</code>, <code>Xform_1</code>, and the gripper prims</li>
+<li>Start and stop the simulation, then click the <strong>Refresh</strong> button in the Physics Inspector</li>
+<li>Drag the <strong>Joint_X</strong> Drive Target slider and confirm the gripper moves forward and backward</li>
+<li>Similarly, verify vertical movement with <strong>Joint_Z</strong></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Fingers rotate freely at this stage</p>
+<p>At this point, no drives are configured on the gripper fingers, so the fingers rotate freely like a ragdoll. This is expected; you will resolve it in the next step by configuring joint drives and a mimic joint.</p>
+</div>
+<h2 id="step-5-configuring-joint-drives-and-mimic-joints">Step 5: Configuring Joint Drives and Mimic Joints<a class="headerlink" href="#step-5-configuring-joint-drives-and-mimic-joints" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Working file: <code>Robotiq_2F_85_edit.usd</code></p>
+<p>Drives and mimic joints are rigging settings for the gripper asset. Work with <code>_edit.usd</code> open.</p>
+</div>
+<p>Configure joint drives and a mimic joint to control the gripper fingers. Because the Robotiq 2F-85 drives both fingers in synchronization with a single motor, <strong>add a drive only to the main drive joint (<code>finger_joint</code>) and link the opposite side (<code>right_outer_knuckle_joint</code>) using a mimic joint</strong>.</p>
+<h3 id="5-1-adding-a-drive-to-the-main-drive-joint">5-1. Adding a Drive to the Main Drive Joint<a class="headerlink" href="#5-1-adding-a-drive-to-the-main-drive-joint" title="Permanent link">&para;</a></h3>
+<p>Add an Angular Drive to <code>finger_joint</code> and configure it for force control.</p>
+<ol>
+<li>Select <code>finger_joint</code> in the Stage panel</li>
+<li>In the Properties panel, click <strong>Add &gt; Physics &gt; Angular Drive</strong></li>
+<li>
+<p>Configure the following parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stiffness</td>
+<td><code>0.0</code></td>
+<td>Disables position control</td>
+</tr>
+<tr>
+<td>Damping</td>
+<td><code>5,000</code></td>
+<td>Damping for velocity control</td>
+</tr>
+<tr>
+<td>Max Force</td>
+<td><code>180.0</code></td>
+<td>Maximum grip force (Newtons, based on datasheet)</td>
+</tr>
+<tr>
+<td>Max Actuator Velocity</td>
+<td><code>130</code> deg/s</td>
+<td>Maximum joint velocity (based on datasheet)</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Meaning of Stiffness = 0 (force control)</p>
+<p>Setting <code>Stiffness = 0</code> disables position control, leaving only <code>Damping</code> for velocity control. This allows the gripper to grasp an object with a constant torque. With position control (Stiffness &gt; 0), excessive force may be generated as the joint tries to reach its target position even after contact.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Do not add a drive to <code>right_outer_knuckle_joint</code></p>
+<p>The opposite finger is configured as a mimic joint in the next section (5-2). Mimic joints automatically inherit the drive characteristics of their reference joint, so an individual drive is not needed (and would in fact cause the drives to interfere).</p>
+</div>
+<h3 id="5-2-linking-both-fingers-with-a-mimic-joint">5-2. Linking Both Fingers with a Mimic Joint<a class="headerlink" href="#5-2-linking-both-fingers-with-a-mimic-joint" title="Permanent link">&para;</a></h3>
+<p>Configure <code>right_outer_knuckle_joint</code> as a mimic joint that follows the motion of <code>finger_joint</code>.</p>
+<ol>
+<li>Select <code>right_outer_knuckle_joint</code> in the Stage panel</li>
+<li>In the Properties panel, click <strong>Add &gt; Physics &gt; Mimic Joint</strong></li>
+<li>
+<p>Configure the following parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gearing</td>
+<td><code>-1.0</code></td>
+<td>Coefficient applied to the reference joint's motion</td>
+</tr>
+<tr>
+<td>Reference Joint</td>
+<td><code>finger_joint</code></td>
+<td>The source joint to follow</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">What is a mimic joint?</p>
+<p>A mimic joint automatically follows the motion of a reference joint. Gearing is the coefficient applied to the reference joint's position; specifying <code>-1.0</code> causes this joint to rotate -75° when the reference joint rotates +75°. The left and right finger joints of the Robotiq 2F-85 are internally defined with axes pointing in opposite directions, so <code>-1.0</code> produces the correct symmetric motion.</p>
+</div>
+<h3 id="5-3-spring-to-maintain-finger-parallelism">5-3. Spring to Maintain Finger Parallelism<a class="headerlink" href="#5-3-spring-to-maintain-finger-parallelism" title="Permanent link">&para;</a></h3>
+<p>The Robotiq 2F-85 has a spring mechanism that keeps the fingertips parallel. To reproduce this, add a low-stiffness Angular Drive to the outer finger joints:</p>
+<ol>
+<li>Select <code>left_outer_finger_joint</code> in the Stage panel</li>
+<li>In the Properties panel, click <strong>Add &gt; Physics &gt; Angular Drive</strong></li>
+<li>
+<p>Configure the following parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stiffness</td>
+<td><code>0.05</code></td>
+<td>Weak stiffness to maintain parallelism</td>
+</tr>
+<tr>
+<td>Damping</td>
+<td><code>0.0</code></td>
+<td>No damping</td>
+</tr>
+<tr>
+<td>Target Position</td>
+<td><code>0.0</code></td>
+<td>Parallel state as the target position</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Apply the same configuration to <code>right_outer_finger_joint</code></p>
+</li>
+</ol>
+<p>This setting allows the fingertips to remain parallel while the gripper closes, allowing the fingers to close without resistance until they contact an object.</p>
+<div class="admonition warning">
+<p class="admonition-title">Use the Drive's Stiffness</p>
+<p>Be sure to set the <strong>Angular Drive's Stiffness</strong>, not the joint's <strong>Stiffness attribute</strong>. Within an articulation, the joint's own Stiffness attribute is ignored, so stiffness can only take effect through a Drive.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>[omni.physx.plugin] Stiffness attribute is unsupported for articulation joints and will be ignored
+</span></code></pre></div>
+<p>If you see a warning like the one above, you have set Stiffness on the joint itself.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Without this setting, the finger links fold inward</p>
+<p>Without the Drive Stiffness on the outer finger joints, the outer finger links (<code>outer_finger</code>) will fold inward and become inverted immediately after the simulation starts, preventing the gripper from closing properly. The Drive's Stiffness functions as a "spring that returns the fingers to a parallel posture."</p>
+</div>
+<h3 id="5-4-verifying-the-gripper-alone">5-4. Verifying the Gripper Alone<a class="headerlink" href="#5-4-verifying-the-gripper-alone" title="Permanent link">&para;</a></h3>
+<div class="admonition info">
+<p class="admonition-title">Switch the working file to <code>Robotiq_2F_85_config.usd</code> from here on</p>
+<p>Step 5-4 onward is verification work. In <code>_config.usd</code>, the gripper is held in place by the test scaffold (prismatic joints), so the body does not fall when the simulation runs and you can more easily verify open/close motion. In the Layer tab, switch the edit target to <code>_config.usd</code>, then <strong>return to the Stage panel and select prims such as <code>finger_joint</code> to operate on them</strong> (changes from this section onward may go into <code>_config.usd</code>, but final drive value adjustments should be recorded back in <code>_edit.usd</code>).</p>
+</div>
+<p>Verify that the gripper alone operates correctly with the configuration so far. Because <code>Stiffness = 0</code> (force control) is set, <code>Target Position</code> is ignored and you <strong>specify the drive direction with <code>Target Velocity</code></strong>. The Physics Inspector's Drive Target slider only manipulates <code>Target Position</code> and cannot change <code>Target Velocity</code>, so here you directly edit the <code>finger_joint</code> Angular Drive to verify operation:</p>
+<ol>
+<li>Start the simulation (Play button)</li>
+<li>Select <code>finger_joint</code> in the Stage panel</li>
+<li>Open the <strong>Angular Drive</strong> section in the Properties panel</li>
+<li>Directly change the <strong>Target Velocity</strong> value to verify open/close motion:<ul>
+<li>A positive value (e.g., <code>+1.0</code>) closes the fingers</li>
+<li>A negative value (e.g., <code>-1.0</code>) opens the fingers</li>
+<li>Confirm that the left and right fingers move in sync due to the mimic joint</li>
+</ul>
+</li>
+<li>After verification, stop the simulation and reset Target Velocity to <code>0.0</code></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">If you only want to verify with position control in Physics Inspector</p>
+<p>The Physics Inspector's Drive Target slider only manipulates <code>Target Position</code>, so the fingers will not move with the force-control configuration here (<code>Stiffness = 0</code>). To verify with the slider, you would need to temporarily put a small value (e.g., <code>100</code>) in <code>Stiffness</code>. However, since the final configuration in this tutorial is velocity control, <strong>the recommended procedure is to directly change the Angular Drive's <code>Target Velocity</code></strong>.</p>
+</div>
+<h3 id="5-5-optimizing-physics-steps">5-5. Optimizing Physics Steps<a class="headerlink" href="#5-5-optimizing-physics-steps" title="Permanent link">&para;</a></h3>
+<p>When grasping heavy objects (maximum payload of 2.5 kg), increase the timestep to ensure contact stability:</p>
+<ul>
+<li>Set the <strong>Steps Per Second</strong> of the Physics Scene to at least <strong>80</strong></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Trade-off between step count and performance</p>
+<p>Increasing the step count improves simulation accuracy but also increases computational cost. Increase the step count only when the gripper's grasp is unstable; the default value (60) is fine when the grasp is stable.</p>
+</div>
+<h3 id="5-6-tuning-the-grip-force">5-6. Tuning the Grip Force<a class="headerlink" href="#5-6-tuning-the-grip-force" title="Permanent link">&para;</a></h3>
+<p>This is a test for tuning the actual grasping behavior and grip force. <strong>Max Force = 180 N</strong> is the maximum value from the datasheet, but during testing it is common to start with a smaller value (e.g., <code>5.0</code> N) and observe the grasping behavior while tuning.</p>
+<ol>
+<li>Change the cylinder's scale X to <code>0.08</code> (a slightly thicker cylinder)</li>
+<li>Move the cylinder's position X to <code>0.13</code></li>
+<li>Temporarily lower the <strong>Max Force</strong> of the <code>finger_joint</code> Angular Drive to <code>5.0</code></li>
+<li>Run the simulation and verify that the cylinder is stably grasped in parallel</li>
+<li>Once the grasp is stable, adjust Max Force based on the expected weight of grasped objects (return to around <code>180.0</code> for the maximum payload of 2.5 kg)</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Why temporarily lower Max Force</p>
+<p>With the maximum value (180 N), excessive grip force is applied to thin cylinders or light objects, leading to behaviors such as the cylinder being knocked away or the physics calculations becoming unstable. A good practice during testing is to start with a small value and find an appropriate value while observing the grasping behavior.</p>
+</div>
+<h2 id="step-6-collision-meshes-and-self-collision">Step 6: Collision Meshes and Self-Collision<a class="headerlink" href="#step-6-collision-meshes-and-self-collision" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Switch the working file back to <code>Robotiq_2F_85_edit.usd</code></p>
+</div>
+<h3 id="6-1-checking-collision-meshes">6-1. Checking Collision Meshes<a class="headerlink" href="#6-1-checking-collision-meshes" title="Permanent link">&para;</a></h3>
+<p>First, check the current collision shapes:</p>
+<ol>
+<li>Click the <strong>eye icon</strong> at the top of the viewport</li>
+<li>Select <strong>Show By Type &gt; Physics &gt; Colliders &gt; All</strong></li>
+<li>Verify that outlines are displayed around objects with collision enabled</li>
+</ol>
+<h3 id="6-2-adjusting-the-collider-approximation-type">6-2. Adjusting the Collider Approximation Type<a class="headerlink" href="#6-2-adjusting-the-collider-approximation-type" title="Permanent link">&para;</a></h3>
+<p>To improve fingertip contact accuracy, change the collider approximation type:</p>
+<ol>
+<li>Select the object component in the viewport</li>
+<li>Open the <strong>Physics</strong> section of the Properties panel</li>
+<li>Change the type of <strong>Collider Approximation</strong>:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Convex Hull</strong></td>
+<td>Approximation by convex hull</td>
+<td>Balanced performance and accuracy</td>
+</tr>
+<tr>
+<td><strong>Convex Decomposition</strong></td>
+<td>Approximation by convex decomposition</td>
+<td>Best for complex fingertip outlines</td>
+</tr>
+<tr>
+<td><strong>Triangle Mesh</strong></td>
+<td>The mesh itself</td>
+<td>Most accurate but with high computational cost</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Convex Decomposition is recommended for fingertips</p>
+<p>Fingertip meshes have complex shapes, so accurate contact may not be obtained with Convex Hull. Using <strong>Convex Decomposition</strong> allows the geometry's concavities and convexities to be reproduced more accurately.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">If the Physics section does not appear</p>
+<p>If the Physics section does not appear in the Properties panel, check the parent or child Xform in the Stage tree. The collider may be set on a prim at a different hierarchy level.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">If you cannot change Collider Approximation</p>
+<p>If the Collider Approximation dropdown is unresponsive or your changes are not reflected, check whether the <strong><code>Instanceable</code> property is set on the parent Xform</strong> of the target mesh. When <code>Instanceable</code> is enabled, the collider approximation type of child elements cannot be changed individually.</p>
+<p>Select the parent Xform in the Stage panel, uncheck <strong>Instanceable</strong> in the Properties panel, then change the collider approximation type again (this is the same procedure as for material application in Step 2-5).</p>
+</div>
+<h3 id="6-3-enabling-self-collision">6-3. Enabling Self-Collision<a class="headerlink" href="#6-3-enabling-self-collision" title="Permanent link">&para;</a></h3>
+<p>By default, links within the same articulation do not collide with each other. To prevent the gripper fingers from interpenetrating, enable self-collision:</p>
+<ol>
+<li>Select <code>/World/Robotiq_2F_85</code> (the articulation root prim) in the Stage panel</li>
+<li>Check <strong>Self Collision Enabled</strong> in the <strong>Articulation Root</strong> section of the Properties panel</li>
+</ol>
+<p>This causes the gripper fingers to physically interfere with each other, resolving the issue of fingers passing through each other.</p>
+<h2 id="step-7-saving-the-configuration">Step 7: Saving the Configuration<a class="headerlink" href="#step-7-saving-the-configuration" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Working files: <code>Robotiq_2F_85_edit.usd</code> and <code>Robotiq_2F_85_config.usd</code></p>
+<p>In this step you save both files.</p>
+</div>
+<p>After testing and verification are complete, save each file.</p>
+<h3 id="7-1-reviewing-and-saving-changes">7-1. Reviewing and Saving Changes<a class="headerlink" href="#7-1-reviewing-and-saving-changes" title="Permanent link">&para;</a></h3>
+<p>If you worked in the correct file at each step, the changes should already be recorded in the appropriate file. Open the <strong>Layer</strong> tab and verify the following:</p>
+<ul>
+<li><strong><code>Robotiq_2F_85_edit.usd</code></strong>: Contains gripper-rigging changes such as joint adjustments, drives, mimic joints, and collision settings</li>
+<li><strong><code>Robotiq_2F_85_config.usd</code></strong>: Contains test-scene-specific elements such as the test Xforms, prismatic joints, ground plane, and cylinder</li>
+</ul>
+<p>After verifying, click <strong>Save Layer</strong> on both layers to save them.</p>
+<div class="admonition tip">
+<p class="admonition-title">If a change ended up in the wrong file</p>
+<p>The Layer tab shows which prims have changes recorded in which layer. If a change is in the wrong file, you can drag the prim to the correct layer in the Layer tab.</p>
+</div>
+<h2 id="step-8-gripper-control-with-omnigraph">Step 8: Gripper Control with OmniGraph<a class="headerlink" href="#step-8-gripper-control-with-omnigraph" title="Permanent link">&para;</a></h2>
+<div class="admonition info">
+<p class="admonition-title">Working file: <code>Robotiq_2F_85_config.usd</code></p>
+<p>OmniGraph-based gripper control is a test-scene-specific element. Work with <code>_config.usd</code> open.</p>
+</div>
+<p>Manipulating the gripper with the Physics Inspector slider is cumbersome. Use OmniGraph to build a system that controls gripper open/close by simply toggling a Boolean variable.</p>
+<h3 id="8-1-creating-an-action-graph">8-1. Creating an Action Graph<a class="headerlink" href="#8-1-creating-an-action-graph" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open <strong>Window &gt; Graph Editors &gt; Action Graph</strong> from the menu</li>
+<li>Click the <strong>New Action Graph</strong> icon</li>
+<li>Rename the created Action Graph to <code>Gripper_Controller</code></li>
+</ol>
+<h3 id="8-2-constructing-the-graph">8-2. Constructing the Graph<a class="headerlink" href="#8-2-constructing-the-graph" title="Permanent link">&para;</a></h3>
+<p>The gripper control graph operates with the following logic (described in detail in the next section):</p>
+<ol>
+<li>Prepare a <strong>Boolean variable</strong> (open/close instruction) and a <strong>Float variable</strong> (absolute speed)</li>
+<li>Switch the sign of the Float variable based on the Boolean variable (e.g., negative for closing, positive for opening)</li>
+<li>Write the resulting value to <code>finger_joint</code>'s <code>targetVelocity</code></li>
+<li>Through the mimic joint, the right finger moves in sync with <code>finger_joint</code></li>
+</ol>
+<h4 id="8-2-1-adding-variables">8-2-1. Adding Variables<a class="headerlink" href="#8-2-1-adding-variables" title="Permanent link">&para;</a></h4>
+<p>This tutorial uses <strong>Variables</strong>, which were not covered before. Variables in an Action Graph are shared between nodes within the graph, and the graph's behavior can be controlled by changing values from outside.</p>
+<ol>
+<li>Click the <strong>[+ Add]</strong> button in the <strong>Variables</strong> panel (left side) of the Action Graph editor</li>
+<li>A new variable is added; click the <strong>variable name</strong> and rename it to <code>close</code></li>
+<li>
+<p>Confirm that the <strong>type</strong> (default <code>Bool</code>) is <code>Bool</code> (change via the dropdown if necessary)</p>
+<p><img alt="Adding the close variable" src="../images/55_add_close_variable.png" /></p>
+</li>
+<li>
+<p>Add another variable in the same way, naming it <code>speed</code> and changing its type to <code>Float</code></p>
+<p><img alt="Adding the speed variable" src="../images/56_add_speed_variable.png" /></p>
+</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">How to change a variable's type</p>
+<p>A variable's type can be changed via the dropdown in the <strong>Type</strong> column of the list. In addition to basic types such as <code>Bool</code>, <code>Int</code>, <code>Float</code>, and <code>String</code>, you can also select multi-element types such as <code>Vector3f</code>.</p>
+</div>
+<h4 id="8-2-2-placing-and-connecting-nodes">8-2-2. Placing and Connecting Nodes<a class="headerlink" href="#8-2-2-placing-and-connecting-nodes" title="Permanent link">&para;</a></h4>
+<p>Build the Action Graph using the following completed form as a reference:</p>
+<p><img alt="Completed Gripper Controller" src="../images/57_gripper_controller_action_graph.png" /></p>
+<p>Required nodes and their roles:</p>
+<ol>
+<li><strong>On Variable Change</strong> — Trigger for graph execution (fires on variable change)</li>
+<li><strong>Read Variable Node</strong> (for <code>close</code>) — Reads the Boolean variable <code>close</code></li>
+<li><strong>Read Variable Node</strong> (for <code>speed</code>) — Reads the Float variable <code>speed</code></li>
+<li><strong>Boolean Not</strong> — Inverts the value of the Boolean variable <code>close</code></li>
+<li><strong>To Float</strong> — Converts <code>close</code> value to a Float (True=1.0, False=0.0)</li>
+<li><strong>To Float</strong> — Converts the inverted value of <code>close</code> to a Float</li>
+<li><strong>Constant Float</strong> — Outputs the constant <code>-1.0</code> (used to invert the sign for the opening direction)</li>
+<li><strong>Multiply</strong> — Multiplies the float-converted <code>close</code> and <code>speed</code> (<strong>closing direction</strong> velocity. <code>+speed</code> when close=true, <code>0</code> when false)</li>
+<li><strong>Multiply</strong> — Multiplies the float-converted inverted <code>close</code> value by <code>Constant Float</code> (<code>-1.0</code> when close=false, <code>0</code> when true)</li>
+<li><strong>Multiply</strong> — Multiplies the result of step 9 by <code>speed</code> (<strong>opening direction</strong> velocity. <code>-speed</code> when close=false, <code>0</code> when true)</li>
+<li><strong>Add</strong> — Adds the opening-direction velocity and the closing-direction velocity (since one of them is always 0, the active value is selected as the result)</li>
+<li><strong>Write Prim Attribute</strong> — Writes the value to <code>finger_joint</code>'s <code>targetVelocity</code></li>
+</ol>
+<h4 id="8-2-3-configuring-each-node">8-2-3. Configuring Each Node<a class="headerlink" href="#8-2-3-configuring-each-node" title="Permanent link">&para;</a></h4>
+<h5 id="on-variable-change">On Variable Change<a class="headerlink" href="#on-variable-change" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Select <code>close</code> for <strong>Variable Name</strong></li>
+<li>This causes the node to fire when the <code>close</code> variable changes</li>
+</ul>
+<h5 id="constant-float">Constant Float<a class="headerlink" href="#constant-float" title="Permanent link">&para;</a></h5>
+<ul>
+<li>Enter <code>-1.0</code> in <strong>Value</strong></li>
+<li>This value is used to invert the sign for the opening direction</li>
+</ul>
+<h5 id="write-prim-attribute">Write Prim Attribute<a class="headerlink" href="#write-prim-attribute" title="Permanent link">&para;</a></h5>
+<p>This node writes to the joint's target velocity. Configure the following parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Prim</strong></td>
+<td><code>/World/Robotiq_2F_85/Robotiq_2F_85/finger_joint</code></td>
+</tr>
+<tr>
+<td><strong>Attribute Name</strong></td>
+<td><code>drive:angular:physics:targetVelocity</code></td>
+</tr>
+<tr>
+<td><strong>Attribute Type</strong></td>
+<td><code>float</code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">How to specify the Prim</p>
+<p>You can use the icon to the right of the Prim field to select a prim from the Stage panel, or enter the path directly. The prim path may differ depending on the gripper placement in <code>_config.usd</code>. Select <code>finger_joint</code> in the Stage panel to confirm the exact path.</p>
+</div>
+<h4 id="8-2-4-connection-flow">8-2-4. Connection Flow<a class="headerlink" href="#8-2-4-connection-flow" title="Permanent link">&para;</a></h4>
+<p>The graph computes two paths — the <strong>opening direction velocity</strong> and the <strong>closing direction velocity</strong> — and sums them to produce the final target velocity. When <code>close</code> is False, only the opening direction has a meaningful value, and when <code>close</code> is True, only the closing direction does (the other is 0).</p>
+<p><strong>Opening direction path</strong> (outputs <code>-speed</code> when <code>close = false</code>):</p>
+<ol>
+<li><code>close</code> variable → <strong>Boolean Not</strong> Value In</li>
+<li><strong>Boolean Not</strong> Value Out → <strong>To Float</strong> (top) Value</li>
+<li><strong>To Float</strong> (top) Float → <strong>Multiply</strong> (top) A</li>
+<li><strong>Constant Float</strong> Value → <strong>Multiply</strong> (top) B</li>
+<li><strong>Multiply</strong> (top) Product → <strong>Multiply</strong> (middle) A</li>
+<li><code>speed</code> variable → <strong>Multiply</strong> (middle) B</li>
+<li><strong>Multiply</strong> (middle) Product → <strong>Add</strong> A</li>
+</ol>
+<p><strong>Closing direction path</strong> (outputs <code>+speed</code> when <code>close = true</code>):</p>
+<ol>
+<li><code>close</code> variable → <strong>To Float</strong> (bottom) Value</li>
+<li><strong>To Float</strong> (bottom) Float → <strong>Multiply</strong> (bottom) A</li>
+<li><code>speed</code> variable → <strong>Multiply</strong> (bottom) B</li>
+<li><strong>Multiply</strong> (bottom) Product → <strong>Add</strong> B</li>
+</ol>
+<p><strong>Execution flow and write</strong>:</p>
+<ol>
+<li><strong>Add</strong> Sum → <strong>Write Prim Attribute</strong> Values</li>
+<li><strong>On Variable Change</strong> Changed → <strong>Write Prim Attribute</strong> Exec In</li>
+</ol>
+<h4 id="8-2-5-how-it-works">8-2-5. How It Works<a class="headerlink" href="#8-2-5-how-it-works" title="Permanent link">&para;</a></h4>
+<p>The graph's calculation result is as follows:</p>
+<table>
+<thead>
+<tr>
+<th><code>close</code> value</th>
+<th>Opening direction output</th>
+<th>Closing direction output</th>
+<th>Add result (targetVelocity)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>false</code> (open)</td>
+<td><code>1.0 × (-1.0) × speed = -speed</code></td>
+<td><code>0.0 × speed = 0</code></td>
+<td><code>-speed</code></td>
+</tr>
+<tr>
+<td><code>true</code> (close)</td>
+<td><code>0.0 × (-1.0) × speed = 0</code></td>
+<td><code>1.0 × speed = +speed</code></td>
+<td><code>+speed</code></td>
+</tr>
+</tbody>
+</table>
+<p>In other words, a positive velocity (closing direction) is written to <code>finger_joint</code>'s <code>targetVelocity</code> when <code>close = true</code>, and a negative velocity (opening direction) is written when <code>close = false</code>. Because the joint orientations were aligned in Step 2-3, a positive velocity corresponds to the gripper closing motion.</p>
+<div class="admonition tip">
+<p class="admonition-title">More on OmniGraph</p>
+<p>For basic OmniGraph usage, refer to what you learned in <a href="../05_rig_mobile_robot/">Tutorial 5: Rig a Mobile Robot</a>. For gripper control, instead of differential control (Differential Controller), you directly set the joint drive's target value.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Why targetVelocity instead of targetPosition</p>
+<p>In Step 5-1, you configured <code>finger_joint</code>'s drive as <strong>force control</strong> (Stiffness=0, only Damping). With this setting, the position target (<code>targetPosition</code>) is ignored, and the drive force is determined by the velocity target (<code>targetVelocity</code>) and Damping. Therefore, the gripper open/close is controlled by writing to <code>targetVelocity</code> here.</p>
+</div>
+<h3 id="8-3-verifying-operation">8-3. Verifying Operation<a class="headerlink" href="#8-3-verifying-operation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Set the value of the <code>speed</code> variable (e.g., <code>100.0</code>)<ul>
+<li>In the <strong>Variables</strong> panel of the Action Graph editor, select <code>speed</code> and enter the value in <strong>Default Value</strong></li>
+</ul>
+</li>
+<li>Start the simulation (Play button on the timeline)</li>
+<li>Toggle the checkbox of <code>close</code> (Default Value) in the <strong>Variables</strong> panel to verify gripper open/close:<ul>
+<li><strong>True</strong> (checked): the gripper moves in the closing direction</li>
+<li><strong>False</strong> (unchecked): the gripper moves in the opening direction</li>
+</ul>
+</li>
+</ol>
+<p><img alt="Operation verification" src="../images/58_play_closed_loop_rigging.webp" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Tuning the speed value</p>
+<p>If the <code>speed</code> value is too large, the fingers may move too quickly and grasping may become unstable. Start with a value around <code>50</code> to <code>150</code>, and adjust while observing the grasping behavior.</p>
+</div>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Self-collision is not working</td>
+<td>Articulation Root configuration missing</td>
+<td>Verify that <strong>Self Collision Enabled</strong> is checked at the articulation root</td>
+</tr>
+<tr>
+<td>Outer finger links fold inward and invert at simulation start</td>
+<td>Outer finger joints' Drive Stiffness not set</td>
+<td>Add an <strong>Angular Drive</strong> to <code>left/right_outer_finger_joint</code> and set Stiffness to <code>0.05</code> (note this is the Drive's Stiffness, not the joint's Stiffness attribute)</td>
+</tr>
+<tr>
+<td>Grasping heavy objects is unstable</td>
+<td>Insufficient timesteps</td>
+<td>Increase Physics Scene's <strong>Steps Per Second</strong> to 80 or more</td>
+</tr>
+<tr>
+<td>Gaps in the collision mesh</td>
+<td>Inappropriate approximation type</td>
+<td>Change the fingertip mesh approximation to <strong>Convex Decomposition</strong></td>
+</tr>
+<tr>
+<td>Cannot change Collider Approximation</td>
+<td>Parent Xform's Instanceable is enabled</td>
+<td>Uncheck <strong>Instanceable</strong> on the parent Xform</td>
+</tr>
+<tr>
+<td>Articulation loop warning</td>
+<td>Exclude From Articulation not configured</td>
+<td>Set <strong>Exclude From Articulation</strong> on <code>left/right_inner_knuckle_joint</code></td>
+</tr>
+<tr>
+<td>Errors related to <code>setDriveTarget()</code></td>
+<td>Physics Scene's GPU Dynamics is enabled</td>
+<td>Turn off <strong>Enable GPU Dynamics</strong>. Check whether settings remain from the previous tutorial (Deformable Body)</td>
+</tr>
+<tr>
+<td><code>Stiffness attribute is unsupported for articulation joints</code> warning</td>
+<td>Stiffness was set on the joint's own Stiffness attribute</td>
+<td>Add an Angular Drive to the joint and set the stiffness on the Drive instead</td>
+</tr>
+<tr>
+<td>Joints don't move / gripper is locked</td>
+<td>Articulation lock (mimic constraint conflicts with joint limits, excessive Exclude From Articulation, etc.)</td>
+<td>Verify that <code>right_outer_knuckle_joint</code> has only the Mimic Joint configured (no Drive); verify that <code>Exclude From Articulation</code> is not set on joints other than <code>inner_knuckle_joint</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This tutorial covered the following topics:</p>
+<ol>
+<li><strong>Layer-based editing workflow</strong> — Non-destructive configuration changes using the three-layer structure of <code>_base.usd</code>, <code>_edit.usd</code>, and <code>_config.usd</code></li>
+<li><strong>Choosing between Payload and Reference</strong> — Selecting the appropriate composition method for scene construction</li>
+<li><strong>Joint visualization and orientation correction</strong> — Verifying with gizmos and fixing with Rotation offsets</li>
+<li><strong>Breaking the closed loop</strong> — Converting to a kinematic tree using <code>Exclude From Articulation</code></li>
+<li><strong>Configuring joint drives</strong> — Achieving force control by balancing Stiffness, Damping, and Max Force</li>
+<li><strong>Mimic joint</strong> — Synchronously controlling multiple joints with a single input</li>
+<li><strong>Optimizing collision meshes</strong> — Accurate contact detection with Convex Decomposition</li>
+<li><strong>Self-collision</strong> — Enabling collision among links within an articulation</li>
+<li><strong>Gripper control with OmniGraph</strong> — Open/close control with an Action Graph leveraging Variables</li>
+</ol>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Proceed to the next tutorial, "<a href="../11_joint_tuning/">Tuning Joint Drive Gains</a>", to learn how to optimize joint drive parameters.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/extra.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

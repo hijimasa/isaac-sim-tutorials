@@ -1,0 +1,3500 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Isaac Sim チュートリアル集 / Isaac Sim Tutorial Collection">
+      
+      
+        <meta name="author" content="IR Lab">
+      
+      
+        <link rel="canonical" href="https://hijimasa.github.io/isaac-sim-tutorials/robot_setup/12_asset_optimization/">
+      
+      
+        <link rel="prev" href="../11_joint_tuning/">
+      
+      
+        <link rel="next" href="../13_rig_legged_robot/">
+      
+      
+        
+          <link rel="alternate" href="../../ja/robot_setup/12_asset_optimization/" hreflang="ja">
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Asset Optimization - Isaac Sim Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans JP";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#asset-optimization" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-header__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Isaac Sim Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Asset Optimization
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../ja/robot_setup/12_asset_optimization/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/tutorial_list/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Introduction
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core_api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Core API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Robot Setup
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../importer_exporter/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Import & Export
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../isaac_lab/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Isaac Lab
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ros/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ROS 2
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../synthetic_data/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Synthetic Data
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sensors/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Sensors
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../motion_generation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Motion Generation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../omnigraph/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  OmniGraph
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../troubleshooting/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Troubleshooting
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Isaac Sim Tutorials" class="md-nav__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    Isaac Sim Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Introduction
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/tutorial_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../core_api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core API
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/01_hello_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello World
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/02_hello_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/03_adding_a_controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Controller
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/04_adding_a_manipulator_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a Manipulator Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/05_adding_multiple_robots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Multiple Robots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/06_multiple_tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiple Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/07_adding_props/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding Props
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/08_data_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Logging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/09_deformable_body/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deformable Body
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Robot Setup
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Robot Setup
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_stage_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_assemble_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assemble a Simple Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_articulate_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articulate a Basic Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_camera_sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add Camera and Sensors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_rig_mobile_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Mobile Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05a_apply_robot_schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Applying the Robot Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_setup_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_configure_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configure a Manipulator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_generate_robot_config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generate Robot Configuration File
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_pick_and_place/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pick and Place Example
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_closed_loop_structures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig Closed-Loop Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_joint_tuning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tuning Joint Drive Gains
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Optimization
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assets-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-restructure-the-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Restructure the Asset
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Restructure the Asset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-enable-inherit-parent-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. Enable Inherit Parent Transform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-prepare-a-working-folder-and-copy-the-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Prepare a Working Folder and Copy the Asset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-create-a-new-jetbot_optimizedusd-and-insert-the-sublayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. Create a New Jetbot_optimized.usd and Insert the Sublayer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-4-create-the-optimized-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-4. Create the Optimized Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-5-reparent-the-prims" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-5. Reparent the Prims
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-merge-meshes-mesh-merge-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Merge Meshes (Mesh Merge Tool)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Merge Meshes (Mesh Merge Tool)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1-open-the-mesh-merge-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. Open the Mesh Merge Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-merge-one-link-left-wheel-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Merge One Link (Left Wheel) End-to-End
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-build-the-visual-reference-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Build the Visual Reference Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-repeat-for-the-remaining-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Repeat for the Remaining Links
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-scenegraph-instancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Scenegraph Instancing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Scenegraph Instancing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1-consolidate-the-common-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. Consolidate the Common Geometry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2-enable-instanceable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. Enable Instanceable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3-cleanup-before-saving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. Cleanup Before Saving
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-4-save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-4. Save
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-other-performance-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Other Performance Optimizations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Other Performance Optimizations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Rendering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-physics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Physics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-make-measurement-a-habit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. Make Measurement a Habit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_rig_legged_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rig a Legged Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../importer_exporter/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import & Export
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Import & Export
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/01_import_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/02_export_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Export URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/03_import_mjcf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import MJCF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/04_shapenet_importer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ShapeNet Importer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../isaac_lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isaac Lab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Isaac Lab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ros/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS 2
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ROS 2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../synthetic_data/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Synthetic Data
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Synthetic Data
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sensors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sensors
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sensors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../motion_generation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Motion Generation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Motion Generation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../omnigraph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OmniGraph
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OmniGraph
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../troubleshooting/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Troubleshooting
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#learning-objectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning Objectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assets-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#estimated-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimated Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-restructure-the-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Restructure the Asset
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Restructure the Asset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1-enable-inherit-parent-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. Enable Inherit Parent Transform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-prepare-a-working-folder-and-copy-the-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Prepare a Working Folder and Copy the Asset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-create-a-new-jetbot_optimizedusd-and-insert-the-sublayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. Create a New Jetbot_optimized.usd and Insert the Sublayer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-4-create-the-optimized-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-4. Create the Optimized Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-5-reparent-the-prims" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-5. Reparent the Prims
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-merge-meshes-mesh-merge-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Merge Meshes (Mesh Merge Tool)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Merge Meshes (Mesh Merge Tool)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1-open-the-mesh-merge-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. Open the Mesh Merge Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-merge-one-link-left-wheel-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Merge One Link (Left Wheel) End-to-End
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-build-the-visual-reference-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Build the Visual Reference Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-repeat-for-the-remaining-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Repeat for the Remaining Links
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-scenegraph-instancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Scenegraph Instancing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Scenegraph Instancing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1-consolidate-the-common-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. Consolidate the Common Geometry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2-enable-instanceable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. Enable Instanceable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3-cleanup-before-saving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. Cleanup Before Saving
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-4-save" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-4. Save
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-other-performance-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Other Performance Optimizations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Other Performance Optimizations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Rendering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-physics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Physics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3-make-measurement-a-habit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. Make Measurement a Habit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="asset-optimization">Asset Optimization<a class="headerlink" href="#asset-optimization" title="Permanent link">&para;</a></h1>
+<h2 id="learning-objectives">Learning Objectives<a class="headerlink" href="#learning-objectives" title="Permanent link">&para;</a></h2>
+<p>After completing this tutorial, you will have learned:</p>
+<ul>
+<li>How to <strong>restructure a robot asset for simulation</strong> (reparenting and layer setup)</li>
+<li>How to consolidate redundant mesh nodes with the <strong>Mesh Merge Tool</strong></li>
+<li>How <strong>Scenegraph Instancing</strong> reduces memory usage and rendering cost</li>
+<li>Key checkpoints for performance — lights, materials, and colliders</li>
+<li>How to evaluate the effect by comparing frame rate (FPS) before and after optimization</li>
+</ul>
+<h2 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Complete <a href="../03_articulate_robot/">Tutorial 3: Articulate a Basic Robot</a></li>
+<li>Familiarity with USD composition concepts — sublayers, References, and Payloads (covered in Step 1 of <a href="../10_closed_loop_structures/">Tutorial 10</a>)</li>
+</ul>
+<h3 id="assets-used">Assets Used<a class="headerlink" href="#assets-used" title="Permanent link">&para;</a></h3>
+<p>This tutorial uses the <strong>Jetbot</strong> sample asset bundled with Isaac Sim:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Samples/Rigging/Jetbot/Jetbot_Base/Jetbot_base.usd</code></td>
+<td>Source asset (<strong>copy locally before use</strong>)</td>
+</tr>
+<tr>
+<td><code>Samples/Rigging/Jetbot/Jetbot_Optimized/Jetbot_optimized.usd</code></td>
+<td>Empty stage prepared for optimization work</td>
+</tr>
+<tr>
+<td><code>Samples/Rigging/Jetbot/Jetbot_Optimized/Jetbot_optimized_post_merge.usd</code></td>
+<td>Intermediate state after mesh merging (<strong>reference only</strong>)</td>
+</tr>
+<tr>
+<td><code>Samples/Rigging/Jetbot/Jetbot_Optimized/Jetbot_optimized_final.usd</code></td>
+<td>Final state after instancing (<strong>reference only</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p>The three <code>Jetbot_optimized*.usd</code> files in the Samples folder are pre-optimized <strong>reference data</strong>. In this tutorial, you will copy <code>Jetbot_base.usd</code> into a working folder and <strong>create your own new <code>Jetbot_optimized.usd</code></strong> to perform the optimization steps. If you get stuck, open the reference files above to compare with the expected state.</p>
+<h3 id="estimated-time">Estimated Time<a class="headerlink" href="#estimated-time" title="Permanent link">&para;</a></h3>
+<p>Approximately 20-30 minutes.</p>
+<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+<p>Robot assets imported from CAD or other 3D software into Isaac Sim are often <strong>highly fragmented</strong> — meshes and materials split into many pieces. It is not unusual for a single wheel to consist of dozens of meshes and materials. While this looks fine visually, it <strong>bloats the scenegraph and degrades both rendering and physics performance</strong>.</p>
+<p>In this tutorial, you will learn how to optimize a robot asset for simulation using the <strong>Jetbot robot</strong> as an example. The optimization improves performance from approximately <strong>40 FPS to 64 FPS (about 1.6×)</strong> compared to the unoptimized state.</p>
+<p>The flow is as follows:</p>
+<ol>
+<li><strong>Restructure the asset</strong> — prepare layers and prim hierarchy for simulation</li>
+<li><strong>Merge meshes</strong> — use the Mesh Merge Tool to consolidate each link to a single mesh</li>
+<li><strong>Scenegraph instancing</strong> — share identical meshes as a single data source</li>
+<li><strong>Other optimization checkpoints</strong> — lights, translucent materials, colliders, and more</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Why does performance drop?</p>
+<p>Every prim and mesh in the USD scenegraph adds <strong>its own draw-call and physics-evaluation overhead</strong>. Even if there are only 10 links, splitting them into 200 meshes results in roughly 200 draw calls. <strong>Mesh merging</strong> consolidates these into a single draw call, while <strong>instancing</strong> reduces memory by sharing identical data.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Recommended asset structure</p>
+<p>The official <a href="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html">Isaac Sim asset structure guidelines</a> recommend organizing a robot asset into the following three stages:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Asset Source</strong> (raw data)</td>
+<td>Raw meshes and materials imported from CAD. <strong>Do not modify.</strong></td>
+</tr>
+<tr>
+<td><strong>Transformation</strong> (optimized)</td>
+<td>Asset with mesh merging and instancing applied. Created in this tutorial.</td>
+</tr>
+<tr>
+<td><strong>Features</strong> (feature layers)</td>
+<td>Per-purpose layers for physics, sensors, ROS, and so on</td>
+</tr>
+</tbody>
+</table>
+<p>With this design, you can update the CAD by swapping out only Asset Source — you do not have to rebuild the rigging or physics setup.</p>
+</div>
+<h2 id="step-1-restructure-the-asset">Step 1: Restructure the Asset<a class="headerlink" href="#step-1-restructure-the-asset" title="Permanent link">&para;</a></h2>
+<p>First, prepare a <strong>new prim hierarchy</strong> for the optimized simulation asset. Without modifying the source asset (<code>Jetbot_base.usd</code>), you will build the optimized structure in a separate USD file (<code>Jetbot_optimized.usd</code>).</p>
+<h3 id="1-1-enable-inherit-parent-transform">1-1. Enable Inherit Parent Transform<a class="headerlink" href="#1-1-enable-inherit-parent-transform" title="Permanent link">&para;</a></h3>
+<p>When you reparent meshes via drag-and-drop, <strong>changing the parent can shift the child's apparent position</strong>. To prevent this, enable inheritance of the parent transform during reparenting:</p>
+<ol>
+<li>Open <strong>Edit &gt; Preferences</strong></li>
+<li>From the list on the left, select <strong>Stage &gt; Authoring</strong></li>
+<li>Check <strong>Inherit Parent Transform</strong></li>
+</ol>
+<p><img alt="Enable Inherit Parent Transform" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_2.png" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Why this setting matters</p>
+<p>A USD prim's final world coordinate is computed as parent transform × local transform. With <code>Inherit Parent Transform</code> disabled, <strong>the parent transform is not inherited</strong> when the parent changes, so the world position can shift even if the local transform is unchanged. Since this optimization workflow moves many meshes between parents, enabling this once up front saves time.</p>
+</div>
+<h3 id="1-2-prepare-a-working-folder-and-copy-the-asset">1-2. Prepare a Working Folder and Copy the Asset<a class="headerlink" href="#1-2-prepare-a-working-folder-and-copy-the-asset" title="Permanent link">&para;</a></h3>
+<p>The sample assets are read-only, so first copy the base asset to a working folder (the same flow as Step 1-1 of <a href="../10_closed_loop_structures/">Tutorial 10</a>):</p>
+<ol>
+<li>Create a working folder somewhere convenient (for example, on the desktop, named <code>Jetbot_optimization</code>)</li>
+<li>In the <strong>Content</strong> tab, open <code>Samples/Rigging/Jetbot/Jetbot_Base/</code>, then download the <code>Jetbot_base.usd</code> file along with any related resources in the same folder (such as <code>Materials</code> and <code>parts</code>, if present) into the working folder</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">You do not need to copy <code>Jetbot_optimized*.usd</code></p>
+<p>The files under <code>Jetbot_Optimized</code> are already pre-optimized reference data. You may open them to inspect the contents, but you do <strong>not</strong> need to copy them into your working folder.</p>
+</div>
+<h3 id="1-3-create-a-new-jetbot_optimizedusd-and-insert-the-sublayer">1-3. Create a New <code>Jetbot_optimized.usd</code> and Insert the Sublayer<a class="headerlink" href="#1-3-create-a-new-jetbot_optimizedusd-and-insert-the-sublayer" title="Permanent link">&para;</a></h3>
+<p>In the working folder, create a new USD file to hold the optimization results, and insert the base asset as a sublayer:</p>
+<ol>
+<li>Choose <strong>File &gt; New</strong> to create an empty stage</li>
+<li>Choose <strong>File &gt; Save As</strong> to save the stage as <code>Jetbot_optimized.usd</code> inside the working folder you created in Step 1-2</li>
+<li>Open the <strong>Layer</strong> tab (if hidden, <strong>Window &gt; Layer</strong>)</li>
+<li>With the <strong>Root Layer</strong> (<code>Jetbot_optimized.usd</code>) selected, click the <strong>Insert Sublayer</strong> button</li>
+<li>In the file dialog, select the <code>Jetbot_base.usd</code> you copied to the working folder</li>
+</ol>
+<p><img alt="Insert sublayer" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_3.png" /></p>
+<p>The Jetbot meshes and materials now appear in the viewport. <strong>Because <code>Jetbot_optimized.usd</code> is the Root Layer, all subsequent edits are recorded in this file, and <code>Jetbot_base.usd</code> itself is not modified.</strong></p>
+<div class="admonition note">
+<p class="admonition-title">You can sublayer directly from the Samples folder, but...</p>
+<p>Technically, you can skip the local copy and sublayer the Samples-side <code>Jetbot_base.usd</code> directly. However, the Isaac Sim sample layout and paths can change between versions, so future asset lookups may break. <strong>Copying locally and referencing via a relative path</strong> improves reproducibility.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Sublayer vs Reference</p>
+<p>As covered in <a href="../10_closed_loop_structures/">Tutorial 10</a>, a <strong>sublayer</strong> shares the same prim hierarchy and overrides properties on top of it, whereas a <strong>Reference / Payload</strong> places an external asset as an independent child prim. Here we want to keep the base asset's prim hierarchy and <strong>add an additional, parallel</strong> optimized Xform hierarchy alongside it, so a sublayer is the right fit.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Return to the Stage panel after working in the Layer tab</p>
+<p>Once you have finished inserting the sublayer, all subsequent reparenting and prim creation happens in the <strong>Stage</strong> panel. The Layer tab is only for managing layers and switching the edit target — it is not where you select or edit prims directly. Trying to operate on prims from inside the Layer tab is a common way to get lost.</p>
+</div>
+<h3 id="1-4-create-the-optimized-hierarchy">1-4. Create the Optimized Hierarchy<a class="headerlink" href="#1-4-create-the-optimized-hierarchy" title="Permanent link">&para;</a></h3>
+<p>Create the Xform that holds the optimized asset:</p>
+<ol>
+<li>Right-click the <strong>Stage</strong> panel and choose <strong>Show Root</strong> to display the <code>/</code> (root) level</li>
+</ol>
+<p><img alt="Enable Show Root" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_4.png" /></p>
+<ol>
+<li>Right-click the root and choose <strong>Create &gt; Xform</strong>, then rename the new Xform to <code>Jetbot_Sim</code></li>
+<li>Right-click <code>Jetbot_Sim</code> and choose <strong>Set as Default Prim</strong> (this becomes the asset's "front door")</li>
+<li>Create another <strong>Scope</strong> directly under root and rename it to <code>Visuals</code> (placing it <strong>outside</strong> <code>Jetbot_Sim</code> is the key point)</li>
+</ol>
+<p>The Stage now has the following structure:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── Jetbot_Sim       &lt;- Default Prim (link hierarchy used for simulation)
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── Visuals          &lt;- Holds visual meshes (used as instancing source)
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>└── Jetbot           &lt;- Source asset (its contents will be moved out, leaving it empty)
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Scope vs Xform</p>
+<p>An <strong>Xform</strong> carries a coordinate transform and acts as a frame that applies position, rotation, and scale to its children. A <strong>Scope</strong> carries no transform and is just a grouping container — like a folder. Since <code>Visuals</code> only stores meshes that already have their own transforms via references, a Scope is a better fit.</p>
+</div>
+<h3 id="1-5-reparent-the-prims">1-5. Reparent the Prims<a class="headerlink" href="#1-5-reparent-the-prims" title="Permanent link">&para;</a></h3>
+<p>Move the children of the original <code>Jetbot</code> prim under <code>Jetbot_Sim</code>:</p>
+<ol>
+<li>In the Stage panel, Shift-click to select all children of <code>Jetbot</code></li>
+<li>Drag-and-drop them onto <code>Jetbot_Sim</code></li>
+</ol>
+<p><img alt="Move prims" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_5.png" /></p>
+<ol>
+<li>If the moved prims appear <strong>grayed out (inactive)</strong>, select them, right-click, and choose <strong>Activate</strong> to re-enable them</li>
+</ol>
+<p><img alt="Activate prims" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_6.png" /></p>
+<ol>
+<li><strong>Delete the meshes and materials that were copied</strong> under each <code>Jetbot_Sim/&lt;link&gt;</code> (for example <code>Jetbot_Sim/left_wheel</code>), but <strong>keep the link Xform itself</strong>. The link Xform serves as a container that will receive the merged mesh produced by the Mesh Merge Tool in the next step, so we leave the container in place and empty its contents.</li>
+</ol>
+<p><img alt="Delete leftover contents under Jetbot_Sim" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_6a.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Why empty the contents under Jetbot_Sim</p>
+<p>The reparent operation also moves the children (meshes, materials, and so on) from <code>Jetbot/&lt;link&gt;</code> to <code>Jetbot_Sim/&lt;link&gt;</code>. These are still the unmerged originals; the next step uses the Mesh Merge Tool to <strong>produce a new merged mesh that replaces them</strong>, so we tidy them up here. The original mesh data remains in the <code>Jetbot_base.usd</code> sublayer (and under <code>Jetbot/&lt;original-link&gt;</code>), so the Mesh Merge Tool can still reference it as input.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Why prims become inactive</p>
+<p>A prim "move" across USD sublayers is internally a <strong>deactivate at the source plus a redefinition at the destination</strong>. If the destination prim is inactive in the Stage panel, explicitly <strong>Activate</strong> it to enable it.</p>
+</div>
+<h2 id="step-2-merge-meshes-mesh-merge-tool">Step 2: Merge Meshes (Mesh Merge Tool)<a class="headerlink" href="#step-2-merge-meshes-mesh-merge-tool" title="Permanent link">&para;</a></h2>
+<p>Right after CAD import, a single Jetbot link is split into <strong>dozens of meshes and materials</strong>. Consolidating each link into a single mesh dramatically reduces both draw-call count and scenegraph prim count.</p>
+<div class="admonition note">
+<p class="admonition-title">What the Mesh Merge Tool does</p>
+<p>The Mesh Merge Tool combines multiple meshes into a single merged mesh and simultaneously consolidates their <strong>materials into a single combined material</strong>. The original meshes remain elsewhere, so they are still available for reuse if needed.</p>
+</div>
+<h3 id="2-1-open-the-mesh-merge-tool">2-1. Open the Mesh Merge Tool<a class="headerlink" href="#2-1-open-the-mesh-merge-tool" title="Permanent link">&para;</a></h3>
+<p>From the menu, click in the following order:</p>
+<p><strong>Tools &gt; Robotics &gt; Asset Editors &gt; Mesh Merge Tool</strong></p>
+<p>The tool window opens.</p>
+<h3 id="2-2-merge-one-link-left-wheel-end-to-end">2-2. Merge One Link (Left Wheel) End-to-End<a class="headerlink" href="#2-2-merge-one-link-left-wheel-end-to-end" title="Permanent link">&para;</a></h3>
+<p>Use <code>left_wheel</code> as the example to walk through the full merge flow:</p>
+<ol>
+<li>In the <strong>Stage</strong> panel, select <code>Jetbot/left_wheel</code></li>
+<li>In the Mesh Merge Tool, check <strong>Combine Materials</strong></li>
+<li>Set <strong>Material Save Location</strong> (the input field next to the <strong>Combine Materials</strong> checkbox) to <code>/Jetbot_Sim/Looks</code> (the destination where merged materials will be collected)</li>
+<li>Click the <strong>Merge</strong> button</li>
+</ol>
+<p><img alt="Mesh Merge Tool settings" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_7.png" /></p>
+<ol>
+<li>The merged result is created temporarily at <code>/Merged/left_wheel</code></li>
+<li>Select the new mesh and, in the <strong>Properties</strong> panel's <strong>Transform</strong> section, <strong>clear position, rotation, and scale to 0 (or identity values)</strong></li>
+</ol>
+<p><img alt="Clear Transform" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_8.png" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Why clear the Transform</p>
+<p>The Mesh Merge Tool bakes the merged geometry relative to the selected prim's world coordinates. As a result, the new <code>/Merged/left_wheel</code> ends up with <strong>a Transform equal to its world position</strong>. If you then place this mesh under <code>Visuals</code> and reference it from elsewhere, leaving the Transform in place causes it to be <strong>applied twice</strong> (once at the source and once at the reference site).</p>
+</div>
+<h3 id="2-3-build-the-visual-reference-structure">2-3. Build the Visual Reference Structure<a class="headerlink" href="#2-3-build-the-visual-reference-structure" title="Permanent link">&para;</a></h3>
+<p>Place the merged mesh under <code>Visuals</code> and have the simulation-side <code>Jetbot_Sim/left_wheel</code> access it via a <strong>Reference</strong>. This structure enables instancing in the next step.</p>
+<ol>
+<li>Create an Xform under <code>/Visuals</code> and rename it to <code>left_wheel</code></li>
+<li>Drag-and-drop <code>/Merged/left_wheel</code> into <code>/Visuals/left_wheel</code></li>
+<li>Delete the now-empty <code>/Merged</code> prim</li>
+</ol>
+<p><img alt="Place under Visuals" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_9.png" /></p>
+<p>Next, add an Xform under the simulation-side link <code>Jetbot_Sim/left_wheel</code> that references <code>Visuals/left_wheel</code>:</p>
+<ol>
+<li>Under <code>Jetbot_Sim/left_wheel</code>, create a new Xform and rename it to <code>Visuals</code></li>
+<li>Right-click the new Xform and choose <strong>Add &gt; Reference</strong></li>
+</ol>
+<p><img alt="Add Reference" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_10.png" /></p>
+<ol>
+<li>In the file dialog, select the <code>Jetbot_base.usd</code> you copied to your working folder (the next step clears the Asset Path to convert this into an internal reference, so this file selection is just a temporary "stepping stone" to dismiss the dialog)</li>
+</ol>
+<p><img alt="Select file" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_11.png" /></p>
+<ol>
+<li>In Prim Path, enter <code>/Visuals/left_wheel</code></li>
+</ol>
+<p><img alt="Enter Prim Path" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_12.png" /></p>
+<ol>
+<li>In the <strong>Properties</strong> panel, expand the <strong>References</strong> section and clear the <strong>Asset Path</strong> value (this turns the reference into an "internal reference" that points within the same stage)</li>
+</ol>
+<p><img alt="Clear Asset Path" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_12a.png" /></p>
+<ol>
+<li>Confirm that the left wheel renders correctly in the viewport and that the merged mesh appears under <code>Jetbot_Sim/left_wheel/Visuals</code> in the Stage panel</li>
+</ol>
+<p><img alt="Final reference structure" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_13.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Why use an internal reference</p>
+<p>Storing the merged meshes under <code>Visuals</code> inside <code>Jetbot_optimized.usd</code> and referencing them from within the same file keeps the asset self-contained and free of external dependencies. The instancing step that follows is also applied to these internal references.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Reference vs Payload</p>
+<p>As covered in <a href="../10_closed_loop_structures/">Tutorial 10</a>, <strong>References are always loaded</strong>, while <strong>Payloads support deferred loading (and can be Unloaded)</strong>. Since the visuals are essential to the robot, we use References here.</p>
+</div>
+<h3 id="2-4-repeat-for-the-remaining-links">2-4. Repeat for the Remaining Links<a class="headerlink" href="#2-4-repeat-for-the-remaining-links" title="Permanent link">&para;</a></h3>
+<p>Apply the same flow to the other links such as <code>right_wheel</code>, <code>chassis</code>, and <code>caster_wheel</code>:</p>
+<ol>
+<li>Select <code>Jetbot/&lt;link&gt;</code></li>
+<li>Use the Mesh Merge Tool's <strong>Merge</strong> button</li>
+<li>Clear the Transform on <code>/Merged/&lt;link&gt;</code></li>
+<li>Move it to <code>/Visuals/&lt;link&gt;</code></li>
+<li>Create an internal reference under <code>Jetbot_Sim/&lt;link&gt;/Visuals</code></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Intermediate sample file</p>
+<p>Merging every link is tedious, so Isaac Sim ships an intermediate file at <code>Samples/Rigging/Jetbot/Jetbot_Optimized/Jetbot_optimized_post_merge.usd</code> with merging already complete. To skip ahead and start from the instancing step, copy that file along with its related resources into your working folder before opening it (the Samples area is read-only, so opening it directly will not let you save).</p>
+</div>
+<h2 id="step-3-scenegraph-instancing">Step 3: Scenegraph Instancing<a class="headerlink" href="#step-3-scenegraph-instancing" title="Permanent link">&para;</a></h2>
+<p>The Jetbot's left and right wheels are <strong>identical in shape</strong>. Instead of holding two copies of the same mesh data, <strong>share a single data source for rendering</strong> to reduce both memory usage and rendering cost. This is <strong>scenegraph instancing</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">What scenegraph instancing is</p>
+<p>Instancing is a standard GPU mechanism for "drawing the same shape at different locations." In USD, setting <code>Instanceable = true</code> on a referenced prim lets Hydra (the USD render layer) <strong>collapse prims that come from the same source into a single draw call</strong>.</p>
+<p>A trade-off to be aware of: <strong>child properties under an Instanceable prim cannot be overridden individually</strong> (so you cannot swap materials or transforms on a per-instance basis). Since we apply this only to visual meshes here, this restriction does not cause issues.</p>
+</div>
+<h3 id="3-1-consolidate-the-common-geometry">3-1. Consolidate the Common Geometry<a class="headerlink" href="#3-1-consolidate-the-common-geometry" title="Permanent link">&para;</a></h3>
+<p>Because the left and right wheels share the same geometry, consolidate the source under <code>Visuals</code>:</p>
+<ol>
+<li>Open the file you used in Step 2 (or the <code>Jetbot_optimized_post_merge.usd</code> you copied to your working folder)</li>
+<li>Rename <code>/Visuals/left_wheel</code> to <code>/Visuals/wheel</code></li>
+<li><strong>Delete</strong> <code>/Visuals/right_wheel</code></li>
+<li>Update the Prim Path in the <strong>References</strong> of <code>Jetbot_Sim/right_wheel/Visuals</code> to <code>/Visuals/wheel</code></li>
+</ol>
+<p>Both <code>Jetbot_Sim/&lt;wheel&gt;/Visuals</code> now reference <code>/Visuals/wheel</code>.</p>
+<h3 id="3-2-enable-instanceable">3-2. Enable Instanceable<a class="headerlink" href="#3-2-enable-instanceable" title="Permanent link">&para;</a></h3>
+<p>Mark the referenced Visuals prims as instancing targets:</p>
+<ol>
+<li>Shift-click to select all <code>Visuals</code> prims under <code>Jetbot_Sim</code> (<code>left_wheel/Visuals</code>, <code>right_wheel/Visuals</code>, <code>chassis/Visuals</code>, and so on)</li>
+<li>In the <strong>Properties</strong> panel, check <strong>Instanceable</strong></li>
+<li>Verify that a <strong>blue "I" badge</strong> appears on the reference icons in the Stage</li>
+</ol>
+<p><img alt="Instanceable indicator" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_16.png" /></p>
+<div class="admonition warning">
+<p class="admonition-title">Instanceable and per-prim collider/material edits</p>
+<p>Once <strong>Instanceable</strong> is enabled, you cannot change materials or collider approximations on a per-mesh basis under that prim. As covered in Steps 2-5 and 6-2 of <a href="../10_closed_loop_structures/">Tutorial 10</a>, if you need to swap materials per-link later, <strong>temporarily disable</strong> Instanceable on the target prim, make the change, and then re-enable it.</p>
+</div>
+<h3 id="3-3-cleanup-before-saving">3-3. Cleanup Before Saving<a class="headerlink" href="#3-3-cleanup-before-saving" title="Permanent link">&para;</a></h3>
+<p>Before you save, tidy up unused prims so the optimized asset is less confusing to use later. The original NVIDIA documentation also notes "you can hide the Visuals scope" — these steps are not strictly required but are recommended cleanup.</p>
+<p><strong>Hide the <code>/Visuals</code> scope</strong></p>
+<p>The meshes under <code>/Visuals</code> are displayed via internal references from <code>Jetbot_Sim/&lt;link&gt;/Visuals</code>. Because <code>/Visuals</code> itself also lives directly under root, leaving it visible can cause <strong>the base meshes to render twice</strong> in the viewport — once on the <code>Jetbot_Sim</code> side and once at <code>/Visuals</code>.</p>
+<ol>
+<li>In the <strong>Stage</strong> panel, select <code>/Visuals</code></li>
+<li>Click the <strong>eye icon</strong> on the right of the panel to hide it (<code>visibility = invisible</code>)</li>
+</ol>
+<p><code>/Visuals</code> itself is no longer drawn in the viewport, but it continues to function as a reference source, so the meshes shown via <code>Jetbot_Sim/&lt;link&gt;/Visuals</code> are unaffected.</p>
+<p><strong>Tidy up under <code>/Jetbot</code></strong></p>
+<p>After the reparent in Step 1-5, <code>/Jetbot</code> no longer holds the link hierarchy. The exact appearance depends on USD composition behavior — its children may be grayed out, only empty Xforms may remain, or original meshes may still be visible. If the Stage panel feels cluttered, you can clean up using one of:</p>
+<ul>
+<li><strong>Delete</strong> the <code>/Jetbot</code> prim (a delete instruction is recorded in the Root Layer; the <code>Jetbot_base.usd</code> sublayer is not modified)</li>
+<li><strong>Hide</strong> the <code>/Jetbot</code> prim (toggle the eye icon)</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Delete vs Hide</p>
+<p><strong>Delete</strong> removes <code>/Jetbot</code> from the composed result, giving the cleanest layout. As long as you have finished using <code>/Jetbot/&lt;original-link&gt;</code> as Mesh Merge input, deleting is fine. <strong>Hide</strong> is safer if you may want to re-reference one of those meshes later.</p>
+</div>
+<h3 id="3-4-save">3-4. Save<a class="headerlink" href="#3-4-save" title="Permanent link">&para;</a></h3>
+<p>After the cleanup, save the file with <strong>Ctrl + S</strong>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Final-state sample file</p>
+<p><code>Jetbot_optimized_final.usd</code> represents the state after instancing is complete. Use it as a reference when you want to compare your end result.</p>
+</div>
+<h2 id="step-4-other-performance-optimizations">Step 4: Other Performance Optimizations<a class="headerlink" href="#step-4-other-performance-optimizations" title="Permanent link">&para;</a></h2>
+<p>Mesh merging and instancing are the two highest-impact techniques, but reviewing the items below can squeeze out additional FPS.</p>
+<h3 id="4-1-rendering">4-1. Rendering<a class="headerlink" href="#4-1-rendering" title="Permanent link">&para;</a></h3>
+<p><strong>Reduce the number of lights</strong></p>
+<p>Isaac Sim's default renderer <strong>switches to sample-based lighting once the scene has 10 or more lights</strong>, which sharply increases compute cost. Stick to the default environment light plus only the point lights you really need.</p>
+<p><strong>Avoid translucent materials</strong></p>
+<p>Translucent materials such as <strong>OmniPBR Translucent</strong> (glass, smoke, and similar) are noticeably more expensive than opaque OmniPBR and are common bottlenecks. Unless they are essential for a demo, prefer opaque materials.</p>
+<h3 id="4-2-physics">4-2. Physics<a class="headerlink" href="#4-2-physics" title="Permanent link">&para;</a></h3>
+<p><strong>Simplify collider shapes</strong></p>
+<p>A mesh collider (Triangle Mesh) is the most accurate, but switching to <strong>Convex Hull</strong>, <strong>Convex Decomposition</strong>, or basic primitives (Box / Sphere / Cylinder / Capsule) dramatically reduces physics cost.</p>
+<table>
+<thead>
+<tr>
+<th>Collider</th>
+<th>Compute cost</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Box / Sphere / Cylinder</strong></td>
+<td>Low</td>
+<td>Substitute for simple shapes (wheels, etc.)</td>
+</tr>
+<tr>
+<td><strong>Convex Hull</strong></td>
+<td>Medium</td>
+<td>Balanced default</td>
+</tr>
+<tr>
+<td><strong>Convex Decomposition</strong></td>
+<td>Medium-High</td>
+<td>Shapes with concavities</td>
+</tr>
+<tr>
+<td><strong>Triangle Mesh</strong></td>
+<td>High</td>
+<td>Only when high accuracy is required</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reduce the number of contact points</strong></p>
+<p>When multiple rigid bodies are in contact, the number of contact points dominates physics cost. Simplifying colliders also reduces contact points, so this item is closely tied to the previous one.</p>
+<p><strong>Use a cylinder or sphere instead of a mesh for wheels</strong></p>
+<p>Mesh colliders on wheels make ground-contact computation extremely heavy for mobile robots. Approximating a wheel with a <strong>Cylinder</strong> or <strong>Sphere</strong> improves both driving behavior and compute cost.</p>
+<h3 id="4-3-make-measurement-a-habit">4-3. Make Measurement a Habit<a class="headerlink" href="#4-3-make-measurement-a-habit" title="Permanent link">&para;</a></h3>
+<p>Optimization gains depend on the environment and scene. <strong>Record FPS before and after each change</strong> so you can tell which steps actually paid off and avoid unnecessary work. Isaac Sim can show FPS in the HUD overlay, so check it after every optimization.</p>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>World position shifts when dragging a prim</td>
+<td><strong>Inherit Parent Transform</strong> is disabled</td>
+<td>Enable it under <strong>Edit &gt; Preferences &gt; Stage &gt; Authoring</strong></td>
+</tr>
+<tr>
+<td>The destination prim is grayed out and not visible in the viewport</td>
+<td>The cross-sublayer move deactivated it</td>
+<td>Right-click the prim and choose <strong>Activate</strong></td>
+</tr>
+<tr>
+<td>Position shifts after Mesh Merge</td>
+<td>Transform remains on <code>/Merged/&lt;link&gt;</code></td>
+<td>Clear all values in Properties &gt; Transform (position 0, rotation 0, scale 1)</td>
+</tr>
+<tr>
+<td>No blue "I" badge on the reference even though Instanceable was enabled</td>
+<td>The reference still points to an external file, or Instanceable is unchecked</td>
+<td>Empty the <strong>Asset Path</strong> in <strong>References</strong> to make it internal, then enable <strong>Instanceable</strong></td>
+</tr>
+<tr>
+<td>Cannot edit per-mesh materials or colliders under an Instanceable prim</td>
+<td>Instanceable is enabled</td>
+<td>Temporarily disable Instanceable on the target Xform, then re-enable after editing</td>
+</tr>
+<tr>
+<td>FPS does not change after optimization</td>
+<td>Too many lights, leftover translucent materials, or mesh colliders still in use</td>
+<td>Walk through the checklist in Step 4</td>
+</tr>
+<tr>
+<td>Base meshes appear twice</td>
+<td>The <code>/Visuals</code> scope is still visible</td>
+<td>Hide <code>/Visuals</code> per Step 3-3</td>
+</tr>
+<tr>
+<td><code>/Jetbot</code> leftovers clutter the Stage panel</td>
+<td>The original asset hierarchy persists after the reparent</td>
+<td>Hide or delete <code>/Jetbot</code> per Step 3-3 (the sublayer is not modified)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This tutorial covered the following topics:</p>
+<ol>
+<li><strong>Restructuring the asset</strong> — enable Inherit Parent Transform, then split into <code>Jetbot_Sim</code> (link hierarchy) and <code>Visuals</code> (reference source location)</li>
+<li><strong>Mesh Merge Tool</strong> — consolidate per-link meshes and materials into a single mesh and material</li>
+<li><strong>Visual separation via internal references</strong> — have the simulation links Reference <code>Visuals/&lt;link&gt;</code></li>
+<li><strong>Scenegraph instancing</strong> — share identical meshes from one data source by enabling Instanceable to lower rendering cost</li>
+<li><strong>Other optimizations</strong> — review lights, translucent materials, colliders, and contact points</li>
+</ol>
+<p>Combined, these changes take the Jetbot sample from <strong>40 FPS to 64 FPS (about 1.6×)</strong>. Mesh merging and instancing in particular tend to pay off well on real robot USD assets too, so they are a good first stop whenever simulation feels slow.</p>
+<div class="admonition tip">
+<p class="admonition-title">Also see the asset structure guidelines</p>
+<p>The "base / optimized / features (physics, sensors)" separation introduced here follows the official <a href="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html">Isaac Sim asset structure guidelines</a>. Splitting layers by feature — physics, sensors, ROS, and so on — further improves reusability and maintainability.</p>
+</div>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Proceed to the next tutorial, "<a href="../13_rig_legged_robot/">Rig a Legged Robot</a>", to learn how to rig a legged robot for a locomotion policy.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/extra.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

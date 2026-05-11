@@ -1,0 +1,3713 @@
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Isaac Sim チュートリアル集 / Isaac Sim Tutorial Collection">
+      
+      
+        <meta name="author" content="IR Lab">
+      
+      
+        <link rel="canonical" href="https://hijimasa.github.io/isaac-sim-tutorials/ja/robot_setup/11_joint_tuning/">
+      
+      
+        <link rel="prev" href="../10_closed_loop_structures/">
+      
+      
+        <link rel="next" href="../12_asset_optimization/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="ja">
+        
+          <link rel="alternate" href="../../../robot_setup/11_joint_tuning/" hreflang="en">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ジョイントドライブゲインの調整 - Isaac Sim Tutorials</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans JP";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          コンテンツにスキップ
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../" title="Isaac Sim Tutorials" class="md-header__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Isaac Sim Tutorials
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ジョイントドライブゲインの調整
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../../robot_setup/11_joint_tuning/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+        
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="タブ" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  ホーム
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../introduction/tutorial_list/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  はじめに
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../core_api/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Core API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ロボットセットアップ
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../importer_exporter/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  インポート・エクスポート
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../isaac_lab/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Isaac Lab
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ros/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  ROS 2
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../synthetic_data/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  合成データ生成
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sensors/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  センサー
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../motion_generation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  モーション生成
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../omnigraph/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  OmniGraph
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../troubleshooting/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  トラブルシューティング
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="Isaac Sim Tutorials" class="md-nav__button md-logo" aria-label="Isaac Sim Tutorials" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 4 16 6.41v.18L18.41 9H22v2h-4.41L16 9.41V12h-1a2 2 0 0 1-2-2V7.5H9.86c-.09.37-.24.72-.44 1.05L15.18 19H20a2 2 0 0 1 2 2v1H2v-1a2 2 0 0 1 2-2h6.61l-4.69-8.5a4.006 4.006 0 0 1-3.81-3A4 4 0 0 1 5 2.63c2.13-.55 4.31.73 4.86 2.87H13V3a2 2 0 0 1 2-2h1v2.59L17.59 2H22v2zM6 4.5a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2"/></svg>
+
+    </a>
+    Isaac Sim Tutorials
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ホーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    はじめに
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    はじめに
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../introduction/tutorial_list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    チュートリアル一覧
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../core_api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core API
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/01_hello_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello World
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/02_hello_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hello Robot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/03_adding_a_controller/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    コントローラの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/04_adding_a_manipulator_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    マニピュレータロボットの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/05_adding_multiple_robots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    複数ロボットの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/06_multiple_tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    複数タスクの実行
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/07_adding_props/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    属性の追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/08_data_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    データロギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../core_api/09_deformable_body/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    変形可能物体（Deformable Body）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ロボットセットアップ
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ロボットセットアップ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_stage_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ステージのセットアップ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_assemble_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    シンプルなロボットの組み立て
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_articulate_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基本ロボットのアーティキュレーション
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_camera_sensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    カメラとセンサーの追加
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_rig_mobile_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    モバイルロボットのリギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05a_apply_robot_schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Robot Schema の適用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_setup_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    マニピュレータのセットアップ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_configure_manipulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    マニピュレータの設定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_generate_robot_config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ロボット設定ファイルの生成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_pick_and_place/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ピック＆プレースの例
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_closed_loop_structures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    閉ループ構造のリギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ジョイントドライブゲインの調整
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ジョイントドライブゲインの調整
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学習目標
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="はじめに">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前提条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所要時間
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概要
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 1：Gain Tuner エクステンションの起動
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 1：Gain Tuner エクステンションの起動">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. ロボットアセットを開く
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Gain Tuner を開く
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. UI の構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 2：ポジションドライブのゲイン調整
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 2：ポジションドライブのゲイン調整">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. 調整の基本方針
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Damping をゼロに設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-stiffness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Stiffness を段階的に増やす
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Damping を加える
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-5. 重力補償が組み込まれているロボットの場合
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-6. ジョイントごとのグルーピング戦略
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 3：速度制限と産業用ロボット
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 3：速度制限と産業用ロボット">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1-stiffness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. Stiffness を強めにする
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. 最大ジョイント速度の設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. 速度上限の確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 4：ベロシティドライブのゲイン調整
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 4：ベロシティドライブのゲイン調整">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-stiffness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Stiffness をゼロに設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Damping を段階的に増やす
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. ペイロード変動への対応
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-4. 出力上限の設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 5：ゲインのアセットへの保存
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 5：ゲインのアセットへの保存">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-save-gains-to-physics-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Save Gains to Physics Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. 保存できない／したくない場合
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 6：結果の可視化
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 6：結果の可視化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-1. プロットの読み方
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-2. プロットからの読み取りポイント
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-3. ジョイント単位の評価
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_asset_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    アセット最適化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_rig_legged_robot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    脚ロボットのリギング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../importer_exporter/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    インポート・エクスポート
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    インポート・エクスポート
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/01_import_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF インポート
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/02_export_urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF エクスポート
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/03_import_mjcf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MJCF インポート
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../importer_exporter/04_shapenet_importer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ShapeNet インポーター
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../isaac_lab/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Isaac Lab
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Isaac Lab
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ros/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS 2
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ROS 2
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../synthetic_data/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    合成データ生成
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    合成データ生成
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sensors/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    センサー
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    センサー
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../motion_generation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    モーション生成
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    モーション生成
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../omnigraph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OmniGraph
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OmniGraph
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../troubleshooting/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    トラブルシューティング
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    トラブルシューティング
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学習目標
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        はじめに
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="はじめに">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        前提条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        所要時間
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        概要
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 1：Gain Tuner エクステンションの起動
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 1：Gain Tuner エクステンションの起動">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-1. ロボットアセットを開く
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-2-gain-tuner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-2. Gain Tuner を開く
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-3-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-3. UI の構成
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 2：ポジションドライブのゲイン調整
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 2：ポジションドライブのゲイン調整">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-1. 調整の基本方針
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-2-damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-2. Damping をゼロに設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3-stiffness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-3. Stiffness を段階的に増やす
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-4-damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-4. Damping を加える
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-5. 重力補償が組み込まれているロボットの場合
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-6. ジョイントごとのグルーピング戦略
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 3：速度制限と産業用ロボット
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 3：速度制限と産業用ロボット">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3-1-stiffness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-1. Stiffness を強めにする
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-2. 最大ジョイント速度の設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-3. 速度上限の確認
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 4：ベロシティドライブのゲイン調整
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 4：ベロシティドライブのゲイン調整">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-1-stiffness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-1. Stiffness をゼロに設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-2-damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-2. Damping を段階的に増やす
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-3. ペイロード変動への対応
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-4. 出力上限の設定
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 5：ゲインのアセットへの保存
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 5：ゲインのアセットへの保存">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5-1-save-gains-to-physics-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-1. Save Gains to Physics Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5-2. 保存できない／したくない場合
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ステップ 6：結果の可視化
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ステップ 6：結果の可視化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-1. プロットの読み方
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-2. プロットからの読み取りポイント
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6-3. ジョイント単位の評価
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">ジョイントドライブゲインの調整<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">学習目標<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>このチュートリアルを修了すると、以下の内容を習得できます：</p>
+<ul>
+<li><strong>Gain Tuner エクステンション</strong>の起動方法と UI の使い方</li>
+<li><strong>ポジションドライブ</strong>（位置制御）のゲイン調整手順</li>
+<li><strong>産業用ロボット</strong>を想定した速度制限の設定方法</li>
+<li><strong>ベロシティドライブ</strong>（速度制御）のゲイン調整手順</li>
+<li>調整したゲインをアセット（USD ファイル）に保存する方法</li>
+<li>調整結果のプロットによる可視化と評価方法</li>
+</ul>
+<h2 id="_3">はじめに<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h3 id="_4">前提条件<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../07_configure_manipulator/">チュートリアル 7: マニピュレータの設定</a> を完了していること</li>
+<li>ロボットアセットに以下の 2 つが適用されていること（<strong>URDF からインポートしたロボットでは両方とも自動的に適用されます</strong>）：<ul>
+<li><strong>Robot Schema</strong>（Robot API）：Gain Tuner がロボットを認識するために必須</li>
+<li><strong>アーティキュレーションルート（Articulation Root）</strong>：物理的にアーティキュレーションとして駆動するために必須</li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Gain Tuner と Robot Schema の関係</p>
+<p>Isaac Sim 5.1 の Gain Tuner は、内部的に <strong>Robot Schema</strong>（<code>IsaacRobotAPI</code>、<code>IsaacLinkAPI</code>、<code>IsaacJointAPI</code>）を使用してロボットの構造を把握します。具体的には、Gain Tuner ウィンドウの <strong>Select Robot</strong> ドロップダウンには <strong>Robot API が適用されたプリムだけ</strong>が表示される実装になっています。そのため Robot Schema が適用されていないアセットは、たとえアーティキュレーションが有効でも Gain Tuner からは見えません。</p>
+<p><a href="../06_setup_manipulator/">チュートリアル 6</a> で URDF からロボットをインポートする際、URDF インポーターが Robot Schema を<strong>自動的に</strong>適用します。したがって、URDF 経由でインポートしたロボットを使い続けている限り、追加の操作は不要です。</p>
+<p><a href="../05_rig_mobile_robot/">チュートリアル 5</a> のように手動リギングしたロボットや、URDF を経由していない既存の USD アセットを使う場合は、別途 Robot Schema を適用する必要があります。手順は<a href="../05a_apply_robot_schema/">チュートリアル 5a: Robot Schema の適用</a> を参照してください。</p>
+</div>
+<h3 id="_5">所要時間<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>約 15〜20 分</p>
+<h3 id="_6">概要<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>ロボットを Isaac Sim 上で正しく動かすためには、各ジョイントの<strong>ドライブゲイン</strong>（PD 制御のパラメータ）を適切に調整する必要があります。ゲインが小さすぎるとロボットが目標位置に追従できず、大きすぎると振動したり不安定になったりします。</p>
+<p><a href="../07_configure_manipulator/">チュートリアル 7</a> では、<strong>Natural Frequency（固有振動数）</strong> と <strong>Damping Ratio（減衰比）</strong> という抽象化されたパラメータで Gain Tuner の基本的な使い方を学びました。本チュートリアルでは、より直接的な <strong>Stiffness / Damping</strong> の調整手順と、産業用ロボットで重要となる<strong>速度制限</strong>、<strong>ベロシティドライブ</strong>の調整、調整結果の<strong>保存と可視化</strong>まで踏み込んで学びます。具体的には以下の流れで進めます：</p>
+<ol>
+<li><strong>Gain Tuner の起動</strong> — エクステンションを開いてロボットを読み込む</li>
+<li><strong>ポジションドライブの調整</strong> — Stiffness（剛性）と Damping（ダンピング）の調整</li>
+<li><strong>速度制限の設定</strong> — 産業用ロボットを想定した速度上限の組み込み</li>
+<li><strong>ベロシティドライブの調整</strong> — 速度制御モードでの Damping 調整</li>
+<li><strong>ゲインの保存</strong> — 調整結果をアセットの物理レイヤーに書き戻す</li>
+<li><strong>結果の可視化</strong> — 指令値と計測値のプロットで挙動を評価</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">ジョイントドライブとは</p>
+<p>Isaac Sim のジョイントドライブは、各ジョイントに組み込まれた<strong>仮想モーター</strong>のようなものです。目標値（位置または速度）を与えると、内部の <strong>PD 制御</strong>（比例・微分制御）が目標との差を計算してトルクを発生させ、ジョイントを駆動します。</p>
+<p>PD 制御では 2 つのパラメータが重要になります：</p>
+<ul>
+<li><strong>Stiffness（剛性、P ゲイン）</strong>: 目標位置に引き戻す<strong>ばね</strong>の強さ。大きいほど素早く目標に到達するが、大きすぎると行き過ぎ（オーバーシュート）や振動が発生する。</li>
+<li><strong>Damping（ダンピング、D ゲイン）</strong>: 速度に応じて運動を抑える<strong>摩擦</strong>の強さ。振動を抑える役割を果たすが、大きすぎると応答が鈍くなる。</li>
+</ul>
+<p>良いゲインとは、「目標値に素早く到達し、振動せず、行き過ぎが小さい」状態を実現する組み合わせです。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">ポジションドライブとベロシティドライブ</p>
+<p>Isaac Sim のジョイントドライブには 2 つのモードがあります：</p>
+<table>
+<thead>
+<tr>
+<th>モード</th>
+<th>制御目標</th>
+<th>主に使うパラメータ</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ポジションドライブ</strong></td>
+<td>目標位置</td>
+<td>Stiffness + Damping</td>
+<td>マニピュレータの軌道追従、姿勢保持</td>
+</tr>
+<tr>
+<td><strong>ベロシティドライブ</strong></td>
+<td>目標速度</td>
+<td>Damping のみ（Stiffness=0）</td>
+<td>グリッパーの把持、車輪の回転</td>
+</tr>
+</tbody>
+</table>
+<p>どちらのモードを使うべきかは、対象ジョイントの役割で決まります。本チュートリアルでは両方の調整方法を扱います。</p>
+</div>
+<h2 id="1gain-tuner">ステップ 1：Gain Tuner エクステンションの起動<a class="headerlink" href="#1gain-tuner" title="Permanent link">&para;</a></h2>
+<h3 id="1-1">1-1. ロボットアセットを開く<a class="headerlink" href="#1-1" title="Permanent link">&para;</a></h3>
+<p>調整したいロボット（例：チュートリアル 7 で設定した UR10e）を Isaac Sim で開きます。</p>
+<div class="admonition warning">
+<p class="admonition-title">Robot Schema とアーティキュレーションが適用されていることを確認</p>
+<p>URDF インポート経由のロボットであれば自動的に適用されていますが、念のため確認しておきます：</p>
+<ol>
+<li>Stage パネルでロボットのルートプリム（例：<code>/World/ur10e</code>）を選択</li>
+<li>Properties パネルの <strong>Add</strong> ボタン横の検索欄や <strong>Raw USD Properties</strong> で、以下が適用されているか確認：<ul>
+<li><strong>IsaacRobotAPI</strong>（Robot Schema）：Gain Tuner のドロップダウンに表示されるための必須条件</li>
+<li><strong>PhysicsArticulationRootAPI</strong>（<strong>Articulation Enabled</strong> が有効）：物理シミュレーションのアーティキュレーションとして動作するための必須条件</li>
+</ul>
+</li>
+</ol>
+<p>未設定の場合は<a href="../06_setup_manipulator/">チュートリアル 6</a> の URDF インポートからやり直すか、<a href="../07_configure_manipulator/">チュートリアル 7 のステップ 1</a> を参照してアーティキュレーションを設定してください。</p>
+</div>
+<h3 id="1-2-gain-tuner">1-2. Gain Tuner を開く<a class="headerlink" href="#1-2-gain-tuner" title="Permanent link">&para;</a></h3>
+<p>メニューから次の順にクリックして Gain Tuner ウィンドウを開きます：</p>
+<p><strong>Tools &gt; Robotics &gt; Asset Editors &gt; Gain Tuner</strong></p>
+<p><img alt="Gain Tuner UI" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_gains_tuner_ui.png" /></p>
+<p>ウィンドウ上部の <strong>Select Robot</strong> ドロップダウンから、調整したいロボットを選択します。Robot Schema が適用されたアセットが自動的に候補に表示されます。</p>
+<p>選択すると、左側のジョイントリストに対象ロボットの全ジョイントが一覧表示されます。</p>
+<div class="admonition tip">
+<p class="admonition-title">Gain Tuner エクステンションが見つからない場合</p>
+<p>既定では有効になっていますが、メニューに表示されない場合は <strong>Window &gt; Extensions</strong> を開き、<code>omni.isaac.gain_tuner</code> を検索して有効化してください。</p>
+</div>
+<h3 id="1-3-ui">1-3. UI の構成<a class="headerlink" href="#1-3-ui" title="Permanent link">&para;</a></h3>
+<p>Gain Tuner のウィンドウは、大きく 3 つの領域に分かれています：</p>
+<table>
+<thead>
+<tr>
+<th>領域</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Joint List</strong>（左側）</td>
+<td>ロボットの全ジョイントを一覧表示。クリックして選択するとパラメータ編集と結果表示の対象になる</td>
+</tr>
+<tr>
+<td><strong>Parameters</strong>（中央）</td>
+<td>選択中ジョイントの <strong>Stiffness</strong>、<strong>Damping</strong>、<strong>Max Joint Velocity</strong> などを編集</td>
+</tr>
+<tr>
+<td><strong>Plots</strong>（右側／下部）</td>
+<td>テスト実行後、指令値と計測値の比較プロットを表示</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">複数ジョイントの選択</p>
+<p>左側の Joint List では複数選択が可能です：</p>
+<ul>
+<li><strong>Ctrl + クリック</strong>: クリックしたジョイントを選択／選択解除</li>
+<li><strong>Shift + クリック</strong>: 最初に選択したジョイントから現在のジョイントまでを範囲選択</li>
+</ul>
+<p>複数選択しておくと、まとめてゲインを設定したり、複数ジョイントのプロットを並べて比較したりできます。</p>
+</div>
+<h2 id="2">ステップ 2：ポジションドライブのゲイン調整<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>ポジションドライブは、ジョイントを目標角度（または目標位置）に近づけるよう PD 制御で駆動します。<strong>Stiffness</strong> と <strong>Damping</strong> の 2 つのパラメータをバランス良く設定するのが目的です。</p>
+<h3 id="2-1">2-1. 調整の基本方針<a class="headerlink" href="#2-1" title="Permanent link">&para;</a></h3>
+<p>ゲイン調整は次の順序で進めます：</p>
+<ol>
+<li><strong>Damping をゼロにする</strong> — まずは比例項（Stiffness）のみで応答を見る</li>
+<li><strong>Stiffness を増やしていく</strong> — 目標位置に収束する値を見つける</li>
+<li><strong>Stiffness を 1 桁下げる</strong> — オーバーシュートに余裕を持たせる</li>
+<li><strong>Damping を加える</strong> — Stiffness より 1 桁小さい値から開始</li>
+<li><strong>微調整する</strong> — 安定性、応答速度、オーバーシュートを見ながら値を詰める</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">なぜこの順序なのか</p>
+<p>Damping を入れたまま Stiffness を調整すると、振動が抑えられているのか、本当に応答が良いのか判別しにくくなります。<strong>まず Stiffness 単独で「ぎりぎり収束する」点を探し</strong>、そこから 1 桁下げて余裕を作ったうえで Damping を加えるのが、安全に追い込むコツです。</p>
+</div>
+<h3 id="2-2-damping">2-2. Damping をゼロに設定<a class="headerlink" href="#2-2-damping" title="Permanent link">&para;</a></h3>
+<ol>
+<li>左側の Joint List で調整するジョイントを選択（複数選択可）</li>
+<li>中央の <strong>Damping</strong> フィールドに <code>0</code> を入力</li>
+<li><strong>Stiffness</strong> を初期値（例：<code>100</code>）に設定</li>
+</ol>
+<p><img alt="Gain Tuner の設定画面" src="../../../robot_setup/images/37_gain_tuner_setting.png" /></p>
+<h3 id="2-3-stiffness">2-3. Stiffness を段階的に増やす<a class="headerlink" href="#2-3-stiffness" title="Permanent link">&para;</a></h3>
+<p>シミュレーションを実行（タイムラインの <strong>Play</strong> をクリック）し、ジョイントが目標位置に収束するかを観察します。</p>
+<ul>
+<li>収束しなければ <strong>Stiffness を 10 倍</strong>にして再実行（例：100 → 1,000 → 10,000）</li>
+<li>目標位置付近で振動・暴走するようであれば、その値が上限の目安</li>
+</ul>
+<p>目標値付近に<strong>おおよそ収束する</strong>ところまで Stiffness を上げたら、その値から <strong>1 桁（約 1/10）下げ</strong>て、安定に余裕を持たせます。</p>
+<p><img alt="Gain Tuner のテスト実行" src="../../../robot_setup/images/38_gain_tuner_test.png" /></p>
+<h3 id="2-4-damping">2-4. Damping を加える<a class="headerlink" href="#2-4-damping" title="Permanent link">&para;</a></h3>
+<p>Stiffness が決まったら、その値の <strong>約 1/10</strong> を初期値として <strong>Damping</strong> に入力します。</p>
+<p>例：Stiffness = 1,000 の場合、Damping = 100 から開始</p>
+<p>再度シミュレーションを実行し、以下のポイントで評価します：</p>
+<table>
+<thead>
+<tr>
+<th>観点</th>
+<th>良い状態</th>
+<th>悪い状態と対処</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>収束速度</strong></td>
+<td>短時間で目標値に到達</td>
+<td>遅すぎる場合は Stiffness を上げる</td>
+</tr>
+<tr>
+<td><strong>オーバーシュート</strong></td>
+<td>目標値の <strong>1% 以内</strong>を理想とする</td>
+<td>大きい場合は Damping を上げる</td>
+</tr>
+<tr>
+<td><strong>振動</strong></td>
+<td>振動なく単調に収束</td>
+<td>振動する場合は Damping を上げる</td>
+</tr>
+<tr>
+<td><strong>応答の鈍さ</strong></td>
+<td>過剰な減衰でない</td>
+<td>鈍い場合は Damping を下げる</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">推奨される性能目標</p>
+<p>Isaac Sim の公式ガイドでは、<strong>目標値からの誤差（オーバーシュート含む）を 1% 以内に収める</strong>ことを推奨しています。シビアな精度が求められない用途であれば、もう少し緩い基準でも実用上問題ありません。</p>
+</div>
+<h3 id="2-5">2-5. 重力補償が組み込まれているロボットの場合<a class="headerlink" href="#2-5" title="Permanent link">&para;</a></h3>
+<p>UR10e や Franka など、コントローラ側で<strong>重力補償</strong>を行うことを前提に設計されたロボットでは、Isaac Sim 内でも重力の影響をジョイントが負わないように設定するのが一般的です。</p>
+<ol>
+<li>各リンク（Rigid Body）を Stage パネルで選択</li>
+<li>Properties パネルの <strong>Physics &gt; Rigid Body</strong> セクションを開く</li>
+<li><strong>Disable Gravity</strong> にチェックを入れる</li>
+</ol>
+<p>これにより、ジョイントドライブは重力に逆らうトルクを発生させる必要がなくなり、ゲインの調整が「位置追従の精度」に集中できます。</p>
+<div class="admonition note">
+<p class="admonition-title">重力をオンにしたまま調整する場合</p>
+<p>重力補償を行わない場合は、ジョイントが重力に負けないだけの Stiffness が必要になります。リンクの質量や姿勢に依存するため、<strong>最も重力負荷がかかる姿勢</strong>（例：水平に伸ばした腕の根本）でテストすると安全側のゲインが得られます。</p>
+</div>
+<h3 id="2-6">2-6. ジョイントごとのグルーピング戦略<a class="headerlink" href="#2-6" title="Permanent link">&para;</a></h3>
+<p>ヒューマノイドロボットのように<strong>腕と脚が独立して動く</strong>機体では、すべてのジョイントを同時に動かしてゲイン調整するのは大変です。<strong>機能ごとにジョイントをグループ化</strong>して個別に調整したうえで、最後に全体テストを行うのが効率的です。</p>
+<p>例：ヒューマノイドの場合
+- グループ 1：右腕の 7 ジョイント
+- グループ 2：左腕の 7 ジョイント
+- グループ 3：両脚（同期させて歩行する）
+- 最後：全ジョイントを動かして相互干渉を確認</p>
+<h2 id="3">ステップ 3：速度制限と産業用ロボット<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>産業用ロボット（UR、ABB、KUKA など）の多くは、メーカー側で<strong>事前に PD 制御がチューニングされており</strong>、加えて<strong>ジョイントごとの速度上限</strong>が設けられています。Isaac Sim でこれを再現するには、ゲインに加えて<strong>最大ジョイント速度</strong>を設定します。</p>
+<h3 id="3-1-stiffness">3-1. Stiffness を強めにする<a class="headerlink" href="#3-1-stiffness" title="Permanent link">&para;</a></h3>
+<p>産業用ロボットを再現する場合、ステップ 2 で得た Stiffness を<strong>約 2 倍</strong>に強化します。これにより、目標位置への追従が速度上限まで素早くフルスピードで近づくようになります。</p>
+<p>例：通常時 Stiffness = 1,000 → 産業用想定 Stiffness = 2,000</p>
+<h3 id="3-2">3-2. 最大ジョイント速度の設定<a class="headerlink" href="#3-2" title="Permanent link">&para;</a></h3>
+<p>各ジョイントに速度上限を設定します：</p>
+<ol>
+<li>Stage パネルで対象のジョイントを選択</li>
+<li>Properties パネルで <strong>Joint &gt; Advanced</strong> セクションを展開</li>
+<li><strong>Maximum Joint Velocity</strong> に各ジョイントの最大速度（rad/s または deg/s）を入力</li>
+</ol>
+<p>メーカーのデータシートに記載された各軸の最大角速度を参考にしてください。</p>
+<div class="admonition tip">
+<p class="admonition-title">シミュレーション中のデフォルト値は大きすぎる傾向がある</p>
+<p>USD のデフォルト値は実用範囲を大きく超えていることが多いため、<strong>実機の運用上限</strong>に合わせて下げることを推奨します。これは安全性とシミュレーション安定性の両方に効きます。</p>
+</div>
+<h3 id="3-3">3-3. 速度上限の確認<a class="headerlink" href="#3-3" title="Permanent link">&para;</a></h3>
+<p>シミュレーションを実行し、Gain Tuner のプロットで<strong>ジョイント速度が指定した上限を超えていないか</strong>確認します。超えてしまう場合は Stiffness を下げ、上限に届かない場合は Stiffness を上げて、目標速度に<strong>ぎりぎり到達できる</strong>ように微調整します。</p>
+<h2 id="4">ステップ 4：ベロシティドライブのゲイン調整<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<p>ベロシティドライブは、ジョイントを目標<strong>速度</strong>に追従させる制御モードです。グリッパーの把持や車輪の回転制御で使われます（<a href="../10_closed_loop_structures/">チュートリアル 10: 閉ループ構造のリギング</a> でも使用しました）。</p>
+<h3 id="4-1-stiffness">4-1. Stiffness をゼロに設定<a class="headerlink" href="#4-1-stiffness" title="Permanent link">&para;</a></h3>
+<p>ベロシティドライブでは位置目標を無視し、速度目標のみを使用します：</p>
+<ol>
+<li>対象ジョイントを Joint List で選択</li>
+<li><strong>Stiffness</strong> に <code>0</code> を入力</li>
+<li><strong>Damping</strong> を初期値（例：<code>100</code>）に設定</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Stiffness=0 が「速度制御」を意味する理由</p>
+<p>Isaac Sim のジョイントドライブは内部的には常に PD 制御として動きますが、<strong>Stiffness を 0 にすると比例項（位置誤差）が消え、Damping のみで駆動トルクが決まります</strong>。Damping は速度誤差に応じてトルクを発生させるため、結果として目標速度に追従する制御になります。</p>
+</div>
+<h3 id="4-2-damping">4-2. Damping を段階的に増やす<a class="headerlink" href="#4-2-damping" title="Permanent link">&para;</a></h3>
+<p>シミュレーションを実行し、ジョイントが目標速度に到達するまで Damping を上げていきます：</p>
+<ol>
+<li>目標速度（<strong>Target Velocity</strong>）を設定</li>
+<li>シミュレーション実行</li>
+<li>プロットで実速度が目標速度に到達するまで <strong>Damping を 10 倍ずつ増やす</strong></li>
+<li>目標速度にほぼ到達するところで停止</li>
+</ol>
+<h3 id="4-3">4-3. ペイロード変動への対応<a class="headerlink" href="#4-3" title="Permanent link">&para;</a></h3>
+<p>把持物や搬送物などで<strong>負荷が変動</strong>することが想定される場合、Damping を<strong>約 10% 増し</strong>に設定すると、負荷時にも目標速度を維持しやすくなります。</p>
+<p>例：無負荷で Damping = 5,000 → 負荷想定で Damping = 5,500</p>
+<h3 id="4-4">4-4. 出力上限の設定<a class="headerlink" href="#4-4" title="Permanent link">&para;</a></h3>
+<p>ベロシティドライブでは、<strong>Maximum Joint Velocity</strong> または <strong>Maximum Joint Force</strong> で出力を制限できます：</p>
+<table>
+<thead>
+<tr>
+<th>制限項目</th>
+<th>設定場所</th>
+<th>効果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Maximum Joint Velocity</strong></td>
+<td>Joint &gt; Advanced</td>
+<td>速度の上限</td>
+</tr>
+<tr>
+<td><strong>Maximum Joint Force</strong></td>
+<td>Drive &gt; Max Force</td>
+<td>駆動力の上限</td>
+</tr>
+</tbody>
+</table>
+<p>把持動作では、<strong>Max Force</strong> を絞ることで把持物に過大な力をかけずに済みます（<a href="../10_closed_loop_structures/">チュートリアル 10</a> のステップ 5-6 を参照）。</p>
+<h2 id="5">ステップ 5：ゲインのアセットへの保存<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<p>調整したゲインを USD ファイルに保存して、次回以降の起動時にも反映されるようにします。</p>
+<h3 id="5-1-save-gains-to-physics-layer">5-1. Save Gains to Physics Layer<a class="headerlink" href="#5-1-save-gains-to-physics-layer" title="Permanent link">&para;</a></h3>
+<p>Gain Tuner ウィンドウの <strong>Save Gains to Physics Layer</strong> ボタンをクリックします。</p>
+<p>このボタンは、ロボットアセットの推奨構造（<a href="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html">アセット構造ガイドライン</a>）に従って、<strong>物理設定を記録するレイヤー</strong>を自動的に検出し、そのレイヤーに新しいゲインを書き込みます。</p>
+<div class="admonition note">
+<p class="admonition-title">なぜ専用レイヤーに保存するのか</p>
+<p>Isaac Sim のロボットアセットは、メッシュ・物理・センサーといった<strong>役割ごとに USD レイヤーが分かれている</strong>ことが推奨されています（<a href="../10_closed_loop_structures/">チュートリアル 10</a> のレイヤー編集ワークフローを参照）。物理パラメータを物理レイヤーに集約しておくことで、メッシュ更新時にもゲイン調整を失わずに済みます。</p>
+</div>
+<h3 id="5-2">5-2. 保存できない／したくない場合<a class="headerlink" href="#5-2" title="Permanent link">&para;</a></h3>
+<p>書き込み権限がない、あるいは元のロボットアセットを変更したくない場合は、ゲインの変更を<strong>別のシーンファイル</strong>にオーバーライドとして記録します。<strong><code>File &gt; Save As</code></strong> で新しいファイル名（例：<code>my_robot_with_tuned_gains.usd</code>）として保存するのが、最も明示的で安全な方法です。これにより：</p>
+<ul>
+<li>元のロボット USD ファイルは一切変更されない</li>
+<li>新しく作ったファイルがロボットアセットを参照／サブレイヤーとして取り込み、その上にゲインのオーバーライドが書き込まれる</li>
+<li>そのファイルを開けば調整済みのゲインが反映され、元アセットを開けば調整前の状態に戻る</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title"><code>File &gt; Save</code> は Root Layer を上書きする</p>
+<p><code>File &gt; Save</code> は現在開いているステージの <strong>Root Layer をそのまま上書き</strong>します。そのため、<strong>ロボット本体の USD ファイルを直接開いた状態で <code>File &gt; Save</code> をすると、書き込み権限がある場合は元のロボットを上書きしてしまいます</strong>。</p>
+<p>「ローカルオーバーライドにしたい」つもりで <code>Save</code> を使うのは危険です。ロボット本体を変更したくない場合は、必ず <strong><code>Save As</code></strong> で別ファイルとして保存するか、最初からロボットを参照（Reference／Payload）した自前のシーンファイルを開いて作業してください。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">どちらの保存先にすべきか</p>
+<table>
+<thead>
+<tr>
+<th>状況</th>
+<th>推奨される保存方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>元アセットの一部としてゲインを永続化したい</td>
+<td><strong>Save Gains to Physics Layer</strong>（5-1）</td>
+</tr>
+<tr>
+<td>元アセットを変更せず、自分の用途用のバリアントを作りたい</td>
+<td><strong>File &gt; Save As</strong> で別ファイル化</td>
+</tr>
+<tr>
+<td>すでにロボットを参照する自前のシーンを開いている</td>
+<td><strong>File &gt; Save</strong>（変更はシーンファイルにのみ書き込まれる）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="6">ステップ 6：結果の可視化<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<h3 id="6-1">6-1. プロットの読み方<a class="headerlink" href="#6-1" title="Permanent link">&para;</a></h3>
+<p>Gain Tuner のプロット領域には、テスト実行後に以下が表示されます：</p>
+<p><img alt="Gain Tuner プロット" src="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_gains_tuner_plots.png" /></p>
+<table>
+<thead>
+<tr>
+<th>表示要素</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>濃い色のライン</strong></td>
+<td>指令値（Commanded Position / Commanded Velocity）</td>
+</tr>
+<tr>
+<td><strong>薄い色（フェード）のライン</strong></td>
+<td>計測値（実際のジョイント位置・速度）</td>
+</tr>
+<tr>
+<td><strong>色分け</strong></td>
+<td>ジョイントごとに別の色で表示</td>
+</tr>
+</tbody>
+</table>
+<p>理想的な調整状態では、薄い線（計測値）が濃い線（指令値）に<strong>遅延なくぴったり重なる</strong>形になります。</p>
+<h3 id="6-2">6-2. プロットからの読み取りポイント<a class="headerlink" href="#6-2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>プロットの形</th>
+<th>状態</th>
+<th>対処</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>計測値が指令値の到達前に振動</td>
+<td>Stiffness が高すぎる</td>
+<td>Stiffness を下げるか Damping を上げる</td>
+</tr>
+<tr>
+<td>計測値が指令値に追いつかない</td>
+<td>Stiffness が低すぎる</td>
+<td>Stiffness を上げる</td>
+</tr>
+<tr>
+<td>目標値を行き過ぎて戻る</td>
+<td>オーバーシュート（Damping 不足）</td>
+<td>Damping を上げる</td>
+</tr>
+<tr>
+<td>応答が滑らかだが遅い</td>
+<td>Damping 過多</td>
+<td>Damping を下げる</td>
+</tr>
+<tr>
+<td>目標速度の上限で頭打ちになる</td>
+<td>Maximum Joint Velocity による制限（産業用想定では正常）</td>
+<td>必要に応じて上限を見直す</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-3">6-3. ジョイント単位の評価<a class="headerlink" href="#6-3" title="Permanent link">&para;</a></h3>
+<p>左側の Joint List で個別のジョイントをクリックすると、そのジョイントのプロットだけを大きく表示できます。複数選択した状態（Ctrl/Shift クリック）で複数プロットを並べて比較することもできます。</p>
+<div class="admonition tip">
+<p class="admonition-title">テスト結果はテスト完了後にのみ表示される</p>
+<p>シミュレーション実行中はリアルタイムにプロットが更新されないことがあります。<strong>シミュレーションを停止した後</strong>にプロットを確認してください。</p>
+</div>
+<h2 id="_7">トラブルシューティング<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>原因</th>
+<th>解決方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gain Tuner のドロップダウンにロボットが表示されない</td>
+<td><strong>Robot Schema（IsaacRobotAPI）</strong> が適用されていない</td>
+<td>URDF からインポートしていれば自動適用されるはず。手動アセットの場合は Robot Schema を適用するか、URDF 経由でインポートし直す</td>
+</tr>
+<tr>
+<td>Gain Tuner で選択後、ジョイントが取得できない／エラーが出る</td>
+<td>アーティキュレーションが未設定</td>
+<td>ルートジョイントに <strong>Articulation Root API</strong> が適用され、<strong>Articulation Enabled</strong> がオンになっているか確認（<a href="../07_configure_manipulator/">チュートリアル 7 のステップ 1</a> 参照）</td>
+</tr>
+<tr>
+<td>ジョイントが目標位置に収束しない</td>
+<td>Stiffness が小さすぎる／重力補償未設定</td>
+<td>Stiffness を 10 倍に増やす、または Disable Gravity を有効化</td>
+</tr>
+<tr>
+<td>シミュレーション開始直後に発散する</td>
+<td>Stiffness が大きすぎる</td>
+<td>Stiffness を 1/10 に下げる</td>
+</tr>
+<tr>
+<td>細かく振動する</td>
+<td>Damping 不足</td>
+<td>Damping を 2〜10 倍に増やす</td>
+</tr>
+<tr>
+<td>応答が鈍い／追従が遅い</td>
+<td>Damping 過多</td>
+<td>Damping を 1/2 に下げる</td>
+</tr>
+<tr>
+<td>産業用ロボットの最大速度を超えてしまう</td>
+<td>Maximum Joint Velocity 未設定</td>
+<td>Joint &gt; Advanced で各軸に設定</td>
+</tr>
+<tr>
+<td><code>Stiffness attribute is unsupported for articulation joints</code> 警告</td>
+<td>ジョイント自体の Stiffness 属性に値を設定</td>
+<td>該当ジョイントの <strong>Drive 側</strong> の Stiffness を使用（<a href="../10_closed_loop_structures/">チュートリアル 10</a> のステップ 5-3 参照）</td>
+</tr>
+<tr>
+<td>保存しても次回起動時にゲインが戻る</td>
+<td>物理レイヤーへの書き込み失敗</td>
+<td>レイヤーの書き込み権限を確認、またはステージとして手動保存</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_8">まとめ<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>このチュートリアルでは以下のトピックを扱いました：</p>
+<ol>
+<li><strong>Gain Tuner エクステンション</strong> の起動と UI 構成（Joint List / Parameters / Plots）</li>
+<li><strong>ポジションドライブの調整手順</strong>（Damping=0 から始め、Stiffness で収束点を探し、Damping で振動を抑える）</li>
+<li><strong>産業用ロボットの再現</strong>（Stiffness の強化と Maximum Joint Velocity による速度制限）</li>
+<li><strong>ベロシティドライブの調整手順</strong>（Stiffness=0、Damping のみで速度追従）</li>
+<li><strong>ゲインのアセットへの保存</strong>（Save Gains to Physics Layer による物理レイヤーへの書き込み）</li>
+<li><strong>プロットによる結果の可視化と評価</strong>（指令値と計測値の比較）</li>
+</ol>
+<p>これらの調整により、ロボットが安定かつ応答性良く動作するようになり、上位の制御アルゴリズムが期待通りに振る舞う土台が整います。</p>
+<div class="admonition tip">
+<p class="admonition-title">より深く学ぶには</p>
+<p>Gain Tuner の数学的背景や PD 制御の理論については、Isaac Sim 公式ドキュメントの <a href="https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html">Gain Tuner Extension</a> を参照してください。また、トルク指令を直接書き込むカスタムコントローラを実装したい場合は、公式の "Adding a Controller" チュートリアルが参考になります。</p>
+</div>
+<h2 id="_9">次のステップ<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<p>次のチュートリアル「<a href="../12_asset_optimization/">アセット最適化</a>」に進み、ロボットアセットのパフォーマンス最適化手法を学びましょう。</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
