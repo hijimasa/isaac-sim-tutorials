@@ -121,9 +121,9 @@ plugins:
             - インポート・エクスポート:
               - importer_exporter/index.md
               - URDF インポート: importer_exporter/01_import_urdf.md
+              - ROS 2 ノードからの URDF インポート: importer_exporter/01a_import_urdf_from_ros2.md
               - URDF エクスポート: importer_exporter/02_export_urdf.md
               - MJCF インポート: importer_exporter/03_import_mjcf.md
-              - ShapeNet インポーター: importer_exporter/04_shapenet_importer.md
             - Isaac Lab:
               - isaac_lab/index.md
             - ROS 2:
@@ -178,7 +178,6 @@ plugins:
               - Import URDF: importer_exporter/01_import_urdf.md
               - Export URDF: importer_exporter/02_export_urdf.md
               - Import MJCF: importer_exporter/03_import_mjcf.md
-              - ShapeNet Importer: importer_exporter/04_shapenet_importer.md
             - Isaac Lab:
               - isaac_lab/index.md
             - ROS 2:

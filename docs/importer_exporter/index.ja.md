@@ -15,13 +15,13 @@ title: インポート・エクスポートチュートリアル
 ## チュートリアル
 
 !!! example "[チュートリアル 1: URDF インポート](01_import_urdf.md)"
-    URDF ファイルを Isaac Sim にインポートする方法を学びます。GUI での直接インポート、Python スクリプトによるプログラム的インポート、ROS 2 ノードからのインポートの3つの方法を解説します。
+    URDF ファイルを Isaac Sim にインポートする方法を学びます。GUI からの直接インポートと Python スクリプトによるプログラム的インポートを、インポート設定（ベース固定、自己衝突、Natural Frequency など）の意味とともに解説します。
+
+!!! example "[チュートリアル 1a: ROS 2 ノードからの URDF インポート](01a_import_urdf_from_ros2.md)"
+    ROS 2 がインストールされた環境で、`robot_state_publisher` が公開する `/robot_description` トピックから直接 URDF を取り込む方法を学びます。ROS 2 のインストールが前提となるため、独立したチュートリアルとして分けています。
 
 !!! example "[チュートリアル 2: URDF エクスポート](02_export_urdf.md)"
     USD to URDF Exporter を使用して、USD 形式のロボットファイルを URDF 形式に変換する方法を学びます。コリジョンオブジェクトのマッピングやエクスポーターの制限事項についても解説します。
 
 !!! example "[チュートリアル 3: MJCF インポート](03_import_mjcf.md)"
     MJCF（MuJoCo XML）形式のモデルファイルを Isaac Sim にインポートし、USD 形式に変換する方法を学びます。GUI と Python スクリプトの両方の方法を解説します。
-
-!!! example "[チュートリアル 4: ShapeNet インポーター](04_shapenet_importer.md)"
-    ShapeNet データベースからの3Dモデルインポートについて紹介します。専用エクステンションは非推奨のため、標準 OBJ インポート手順を使用します。

@@ -71,6 +71,3 @@ Script Editor（**Window > Script Editor**）を使ったプログラム的な�
 2. **Python スクリプト**によるプログラム的インポート
 3. インポート後の**アーティキュレーション設定**
 
-## 次のステップ
-
-- [チュートリアル 4: ShapeNet インポーター](04_shapenet_importer.md) - ShapeNet データベースからの3Dモデルインポート方法を学びます。

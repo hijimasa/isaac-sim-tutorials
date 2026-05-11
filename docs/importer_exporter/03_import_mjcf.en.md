@@ -71,6 +71,3 @@ This tutorial covered the following topics:
 2. **Python scripting** for programmatic import
 3. Post-import **articulation configuration**
 
-## Next Steps
-
-- [Tutorial 4: ShapeNet Importer](04_shapenet_importer.md) - Learn how to import 3D models from the ShapeNet database.
