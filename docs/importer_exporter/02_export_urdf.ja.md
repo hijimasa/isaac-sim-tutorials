@@ -41,9 +41,11 @@ title: URDF エクスポート
 ## ステップ 1：エクスポーターの有効化
 
 1. **Window > Extensions** を開き、検索バーに `urdf` と入力します。
-2. **USD to URDF exporter** エクステンションを有効化します。
+2. **Isaac Sim USD to URDF Exporter**（`isaacsim.asset.exporter.urdf`）エクステンションのトグルをクリックして有効化します。
 
-有効化すると、メニューに **File > Export to URDF** が追加されます。選択するとエクスポート用のダイアログが開きます：
+有効化すると、メニューに **File > Export to URDF** が追加されます。選択すると **Export As ...** というタイトルのエクスポート用ダイアログが開き、右側に **Export options** が表示されます：
+
+![Export options](images/02_export_options.png)
 
 ![URDF エクスポート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_full_ext-usd_to_urdf_exporter-1.3.3_gui_urdf_export.png)
 
@@ -53,6 +55,9 @@ title: URDF エクスポート
 2. USD の読み込みが完了したら、**File > Export to URDF** を開きます。ファイル選択ダイアログが表示されます。
 3. 出力先のフォルダとファイル名を指定します。
 4. **Export** をクリックします。
+
+!!! warning "ロボットの USD ファイルを「直接開いた」ステージからエクスポートする"
+    エクスポートは、ロボットの USD ファイルを **File > Open で直接開いたステージ**から行ってください。**File > Import**（URDF インポート）直後のステージでは、ロボットは外部 USD への**参照（Reference）**としてステージに追加されているため、そのままエクスポートすると（Root Prim Path を指定しても）リンクが 1 つだけのほぼ空の URDF が出力されます（Isaac Sim 5.1.0 で確認）。インポートで生成された USD ファイルを開き直してからエクスポートすれば正しく出力されます。
 
 出力フォルダを開き、以下が生成されていることを確認します：
 
@@ -89,7 +94,10 @@ URDF 内でメッシュファイルを参照するパスの形式を 3 つから
 
 ### Root Prim Path（ルートプリムパス）
 
-ロボット単体のアセットファイルからエクスポートする場合は、デフォルトプリムがそのままルートプリムになるため指定は不要です。一方、ロボット以外のオブジェクトを多数含む**シーン**からエクスポートする場合は、どのプリムがロボットを表すかをここで指定することで、ロボットだけをエクスポートできます。
+ロボット単体のアセットファイルからエクスポートする場合は、デフォルトプリムがそのままルートプリムになるため指定は不要です。一方、ロボット以外のオブジェクトを多数含む**シーン**からエクスポートする場合は、どのプリムがロボットを表すか（例：`/World/robot_name`）をここで指定することで、ロボットだけをエクスポートできます。
+
+!!! warning "シーンからのエクスポートで Root Prim Path を指定しなかった場合"
+    ロボット以外のプリムを含むシーンで Root Prim Path を指定せずに **Export** をクリックすると、エクスポートは実行されず、画面左下に一時的なエラー通知（トースト）が表示されるだけでダイアログは開いたままになります。エラーに気づきにくいので注意してください。
 
 ## ステップ 5：コリジョンと可視性のマッピングを理解する
 
@@ -113,6 +121,9 @@ URDF では 1 つのリンクに対して、次の 2 種類のメッシュを別
 1. Franka の USD（`/Isaac/Robots/FrankaRobotics/FrankaPanda/franka.usd`）を開きます。
 2. Stage パネルで `panda_hand` の Xform プリムを右クリックし、コンテキストメニューから **Create > Mesh > Sphere** を選択します。
 3. 追加された Sphere メッシュプリムを選択し、Properties パネルでスケールの x, y, z をすべて `0.3` に変更します。
+
+    !!! note "メニューバーの Create から作成した場合"
+        メニューバーの **Create > Mesh > Sphere** から作成すると、プリムを選択していても選択プリムの子にはならず、ステージのルート（例：`/World/Sphere`）に作成されます。その場合は、Stage パネルで Sphere を `panda_hand` の上にドラッグ＆ドロップして子プリムに移動してください。
 4. ハンド部分に球体が付いた、次のような状態になっていることを確認します：
 
     ![USD モデル（球体追加）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_usd_sphere_mesh_no_collision_visible.png)
@@ -146,10 +157,13 @@ URDF では 1 つのリンクに対して、次の 2 種類のメッシュを別
 
     ![URDF（球体・コリジョンあり・不可視）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_urdf_sphere_mesh_collision_invisible.png)
 
+!!! warning "5-4 の挙動はバージョンによって再現しないことがある"
+    Isaac Sim 5.1.0（USD to URDF Exporter 1.3.4）の Windows 環境で検証したところ、Sphere を不可視（visibility = invisible）にしてエクスポートしても、球体は**ビジュアルメッシュとしても出力されたまま**で、「コリジョンのみ」にはなりませんでした（5-2・5-3 の挙動は記載どおり再現）。この節の内容は公式ドキュメントに基づいていますが、エクスポーターのバージョンによって挙動が異なる可能性があります。エクスポート後は出力された URDF の `<visual>` / `<collision>` を直接確認することをおすすめします。
+
 !!! note "コリジョンメッシュを正しくエクスポートするには"
     リンクのコリジョンメッシュを URDF に正しく（コリジョン専用として）エクスポートするには、そのプリムに**コリジョン API が付与され、かつ不可視に設定されている**必要があります。
 
-    逆に、可視性の状態にかかわらずコリジョン API 付きプリムをすべてビジュアルメッシュとしても出力したい場合は、エクスポーターの詳細オプション（advanced options）にある **Visualize Collisions** を有効にします。
+    逆に、可視性の状態にかかわらずコリジョン API 付きプリムをすべてビジュアルメッシュとしても出力したい場合は、エクスポートダイアログの **Export options** にある **Visualize Collisions** チェックボックスを有効にします。
 
 ## 制限事項
 

@@ -68,15 +68,15 @@ URDF インポーター（`isaacsim.asset.importer.urdf`）は通常、Isaac Sim
 
 ### 1-4. インポート設定を構成する
 
-URDF ファイルを選択すると、インポート設定のパネルが表示されます。Franka（固定ベースのマニピュレータ）の場合は以下のように設定します：
+URDF ファイルを選択すると、ファイル選択ダイアログの右側に **Options** ペイン（インポート設定）が表示されます。設定は Model / Links / Joints & Drives / Colliders のセクションに分かれています。Franka（固定ベースのマニピュレータ）の場合は以下のように設定します：
 
-| 設定項目 | 今回の設定 | 説明 |
-|---|---|---|
-| **USD Output** | 任意の出力先 | 変換後の USD ファイルの保存先。既定では URDF と同じディレクトリになる |
-| **Static Base / Moveable Base** | Static Base | ベースを固定するか（マニピュレータ＝固定、モバイルロボット＝移動） |
-| **Default Density** | 空欄のまま | 質量が未定義のリンクに適用する密度。空欄なら既定値を使用 |
-| **Natural Frequency** | 既定より大きめに | ジョイントドライブの応答特性。大きくすると動作中の振動が減る |
-| **Allow Self-Collision** | オン | ロボット自身のリンク同士の衝突判定を有効にするか |
+| セクション | 設定項目 | 今回の設定 | 説明 |
+|---|---|---|---|
+| Model | **USD Output** | 既定のまま | 変換後の USD ファイルの保存先。既定（`Same as Imported Model(Default)`）では URDF と同じディレクトリになる |
+| Links | **Moveable Base / Static Base** | Static Base | ベースを固定するか（マニピュレータ＝固定、モバイルロボット＝移動）。Franka では既定で Static Base が選択されている |
+| Links | **Default Density** | 既定（`0.0`）のまま | 質量が未定義のリンクに適用する密度。`0.0` なら既定値を使用 |
+| Joints & Drives | **Natural Frequency** | 既定より大きめに | ジョイントドライブの応答特性。**Joint Configuration** で Stiffness / Natural Frequency のどちらで指定するかを選び、ジョイントごとの表で値を設定する。大きくすると動作中の振動が減る |
+| Colliders | **Allow Self-Collision** | オン | ロボット自身のリンク同士の衝突判定を有効にするか |
 
 上記以外の項目は既定のままで構いません。
 
@@ -90,7 +90,16 @@ URDF ファイルを選択すると、インポート設定のパネルが表示
 
 ### 1-5. インポートを実行する
 
-**Import** ボタンをクリックすると、ロボットがステージに追加されます。
+**Import** ボタンをクリックすると、**URDF Confirm Path** ダイアログが表示され、変換後の USD ファイルの保存先が確認できます。**Yes** をクリックするとインポートが実行され、ロボットがステージに追加されます。
+
+![URDF Confirm Path ダイアログ](images/01_urdf_confirm_path.png)
+
+同じ場所に一度インポートしたことがある場合は、続けて **URDF Confirm Overwrite** ダイアログが表示されます。上書きしてよければ **Yes** をクリックします。
+
+![URDF Confirm Overwrite ダイアログ](images/01_urdf_confirm_overwrite.png)
+
+!!! warning "確認ダイアログが他のウィンドウの背後に隠れることがある"
+    環境によっては、この確認ダイアログが**ファイル選択ウィンドウや Extensions ウィンドウの背後に隠れて表示される**ことがあります。その間はメインウィンドウ全体がクリックに反応しなくなるため、フリーズしたように見えます。Import ボタンを押した後に操作できなくなった場合は、手前のウィンドウをドラッグで移動（または閉じる）して、隠れているダイアログの **Yes / No** に応答してください。
 
 ![インポート結果](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_import_urdf_franka.png)
 
@@ -115,12 +124,17 @@ URDF ファイルを選択すると、インポート設定のパネルが表示
 ビューポートでコリジョンメッシュを可視化する手順：
 
 1. ビューポート左上の**目のアイコン**をクリックします。
-2. **Show by type** を選択します。
-3. **Physics** を選択します。
-4. **Colliders** を選択します。
-5. **All** にチェックを入れます。
+2. **Show By Type** にカーソルを合わせます。
+3. **Physics** にカーソルを合わせます。
+4. **Colliders** にカーソルを合わせます。
+5. **All** を選択します（None / Selected / All の 3 択です）。
 
-コリジョンメッシュがワイヤーフレーム（ピンク色の線）で重ねて表示されます。
+![Colliders 表示メニュー](images/01_show_colliders_menu.png)
+
+コリジョンメッシュがワイヤーフレーム（ピンク〜緑色の線）で重ねて表示されます。
+
+!!! note "ワイヤーフレームが表示されない場合"
+    環境やアセットによっては、**All** を選択してもワイヤーフレームがすぐに反映されないことがあります。その場合は、ビューポートのカメラを動かす、対象のプリムに近づく、あるいは一度シミュレーションを再生するなどして表示が更新されるか確認してください。
 
 ![コリジョンメッシュ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_import_urdf_visualize_franka_colliders.png)
 
@@ -128,9 +142,9 @@ URDF ファイルを選択すると、インポート設定のパネルが表示
 
 Isaac Sim には、インポートから駆動設定・シミュレーションまでの一連の流れを体験できるサンプルが組み込まれています。
 
-**Window > Examples > Robotics Examples** を有効にすると、画面下部のドックに **Robotics Examples** タブが表示されます。**Import Robots** セクションには 4 つの例が用意されています：
+**Window > Examples > Robotics Examples** を有効にすると、画面下部のドックに **Robotics Examples** タブが表示されます。サイドバーの **IMPORT ROBOTS** セクションには 4 つの例が用意されています：
 
-- Nova Carter URDF（モバイルロボット）
+- Carter URDF（モバイルロボット。公式ドキュメントでは Nova Carter URDF と表記されていますが、実際の UI 上の表記は Carter URDF です）
 - Franka URDF（マニピュレータ）
 - Kaya URDF（モバイルロボット）
 - UR10 URDF（マニピュレータ）
@@ -140,12 +154,12 @@ Isaac Sim には、インポートから駆動設定・シミュレーション�
 
 それぞれインポート設定とインポート後のセットアップ内容は異なりますが、使い方は共通です：
 
-1. **Robotics Examples** タブで **Import Robots > （ロボット名） URDF** を開きます。
-2. **Load Robot** ボタン — URDF をステージにインポートし、地面・ライト・物理シーンを追加します。
-3. **Configure Drives** ボタン — 各ジョイントドライブの Stiffness / Damping を設定します。
-4. **Open Source Code** ボタン — この一連の処理を Python API でどう実装しているか、ソースコードを確認できます。
-5. **PLAY** ボタン — シミュレーションを開始します。
-6. **Move to Pose** ボタン — ロボットをホーム（休止）姿勢へ動かします。
+1. **Robotics Examples** タブで **IMPORT ROBOTS > （ロボット名） URDF** をクリックすると、右側に例のパネルが開きます。
+2. **Command Panel** の **Load Robot** 行にある **LOAD** ボタン — URDF をステージにインポートし、地面・ライト・物理シーンを追加します。
+3. **Configure Drives** 行にある **CONFIGURE** ボタン — 各ジョイントドライブの Stiffness / Damping を設定します。
+4. パネル右上の**鉛筆アイコン（Open Source Code）** — この一連の処理を Python API でどう実装しているか、ソースコードを確認できます。
+5. 左側ツールバーの **PLAY** ボタン — シミュレーションを開始します。
+6. **Move to Pose** 行にある **MOVE** ボタン — ロボットをホーム（休止）姿勢へ動かします。
 
 ![UI 統合例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_ext-isaacsim.asset.importer.urdf-2.3.0_gui_example_import_franka.png)
 
@@ -156,9 +170,9 @@ Import ウィンドウで行っていた操作は、Python スクリプトでも
 ### 4-1. Hello World サンプルを開く
 
 1. メニューバーから **Window > Examples > Robotics Examples** をクリックします。
-2. 画面下部の **Robotics Examples** タブで **General > Hello World** を選択します。
-3. Hello World のウィンドウがワークスペースに表示されることを確認します。
-4. **Open Source Code** ボタンをクリックして、Visual Studio Code でソースコードを開きます。
+2. 画面下部の **Robotics Examples** タブで **GENERAL > Hello World** を選択します。
+3. Hello World のパネル（Information / World Controls）が表示されることを確認します。
+4. パネル右上の**鉛筆アイコン（Open Source Code）**をクリックして、Visual Studio Code でソースコードを開きます。
 
 ### 4-2. コードを編集する
 
@@ -286,10 +300,10 @@ class HelloWorld(BaseSample):
 
 ### 4-3. 実行する
 
-1. **Ctrl+S** でコードを保存すると、Isaac Sim がホットリロードされます。
+1. **Ctrl+S** でコードを保存すると、Isaac Sim がホットリロードされます（VS Code 以外のエディタで保存しても同様にリロードされます）。
 2. **File > New From Stage Template > Empty** で新しいステージを作成します。保存を促すダイアログが出た場合は **Don't Save** をクリックします。
 3. メニューからもう一度 Hello World のサンプルを開きます。
-4. **LOAD** ボタンをクリックし、ステージ上のターゲットプリム（キューブ）を動かすと、ロボットのエンドエフェクタがターゲットを追従します。
+4. **World Controls** の **LOAD** ボタンをクリックすると、地面・Franka・ターゲットが読み込まれてシミュレーションが開始します。ステージ上のターゲットプリム（キューブ）を動かすと、ロボットのエンドエフェクタがターゲットを追従します。
 
 ![Python インポート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_sim_import_urdf.gif)
 

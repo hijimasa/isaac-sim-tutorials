@@ -123,7 +123,7 @@ plugins:
               - URDF インポート: importer_exporter/01_import_urdf.md
               - URDF エクスポート: importer_exporter/02_export_urdf.md
               - MJCF インポート: importer_exporter/03_import_mjcf.md
-              - ShapeNet インポーター: importer_exporter/04_shapenet_importer.md
+              - 一般 3D モデルのインポート: importer_exporter/04_general_3d_model_importer.md
             - Isaac Lab:
               - isaac_lab/index.md
               - Isaac Lab セットアップ: isaac_lab/00_setup.md
@@ -228,7 +228,7 @@ plugins:
               - Import URDF: importer_exporter/01_import_urdf.md
               - Export URDF: importer_exporter/02_export_urdf.md
               - Import MJCF: importer_exporter/03_import_mjcf.md
-              - ShapeNet Importer: importer_exporter/04_shapenet_importer.md
+              - Importing General 3D Models: importer_exporter/04_general_3d_model_importer.md
             - Isaac Lab:
               - isaac_lab/index.md
               - Isaac Lab Setup: isaac_lab/00_setup.md

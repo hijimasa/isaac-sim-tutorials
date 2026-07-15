@@ -49,11 +49,14 @@ MJCF インポーター（`isaacsim.asset.importer.mjcf`）は通常、Isaac Sim
 ### 1-3. ファイルを選択してインポートする
 
 1. **File > Import** でファイル選択ダイアログを開き、`nv_humanoid.xml` を選択します。
-2. インポートオプションを必要に応じて変更します（既定のままでも構いません）。各オプションの詳細は公式の MJCF Importer Extension ドキュメントの Import Options を参照してください。
+2. ファイルを選択すると、ダイアログ右側に **Options** ペインが表示されます。必要に応じて変更します（既定のままでも構いません）。主な項目は **Model**（USD Output / Import Sites）、**Links**（Moveable Base / Static Base、Default Density）、**Colliders**（Visualize Collision Geometry / Self Collision）です。各オプションの詳細は公式の MJCF Importer Extension ドキュメントの Import Options を参照してください。
 
-    ![MJCF インポートダイアログ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ext-isaacsim.asset.importer.mjcf-2.3.0_gui_0.png)
+    ![MJCF インポートオプション](images/03_mjcf_import_options.png)
 
-3. **Import** ボタンをクリックすると、ロボットがステージに追加されます。
+3. **Import** ボタンをクリックすると、URDF のときと同様に**変換後の USD の保存先を確認するダイアログ**が表示されます。**Yes** をクリックするとロボットがステージに追加されます。
+
+!!! warning "確認ダイアログが他のウィンドウの背後に隠れることがある"
+    [URDF インポート](01_import_urdf.md)と同様に、この確認ダイアログが他のウィンドウの背後に隠れて、アプリがフリーズしたように見えることがあります。Import ボタンを押した後に操作できなくなった場合は、手前のウィンドウを移動して隠れているダイアログに応答してください。
 
     ![インポートされたヒューマノイド](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ext-isaacsim.asset.importer.mjcf-2.3.0_gui_humanoid.png)
 
@@ -141,4 +144,4 @@ distantLight.CreateIntensityAttr(500)
 
 ## 次のステップ
 
-- [チュートリアル 4: ShapeNet インポーター](04_shapenet_importer.md) - ShapeNet データベースの 3D モデルの取り扱い（現在は非推奨のため代替手順）を紹介します。
+- [チュートリアル 4: 一般 3D モデルのインポート](04_general_3d_model_importer.md) - OBJ / FBX などの一般的な 3D モデルのインポートと物理プロパティの設定方法を学びます。

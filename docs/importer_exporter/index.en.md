@@ -23,5 +23,5 @@ These skills are essential for integrating existing robot models into Isaac Sim'
 !!! example "[Tutorial 3: Import MJCF](03_import_mjcf.md)"
     Learn how to import MJCF (MuJoCo XML) model files into Isaac Sim and convert them to USD format. Both GUI and Python scripting methods are covered.
 
-!!! example "[Tutorial 4: ShapeNet Importer](04_shapenet_importer.md)"
-    An introduction to importing 3D models from the ShapeNet database. The dedicated extension is deprecated, so the standard OBJ import procedure is used.
+!!! example "[Tutorial 4: Importing General 3D Models](04_general_3d_model_importer.md)"
+    Learn how to import general 3D models such as OBJ / FBX, add physics properties, and use them in simulation.
