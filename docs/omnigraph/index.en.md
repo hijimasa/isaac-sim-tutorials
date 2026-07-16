@@ -6,23 +6,16 @@ title: OmniGraph Tutorials
 
 <span class="badge badge-advanced">Advanced</span>
 
-Tutorials for creating and editing graphs using OmniGraph.
+Tutorials for creating, editing, and extending graphs with OmniGraph.
 
 ## Overview
 
-In this tutorial series, you will learn:
-
-- Basic concepts of OmniGraph
-- Creating Action Graphs and Push Graphs
-- Developing custom nodes
-- Building ROS 2 integration graphs
+**OmniGraph** is Omniverse's visual programming framework — a graph framework connecting functions across systems, and a compute framework for custom nodes. In Isaac Sim it is the main engine for Replicators, the ROS 2 bridge, sensor access, controllers, external I/O devices, and UI. Open the editor via **Window > Graph Editors > Action Graph**.
 
 ## Tutorials
 
-<!-- Add tutorial articles below -->
-
-!!! example "Tutorial 1: Introduction to OmniGraph"
-    **Coming soon** - Learn the basic operations and graph creation in OmniGraph.
-
-!!! example "Tutorial 2: Creating Custom Nodes"
-    **Coming soon** - Learn how to create custom OmniGraph nodes with Python.
+- [Isaac Sim OmniGraph Tutorial](01_omnigraph_tutorial.md) — control the JetBot with an action graph
+- [OmniGraph via Python Scripting](02_omnigraph_scripting.md) — build, edit, and run graphs with Python APIs
+- [Custom Python Nodes](03_custom_python_nodes.md) — author nodes with `.ogn` + Python
+- [Custom C++ Nodes](04_custom_cpp_nodes.md) — implement nodes in C++
+- [Commonly Used OmniGraph Shortcuts](05_shortcuts.md) — generate controller graphs in a few clicks

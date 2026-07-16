@@ -46,7 +46,7 @@ title: ステージのセットアップ
 2. Properties パネルで以下を確認・設定します：
 
     - **Gravity**: デフォルトの重力設定を確認
-    - **Enable GPU Dynamics**: 効率化のためオフに設定
+    - **Enable GPU Dynamics**: オフに設定（GPU Dynamics は大量のオブジェクトを扱うシーン向けの機能です。本チュートリアルのような小規模なシーンでは CPU シミュレーションのほうが安定しており、デバッグもしやすくなります）
     - **Broadphase Type**: MBP に設定
 
     ![Physics Properties](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_base_ref_gui_physics_properties.png)
@@ -60,7 +60,7 @@ title: ステージのセットアップ
     ![Gridの表示方法](images/01_show_grid.png)
 
 ## ライティングの追加
-新しい Stage には、デフォルトで**defaultLight**が事前配置されています。これがなければ何も見えません。この**defaultLight**はステージ内の**Environment** Xformの子要素であり、右上の**Stage**タブのコンテキストツリーで確認できます。
+新しい Stage には、デフォルトで**defaultLight**が事前配置されています。これがなければ何も見えません。この**defaultLight**はステージ内の**Environment** Xform（位置・回転・スケールを持ち、子プリムをまとめる USD のプリム）の子要素であり、右上の**Stage**タブのコンテキストツリーで確認できます。
 
 追加のスポットライトを作成するには：
 

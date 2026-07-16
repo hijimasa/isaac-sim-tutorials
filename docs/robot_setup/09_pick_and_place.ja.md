@@ -935,14 +935,14 @@ my_world = World(
 
 # ターゲット位置の設定
 target_position = np.array([-0.3, 0.6, 0])
-target_position[2] = 0.0515 / 2.0  # キューブの高さの半分を Z 座標に設定
+target_position[2] = 0.1 / 2.0  # キューブの高さ（Z = 0.1 m）の半分を Z 座標に設定
 
 # ピック＆プレースタスクの初期化
 my_task = PickPlace(
     name="ur10e_pick_place",
-    cube_initial_position=np.array([0.6, 0.3, 0.0515 / 2.0]),
+    cube_initial_position=np.array([0.6, 0.3, 0.1 / 2.0]),
     target_position=target_position,
-    cube_size=np.array([0.0515, 0.0515, 0.1]),
+    cube_size=np.array([0.1, 0.0515, 0.1]),
 )
 my_world.add_task(my_task)
 my_world.reset()
@@ -1021,6 +1021,9 @@ cube_size=np.array([0.1, 0.0515, 0.1])
 ```
 
 キューブのサイズを `[X, Y, Z] = [0.1, 0.0515, 0.1]` メートルに設定しています。Y 方向を薄くすることで、グリッパーが把持しやすい形状にしています。
+
+!!! note "公式ドキュメントのコードとの違い"
+    公式ドキュメントのサンプルコードでは、キューブの高さが Z = 0.1 m であるにもかかわらず、Z 座標に `0.0515 / 2.0`（タスクのデフォルトサイズ 0.0515 m の半分）を設定しています。このままではキューブが地面に半分めり込んだ状態で開始されるため、本ページでは `0.1 / 2.0` に修正しています。
 
 #### エンドエフェクタオフセット
 

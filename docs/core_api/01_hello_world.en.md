@@ -12,6 +12,12 @@ After completing this tutorial, you will have learned:
 - How to add a rigid body to the Stage and simulate it using Python in NVIDIA Isaac Sim
 - The differences between Extension Workflow and Standalone Workflow
 
+!!! note "USD Basics: Stage and Prim"
+    Scenes in Isaac Sim are managed in the **USD (Universal Scene Description)** format. Let's start by learning the following two terms, which appear frequently throughout the tutorials.
+
+    - **Stage** … The container that represents the entire scene. The tree shown in the editor's Stage panel is the content of the current stage.
+    - **Prim** … An individual object placed on the stage (a node in the tree). Robots, cubes, lights, cameras, and so on are all prims, each uniquely identified by a **path** such as `/World/random_cube`.
+
 ## Getting Started
 
 ### Prerequisites
@@ -194,7 +200,10 @@ Here we introduce a new method, `setup_post_load`. The differences from `setup_s
 | `setup_scene` | Only on first load from an empty stage | Place assets |
 | `setup_post_load` | Every time the **LOAD** button is pressed | Initialization after physics handles become active |
 
-`setup_post_load` is called after one physics simulation step, so it can retrieve physical properties such as position and velocity.
+`setup_post_load` is called after the world's first reset has completed (that is, after physics handles have been initialized), so it can retrieve physical properties such as position and velocity.
+
+!!! note "What Are Physics Handles?"
+    A **physics handle** is an internal reference created on the physics engine (PhysX) side, used to read from and write to a simulated object. Simply placing a prim on the stage does not yet create its counterpart in the physics engine; handles are initialized when the world is reset. Only after the physics handles become active can you access properties such as position, velocity, and joint angles (properties of articulations: jointed structures).
 
 ```python linenums="1" hl_lines="23-33"
 from isaacsim.examples.interactive.base_sample import BaseSample
@@ -333,7 +342,7 @@ fancy_cube = world.scene.add(
         color=np.array([0, 0, 1.0]),
     ))
 # Call reset after adding assets to properly initialize physics handles
-# Must be called before querying articulation properties
+# Must be called before querying articulation (articulated/jointed structure) properties
 world.reset()
 for i in range(500):
     position, orientation = fancy_cube.get_world_pose()

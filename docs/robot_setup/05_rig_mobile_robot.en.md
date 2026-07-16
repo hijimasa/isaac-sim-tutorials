@@ -33,7 +33,7 @@ In this tutorial, you will convert an **unrigged (no joints or physics propertie
 
 ### Assets Used
 
-This tutorial uses the forklift assets included with Isaac Sim. You can access them from the **Content** tab at the bottom right of the screen:
+This tutorial uses the forklift assets included with Isaac Sim. You can access them from the **Content** tab at the bottom left of the screen:
 
 | Asset | Path | Purpose |
 |---|---|---|

@@ -124,7 +124,7 @@ This tutorial covered the following topics:
 5. Configuring visual appearance with **OmniPBR materials**
 
 !!! tip "Reference Asset"
-    The completed robot is similar to the `mock_robot_no_joints` asset found in the **Samples > Rigging > MockRobot** folder in the Content tab at the bottom right of the screen.
+    The completed robot is similar to the `mock_robot_no_joints` asset found in the **Samples > Rigging > MockRobot** folder in the Content tab at the bottom left of the screen.
 
 ## Next Steps
 

@@ -21,6 +21,9 @@ After completing this tutorial, you will have learned:
 - Complete [Tutorial 1: Hello World](01_hello_world.md) before starting this tutorial.
 - A configured Omniverse Nucleus server with the `/Isaac` folder is required.
 
+!!! note "What Is a Nucleus Server?"
+    **Nucleus** is Omniverse's asset distribution and sharing server. The official assets used by Isaac Sim, such as robots and environments (under the `/Isaac` folder), are loaded via Nucleus. If you set up Isaac Sim following the standard installation procedure, no additional configuration is needed—simply specify the asset path (e.g., `.../Isaac/Robots/...`) to use them.
+
 ### Estimated Time
 
 Approximately 10-15 minutes.
@@ -119,7 +122,7 @@ class HelloWorld(BaseSample):
 ```
 
 !!! info "About References"
-    `add_reference_to_stage()` adds the USD file as a **Reference** to the Stage. It maintains a link to the original file, so any changes to the asset are automatically reflected. While it is also possible to directly copy USD content into the Stage, the reference approach is standard practice for loading robot assets.
+    `add_reference_to_stage()` adds the USD file as a **Reference** to the Stage. It maintains a link to the original file, so if the referenced asset is updated, the changes are reflected the next time the stage is reopened (reloaded). While it is also possible to directly copy USD content into the Stage, the reference approach is standard practice for loading robot assets.
 
 Save the code and verify the simulation:
 

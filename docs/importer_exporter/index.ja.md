@@ -25,3 +25,6 @@ title: インポート・エクスポートチュートリアル
 
 !!! example "[チュートリアル 3: MJCF インポート](03_import_mjcf.md)"
     MJCF（MuJoCo XML）形式のモデルファイルを Isaac Sim にインポートし、USD 形式に変換する方法を学びます。GUI と Python スクリプトの両方の方法を解説します。
+
+!!! example "[チュートリアル 4: 一般 3D モデルのインポート](04_general_3d_model_importer.md)"
+    OBJ / FBX などの一般的な 3D モデルをインポートし、物理プロパティを設定してシミュレーションで使う方法を学びます。

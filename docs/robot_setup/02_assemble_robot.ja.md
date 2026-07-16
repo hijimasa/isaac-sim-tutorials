@@ -124,7 +124,7 @@ title: シンプルなロボットの組み立て
 5. **OmniPBR マテリアル**による外観の設定
 
 !!! tip "参考アセット"
-    完成したロボットは、画面右下のContentタブの**Samples > Rigging > MockRobot** フォルダ内の `mock_robot_no_joints` アセットと同様のものになります。
+    完成したロボットは、画面左下のContentタブの**Samples > Rigging > MockRobot** フォルダ内の `mock_robot_no_joints` アセットと同様のものになります。
 
 ## 次のステップ
 

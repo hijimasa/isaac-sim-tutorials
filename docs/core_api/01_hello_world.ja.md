@@ -12,6 +12,12 @@ title: Hello World
 - Stage に剛体(rigid body)を追加し、NVIDIA Isaac Sim で Python を使用してシミュレーションする方法
 - Extension Workflow と Standalone Workflow の違い
 
+!!! note "USD の基本用語：ステージとプリム"
+    Isaac Sim のシーンは **USD（Universal Scene Description）** という形式で管理されます。チュートリアル全体で頻出する次の 2 つの用語を最初に押さえておきましょう。
+
+    - **ステージ（Stage）** … シーン全体を表す入れ物です。エディタの Stage パネルに表示されるツリーが、現在のステージの中身です。
+    - **プリム（Prim）** … ステージ上に配置される個々のオブジェクト（ツリーのノード）です。ロボット・立方体・ライト・カメラなどはすべてプリムで、`/World/random_cube` のような**パス**で一意に識別されます。
+
 ## はじめに
 
 ### 前提条件
@@ -194,7 +200,10 @@ class HelloWorld(BaseSample):
 | `setup_scene` | 空のステージから初回ロード時のみ | アセットの配置 |
 | `setup_post_load` | **LOAD** ボタン押下後に毎回 | 物理ハンドルが有効になった後の初期化処理 |
 
-`setup_post_load` は物理シミュレーションの1ステップ後に呼ばれるため、オブジェクトの座標・速度などの物理プロパティを取得できます。
+`setup_post_load` はワールドの初回リセットが完了した後（＝物理ハンドルが初期化された後）に呼ばれるため、オブジェクトの座標・速度などの物理プロパティを取得できます。
+
+!!! note "物理ハンドルとは"
+    **物理ハンドル**は、物理エンジン（PhysX）側で生成される、シミュレーション対象を読み書きするための内部参照です。ステージにプリムを置いただけでは物理エンジン側の実体はまだ存在せず、ワールドのリセット時に初期化されます。物理ハンドルが有効になって初めて、座標・速度・関節角度（アーティキュレーション：関節構造のプロパティ）などへアクセスできます。
 
 ```python linenums="1" hl_lines="23-33"
 from isaacsim.examples.interactive.base_sample import BaseSample
@@ -333,7 +342,7 @@ fancy_cube = world.scene.add(
         color=np.array([0, 0, 1.0]),
     ))
 # アセット追加後にリセットを呼ぶことで、物理ハンドルが正しく初期化される
-# アーティキュレーション等のプロパティ取得前に必ず実行すること
+# アーティキュレーション（関節構造）等のプロパティ取得前に必ず実行すること
 world.reset()
 for i in range(500):
     position, orientation = fancy_cube.get_world_pose()

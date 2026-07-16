@@ -21,6 +21,9 @@ title: Hello Robot
 - [チュートリアル 1: Hello World](01_hello_world.md) を完了していること
 - `/Isaac` フォルダを含む Omniverse Nucleus サーバーが設定済みであること
 
+!!! note "Nucleus サーバーとは"
+    **Nucleus** は Omniverse のアセット配信・共有サーバーです。Isaac Sim が使用するロボットや環境などの公式アセット（`/Isaac` フォルダ以下）は、Nucleus 経由で読み込まれます。標準的なインストール手順で Isaac Sim をセットアップしていれば追加の設定は不要で、アセットのパス（例：`.../Isaac/Robots/...`）を指定するだけで利用できます。
+
 ### 所要時間
 
 約 10〜15 分
@@ -118,7 +121,7 @@ class HelloWorld(BaseSample):
 ```
 
 !!! info "参照（Reference）について"
-    `add_reference_to_stage()` は USD ファイルを**参照（Reference）**として Stage に追加します。元のファイルへのリンクを保持するため、アセットの変更が自動的に反映されます。USD の内容を Stage に直接コピーする方法もありますが、ロボットアセットの読み込みでは参照方式が一般的です。
+    `add_reference_to_stage()` は USD ファイルを**参照（Reference）**として Stage に追加します。元のファイルへのリンクを保持するため、参照先のアセットが更新された場合も、ステージを開き直す（再読み込みする）タイミングでその変更が反映されます。USD の内容を Stage に直接コピーする方法もありますが、ロボットアセットの読み込みでは参照方式が一般的です。
 
 コードを保存してシミュレーションを確認します：
 

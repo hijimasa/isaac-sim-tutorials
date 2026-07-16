@@ -931,14 +931,14 @@ my_world = World(
 
 # Set target position
 target_position = np.array([-0.3, 0.6, 0])
-target_position[2] = 0.0515 / 2.0  # Set Z coordinate to half the cube height
+target_position[2] = 0.1 / 2.0  # Set Z coordinate to half the cube height (Z = 0.1 m)
 
 # Initialize pick and place task
 my_task = PickPlace(
     name="ur10e_pick_place",
-    cube_initial_position=np.array([0.6, 0.3, 0.0515 / 2.0]),
+    cube_initial_position=np.array([0.6, 0.3, 0.1 / 2.0]),
     target_position=target_position,
-    cube_size=np.array([0.0515, 0.0515, 0.1]),
+    cube_size=np.array([0.1, 0.0515, 0.1]),
 )
 my_world.add_task(my_task)
 my_world.reset()
@@ -1017,6 +1017,9 @@ cube_size=np.array([0.1, 0.0515, 0.1])
 ```
 
 Sets the cube size to `[X, Y, Z] = [0.1, 0.0515, 0.1]` meters. Making the Y direction thin creates a shape that is easier for the gripper to grasp.
+
+!!! note "Difference from the code in the official documentation"
+    In the sample code in the official documentation, the Z coordinate is set to `0.0515 / 2.0` (half of the task's default size of 0.0515 m) even though the cube height is Z = 0.1 m. This causes the cube to start half-sunk into the ground, so this page corrects the value to `0.1 / 2.0`.
 
 #### End-Effector Offset
 

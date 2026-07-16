@@ -45,7 +45,7 @@ Isaac Sim には URDF をインポートする方法が2つあります：
 
 ### 使用するアセット
 
-Isaac Sim に同梱されているサンプルアセットを参考として使用できます。画面右下の **Content** タブから以下のパスでアクセスできます：
+Isaac Sim に同梱されているサンプルアセットを参考として使用できます。画面左下の **Content** タブから以下のパスでアクセスできます：
 
 | アセット | パス | 用途 |
 |---|---|---|
@@ -313,6 +313,9 @@ UR10e のロボット定義にグリッパーのリンクとジョイントを�
 2. **Property** タブの **IsaacRobotAPI** セクションで以下を設定します：
     - **isaac:physics:robotjoints** フィールドに `/ur10e/ee_link` を追加
     - **isaac:physics:robotLinks** フィールドに `/ur10e/ee_link` を追加
+
+!!! note "リンクの ee_link を robotjoints にも追加する理由"
+    [チュートリアル 5a](05a_apply_robot_schema.md) では「robotJoints にはジョイント、robotLinks にはリンクを登録する」と説明しました。ここでリンクである `ee_link` を **robotjoints にも**追加するのは一見矛盾しますが、`ee_link`（リネームしたグリッパーのルート）には**グリッパー側の Robot Schema が適用されている**ためです。両フィールドに `ee_link` を追加することで、グリッパー側の Robot Schema が持つジョイント定義とリンク定義がそれぞれ UR10e 側の定義に**入れ子として取り込まれます**（公式ドキュメント準拠の手順です）。
 
 ![手動接続](images/27_connect_with_GUI.png)
 

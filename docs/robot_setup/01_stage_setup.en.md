@@ -47,7 +47,7 @@ In this tutorial, you will learn how to set up a virtual environment for physics
 2. In the Properties panel, review and configure the following:
 
     - **Gravity**: Verify the default gravity settings
-    - **Enable GPU Dynamics**: Disable for efficiency
+    - **Enable GPU Dynamics**: Set to disabled (GPU Dynamics is a feature intended for scenes with a large number of objects. For a small scene like the one in this tutorial, CPU simulation is more stable and easier to debug)
     - **Broadphase Type**: Set to MBP
 
     ![Physics Properties](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_base_ref_gui_physics_properties.png)
@@ -62,7 +62,7 @@ In this tutorial, you will learn how to set up a virtual environment for physics
 
 ## Adding Lighting
 
-A new Stage comes with a **defaultLight** pre-placed by default. Without it, nothing would be visible. This **defaultLight** is a child element of the **Environment** Xform in the stage, and can be found in the context tree under the **Stage** tab in the upper right.
+A new Stage comes with a **defaultLight** pre-placed by default. Without it, nothing would be visible. This **defaultLight** is a child element of the **Environment** Xform (a USD prim that has translation, rotation, and scale, and groups child prims together) in the stage, and can be found in the context tree under the **Stage** tab in the upper right.
 
 To create an additional spotlight:
 

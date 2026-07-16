@@ -118,7 +118,7 @@ def _on_save_data_event(self, log_path):
       "data": {
         "joint_positions": [0.075, -1.231, 0.113, ...],
         "applied_joint_positions": [0.072, -1.220, 0.119, ...],
-        "target_position": [0.0, 10.0, 70.0]
+        "target_position": [0.5, 0.2, 0.3]
       }
     },
     ...
