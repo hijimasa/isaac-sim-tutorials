@@ -55,6 +55,7 @@ title: ポリシーのデプロイ
 
 1. 空のステージを作成します（**File > New From Stage Template > Empty**）。
 2. **Robotics Examples > POLICY > Humanoid** を開きます。
+    ![Robotics Example > POLICY > HUmanoid](./images/01_robotics_examples_policy_humanoid.png)
 3. **LOAD** を押してシーンを読み込みます。
 
 この例では、Isaac Lab で学習された **H1 Flat Terrain Policy**（平地歩行ポリシー）がヒューマノイドのロコモーションを制御します。
@@ -73,6 +74,7 @@ title: ポリシーのデプロイ
 
 1. 空のステージを作成します。
 2. **Robotics Examples > POLICY > Quadruped** を開きます。
+    ![Robotics Example > POLICY > HUmanoid](./images/01_robotics_examples_policy_quadruped.png)
 3. **LOAD** を押してシーンを読み込みます。
 
 この例では **Spot Flat Terrain Policy** が四足ロボットのロコモーションを制御します。
@@ -110,11 +112,22 @@ title: ポリシーのデプロイ
 
 ### 2-2. エクスポート
 
-RSL-RL で学習したポリシーは、Isaac Lab ワークスペース内の `scripts/reinforcement_learning/rsl_rl/play.py` を実行するとエクスポートできます。エクスポートされたファイルは `exported` フォルダに生成されます。
+RSL-RL で学習したポリシーは、Isaac Lab ワークスペース内の `scripts/reinforcement_learning/rsl_rl/play.py` を実行するとエクスポートできます。
 
 ```bash
 ./isaaclab.sh -p scripts/reinforcement_learning/rsl_rl/play.py --task Isaac-Velocity-Flat-H1-v0 --num_envs 32
 ```
+
+!!! note "エクスポート先と生成タイミング"
+    エクスポートは `play.py` の**起動直後（チェックポイント読み込みの直後）**に一度だけ実行されます。その後に始まるロボットの歩行はポリシーの再生（プレイバック）で、エクスポートとは関係ありません。ウィンドウが開いた時点でエクスポートは完了しているので、そのまま閉じて構いません。
+
+    生成先は `play.py` のあるフォルダ**ではなく**、読み込んだチェックポイントと同じ場所（IsaacLab リポジトリ直下の `logs` フォルダ内）です。H1 平地歩行タスクの場合：
+
+    ```
+    logs/rsl_rl/h1_flat/<学習実行日時>/exported/
+    ├── policy.pt      （TorchScript 形式）
+    └── policy.onnx    （ONNX 形式）
+    ```
 
 !!! note "他のフレームワークで学習したポリシー"
     別の強化学習フレームワークで学習したポリシーや学習途中のスナップショットでも推論は可能ですが、ニューラルネットワークの構造情報など追加のデータが必要になる場合があります。使用しているフレームワークのドキュメントに従ってください。
@@ -123,18 +136,22 @@ RSL-RL で学習したポリシーは、Isaac Lab ワークスペース内の `s
 
 ## ステップ 3：環境パラメータファイルを読む
 
-トレーニングを実行すると、学習済みポリシーと一緒に 2 つの YAML ファイルが `logs/rsl_rl/<タスク名>/<日時>/params/` フォルダに生成されます：
+トレーニングを実行すると、学習済みポリシーと一緒に 2 つの YAML ファイルが `logs/rsl_rl/<experiment 名>/<日時>/params/` フォルダ（H1 平地歩行なら `logs/rsl_rl/h1_flat/<日時>/params/`）に生成されます：
 
 - **`agent.yaml`** — ニューラルネットワークのパラメータを記述
 - **`env.yaml`** — 環境とロボットの構成を記述。**デプロイ時に Isaac Sim 側の設定を合わせる際の「正解データ」になる最重要ファイル**
 
 以下、`Isaac-Velocity-Flat-H1-v0` の `env.yaml` から抜粋して各セクションを見ていきます。
 
+!!! note "env.yaml の内容は Isaac Lab のバージョンで変わる"
+    以下の抜粋は、本チュートリアル執筆時点の Isaac Lab（main ブランチ、Isaac Sim 5.1.0 対応）で生成した `env.yaml` に基づきます。公式チュートリアルには旧バージョンの抜粋が載っており、`omni.isaac.lab.*` 名前空間（Isaac Lab 2.0 で `isaaclab.*` に改名）や、現在は削除された `disable_contact_processing` / `use_gpu_pipeline` キーが登場します。手元で生成されたファイルとキーの有無・順序が多少違っても、確認すべきポイント（dt・重力・ゲイン・スケールなど）は同じです。
+
 ### 3-1. シミュレーション設定（sim）
 
 ```yaml
 sim:
   physics_prim_path: /physicsScene
+  device: cuda:0
   dt: 0.005
   render_interval: 4
   gravity: !!python/tuple
@@ -143,10 +160,9 @@ sim:
   - -9.81
   enable_scene_query_support: false
   use_fabric: true
-  disable_contact_processing: true
-  use_gpu_pipeline: true
-  device: cuda:0
 ```
+
+この後に `physx:`（ソルバー設定）、`physics_material:`（地面の摩擦係数など）、`render:` のサブセクションが続きます。
 
 このポリシーは物理シミュレーションが **dt = 0.005 秒（200 Hz）**、重力が下向きに 9.81 m/s² で動くことを前提に学習されています。デプロイ先の Physics Scene もこれに合わせる必要があります。
 
@@ -162,6 +178,14 @@ init_state:
   - 1.05
   rot: !!python/tuple
   - 1.0
+  - 0.0
+  - 0.0
+  - 0.0
+  lin_vel: !!python/tuple
+  - 0.0
+  - 0.0
+  - 0.0
+  ang_vel: !!python/tuple
   - 0.0
   - 0.0
   - 0.0
@@ -190,15 +214,17 @@ init_state:
 ```yaml
 actuators:
   legs:
-    class_type: omni.isaac.lab.actuators.actuator_pd:ImplicitActuator
+    class_type: isaaclab.actuators.actuator_pd:ImplicitActuator
     joint_names_expr:
     - .*_hip_yaw
     - .*_hip_roll
     - .*_hip_pitch
     - .*_knee
     - torso
-    effort_limit: 300
-    velocity_limit: 100.0
+    effort_limit: null
+    velocity_limit: null
+    effort_limit_sim: 300
+    velocity_limit_sim: null
     stiffness:
       .*_hip_yaw: 150.0
       .*_hip_roll: 150.0
@@ -215,6 +241,9 @@ actuators:
 
 デプロイ側のロボットのジョイントドライブ（Stiffness / Damping）はこの値に合わせます。
 
+!!! note "`effort_limit_sim` などの `_sim` 付きキー"
+    現在の Isaac Lab では、シミュレーションに適用されるトルク上限・速度上限は `effort_limit_sim` / `velocity_limit_sim` キーで表されます（旧バージョンの抜粋にある `effort_limit: 300` に相当）。`null` のキーはロボット定義のデフォルト値がそのまま使われることを意味します。
+
 ### 3-4. 観測（observations）
 
 ポリシーへの入力（観測）の構成と、観測に適用するスケール・クリップ・ノイズを記述します：
@@ -223,18 +252,26 @@ actuators:
 observations:
   policy:
     concatenate_terms: true
+    concatenate_dim: -1
     enable_corruption: true
+    history_length: null
+    flatten_history_dim: true
     base_lin_vel:
-      func: omni.isaac.lab.envs.mdp.observations:base_lin_vel
+      func: isaaclab.envs.mdp.observations:base_lin_vel
       params: {}
+      modifiers: null
       noise:
-        func: omni.isaac.lab.utils.noise.noise_model:uniform_noise
+        func: isaaclab.utils.noise.noise_model:uniform_noise
         operation: add
         n_min: -0.1
         n_max: 0.1
       clip: null
       scale: null
+      history_length: 0
+      flatten_history_dim: true
 ```
+
+`base_lin_vel` の後には `base_ang_vel`、`projected_gravity`、`velocity_commands`、`joint_pos`、`joint_vel`、`actions` の各観測項目が同じ形式で続きます。この並び順が、ステップ 4 で組み立てる観測テンソルの並び順に対応します。
 
 ### 3-5. 行動（actions）
 
@@ -243,13 +280,15 @@ observations:
 ```yaml
 actions:
   joint_pos:
-    class_type: omni.isaac.lab.envs.mdp.actions.joint_actions:JointPositionAction
+    class_type: isaaclab.envs.mdp.actions.joint_actions:JointPositionAction
     asset_name: robot
     debug_vis: false
+    clip: null
     joint_names:
     - .*
     scale: 0.5
     offset: 0.0
+    preserve_order: false
     use_default_offset: true
 ```
 
@@ -262,19 +301,32 @@ actions:
 ```yaml
 commands:
   base_velocity:
-    class_type: omni.isaac.lab.envs.mdp.commands.velocity_command:UniformVelocityCommand
+    class_type: isaaclab.envs.mdp.commands.velocity_command:UniformVelocityCommand
+    resampling_time_range: !!python/tuple
+    - 10.0
+    - 10.0
+    debug_vis: true
+    asset_name: robot
     heading_command: true
     heading_control_stiffness: 0.5
+    rel_standing_envs: 0.02
+    rel_heading_envs: 1.0
     ranges:
       lin_vel_x: !!python/tuple
       - 0.0
       - 1.0
+      lin_vel_y: !!python/tuple
+      - 0.0
+      - 0.0
       ang_vel_z: !!python/tuple
       - -1.0
       - 1.0
+      heading: !!python/tuple
+      - -3.141592653589793
+      - 3.141592653589793
 ```
 
-前進速度は 0〜1 m/s、旋回速度は -1〜1 rad/s の範囲で学習されているため、デプロイ時にこの範囲を超えた指令を与えても正しく動く保証はありません。
+前進速度は 0〜1 m/s、旋回速度は -1〜1 rad/s の範囲で学習されている（横方向速度 `lin_vel_y` は 0 に固定）ため、デプロイ時にこの範囲を超えた指令を与えても正しく動く保証はありません。
 
 ## ステップ 4：Policy Controller クラスの構造
 

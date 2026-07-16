@@ -129,8 +129,6 @@ To visualize collision meshes in the viewport:
 4. Hover over **Colliders**.
 5. Select **All** (the three choices are None / Selected / All).
 
-![Colliders menu](images/01_show_colliders_menu.png)
-
 Collision meshes are overlaid as wireframes (pink to green lines).
 
 !!! note "If the wireframes do not appear"
