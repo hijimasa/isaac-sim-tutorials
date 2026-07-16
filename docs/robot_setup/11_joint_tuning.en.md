@@ -97,7 +97,7 @@ Use the **Select Robot** dropdown at the top of the window to pick the robot to 
 After selection, the joint list on the left shows every joint of the selected robot.
 
 !!! tip "If the Gain Tuner Extension Is Not Available"
-    It is enabled by default, but if it does not appear in the menu, open **Window > Extensions** and search for `omni.isaac.gain_tuner` to enable it.
+    It is enabled by default, but if it does not appear in the menu, open **Window > Extensions** and search for `isaacsim.robot_setup.gain_tuner` to enable it.
 
 ### 1-3. UI Layout
 

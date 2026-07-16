@@ -97,6 +97,8 @@ This produces a configuration where `_edit.usd` (Root Layer) is layered on top o
 
     On the other hand, properties that are not overridden in the upper layer use the value from the lower layer in the final result. In other words, if you update meshes or materials in `_base.usd`, those updates will automatically be reflected as long as you have not modified the same properties in `_edit.usd`. This is the advantage of the non-destructive editing workflow.
 
+    Note, however, that this assumes **the prim paths and property names remain unchanged**. If you rename, delete, or restructure prims in `_base.usd`, the overrides (opinions) recorded in `_edit.usd` still reference the old paths and cannot follow the changes automatically, so `_edit.usd` must be fixed accordingly.
+
 !!! tip "Roles of the Layer tab and the Stage panel"
     The **Layer** tab is for adding and reordering layers and for switching the **edit target** (which layer your edits are recorded into). Selecting prims and editing them through the Properties panel is still done from the **Stage** panel. If you try to find prims inside the Layer tab, you only see per-layer opinion listings — you cannot edit prims directly from there and it is easy to get lost.
 

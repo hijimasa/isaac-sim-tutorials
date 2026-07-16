@@ -58,7 +58,7 @@ The MJCF importer (`isaacsim.asset.importer.mjcf`) is normally loaded automatica
 !!! warning "The confirmation dialog may hide behind other windows"
     As with [URDF import](01_import_urdf.md), this confirmation dialog can open hidden behind other windows, making the app look frozen. If Isaac Sim stops responding after you click Import, move the front windows aside and answer the hidden dialog.
 
-![Imported humanoid](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ext-isaacsim.asset.importer.mjcf-2.3.0_gui_humanoid.png)
+    ![Imported humanoid](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ext-isaacsim.asset.importer.mjcf-2.3.0_gui_humanoid.png)
 
 ## Step 2: Import with Python Scripting
 

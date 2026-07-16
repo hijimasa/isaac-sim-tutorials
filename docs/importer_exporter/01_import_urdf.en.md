@@ -333,7 +333,7 @@ class HelloWorld(BaseSample):
 
 ## Step 5: Import from a ROS 2 Node
 
-Importing URDF via a ROS 2 node connects Isaac Sim directly to existing ROS 2 workflows. Because it reads the robot description published by `robot_state_publisher`, a major advantage is that **XACRO files can be imported indirectly without explicitly converting them to URDF**.
+Importing URDF via a ROS 2 node connects Isaac Sim directly to existing ROS 2 workflows. Because it reads the robot description published by `robot_state_publisher`, a major advantage is that **XACRO files** (a ROS description format that generates URDF using macros and parameters) **can also be imported indirectly without explicitly converting them to URDF**.
 
 !!! warning "Supported platforms"
     This feature is supported **only on Isaac Sim on Linux** (it may work in other Omniverse applications, but is not guaranteed to behave as expected).

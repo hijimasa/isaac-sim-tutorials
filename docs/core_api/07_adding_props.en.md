@@ -66,6 +66,9 @@ First, create a new stage and place an object.
 
 ### Adding Rigid Body Properties
 
+!!! note "The Difference Between Xform and Mesh"
+    The Rubik's Cube on the stage has a hierarchical structure: under the **Xform** (a "container" prim that holds position, rotation, and scale and groups child prims), a **Mesh** prim containing the actual geometry data is attached. Physics attributes are **added to the Xform**, which represents the object as a whole. You can tell the two apart by the Type column (Xform / Mesh) in the Stage panel.
+
 1. Right-click the Xform Rubik's Cube on the stage and select **Add > Physics > Rigid Body**.<br>
    ![Add Rigid Body](images/14_add_rigid_body.png)
 

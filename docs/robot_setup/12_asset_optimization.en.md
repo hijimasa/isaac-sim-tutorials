@@ -63,7 +63,7 @@ The flow is as follows:
     | **Transformation** (optimized) | Asset with mesh merging and instancing applied. Created in this tutorial. |
     | **Features** (feature layers) | Per-purpose layers for physics, sensors, ROS, and so on |
 
-    With this design, you can update the CAD by swapping out only Asset Source — you do not have to rebuild the rigging or physics setup.
+    With this design, **CAD updates that do not change the prim names or hierarchy** (such as swapping mesh geometry or materials) only require replacing Asset Source — you do not have to rebuild the rigging or physics setup. Note, however, that the physics and rigging settings in the upper layers reference specific prim paths, so **structure-changing updates** on the CAD side — such as adding, removing, or renaming links — require fixing the corresponding settings.
 
 ## Step 1: Restructure the Asset
 

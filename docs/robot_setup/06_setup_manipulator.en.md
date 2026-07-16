@@ -314,6 +314,9 @@ Add the gripper's links and joints to the UR10e robot definition.
     - Add `/ur10e/ee_link` to the **isaac:physics:robotjoints** field
     - Add `/ur10e/ee_link` to the **isaac:physics:robotLinks** field
 
+!!! note "Why add the ee_link link to robotjoints as well"
+    [Tutorial 5a](05a_apply_robot_schema.md) explained that joints are registered in robotJoints and links in robotLinks. Adding `ee_link`, which is a link, to **robotjoints as well** may seem contradictory at first, but this is because `ee_link` (the renamed root of the gripper) has the **gripper's own Robot Schema applied to it**. By adding `ee_link` to both fields, the joint definitions and link definitions held by the gripper's Robot Schema are each **incorporated as nested definitions** into the UR10e's definition (this procedure follows the official documentation).
+
 ![Manual connection](images/27_connect_with_GUI.png)
 
 ### Option 2: Robot Assembler Connection
