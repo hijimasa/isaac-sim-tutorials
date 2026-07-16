@@ -31,6 +31,9 @@ title: Isaac Sim OmniGraph チュートリアル
 
 OmniGraph は Omniverse のビジュアルプログラミングフレームワークです。Isaac Sim では、Replicator・ROS 2 ブリッジ・センサーアクセス・コントローラ・外部入出力デバイス・UI など、多くの機能の中心エンジンとして使われています。このチュートリアルでは、ビジュアルプログラミングで JetBot（2 輪ロボット）を制御するアクショングラフを構築します。
 
+!!! note "アクショングラフとは"
+    OmniGraph のグラフには評価方式の異なる種類があります。本セクションで主に扱う**アクショングラフ（Action Graph）**は、再生中の毎フレーム tick やステージイベントといった**イベントをきっかけに、実行ピンの接続順で明示的に実行される**タイプのグラフです（接続だけで毎フレーム自動評価される Push Graph などと区別されます。詳細は[カスタム Python ノード](03_custom_python_nodes.md)の note を参照）。
+
 ## ステップ 1：ステージをセットアップする
 
 1. 新規ステージで右クリックし、**Create > Physics > Ground Plane** で地面を作成します。
@@ -63,7 +66,7 @@ OmniGraph は Omniverse のビジュアルプログラミングフレームワ�
 
 ### 関節名リストを作る
 
-Articulation Controller には、動かす関節をトークンまたはインデックス値のリストで渡す必要があります。JetBot の `/World/jetbot/chassis` には `left_wheel_joint` と `right_wheel_joint` の 2 つの回転物理関節があります。
+Articulation Controller には、動かす関節をトークン（token：USD で識別子として使われる文字列型）またはインデックス値のリストで渡す必要があります。JetBot の `/World/jetbot/chassis` には `left_wheel_joint` と `right_wheel_joint` の 2 つの回転物理関節があります。
 
 ![ステージツリー](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_tut_gui_omnigraph_jetbot_joints.png)
 

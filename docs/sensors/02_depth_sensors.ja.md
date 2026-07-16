@@ -75,6 +75,9 @@ Isaac Sim の UI を閉じ、`--test` を付けてヘッドレスで再実行し
 
 カメラのレンダープロダクトにアタッチされたアノテーターから、次の 2 つの画像が生成されます。1 枚目は `DepthSensorDistance` アノテーターの出力（`depth_sensor_distance.png`）、2 枚目は `DistanceToImagePlane` アノテーターの出力（`distance_to_image_plane.png`）です。
 
+!!! note "アノテーターと AOV"
+    **アノテーター（annotator）**は、レンダープロダクトから特定の種類のデータ（RGB・深度・セグメンテーションなど）を取り出す Replicator の構成部品です。また、以降のページで登場する **AOV（Arbitrary Output Variable）** は、レンダラーが通常のカラー画像以外に書き出せる任意の出力チャネル（バッファ）のことで、アノテーターの多くはこの AOV からデータを取得しています。
+
 ![DepthSensorDistance の出力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_full_ext-isaacsim.sensors.camera-1.3.6_viewport_depth_sensor_distance.png)
 
 ![DistanceToImagePlane の出力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_full_ext-isaacsim.sensors.camera-1.3.6_viewport_distance_to_image_plane.png)
@@ -127,7 +130,7 @@ depth_sensor.attach_annotator("DepthSensorDistance")
 
 ![深度センサーアセットの Stage ウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.3.0_gui_depth_sensor_asset_stage.png)
 
-**Layer** ウィンドウには、`HydraTexture` と `DepthSensorDistance` の RenderVar がアタッチされた `RenderProduct` prim が作成されたことが表示されます。
+**Layer** ウィンドウには、`HydraTexture` と `DepthSensorDistance` の RenderVar（レンダープロダクトが保持する出力変数。AOV に対応します）がアタッチされた `RenderProduct` prim が作成されたことが表示されます。
 
 ![深度センサーアセットの Layer ウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.3.0_gui_depth_sensor_asset_layer.png)
 

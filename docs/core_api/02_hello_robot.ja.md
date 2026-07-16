@@ -21,6 +21,9 @@ title: Hello Robot
 - [チュートリアル 1: Hello World](01_hello_world.md) を完了していること
 - `/Isaac` フォルダを含む Omniverse Nucleus サーバーが設定済みであること
 
+!!! note "Nucleus サーバーとは"
+    **Nucleus** は Omniverse のアセット配信・共有サーバーです。Isaac Sim が使用するロボットや環境などの公式アセット（`/Isaac` フォルダ以下）は、Nucleus 経由で読み込まれます。標準的なインストール手順で Isaac Sim をセットアップしていれば追加の設定は不要で、アセットのパス（例：`.../Isaac/Robots/...`）を指定するだけで利用できます。
+
 ### 所要時間
 
 約 10〜15 分

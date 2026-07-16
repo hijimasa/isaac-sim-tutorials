@@ -39,7 +39,7 @@ title: 新しいマニピュレータ用の RMPflow 設定
 
 1. **URDF** … ロボットの運動学、関節・リンク名、各関節の位置リミットを指定します。質量・慣性モーメント・可視/衝突メッシュは無視されるため省略可能です。
 2. **Robot Description ファイル（YAML）** … [Robot Description エディタ](02_robot_description_editor.md) で生成する補足ファイル。
-3. **RMPflow 設定ファイル（YAML）** … 有効な全 RMP のパラメータを含みます。
+3. **RMPflow 設定ファイル（YAML）** … 有効な全 RMP のパラメータを含みます。RMP（Riemannian Motion Policy）は RMPflow を構成する個々のポリシー要素で、「ターゲットへの誘引」「衝突回避」「関節リミット回避」などの目的ごとに 1 つずつ定義されます（詳細は[RMPflow の理論ページ](concepts/rmpflow.md)を参照）。
 
 このチュートリアルは、URDF と Robot Description ファイルはすでにある前提で、残りの **RMPflow 設定** をテンプレートから Cobotta 用に修正します。
 

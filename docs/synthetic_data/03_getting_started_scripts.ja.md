@@ -88,7 +88,7 @@ carb.settings.get_settings().set("/omni/replicator/RTSubframes", 4)
 
 ### DLSS 品質モード
 
-SDG ワークフローでは、レンダリングアーティファクトを避けるために **DLSS を Quality モード**に設定することが推奨されます。低解像度（特に 600×600 未満）では、既定の Performance モードで、生成画像のエッジが透けたり正しく描画されなかったりする問題が起きることがあります：
+SDG ワークフローでは、レンダリングアーティファクトを避けるために **DLSS**（Deep Learning Super Sampling：低解像度のレンダリング結果を AI で高解像度化する超解像機能）を **Quality モード**に設定することが推奨されます。低解像度（特に 600×600 未満）では、既定の Performance モードで、生成画像のエッジが透けたり正しく描画されなかったりする問題が起きることがあります：
 
 ```python
 import carb.settings

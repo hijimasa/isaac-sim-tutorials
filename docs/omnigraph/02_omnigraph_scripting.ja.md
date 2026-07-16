@@ -53,6 +53,9 @@ keys = og.Controller.Keys
 )
 ```
 
+!!! note "evaluator_name とは"
+    **evaluator** は、グラフをどの方式で評価（実行）するかを決める仕組みです。`evaluator_name` に `"execution"` を指定すると、実行ピンの接続に従ってイベント駆動で動く**アクショングラフ**として作成されます（GUI の **New Action Graph** で作るグラフと同じ種類です）。
+
 - **Run** を押すと、Stage ツリーに新しい prim `/action_graph` が作成されます。
 - prim を展開すると `tick` と `print` ノードがグラフの下に表示されます。これらは他の prim と同様に扱えます。
 - **Play** を押すと、毎フレーム「Hello World」がコンソールに出力されます。

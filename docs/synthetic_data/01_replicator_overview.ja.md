@@ -31,6 +31,12 @@ Isaac Sim Replicator は、合成データ生成（SDG: Synthetic Data Generatio
 !!! note "合成データ生成（SDG）とは"
     機械学習モデル（物体検出・セグメンテーションなど）の学習には、大量の**ラベル付きデータ**が必要です。実世界で画像を集めて人手でラベル付けするのは高コストですが、シミュレータなら**レンダリングと同時に正確なラベル（アノテーション）を自動生成**できます。さらに、照明・配置・テクスチャなどをランダム化（**ドメインランダマイゼーション**）することで、実世界への汎化性能を高めたデータセットを大量に作れます。これが Replicator の役割です。
 
+!!! note "アノテータとライター：Replicator の 2 つの基本部品"
+    このセクション全体で繰り返し登場する用語です。
+
+    - **アノテータ（annotator）** … RGB・深度・セマンティックセグメンテーション・バウンディングボックスなど、**特定の種類のデータを生成・抽出する**モジュールです。カメラのレンダープロダクト（レンダリング出力の単位）に接続して使います。
+    - **ライター（writer）** … アノテータの出力を受け取り、**指定した形式（PNG・JSON・KITTI 形式など）でディスクへ書き出す**部品です。既定の **BasicWriter** のほか、用途別ライターやカスタムライターを利用できます。
+
 ## Semantics Schema Editor
 
 [Semantics Schema Editor](https://docs.omniverse.nvidia.com/extensions/latest/ext_replicator/semantics_schema_editor.html) は、ステージ上のプリムの**セマンティックラベル**を表示・追加・編集・削除できる GUI エクステンションです。
@@ -60,7 +66,7 @@ Isaac Sim Replicator は、合成データ生成（SDG: Synthetic Data Generatio
 
 ## Replicator YAML
 
-[Replicator YAML](https://docs.omniverse.nvidia.com/extensions/latest/ext_replicator/yaml_workflow.html) は、Replicator API の上に構築された**設定ファイルベース**のワークフローです。ランダマイゼーションとデータキャプチャのパイプラインを設定ファイルとして定義でき、この設定は Replicator API を通じて OmniGraph のワークフローに変換されて SDG を実行します。**Tools > Replicator > Replicator YAML** からアクセスできます。
+[Replicator YAML](https://docs.omniverse.nvidia.com/extensions/latest/ext_replicator/yaml_workflow.html) は、Replicator API の上に構築された**設定ファイルベース**のワークフローです。ランダマイゼーションとデータキャプチャのパイプラインを設定ファイルとして定義でき、この設定は Replicator API を通じて OmniGraph（ノードを繋いで処理を定義する Omniverse の実行グラフ機構。詳細は OmniGraph セクションを参照）のワークフローに変換されて SDG を実行します。**Tools > Replicator > Replicator YAML** からアクセスできます。
 
 ## Getting Started Scripts
 

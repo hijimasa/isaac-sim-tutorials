@@ -27,7 +27,7 @@ title: RTX センサーアノテーター
 
 ### 概要
 
-`isaacsim.sensors.rtx` 拡張機能は、Omniverse Replicator を使って RTX LiDAR / Radar のデータ収集用**アノテーター**を提供します。アノテーターは、`OmniLidar` や `OmniRadar` などの OmniSensor prim にアタッチされたレンダープロダクトに取り付けます。
+`isaacsim.sensors.rtx` 拡張機能は、Omniverse Replicator を使って RTX LiDAR / Radar のデータ収集用**アノテーター**（レンダープロダクトから特定の種類のデータを抽出する Replicator の構成部品。[深度センサーのページ](02_depth_sensors.md)の note も参照）を提供します。アノテーターは、`OmniLidar` や `OmniRadar` などの OmniSensor prim にアタッチされたレンダープロダクトに取り付けます。
 
 このチュートリアルは、次の流れで進みます。
 

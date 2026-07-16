@@ -60,7 +60,7 @@ title: ステージのセットアップ
     ![Gridの表示方法](images/01_show_grid.png)
 
 ## ライティングの追加
-新しい Stage には、デフォルトで**defaultLight**が事前配置されています。これがなければ何も見えません。この**defaultLight**はステージ内の**Environment** Xformの子要素であり、右上の**Stage**タブのコンテキストツリーで確認できます。
+新しい Stage には、デフォルトで**defaultLight**が事前配置されています。これがなければ何も見えません。この**defaultLight**はステージ内の**Environment** Xform（位置・回転・スケールを持ち、子プリムをまとめる USD のプリム）の子要素であり、右上の**Stage**タブのコンテキストツリーで確認できます。
 
 追加のスポットライトを作成するには：
 
