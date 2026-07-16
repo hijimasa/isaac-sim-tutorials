@@ -180,6 +180,11 @@ plugins:
               - 便利なスニペット集: synthetic_data/14_isaac_snippets.md
               - 把持の合成データ生成: synthetic_data/15_grasping_sdg.md
               - MobilityGen によるデータ生成: synthetic_data/16_mobility_gen.md
+              - アクター シミュレーションと SDG（IRA）: synthetic_data/17_replicator_agent.md
+              - オブジェクト シミュレーションと SDG（IRO）: synthetic_data/18_replicator_object.md
+              - VLM シーンキャプショニング（IRC）: synthetic_data/19_replicator_caption.md
+              - 物理空間イベント生成（IRI）: synthetic_data/20_replicator_incident.md
+              - RTX センサーの配置とキャリブレーション（ISP）: synthetic_data/21_sensors_rtx_placement.md
             - センサー:
               - sensors/index.md
               - カメラセンサー: sensors/01_camera_sensors.md
@@ -209,6 +214,15 @@ plugins:
               - Lula Trajectory Generator: motion_generation/06_lula_trajectory_generator.md
               - 新しいマニピュレータ用の RMPflow 設定: motion_generation/07_configure_rmpflow_denso.md
               - cuRobo と cuMotion: motion_generation/08_curobo.md
+              - コンセプト（理論）:
+                - motion_generation/concepts/index.md
+                - Motion Policy アルゴリズム: motion_generation/concepts/motion_policy.md
+                - RMPflow（理論）: motion_generation/concepts/rmpflow.md
+                - RMPflow チューニングガイド: motion_generation/concepts/rmpflow_tuning_guide.md
+                - Path Planner アルゴリズム: motion_generation/concepts/path_planner.md
+                - Lula RRT: motion_generation/concepts/lula_rrt.md
+                - Kinematics ソルバー: motion_generation/concepts/kinematics_solver.md
+                - 軌道生成: motion_generation/concepts/trajectory_interface.md
             - OmniGraph:
               - omnigraph/index.md
               - Isaac Sim OmniGraph チュートリアル: omnigraph/01_omnigraph_tutorial.md
@@ -315,6 +329,11 @@ plugins:
               - Useful Snippets: synthetic_data/14_isaac_snippets.md
               - Grasping Synthetic Data Generation: synthetic_data/15_grasping_sdg.md
               - Data Generation with MobilityGen: synthetic_data/16_mobility_gen.md
+              - Actor Simulation and SDG (IRA): synthetic_data/17_replicator_agent.md
+              - Object Simulation and SDG (IRO): synthetic_data/18_replicator_object.md
+              - VLM Scene Captioning (IRC): synthetic_data/19_replicator_caption.md
+              - Physical Space Event Generation (IRI): synthetic_data/20_replicator_incident.md
+              - RTX Sensors Placement and Calibration (ISP): synthetic_data/21_sensors_rtx_placement.md
             - Sensors:
               - sensors/index.md
               - Camera Sensors: sensors/01_camera_sensors.md
@@ -344,6 +363,15 @@ plugins:
               - Lula Trajectory Generator: motion_generation/06_lula_trajectory_generator.md
               - Configuring RMPflow for a New Manipulator: motion_generation/07_configure_rmpflow_denso.md
               - cuRobo and cuMotion: motion_generation/08_curobo.md
+              - Concepts:
+                - motion_generation/concepts/index.md
+                - Motion Policy Algorithm: motion_generation/concepts/motion_policy.md
+                - RMPflow (Theory): motion_generation/concepts/rmpflow.md
+                - RMPflow Tuning Guide: motion_generation/concepts/rmpflow_tuning_guide.md
+                - Path Planner Algorithm: motion_generation/concepts/path_planner.md
+                - Lula RRT: motion_generation/concepts/lula_rrt.md
+                - Kinematics Solvers: motion_generation/concepts/kinematics_solver.md
+                - Trajectory Generation: motion_generation/concepts/trajectory_interface.md
             - OmniGraph:
               - omnigraph/index.md
               - Isaac Sim OmniGraph Tutorial: omnigraph/01_omnigraph_tutorial.md

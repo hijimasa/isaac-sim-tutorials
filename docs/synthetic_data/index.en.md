@@ -70,6 +70,10 @@ Synthetic data generation (SDG) produces labeled training data directly from sim
 !!! example "[Tutorial 16: Data Generation with MobilityGen](16_mobility_gen.md)"
     Record-then-render data collection for mobile robots.
 
-### Coming soon
+### Action and Event Data Generation
 
-Action and event data generation (actor/object simulation SDG, VLM scene captioning, physical space event generation, RTX sensor placement)
+- [Tutorial 17: Actor Simulation and SDG (IRA)](17_replicator_agent.md)
+- [Tutorial 18: Object Simulation and SDG (IRO)](18_replicator_object.md)
+- [Tutorial 19: VLM Scene Captioning (IRC)](19_replicator_caption.md)
+- [Tutorial 20: Physical Space Event Generation (IRI)](20_replicator_incident.md)
+- [Tutorial 21: RTX Sensors Placement and Calibration (ISP)](21_sensors_rtx_placement.md)

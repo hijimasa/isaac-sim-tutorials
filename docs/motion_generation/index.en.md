@@ -22,3 +22,7 @@ Isaac Sim provides **Lula** (high-performance library) and **cuRobo** (GPU-accel
 - [Lula Trajectory Generator](06_lula_trajectory_generator.md)
 - [Configuring RMPflow for a New Manipulator](07_configure_rmpflow_denso.md)
 - [cuRobo and cuMotion](08_curobo.md)
+
+## Concepts
+
+Design and theory behind each algorithm: [Motion Generation Concepts](concepts/index.md) — [Motion Policy](concepts/motion_policy.md), [RMPflow](concepts/rmpflow.md), [RMPflow Tuning Guide](concepts/rmpflow_tuning_guide.md), [Path Planner](concepts/path_planner.md), [Lula RRT](concepts/lula_rrt.md), [Kinematics Solvers](concepts/kinematics_solver.md), [Trajectory Generation](concepts/trajectory_interface.md).
