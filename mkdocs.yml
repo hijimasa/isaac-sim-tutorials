@@ -182,10 +182,40 @@ plugins:
               - MobilityGen によるデータ生成: synthetic_data/16_mobility_gen.md
             - センサー:
               - sensors/index.md
+              - カメラセンサー: sensors/01_camera_sensors.md
+              - 深度センサー: sensors/02_depth_sensors.md
+              - RTX センサー: sensors/03_rtx_sensors.md
+              - RTX LiDAR センサー: sensors/04_rtx_lidar.md
+              - RTX Radar センサー: sensors/05_rtx_radar.md
+              - RTX センサーアノテーター: sensors/06_rtx_annotators.md
+              - RTX センサー用の非可視マテリアル: sensors/07_rtx_materials.md
+              - Physics ベースのセンサー: sensors/08_physics_sensors.md
+              - Articulation Joint センサー: sensors/09_articulation_force.md
+              - Contact センサー: sensors/10_contact_sensor.md
+              - Effort センサー: sensors/11_effort_sensor.md
+              - IMU センサー: sensors/12_imu_sensor.md
+              - Proximity センサー: sensors/13_proximity_sensor.md
+              - PhysX SDK センサー: sensors/14_physx_sensors.md
+              - PhysX SDK Generic センサー: sensors/15_physx_generic.md
+              - PhysX SDK Lidar: sensors/16_physx_lidar.md
+              - PhysX SDK Lightbeam センサー: sensors/17_physx_lightbeam.md
             - モーション生成:
               - motion_generation/index.md
+              - モーション生成の概要: motion_generation/01_overview.md
+              - Lula Robot Description と XRDF エディタ: motion_generation/02_robot_description_editor.md
+              - Lula RMPflow: motion_generation/03_rmpflow.md
+              - Lula RRT: motion_generation/04_lula_rrt.md
+              - Lula Kinematics Solver: motion_generation/05_lula_kinematics.md
+              - Lula Trajectory Generator: motion_generation/06_lula_trajectory_generator.md
+              - 新しいマニピュレータ用の RMPflow 設定: motion_generation/07_configure_rmpflow_denso.md
+              - cuRobo と cuMotion: motion_generation/08_curobo.md
             - OmniGraph:
               - omnigraph/index.md
+              - Isaac Sim OmniGraph チュートリアル: omnigraph/01_omnigraph_tutorial.md
+              - OmniGraph の Python スクリプティング: omnigraph/02_omnigraph_scripting.md
+              - カスタム Python ノード: omnigraph/03_custom_python_nodes.md
+              - カスタム C++ ノード: omnigraph/04_custom_cpp_nodes.md
+              - よく使う OmniGraph ショートカット: omnigraph/05_shortcuts.md
             - トラブルシューティング:
               - troubleshooting/index.md
         - locale: en
@@ -287,10 +317,40 @@ plugins:
               - Data Generation with MobilityGen: synthetic_data/16_mobility_gen.md
             - Sensors:
               - sensors/index.md
+              - Camera Sensors: sensors/01_camera_sensors.md
+              - Depth Sensors: sensors/02_depth_sensors.md
+              - RTX Sensors: sensors/03_rtx_sensors.md
+              - RTX Lidar Sensor: sensors/04_rtx_lidar.md
+              - RTX Radar Sensor: sensors/05_rtx_radar.md
+              - RTX Sensor Annotators: sensors/06_rtx_annotators.md
+              - RTX Sensor Non-Visual Materials: sensors/07_rtx_materials.md
+              - Physics-Based Sensors: sensors/08_physics_sensors.md
+              - Articulation Joint Sensors: sensors/09_articulation_force.md
+              - Contact Sensor: sensors/10_contact_sensor.md
+              - Effort Sensor: sensors/11_effort_sensor.md
+              - IMU Sensor: sensors/12_imu_sensor.md
+              - Proximity Sensor: sensors/13_proximity_sensor.md
+              - PhysX SDK Sensors: sensors/14_physx_sensors.md
+              - PhysX SDK Generic Sensor: sensors/15_physx_generic.md
+              - PhysX SDK Lidar: sensors/16_physx_lidar.md
+              - PhysX SDK Lightbeam Sensor: sensors/17_physx_lightbeam.md
             - Motion Generation:
               - motion_generation/index.md
+              - Motion Generation Overview: motion_generation/01_overview.md
+              - Lula Robot Description and XRDF Editor: motion_generation/02_robot_description_editor.md
+              - Lula RMPflow: motion_generation/03_rmpflow.md
+              - Lula RRT: motion_generation/04_lula_rrt.md
+              - Lula Kinematics Solver: motion_generation/05_lula_kinematics.md
+              - Lula Trajectory Generator: motion_generation/06_lula_trajectory_generator.md
+              - Configuring RMPflow for a New Manipulator: motion_generation/07_configure_rmpflow_denso.md
+              - cuRobo and cuMotion: motion_generation/08_curobo.md
             - OmniGraph:
               - omnigraph/index.md
+              - Isaac Sim OmniGraph Tutorial: omnigraph/01_omnigraph_tutorial.md
+              - OmniGraph via Python Scripting: omnigraph/02_omnigraph_scripting.md
+              - Custom Python Nodes: omnigraph/03_custom_python_nodes.md
+              - Custom C++ Nodes: omnigraph/04_custom_cpp_nodes.md
+              - Commonly Used OmniGraph Shortcuts: omnigraph/05_shortcuts.md
             - Troubleshooting:
               - troubleshooting/index.md
 
