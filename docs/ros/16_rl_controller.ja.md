@@ -96,7 +96,7 @@ title: 強化学習ポリシーの ROS 2 実行
 
 3. 下の画像のとおりに接続します。
 4. **Isaac Read IMU Node** の **IMU Prim** 入力を `/h1/pelvis/Imu_Sensor` に設定します。
-5. **Isaac Read IMU Node** の **Read Gravity** 入力の**チェックを外します**。pelvis リンクからは並進・角速度だけを取得したいためです。
+5. **Isaac Read IMU Node** の **Read Gravity** 入力の**チェックを外します**。Read Gravity は IMU の加速度出力に重力成分を含めるかどうかの設定です。観測に必要な重力ベクトルは、IMU が出力する姿勢（クォータニオン）からポリシー制御ノード側で算出するため、ここでは加速度への重力の混入を避け、pelvis リンクの並進・角速度と姿勢だけを取得します。
 6. **Read Simulation Time** ノードの **Reset on Stop** に**チェックを入れ**、シミュレーション停止時に時刻をリセットするようにします。
 
 ![IMU パブリッシャグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rl_ros_controller_2.png)

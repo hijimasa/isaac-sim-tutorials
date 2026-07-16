@@ -107,7 +107,7 @@ def create_parent_xforms(asset_usd_path, source_prim_path, save_as_path=None):
     while len(prims) > 0:
         prim = prims.pop(0)
         print(prim)
-        if prim.GetTypeName() in ["Mesh", "Capsule", "Sphere", "Box"]:
+        if prim.GetTypeName() in ["Mesh", "Capsule", "Sphere", "Cube"]:
             new_xform = UsdGeom.Xform.Define(stage, str(prim.GetPath()) + "_xform")
             print(prim, new_xform)
             edits.Add(Sdf.NamespaceEdit.Reparent(prim.GetPath(), new_xform.GetPath(), 0))
@@ -123,6 +123,9 @@ def create_parent_xforms(asset_usd_path, source_prim_path, save_as_path=None):
     else:
         omni.usd.get_context().save_as_stage(save_as_path)
 ```
+
+!!! note "型名リストの `Box` について"
+    公式ドキュメントのコードでは判定リストが `["Mesh", "Capsule", "Sphere", "Box"]` となっていますが、USD の直方体プリムの型名は `Cube`（`UsdGeomCube`）であり、`Box` という型名は存在しません（チュートリアル 2 の制限事項一覧でも `Cube` と記載されています）。そのままでは Cube プリムが変換対象から漏れるため、本ページでは `Cube` に修正しています。Cylinder や Cone を含むアセットを扱う場合は、必要に応じてリストに追加してください。
 
 引数は次のとおりです：
 
@@ -174,7 +177,7 @@ def convert_asset_instanceable(asset_usd_path, source_prim_path, save_as_path=No
     while len(prims) > 0:
         prim = prims.pop(0)
         if prim:
-            if prim.GetTypeName() in ["Mesh", "Capsule", "Sphere", "Box"]:
+            if prim.GetTypeName() in ["Mesh", "Capsule", "Sphere", "Cube"]:
                 parent_prim = prim.GetParent()
                 if parent_prim and not parent_prim.IsInstance():
                     parent_prim.GetReferences().AddReference(assetPath=instance_usd_path, primPath=str(parent_prim.GetPath()))

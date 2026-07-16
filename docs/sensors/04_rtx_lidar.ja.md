@@ -65,7 +65,7 @@ _, sensor = omni.kit.commands.execute(
     path="/lidar",
     parent=None,
     config="Example_Rotary",
-    visiblity=False,
+    visibility=False,
     variant=None,
     force_camera_prim=False,
     **sensor_attributes,

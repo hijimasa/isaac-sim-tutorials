@@ -194,7 +194,7 @@ class HelloWorld(BaseSample):
 | `setup_scene` | 空のステージから初回ロード時のみ | アセットの配置 |
 | `setup_post_load` | **LOAD** ボタン押下後に毎回 | 物理ハンドルが有効になった後の初期化処理 |
 
-`setup_post_load` は物理シミュレーションの1ステップ後に呼ばれるため、オブジェクトの座標・速度などの物理プロパティを取得できます。
+`setup_post_load` はワールドの初回リセットが完了した後（＝物理ハンドルが初期化された後）に呼ばれるため、オブジェクトの座標・速度などの物理プロパティを取得できます。
 
 ```python linenums="1" hl_lines="23-33"
 from isaacsim.examples.interactive.base_sample import BaseSample

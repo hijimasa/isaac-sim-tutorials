@@ -51,7 +51,7 @@ PhysX SDK Generic センサーは、PhysX SDK のレイキャストを使って 
 | `streaming` | データを継続的にストリーミングする場合は `True`、最初に 1 度だけバッチ送信して繰り返す場合は `False` |
 | `sampling_rate` | 1 秒あたりのスキャン数 |
 | `batch_size` | 1 バッチに含まれるスキャン数。数フレームを描画しても枯渇しない十分な大きさが必要 |
-| `sensor_pattern` | Nx2 の NumPy 配列（N は batch_size）。各列は各レイの `[azimuth, zenith]` 角度 |
+| `sensor_pattern` | 2×N の NumPy 配列（N は batch_size）。各列が 1 本のレイの `[azimuth, zenith]` 角度（後述のコード例のように `np.stack((azimuth, zenith))` で作る形状） |
 | `origin_offsets` | （省略可）Nx3 の NumPy 配列。各行は各レイの原点からのオフセット `[x, y, z]` |
 
 !!! note "batch_size の考え方"

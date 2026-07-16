@@ -142,7 +142,7 @@ async def run_example_async():
     rep.orchestrator.set_capture_on_play(False)
 
     # DLSS を Quality モード（2）に設定
-    carb.settings.get_settings().set("rtx/post/dlss/execMode", 2)
+    carb.settings.get_settings().set("/rtx/post/dlss/execMode", 2)
 
     # ドームライトとキューブでステージをセットアップ
     stage = omni.usd.get_context().get_stage()
@@ -231,7 +231,7 @@ async def run_example_async():
     rep.orchestrator.set_capture_on_play(False)
 
     # DLSS を Quality モード（2）に設定
-    carb.settings.get_settings().set("rtx/post/dlss/execMode", 2)
+    carb.settings.get_settings().set("/rtx/post/dlss/execMode", 2)
 
     # ステージのセットアップ
     stage = omni.usd.get_context().get_stage()
@@ -340,7 +340,7 @@ async def run_example_async():
     rep.set_global_seed(42)
 
     # DLSS を Quality モード（2）に設定
-    carb.settings.get_settings().set("rtx/post/dlss/execMode", 2)
+    carb.settings.get_settings().set("/rtx/post/dlss/execMode", 2)
 
     # ステージのセットアップ
     stage = omni.usd.get_context().get_stage()
@@ -435,7 +435,7 @@ async def run_example_async():
     rep.orchestrator.set_capture_on_play(False)
 
     # DLSS を Quality モード（2）に設定
-    carb.settings.get_settings().set("rtx/post/dlss/execMode", 2)
+    carb.settings.get_settings().set("/rtx/post/dlss/execMode", 2)
 
     # ライトを追加
     stage = omni.usd.get_context().get_stage()

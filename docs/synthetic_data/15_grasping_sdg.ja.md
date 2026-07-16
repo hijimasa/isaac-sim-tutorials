@@ -74,7 +74,7 @@ Grasping SDG は、**グリッパーとオブジェクトのペアに対する�
     | Maximum gripper aperture | グリッパーの最大開き幅（広すぎる把持候補の除外） |
     | Alignment axes | オブジェクトの特徴や把持線に合わせるグリッパーのローカル軸 |
     | Gripper approach direction | 接近方向のベクトル |
-    | Lateral perturbation (sigma) | 把持軸に沿った接触点のランダムなずらし |
+    | Lateral perturbation (sigma) | 把持軸に対して横方向への接触点のランダムなずらし |
     | Random seed | 再現可能なサンプリングのためのシード |
 
 - **Grasp Poses** — 生成した候補姿勢の管理（生成数の指定・クリア・ビューポートでの可視化とサイクル確認）

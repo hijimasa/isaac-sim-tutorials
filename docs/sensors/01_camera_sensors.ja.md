@@ -347,7 +347,7 @@ camera = Camera(
 公式ドキュメントでは、Intel® RealSense™ Depth Camera D455 のデジタルツインを例に説明しています。この USD は Content フォルダの `/Isaac/Sensors/Intel/RealSense/rsd455.usd` にあります。RealSense には 3 つの視覚センサーと 1 つの IMU センサーがあり、カメラ原点に対する配置は Intel の TechSpec のレイアウト図から取得されています。
 
 !!! note "実機からリグを作るときのポイント"
-    - `fStop` は TechSpec の F Number の分母、`focalLength` は Focal Length、`ftheatMaxFov` は対角視野（Diagonal FOV）に対応します。
+    - `fStop` は TechSpec の F Number の分母、`focalLength` は Focal Length、`fthetaMaxFov` は対角視野（Diagonal FOV）に対応します。
     - `focusDistance` のような一部のパラメータは、実際の出力と比較しながら推定する必要があります。
     - `horizontalAperture` / `verticalAperture` はセンサーのイメージエリア（例：OV9782 は 3896 × 2453 µm）から導出できます。
     - Pseudo Depth カメラは、ファームウェアがステレオから生成する深度画像の代替です。ステレオアルゴリズムを再現するわけではなく、左右カメラの中間位置から見たシーン深度を返す便宜的なカメラです。

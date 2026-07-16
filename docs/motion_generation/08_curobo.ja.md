@@ -48,7 +48,7 @@ cuRobo のドキュメントの **「Using Isaac Sim」** セクションに、c
 - 衝突チェック（collision checking）
 - モーション生成（motion generation）
 - 逆運動学（inverse kinematics）
-- モデル予測制御（MPPI）
+- モデル予測経路積分制御（MPPI: Model Predictive Path Integral。サンプリングベースのモデル予測制御手法）
 - 複数アームのリーチング（multi-arm reaching）
 
 ### Isaac Sim + cuRobo + nvblox

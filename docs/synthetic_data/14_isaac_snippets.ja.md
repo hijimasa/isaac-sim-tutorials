@@ -46,7 +46,7 @@ title: 便利なスニペット集
 
 **RTX Real-Time** と **RTX Interactive（Path Tracing）**の両レンダリングモードでモーションブラーをキャプチャする例です。
 
-- Real-Time モードでは公式のモーションブラー後処理パラメータを使用
+- Real-Time モードでは組み込みのモーションブラー後処理パラメータを使用
 - Path Tracing モードでは複数のサブフレーム（`/omni/replicator/pathTracedMotionBlurSubSamples`）をレンダリングして合成
 
 アニメーションアセットと物理アセットの同期した動きを使っており、**キーフレームアニメーションは任意の delta time で補間できる**のに対し、**物理アセットは任意の delta time でモーションサンプルを得るためにカスタム物理 FPS が必要**という違いも扱います。目標物理 FPS の計算・変更・復元の方法が含まれます。

@@ -21,7 +21,7 @@ After completing this tutorial, you will have learned:
 - Complete [Tutorial 2: Assemble a Simple Robot](02_assemble_robot.md) before starting this tutorial.
 
 !!! tip "Starting from a Checkpoint Asset"
-    If you have not completed the previous tutorial, you can start from this tutorial by loading the `mock_robot_no_joints` asset from the **Samples > Rigging > MockRobot** folder in the **Content** tab at the bottom right of the screen. When loading, open it as a **File (not as a reference)**. Since this tutorial makes direct changes to the asset, it must be opened as a file rather than a reference.
+    If you have not completed the previous tutorial, you can start from this tutorial by loading the `mock_robot_no_joints` asset from the **Samples > Rigging > MockRobot** folder in the **Content** tab at the bottom left of the screen. When loading, open it as a **File (not as a reference)**. Since this tutorial makes direct changes to the asset, it must be opened as a file rather than a reference.
 
 ### Estimated Time
 
@@ -157,7 +157,7 @@ This tutorial covered the following topics:
 5. Controlling robot movement with **Velocity Controller**
 
 !!! tip "Reference Asset"
-    The completed robot is similar to the `mock_robot_rigged` asset found in the **Samples > Rigging > MockRobot** folder in the Content tab at the bottom right of the screen.
+    The completed robot is similar to the `mock_robot_rigged` asset found in the **Samples > Rigging > MockRobot** folder in the Content tab at the bottom left of the screen.
 
 ## Next Steps
 

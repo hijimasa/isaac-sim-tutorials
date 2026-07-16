@@ -97,7 +97,7 @@ title: ジョイントドライブゲインの調整
 選択すると、左側のジョイントリストに対象ロボットの全ジョイントが一覧表示されます。
 
 !!! tip "Gain Tuner エクステンションが見つからない場合"
-    既定では有効になっていますが、メニューに表示されない場合は **Window > Extensions** を開き、`omni.isaac.gain_tuner` を検索して有効化してください。
+    既定では有効になっていますが、メニューに表示されない場合は **Window > Extensions** を開き、`isaacsim.robot_setup.gain_tuner` を検索して有効化してください。
 
 ### 1-3. UI の構成
 

@@ -78,18 +78,19 @@ Isaac Sim には多数のデフォルトノードが用意されています（O
 
 ## ステップ 2：関数定義を書く
 
-入力の数が 0 より大きいかどうかで真偽値を出力する、最小限の Python ノードの例です。
+入力値（`value_input`）が 0 より大きいかどうかで真偽値を出力する、最小限の Python ノードの例です。
 
 ```python
 class OgnNodeName:
     @staticmethod
     def compute(db):
-        db.outputs.out = bool(db.inputs.value_input > 0.0)
+        db.outputs.output_bool = bool(db.inputs.value_input > 0.0)
         return True
 ```
 
 !!! note "実装上の注意"
-    - クラス名は `.ogn` ファイル内のノード名と一致させ、ファイル名もクラス名と一致させる必要があります。
+    - 入出力へは `db.inputs.<入力名>` / `db.outputs.<出力名>` でアクセスします。名前は `.ogn` で定義したもの（この例では `value_input` と `output_bool`）と一致させます。
+    - クラス名は `.ogn` ファイル内のノード名（この例では `NodeName`）に接頭辞 `Ogn` を付けたもの（`OgnNodeName`）にし、ファイル名（`OgnNodeName.ogn` / `OgnNodeName.py`）もこれと一致させる必要があります。
     - `compute` 関数が `execIn` 入力によってトリガーされる処理です。引数は 1 つで、ノードの入出力を含むデータベース（`db`）を受け取ります。成功時は `True`、失敗時は `False` を返します。
     - このノードは内部状態を持たないため、通過するデータは次の tick で失われます。tick 間でデータを保存したい場合は「internal state」を使います。
 

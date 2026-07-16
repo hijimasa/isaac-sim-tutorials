@@ -87,10 +87,10 @@ class FrankaKinematicsExample():
             self._articulation, self._kinematics_solver, end_effector_name)
 
     def update(self, step: float):
-        target_position, target_orientation = self._target.get_world_poses()
+        target_position, target_orientation = self._target.get_world_pose()
 
         # ロボットベースの移動を追跡
-        robot_base_translation, robot_base_orientation = self._articulation.get_world_poses()
+        robot_base_translation, robot_base_orientation = self._articulation.get_world_pose()
         self._kinematics_solver.set_robot_base_pose(robot_base_translation, robot_base_orientation)
 
         action, success = self._articulation_kinematics_solver.compute_inverse_kinematics(

@@ -204,8 +204,8 @@ class OgnCustomPythonRos2NodePy:
             if number is not None:
                 # 受信した数のフィボナッチ数を計算
                 value = OgnCustomPythonRos2NodePy.fibonacci(number)
-                # uint64 のオーバーフローを確認
-                if value > 2**64:
+                # uint64 のオーバーフローを確認（uint64 の最大値は 2**64 - 1）
+                if value >= 2**64:
                     db.log_warn(f"Fibonacci number {number} exceeds uint64's storage capacity")
                     return False
                 # 値を出力し、出力実行をトリガーする

@@ -19,7 +19,7 @@ title: アクター シミュレーションと合成データ生成（IRA）
 
 - Isaac Sim 5.1 がインストール済みで起動できること
 - Replicator の基礎（[Replicator の概要](01_replicator_overview.md)）を理解していること
-- NavMesh（[Navigation Mesh]）の作成方法を把握していること
+- NavMesh（Navigation Mesh：キャラクターやロボットが歩行可能な領域を表すメッシュ）の作成方法を把握していること
 
 ### 所要時間
 

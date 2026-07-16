@@ -12,7 +12,7 @@ title: Lula RRT（コンセプト）
 - **タスク空間 RRT** … Jacobian 転置（Jacobian transpose）RRT ベース
 
 !!! note
-    この RRT 実装は**姿勢（orientation）ターゲットをサポートしません**。
+    この RRT 実装が探索の目標にするのは**位置（position）ターゲット**です。姿勢（orientation）は、RRT アルゴリズム設定の `orientation_target_zone_tolerance` / `orientation_target_final_tolerance`（[チュートリアル：Lula RRT](../04_lula_rrt.md) 参照）で指定する**許容ゾーンとして扱われる**もので、位置ターゲットのように任意の姿勢へ厳密に到達させる指定はできません。
 
 ## Lula RRT の設定
 

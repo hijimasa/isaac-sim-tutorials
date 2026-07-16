@@ -168,7 +168,7 @@ project_ext_plugin(ext, ogn.plugin_project)
         "std_msgs__rosidl_typesupport_c", "std_msgs__rosidl_generator_c",
 
         -- カスタムメッセージとその依存ライブラリ
-        "geometry_msgs__rosidl_typesupport_c", "geometry_msgs__rosidl_typesupport_c",
+        "geometry_msgs__rosidl_typesupport_c", "geometry_msgs__rosidl_generator_c",
         "tutorial_interfaces__rosidl_typesupport_c", "tutorial_interfaces__rosidl_generator_c",
     }
 

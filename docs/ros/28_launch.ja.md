@@ -39,7 +39,7 @@ title: ROS 2 Launch
 | `gui` | "" | GUI モードで起動時に開く USD ファイルのパス。空なら空のステージ |
 | `standalone` | "" | スタンドアロンワークフローで実行する Python ファイルのパス |
 | `play_sim_on_start` | "false" | 読み込み後にシーンを自動再生するか（GUI モードのみ） |
-| `ros_distro` | "humble" | 使用する ROS バージョン（Humble のみサポート） |
+| `ros_distro` | "humble" | 使用する ROS 2 ディストリビューション（"humble" または "jazzy"） |
 | `ros_installation_path` | "" | ROS が `/opt/ros/` 以外にある場合の setup.bash / local_setup.bash のパス（カンマ区切り） |
 | `headless` | "" | "webrtc" でヘッドレス＋WebRTC 配信。空なら GUI モード |
 | `custom_args` | "" | isaac-sim.sh に転送する任意の引数 |

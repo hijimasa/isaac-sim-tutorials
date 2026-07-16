@@ -43,7 +43,7 @@ title: オブジェクト シミュレーションと合成データ生成（IRO
 
 ## ステップ 1：UI から実行する
 
-1. **Windows > Extension Manager** で `isaacsim.replicator.object` を検索し、緑のカプセルアイコンで有効化します。
+1. **Window > Extensions** で `isaacsim.replicator.object` を検索し、緑のカプセルアイコンで有効化します。
 2. 有効化されると、右上に **Object Detection SDG** パネルが表示され、**Tools > Action and Event Data Generation** に Object Detection SDG と Distribution Visualizer が追加されます。
 3. パネル右側のフォルダアイコン（または VS Code アイコン）で拡張機能のルートフォルダを開きます。`PATH_TO_EXTENSION/isaacsim/replicator/object/configs` に多数の YAML 記述ファイルがあります（まずは `demo_kaleidoscope.yaml` がおすすめ）。
 4. `global.yaml` の `output_path` を、出力を保存するローカルフォルダに更新します。
@@ -83,7 +83,7 @@ bash isaac-sim.sh --no-window --enable isaacsim.replicator.object --allow-root \
 ![bottle の RGB](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_bottle_image.jpg)
 ![bottle のセグメンテーション](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_bottle_segmentation.png)
 
-2D バウンディングボックスは次の形式です（4 つの正の数が `x_min, x_max, y_min, y_max`。`-1` はオクルージョン率の位置で、ボトルは透明なため `-1`）。
+2D バウンディングボックスは次の形式です（4 つの正の数が `x_min, y_min, x_max, y_max`。`-1` はオクルージョン率の位置で、ボトルは透明なため `-1`）。
 
 ```text
 bottle_0 0 -1.0 0 1028 333 1362 2159 0 0 0 0 0 0 0
@@ -118,7 +118,7 @@ isaacsim.replicator.object:
   screen_width: 3840
 
   # 物理パラメータ
-  gravity: 10000
+  gravity: 10000  # SI 単位（9.8 m/s²）ではなく、このシーンのスケールに合わせた値
   friction: 0.3
   simulation_time: 10
   linear_damping: 4

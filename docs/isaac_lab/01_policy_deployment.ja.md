@@ -432,7 +432,7 @@ print(str(prim.dof_properties))
 
 出力を `env.yaml` の actuators セクションと比較してください。
 
-Stiffness / Damping が高すぎると動きが抑えられ（アンダーアクチュエート）：
+Stiffness / Damping が高すぎると動きが硬く抑え込まれ（過制動気味になり、ポリシーの指令どおりに関節が動かない状態）：
 
 ![Spot ゲイン過大](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_spot_wrong_gains.gif)
 

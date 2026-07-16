@@ -46,7 +46,7 @@ title: ステージのセットアップ
 2. Properties パネルで以下を確認・設定します：
 
     - **Gravity**: デフォルトの重力設定を確認
-    - **Enable GPU Dynamics**: 効率化のためオフに設定
+    - **Enable GPU Dynamics**: オフに設定（GPU Dynamics は大量のオブジェクトを扱うシーン向けの機能です。本チュートリアルのような小規模なシーンでは CPU シミュレーションのほうが安定しており、デバッグもしやすくなります）
     - **Broadphase Type**: MBP に設定
 
     ![Physics Properties](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_base_ref_gui_physics_properties.png)

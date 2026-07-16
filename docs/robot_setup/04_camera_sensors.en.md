@@ -20,7 +20,7 @@ After completing this tutorial, you will have learned:
 - Complete [Tutorial 3: Articulate a Basic Robot](03_articulate_robot.md) before starting this tutorial.
 
 !!! tip "Starting from a Checkpoint Asset"
-    If you have not completed the previous tutorial, you can start from this tutorial by loading the `mock_robot_rigged` asset from the **Samples > Rigging > MockRobot** folder in the **Content** tab at the bottom right of the screen. When loading, open it as a **File (not as a reference)**.
+    If you have not completed the previous tutorial, you can start from this tutorial by loading the `mock_robot_rigged` asset from the **Samples > Rigging > MockRobot** folder in the **Content** tab at the bottom left of the screen. When loading, open it as a **File (not as a reference)**.
 
 ### Estimated Time
 

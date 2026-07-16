@@ -148,7 +148,7 @@ $$
 ros2 topic echo /rgb
 ```
 
-画像の表示（rqt_image_view）：
+画像の表示（rqt_image_view）。なお `/depth` トピックは、ステップ 2 のグラフ（RGB のみ）には含まれていません。深度画像を確認する場合は、ステップ 3 で説明したように `type` を `depth` に設定したカメラ配信ノード一式を追加して深度を配信しておいてください（RGB だけを確認するなら引数を `/rgb` に変えます）：
 
 ```bash
 ros2 run rqt_image_view rqt_image_view /depth

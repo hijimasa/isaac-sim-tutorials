@@ -40,7 +40,10 @@ Isaac Sim には、7 自由度の Franka Emika Panda と 6 自由度の Universa
 **target_rmp**：冗長性解決に cspace target RMP を使いつつ、エンドエフェクタをターゲットへ確実に動かします。
 
 - `target_rmp/min_metric_alpha` を 0、`target_rmp/metric_alpha_length_scale` をロボットサイズに対して大きな値（例：100,000）にし、計量中の方向性 S 項を実質オフにして等方計量に簡略化します。
-- `target_rmp/proximity_metric_boost_length_scalar` を 1 にして優先度ブーストをオフにします。
+- `target_rmp/proximity_metric_boost_scalar` を 1 にして優先度ブーストをオフにします（ブースト強度は計量への乗数なので、1 でブーストなしになります）。
+
+    !!! note "公式ドキュメントのパラメータ名について"
+        公式のチューニングガイドはここで `proximity_metric_boost_length_scalar` という名前を挙げていますが、これは設定ファイルに存在しない名前です（ブースト強度 `proximity_metric_boost_scalar` と長さスケール `proximity_metric_boost_length_scale` が混ざった表記。[RMPflow のコンセプトページ](rmpflow.md)のパラメータ表を参照）。ブーストを無効化する目的に対応するのは強度側の `proximity_metric_boost_scalar` です。
 - `target_rmp/max_metric_scalar` を `cspace_target_rmp/metric_scalar` に対して十分大きくし、target RMP が支配的になるようにします（cspace target RMP が target RMP のヌル空間でのみ働くようになります）。
 - `accel_p_gain` / `accel_d_gain` / `accel_norm_eps` を、エンドエフェクタに良いアトラクタ挙動が得られるまで調整します。
 - `max_metric_scalar` を減らしてみて、大きすぎないか確認します。適切な値へ増やすにつれ収束精度は徐々に向上します。値に達する前に小さな一定誤差で精度が頭打ちなら、設定が高すぎる可能性があります。

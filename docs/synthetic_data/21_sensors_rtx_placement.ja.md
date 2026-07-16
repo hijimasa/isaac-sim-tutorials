@@ -84,7 +84,7 @@ title: RTX センサーの配置とキャリブレーション（ISP）
 | **Place Info** | シーンの場所（都市・建物・部屋）。`city=[名]/building=[名]/room=[名]` 形式で `calibration.json` に保存 |
 | **Scene Root Prim Path** | シーンのルート prim。トップビューカメラはこの中心を注視 |
 | **Floor & Ceiling Height** | 床・天井の高さ（天井高でトップビューのクリッピング範囲を調整。既定 -1） |
-| **Top View Camera** | `Create` で `/World/Top_Camera` にトップビューカメラを生成。回転 [0,0,0]・正射投影・地面に垂直である必要あり |
+| **Top View Camera** | `Create` でトップビューカメラ（`Calibration_Top_Camera`）を生成。回転 [0,0,0]・正射投影・地面に垂直である必要あり |
 | **Raycast Density** | レイキャスト密度（N なら N×N レイ。FOV 輪郭の詳細度。既定 100） |
 | **Minimum FOV Polygon Edge Length** | ポリゴン輪郭の最小エッジ長（既定 0＝簡略化なし） |
 | **Minimum Area of FOV Polygon Hole to Ignore** | 無視する FOV ポリゴンの穴の最小面積（既定 0） |

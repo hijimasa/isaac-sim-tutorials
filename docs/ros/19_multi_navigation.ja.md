@@ -82,7 +82,7 @@ Occupancy Map Generator を使って、Hospital と Office それぞれの環境
 
 4. 各 RViz2 ウィンドウの Displays パネルで **Map** をクリックしてトピック名を確認し、そのウィンドウがどのロボットのネームスペース（`/carter1` など）に対応しているかを把握します。
 5. 各ロボットの初期位置は `carter_navigation/params/hospital/` または `params/office/` のパラメータファイルに定義済みなので、既に自己位置推定されているはずです。
-6. `/carter1` の RViz2 ウィンドウで **2D Nav Goal** ボタンをクリックし、マップ上の目的地でクリック＆ドラッグします。Nav2 が軌道を生成し、carter1 が動き始めます。
+6. `/carter1` の RViz2 ウィンドウで **Navigation2 Goal** ボタンをクリックし、マップ上の目的地でクリック＆ドラッグします。Nav2 が軌道を生成し、carter1 が動き始めます。
 7. `/carter2`、`/carter3` のウィンドウでも同じ操作を繰り返します。
 
 !!! note "画像配信は既定で無効"

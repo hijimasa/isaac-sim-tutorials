@@ -45,7 +45,7 @@ This tutorial uses the **Direct URDF Importer**, which does not require ROS 2.
 
 ### Reference Assets
 
-Sample assets bundled with Isaac Sim can be used as references. Access them from the **Content** tab at the bottom right of the screen:
+Sample assets bundled with Isaac Sim can be used as references. Access them from the **Content** tab at the bottom left of the screen:
 
 | Asset | Path | Purpose |
 |---|---|---|

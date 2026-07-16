@@ -48,7 +48,7 @@ title: MobilityGen によるデータ生成
 2. **Tools > Robotics > Occupancy Map** を開き、次のように設定します（テキストボックスへの入力は ctrl＋左クリックで入力モードになります）：
     - **Origin**：X: 2.0, Y: 0.0, Z: 0.0
     - **Upper Bound**：X: 10.0, Y: 20.0, **Z: 2.0**（ロボットが 2 m の高架下を通れる想定）
-    - **Lower Bound**：X: -14.0, Y: -18.0, **Z: 0.1**（5 cm の段差は乗り越えられる想定）
+    - **Lower Bound**：X: -14.0, Y: -18.0, **Z: 0.1**（高さ 10 cm 未満の床面の凹凸や段差は占有マップに含めず、乗り越えられる想定）
 3. **Calculate** → **Visualize Image** をクリックします。
 4. Visualization ウィンドウで **Rotate Image** を 180、**Coordinate Type** を **ROS Occupancy Map Parameters File YAML** にして **Regenerate Image** をクリックします。
 5. 生成された YAML テキストをコピーし、`~/MobilityGenData/maps/warehouse_multiple_shelves/map.yaml` というファイルを作って貼り付けます（Windows では `~` を任意のディレクトリに読み替え）。
