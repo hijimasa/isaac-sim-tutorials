@@ -84,7 +84,7 @@ All other settings can be left at their defaults.
     The output directory used at import time **must be writable**. Since the default output location is the same directory as the URDF file, change **USD Output** to a writable location when importing a URDF that lives in a read-only place, such as the extension's bundled samples.
 
 !!! note "What is Natural Frequency"
-    Joint drives in Isaac Sim are driven by PD control (Stiffness / Damping). Instead of specifying these directly, the URDF importer lets you specify responsiveness through an abstracted parameter, the **natural frequency**. Larger values make the joint track its target more quickly and suppress oscillation during motion.
+    Joint drives in Isaac Sim are driven by PD control (Stiffness / Damping). Instead of specifying these directly, the URDF importer lets you specify responsiveness through an abstracted parameter, the **natural frequency**. Larger values make the joint track its target more quickly and suppress oscillation during motion. However, setting the value too high can cause the simulation to become **numerically unstable**, causing joints or rigid bodies to jitter or fly off unexpectedly. If this occurs, try reducing the simulation timestep in the Physics Scene settings or lowering the value.
 
     The relationship between Stiffness / Damping and Natural Frequency, and how to retune after import, are covered in [Robot Setup Tutorial 11: Tuning Joint Drive Gains](../robot_setup/11_joint_tuning.md).
 
