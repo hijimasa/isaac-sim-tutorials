@@ -152,6 +152,8 @@ Enable **Window > Examples > Robotics Examples** and a **Robotics Examples** tab
 !!! note "Wait for materials to load"
     Materials in these samples can take a while to load. Check the progress indicator at the bottom right of the UI.
 
+![Robotics Examples](./images/01_robotics_examples_window.png)
+
 The import settings and post-import setup differ per sample, but the usage is common to all:
 
 1. In the **Robotics Examples** tab, click **IMPORT ROBOTS > (robot name) URDF** to open the example panel on the right.

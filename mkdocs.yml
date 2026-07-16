@@ -121,7 +121,6 @@ plugins:
             - インポート・エクスポート:
               - importer_exporter/index.md
               - URDF インポート: importer_exporter/01_import_urdf.md
-              - ROS 2 ノードからの URDF インポート: importer_exporter/01a_import_urdf_from_ros2.md
               - URDF エクスポート: importer_exporter/02_export_urdf.md
               - MJCF インポート: importer_exporter/03_import_mjcf.md
               - 一般 3D モデルのインポート: importer_exporter/04_general_3d_model_importer.md
