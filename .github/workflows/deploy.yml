@@ -1,9 +1,9 @@
-name: Deploy to GitHub Pages
+name: Deploy 5.1.0 docs to GitHub Pages
 
 on:
   push:
     branches:
-      - main
+      - "5.1.0"
   workflow_dispatch:
 
 permissions:
@@ -11,12 +11,20 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  # このブランチは Isaac Sim 5.1.0 向けドキュメントの保守ブランチ。
+  # mike が gh-pages 上の 5.1.0/ ディレクトリのみを更新する
+  # （latest = 6.0.1 は main ブランチの workflow が管理する）。
+  DOCS_VERSION: 5.1.0
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,5 +42,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Build and deploy
-        run: mkdocs gh-deploy --force
+      - name: Configure git for mike
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build and deploy 5.1.0 docs (mike)
+        run: |
+          git fetch origin gh-pages --depth=1 || true
+          mike deploy --push "$DOCS_VERSION"
