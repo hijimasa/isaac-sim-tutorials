@@ -4,6 +4,7 @@ NVIDIA Isaac Sim 公式チュートリアルを日本語で解説し直す MkDoc
 公式の誤植・説明不足を補足 note で解消するのがこのサイトの価値。
 
 **詳細な手順・ポリシーは [MAINTENANCE.md](MAINTENANCE.md) を必ず参照**（バージョン更新プレイブック、削除ページ/deprecated ポリシー、ブランチ運用）。
+未作成ページ・バックログは [TODO.md](TODO.md) にある。新規ページを作成・完了したら TODO.md のチェックを更新すること。
 
 ## ブランチ
 
