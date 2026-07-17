@@ -27,7 +27,7 @@ title: カスタム Replicator ランダマイゼーションノード
 
 Replicator 組み込みのランダマイザ（`rep.randomizer.*`、`rep.distribution.*`）で足りない分布や配置ロジックが必要になったら、**自作のランダム化を OmniGraph ノードとして Replicator に統合**できます。このチュートリアルでは「球の表面上」「球の内部」「2 つの球の間」に一様分布するランダムな 3D 点を生成する 3 つのランダマイザを例に、**素の Python 関数 → OmniGraph ノード → ReplicatorItem** と段階的に統合レベルを上げていきます。
 
-![Python でのランダム化結果](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_custom_og_randomizer_python.jpg)
+![Python でのランダム化結果](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_custom_og_randomizer_python.jpg)
 
 ## ステップ 1：Python 関数として書く
 
@@ -48,7 +48,7 @@ Replicator 組み込みのランダマイザ（`rep.randomizer.*`、`rep.distrib
 
 基本の SDG グラフ（作成したキューブの回転を毎フレームランダム化するもの）を Script Editor で作ると、`/Replicator/SDGPipeline` にグラフが生成されます。このグラフを開いて、カスタムノードを手動で追加できます。動作確認は UI の **Tools > Replicator > Preview**（または **Step**）で行います。
 
-![SDG パイプラインへの手動追加](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_custom_og_randomizer_pipeline.jpg)
+![SDG パイプラインへの手動追加](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_custom_og_randomizer_pipeline.jpg)
 
 ## ステップ 3：ReplicatorItem として統合する
 
@@ -59,7 +59,7 @@ Replicator 組み込みのランダマイザ（`rep.randomizer.*`、`rep.distrib
 
 スニペットを Script Editor で実行すると、カスタムノードが自動的に SDG パイプライングラフへ追加されます。ランダム化のトリガーは同じく **Tools > Replicator > Preview**（または **Step**）です。
 
-![ReplicatorItem による自動追加](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_custom_og_randomizer_replicator.jpg)
+![ReplicatorItem による自動追加](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_custom_og_randomizer_replicator.jpg)
 
 ## まとめ
 

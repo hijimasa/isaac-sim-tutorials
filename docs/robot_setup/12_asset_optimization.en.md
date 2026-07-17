@@ -75,7 +75,7 @@ When you reparent meshes via drag-and-drop, **changing the parent can shift the 
 
 1. Open **Edit > Preferences**
 2. From the list on the left, select **Stage > Authoring**
-3. Check **Inherit Parent Transform**
+3. Next to **Keep Prim World Transform When Reparenting**, select **Inherit Parent Transform**
 
    ![Enable Inherit Parent Transform](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_2.png)
 
@@ -169,11 +169,17 @@ Right after CAD import, a single Jetbot link is split into **dozens of meshes an
 !!! note "What the Mesh Merge Tool does"
     The Mesh Merge Tool combines multiple meshes into a single merged mesh and simultaneously consolidates their **materials into a single combined material**. The original meshes remain elsewhere, so they are still available for reuse if needed.
 
+!!! warning "The Mesh Merge Tool is deprecated"
+    In Isaac Sim 6.0, the Mesh Merge Tool (`isaacsim.util.merge_mesh`) is **deprecated** and will be removed in a future release. The **Scene Optimizer** extension (`omni.scene.optimizer`) is recommended going forward. This tutorial follows the official procedure and continues to use the Mesh Merge Tool.
+
 ### 2-1. Open the Mesh Merge Tool
 
-From the menu, click in the following order:
+Because the Mesh Merge Tool is a deprecated extension in Isaac Sim 6.0, it must be enabled first:
 
-**Tools > Robotics > Asset Editors > Mesh Merge Tool**
+1. Open **Window > Extensions** and search for `Isaac Sim Mesh Merge` or `isaacsim.util.merge_mesh` among the deprecated extensions, then toggle it on
+2. From the menu, click in the following order:
+
+    **Tools > Robotics > Asset Editors > Mesh Merge Tool**
 
 The tool window opens.
 

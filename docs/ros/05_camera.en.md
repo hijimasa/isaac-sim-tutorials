@@ -13,11 +13,14 @@ title: ROS 2 Cameras
 - Build camera publishers in OmniGraph (and via the menu shortcut)
 - Publish ground-truth synthetic perception data over rostopics
 
+!!! note
+    In Isaac Sim 6.0 the `frameSkipCount` input on ROS2 Camera Helper / Camera Info Helper is deprecated. Control publish rates with `omni:sensor:tickRate` on the camera prim (requires OmniSensorAPI); see the official Multi-Tick Rendering page.
+
 ## RGB Publisher Graph
 
-Add two stationary cameras (`Camera_1`, `Camera_2`), open extra viewports via **Window > Viewports > Viewport 2**, then build:
+Add two stationary cameras at `/World/Camera_1` and `/World/Camera_2` (use these exact paths so later tutorials' graphs and scripts match), open extra viewports via **Window > Viewports > Viewport 2**. Select `/World/Camera_1` in the Stage panel and create a new Action Graph named `Camera_1_Graph` (path `/World/Camera_1/Camera_1_Graph`), then build:
 
-![Camera graph](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_ros2_camera_graph.png)
+![Camera graph](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_ros2_camera_graph.png)
 
 | Node | Field | Value |
 |---|---|---|

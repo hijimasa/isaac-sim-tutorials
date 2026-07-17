@@ -8,26 +8,26 @@ title: ROS 2 Launch
     This is a concise English version. See the Japanese page for the full detailed walkthrough.
 
 !!! warning
-    Linux only; the `isaacsim` package is not supported in WSL2.
+    Supported on Linux and on Windows with a Pixi-based installation; the `isaacsim_bringup` package (renamed from `isaacsim` in Isaac Sim 6.0) is not supported in WSL2.
 
 ## Learning Objectives
 
-Run Isaac Sim from a ROS 2 launch file using the `isaacsim` package's `run_isaacsim.launch.py`. Key parameters: `version` / `install_path`, `use_internal_libs` (default true — Python 3.11), `dds_type`, `gui` (USD to open), `standalone` (Python file), `play_sim_on_start`, `ros_distro` (humble only), `ros_installation_path`, `headless` ("webrtc"), `custom_args`, `exclude_install_path`.
+Run Isaac Sim from a ROS 2 launch file using the `isaacsim_bringup` package's `run_isaacsim.launch.py`. Key parameters: `version` (default "6.0.1") / `install_path`, `use_internal_libs` (default true for Humble, false for Jazzy — Isaac Sim requires Python 3.12), `dds_type`, `gui` (USD to open), `standalone` (Python file), `play_sim_on_start`, `ros_distro` (humble or jazzy), `ros_installation_path`, `headless` ("webrtc"), `custom_args`, `exclude_install_path`.
 
 ## Examples
 
 ```bash
 # default
-ros2 launch isaacsim run_isaacsim.launch.py
+ros2 launch isaacsim_bringup run_isaacsim.launch.py
 
-# with custom workspace packages (exclude the Python 3.10 install dir; add the 3.11 build)
-ros2 launch isaacsim run_isaacsim.launch.py exclude_install_path:=/home/user/IsaacSim-ros_workspaces/humble_ws/install ros_installation_path:=/home/user/IsaacSim-ros_workspaces/build_ws/humble/humble_ws/install/local_setup.bash
+# with custom workspace packages (Ubuntu 22.04 only: exclude the Python 3.10 install dir; add the 3.12 build)
+ros2 launch isaacsim_bringup run_isaacsim.launch.py exclude_install_path:=/home/user/IsaacSim-ros_workspaces/humble_ws/install ros_installation_path:=/home/user/IsaacSim-ros_workspaces/build_ws/humble/humble_ws/install/local_setup.bash
 
 # open a USD and play immediately
-ros2 launch isaacsim run_isaacsim.launch.py gui:=https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Samples/ROS2/Robots/Nova_Carter_ROS.usd play_sim_on_start:=true
+ros2 launch isaacsim_bringup run_isaacsim.launch.py gui:=https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Samples/ROS2/Robots/Nova_Carter_ROS.usd play_sim_on_start:=true
 
 # standalone workflow
-ros2 launch isaacsim run_isaacsim.launch.py standalone:=$HOME/isaacsim/standalone_examples/api/isaacsim.ros2.bridge/moveit.py
+ros2 launch isaacsim_bringup run_isaacsim.launch.py standalone:=$HOME/isaacsim/standalone_examples/api/isaacsim.ros2.bridge/moveit.py
 ```
 
 ## Launch Isaac Sim with Nav2

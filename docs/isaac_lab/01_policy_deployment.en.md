@@ -60,7 +60,7 @@ Let's first experience the finished result. Enable **Window > Examples > Robotic
 
 In this example, the **H1 Flat Terrain Policy** trained in Isaac Lab controls the humanoid's locomotion.
 
-![H1 walk demo](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_h1_walk_demo.gif)
+![H1 walk demo](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_h1_walk_demo.gif)
 
 You can drive it with the keyboard:
 
@@ -79,7 +79,7 @@ You can drive it with the keyboard:
 
 In this example, the **Spot Flat Terrain Policy** controls the quadruped's locomotion.
 
-![Spot walk demo](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_spot_walk_demo.gif)
+![Spot walk demo](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_spot_walk_demo.gif)
 
 | Action | Key |
 |---|---|
@@ -347,25 +347,26 @@ The demo robots are controlled by a **robot definition class (Policy Controller)
 Build the observation tensor exactly in the format the policy expects. The following is the example for the H1 flat-terrain policy (observation dimension 69):
 
 ```python
-obs = np.zeros(69)
+obs = torch.zeros(69, device=torch.device(str(self.robot._device)))
 # Base linear velocity
-obs[:3] = self._base_vel_lin_scale * lin_vel_b
+obs[:3] = lin_vel_b.squeeze()
 # Base angular velocity
-obs[3:6] = self._base_vel_ang_scale * ang_vel_b
+obs[3:6] = ang_vel_b.squeeze()
 # Gravity vector (in body frame)
-obs[6:9] = gravity_b
+obs[6:9] = gravity_b.squeeze()
 # Commands (forward velocity, lateral velocity, yaw rate)
-obs[9] = self._base_vel_lin_scale * command[0]
-obs[10] = self._base_vel_lin_scale * command[1]
-obs[11] = self._base_vel_ang_scale * command[2]
-# Joint states (offset from default positions, and velocities)
-current_joint_pos = self.get_joint_positions()
-current_joint_vel = self.get_joint_velocities()
-obs[12:31] = current_joint_pos - self._default_joint_pos
-obs[31:50] = current_joint_vel
+obs[9:12] = command
+# Joint states (offsets from default positions and velocities)
+current_joint_pos = wp.to_torch(self.robot.get_dof_positions())
+current_joint_vel = wp.to_torch(self.robot.get_dof_velocities())
+obs[12:31] = current_joint_pos - self.default_pos
+obs[31:50] = current_joint_vel - self.default_vel
 # Previous action
 obs[50:69] = self._previous_action
 ```
+
+!!! note "The 6.0 samples are Warp + PyTorch based"
+    The policy samples in Isaac Sim 6.0 (`isaacsim.robot.policy.examples`) were rewritten to use the `isaacsim.core.experimental` Articulation API. Robot states are returned as [Warp](https://nvidia.github.io/warp/) (NVIDIA's GPU computing library) arrays, so observations and actions are assembled by converting to and from PyTorch tensors with `wp.to_torch()` / `wp.from_torch()`. This is the main difference from the NumPy-based 5.x code.
 
 !!! warning "Don't forget the observation scales"
     Remember to multiply each observation term by the observation scale specified in `env.yaml`.
@@ -378,10 +379,8 @@ Called every physics step; turns the policy's output into commands for the robot
 if self._policy_counter % self._decimation == 0:
     obs = self._compute_observation(command)
     self.action = self._compute_action(obs)
-    self._previous_action = self.action.copy()
-
-action = ArticulationAction(joint_positions=self.default_pos + (self.action * self._action_scale))
-self.robot.apply_action(action)
+    self._previous_action = self.action.clone()
+    self.robot.set_dof_position_targets(positions=wp.from_torch(self.default_pos + (self.action * self._action_scale)))
 
 self._policy_counter += 1
 ```
@@ -390,8 +389,8 @@ self._policy_counter += 1
     - Policy inference does not need to run every step. Skip steps according to the **decimation** parameter in `env.yaml` (e.g. physics at 200 Hz with inference at 50 Hz means decimation = 4).
     - Remember to multiply the policy output by the **action scale** specified in `env.yaml`.
 
-!!! warning "Do not use set_joint_position()"
-    For position-based control, do not use `set_joint_position()`. It **teleports** the joint to the target position and is not a physical drive. Always use `apply_action()` (driving through the joint drives).
+!!! warning "Do not set joint positions directly"
+    For position-based control, do not use the functions that set joint positions directly (`set_joint_position()` in the old API, `set_dof_positions()` in the experimental API). They **teleport** the joints to the target positions and are not a physical drive. Always set the joint drive **targets** with `set_dof_position_targets()` (`apply_action()` in the old API).
 
 ## Step 5: Converting Position Outputs to Torque Controls
 
@@ -413,7 +412,7 @@ def initialize(self, physics_sim_view=None) -> None:
     # Actuator network
     assets_root_path = get_assets_root_path()
     file_content = omni.client.read_file(
-        assets_root_path + "/Isaac/Samples/Policies/Anymal_Policies/sea_net_jit2.pt"
+        assets_root_path + "/Isaac/IsaacLab/ActuatorNets/ANYbotics/anydrive_3_lstm_jit.pt"
     )[2]
     file = io.BytesIO(memoryview(file_content).tobytes())
     self._actuator_network = LstmSeaNetwork()
@@ -452,8 +451,8 @@ You can check the joint order with this snippet:
 
 ```python
 # Open the target USD and PLAY the simulation before running this
-prim = Articulation(prim_path=<your_robot_prim_path>)
-prim.initialize()
+# Change the path to the robot you want to inspect
+prim = Articulation(paths="/World/Robot")
 print(str(prim.dof_names))
 ```
 
@@ -461,7 +460,7 @@ Print `dof_names` on both the Isaac Sim side and the Isaac Lab side, and compare
 
 In the example below, the ordering of the control commands sent to ANYmal is wrong, so the robot falls over:
 
-![Wrong joint order](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_anymal_joint_error.gif)
+![Wrong joint order](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_anymal_joint_error.gif)
 
 ### 6-3. Verify the Default Joint Positions
 
@@ -469,7 +468,7 @@ If the joint order matches, check that the default joint positions are set corre
 
 In the example below, the ankle joint configuration is wrong, and H1 "moonwalks" on tiptoe:
 
-![H1 moonwalk](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_h1_moonwalk.gif)
+![H1 moonwalk](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_h1_moonwalk.gif)
 
 ### 6-4. Verify the Joint Properties
 
@@ -477,20 +476,28 @@ If the joints move too much or too little, suspect the joint properties (stiffne
 
 ```python
 # Open the target USD and PLAY the simulation before running this
-prim = Articulation(prim_path=<your_robot_prim_path>)
-prim.initialize()
-print(str(prim.dof_properties))
+# Change the path to the robot you want to inspect
+prim = Articulation(paths="/World/Robot")
+print("DOF names:", prim.dof_names)
+print("DOF types:", prim.dof_types)
+print("DOF limits:", prim.get_dof_limits())
+print("DOF gains (stiffness, damping):", prim.get_dof_gains())
+print("DOF max efforts:", prim.get_dof_max_efforts())
+print("DOF max velocities:", prim.get_dof_max_velocities())
+print("DOF drive types:", prim.get_dof_drive_types())
+print("DOF friction:", prim.get_dof_friction_properties())
+print("DOF armatures:", prim.get_dof_armatures())
 ```
 
 Compare the output with the actuators section of `env.yaml`.
 
 If stiffness / damping are too high, the motion becomes stiff and suppressed (overdamped, so the joints don't follow the policy's commands):
 
-![Spot gains too high](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_spot_wrong_gains.gif)
+![Spot gains too high](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_spot_wrong_gains.gif)
 
 If they are too low, the robot moves too much (e.g. shaking arms):
 
-![H1 arm shake](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_h1_arm_shake.gif)
+![H1 arm shake](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_h1_arm_shake.gif)
 
 ### 6-5. Verify the Simulation Environment
 
@@ -500,7 +507,7 @@ If the robot side matches perfectly and it still doesn't work, check the simulat
 
 In the example below, the controller expects 500 Hz but the time step is set to 60 Hz, so the robot cannot walk properly:
 
-![Wrong timestep](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_spot_wrong_timestep.gif)
+![Wrong timestep](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_spot_wrong_timestep.gif)
 
 ### 6-6. Verify the Observation and Action Tensors
 

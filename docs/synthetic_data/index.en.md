@@ -23,7 +23,7 @@ Synthetic data generation (SDG) produces labeled training data directly from sim
     GUI-based recording, custom writers, the DataVisualizationWriter, and randomized cameras.
 
 !!! example "[Tutorial 3: Getting Started Scripts](03_getting_started_scripts.md)"
-    Script-based SDG essentials (capture on play, step, RTSubframes, DLSS) and four worked examples.
+    Script-based SDG essentials (capture on play, step, RTSubframes, DLSS, wait_for_render, write-to-fabric) and five worked examples.
 
 ### SDG Tutorials
 

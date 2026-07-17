@@ -60,7 +60,7 @@ title: ポリシーのデプロイ
 
 この例では、Isaac Lab で学習された **H1 Flat Terrain Policy**（平地歩行ポリシー）がヒューマノイドのロコモーションを制御します。
 
-![H1 歩行デモ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_h1_walk_demo.gif)
+![H1 歩行デモ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_h1_walk_demo.gif)
 
 キーボードで操作できます：
 
@@ -79,7 +79,7 @@ title: ポリシーのデプロイ
 
 この例では **Spot Flat Terrain Policy** が四足ロボットのロコモーションを制御します。
 
-![Spot 歩行デモ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_spot_walk_demo.gif)
+![Spot 歩行デモ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_spot_walk_demo.gif)
 
 | 操作 | キー |
 |---|---|
@@ -347,25 +347,26 @@ commands:
 ポリシーが期待する形式どおりに観測テンソルを作ります。以下は H1 平地歩行ポリシーの例です（観測次元 69）：
 
 ```python
-obs = np.zeros(69)
+obs = torch.zeros(69, device=torch.device(str(self.robot._device)))
 # ベースの並進速度
-obs[:3] = self._base_vel_lin_scale * lin_vel_b
+obs[:3] = lin_vel_b.squeeze()
 # ベースの角速度
-obs[3:6] = self._base_vel_ang_scale * ang_vel_b
+obs[3:6] = ang_vel_b.squeeze()
 # 重力ベクトル（ボディ座標系）
-obs[6:9] = gravity_b
+obs[6:9] = gravity_b.squeeze()
 # 指令（前進速度・横速度・旋回速度）
-obs[9] = self._base_vel_lin_scale * command[0]
-obs[10] = self._base_vel_lin_scale * command[1]
-obs[11] = self._base_vel_ang_scale * command[2]
-# ジョイント状態（デフォルト位置からの差分と速度）
-current_joint_pos = self.get_joint_positions()
-current_joint_vel = self.get_joint_velocities()
-obs[12:31] = current_joint_pos - self._default_joint_pos
-obs[31:50] = current_joint_vel
+obs[9:12] = command
+# ジョイント状態（デフォルト位置・速度からの差分）
+current_joint_pos = wp.to_torch(self.robot.get_dof_positions())
+current_joint_vel = wp.to_torch(self.robot.get_dof_velocities())
+obs[12:31] = current_joint_pos - self.default_pos
+obs[31:50] = current_joint_vel - self.default_vel
 # 前回の行動
 obs[50:69] = self._previous_action
 ```
+
+!!! note "6.0 のサンプルは Warp ＋ PyTorch ベース"
+    Isaac Sim 6.0 のポリシーサンプル（`isaacsim.robot.policy.examples`）は、`isaacsim.core.experimental` 系の Articulation API を使うように書き換えられました。ロボットの状態は [Warp](https://nvidia.github.io/warp/)（NVIDIA の GPU 計算ライブラリ）の配列として取得されるため、`wp.to_torch()` / `wp.from_torch()` で PyTorch テンソルと相互変換しながら観測・行動を組み立てます。NumPy ベースだった 5.x のコードとの主な違いはこの点です。
 
 !!! warning "観測スケールを忘れずに"
     各観測項目には、`env.yaml` で指定された観測スケールを掛けるのを忘れないでください。
@@ -378,10 +379,8 @@ obs[50:69] = self._previous_action
 if self._policy_counter % self._decimation == 0:
     obs = self._compute_observation(command)
     self.action = self._compute_action(obs)
-    self._previous_action = self.action.copy()
-
-action = ArticulationAction(joint_positions=self.default_pos + (self.action * self._action_scale))
-self.robot.apply_action(action)
+    self._previous_action = self.action.clone()
+    self.robot.set_dof_position_targets(positions=wp.from_torch(self.default_pos + (self.action * self._action_scale)))
 
 self._policy_counter += 1
 ```
@@ -390,8 +389,8 @@ self._policy_counter += 1
     - ポリシーの推論は毎ステップ実行する必要はありません。`env.yaml` の **decimation** パラメータに従って間引きます（例：物理 200 Hz、推論 50 Hz なら decimation = 4）。
     - ポリシー出力には `env.yaml` で指定された**アクションスケール**を掛けるのを忘れないでください。
 
-!!! warning "set_joint_position() を使わないこと"
-    位置ベースの制御では `set_joint_position()` を使ってはいけません。これはジョイントを目標位置へ**瞬間移動（テレポート）**させる関数であり、物理的な駆動にはなりません。必ず `apply_action()`（ジョイントドライブ経由の駆動）を使ってください。
+!!! warning "ジョイント位置を直接設定しないこと"
+    位置ベースの制御では、ジョイント位置を直接設定する関数（旧 API の `set_joint_position()`、experimental API の `set_dof_positions()`）を使ってはいけません。これらはジョイントを目標位置へ**瞬間移動（テレポート）**させる関数であり、物理的な駆動にはなりません。必ずジョイントドライブの**目標値**を設定する `set_dof_position_targets()`（旧 API では `apply_action()`）を使ってください。
 
 ## ステップ 5：位置出力からトルク制御への変換
 
@@ -413,7 +412,7 @@ def initialize(self, physics_sim_view=None) -> None:
     # アクチュエータネットワーク
     assets_root_path = get_assets_root_path()
     file_content = omni.client.read_file(
-        assets_root_path + "/Isaac/Samples/Policies/Anymal_Policies/sea_net_jit2.pt"
+        assets_root_path + "/Isaac/IsaacLab/ActuatorNets/ANYbotics/anydrive_3_lstm_jit.pt"
     )[2]
     file = io.BytesIO(memoryview(file_content).tobytes())
     self._actuator_network = LstmSeaNetwork()
@@ -452,8 +451,8 @@ Isaac Lab で動くなら、次に疑うのは**ジョイントの順序**です
 
 ```python
 # 対象の USD を開き、シミュレーションを PLAY してから実行すること
-prim = Articulation(prim_path=<your_robot_prim_path>)
-prim.initialize()
+# パスは調べたいロボットのものに変更する
+prim = Articulation(paths="/World/Robot")
 print(str(prim.dof_names))
 ```
 
@@ -461,7 +460,7 @@ Isaac Sim 側と Isaac Lab 側の両方で `dof_names` を出力し、名前と�
 
 下の例では、ANYmal への制御指令の順序が間違っているため、ロボットが転倒しています：
 
-![ジョイント順序の誤り](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_anymal_joint_error.gif)
+![ジョイント順序の誤り](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_anymal_joint_error.gif)
 
 ### 6-3. デフォルトジョイント位置を検証する
 
@@ -469,7 +468,7 @@ Isaac Sim 側と Isaac Lab 側の両方で `dof_names` を出力し、名前と�
 
 下の例では、足首ジョイントの設定が間違っており、H1 がつま先立ちで「ムーンウォーク」しています：
 
-![H1 ムーンウォーク](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_h1_moonwalk.gif)
+![H1 ムーンウォーク](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_h1_moonwalk.gif)
 
 ### 6-4. ジョイントプロパティを検証する
 
@@ -477,20 +476,28 @@ Isaac Sim 側と Isaac Lab 側の両方で `dof_names` を出力し、名前と�
 
 ```python
 # 対象の USD を開き、シミュレーションを PLAY してから実行すること
-prim = Articulation(prim_path=<your_robot_prim_path>)
-prim.initialize()
-print(str(prim.dof_properties))
+# パスは調べたいロボットのものに変更する
+prim = Articulation(paths="/World/Robot")
+print("DOF names:", prim.dof_names)
+print("DOF types:", prim.dof_types)
+print("DOF limits:", prim.get_dof_limits())
+print("DOF gains (stiffness, damping):", prim.get_dof_gains())
+print("DOF max efforts:", prim.get_dof_max_efforts())
+print("DOF max velocities:", prim.get_dof_max_velocities())
+print("DOF drive types:", prim.get_dof_drive_types())
+print("DOF friction:", prim.get_dof_friction_properties())
+print("DOF armatures:", prim.get_dof_armatures())
 ```
 
 出力を `env.yaml` の actuators セクションと比較してください。
 
 Stiffness / Damping が高すぎると動きが硬く抑え込まれ（過制動気味になり、ポリシーの指令どおりに関節が動かない状態）：
 
-![Spot ゲイン過大](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_spot_wrong_gains.gif)
+![Spot ゲイン過大](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_spot_wrong_gains.gif)
 
 低すぎると動きすぎ（腕の震えなど）が発生します：
 
-![H1 腕の震え](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_h1_arm_shake.gif)
+![H1 腕の震え](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_h1_arm_shake.gif)
 
 ### 6-5. シミュレーション環境を検証する
 
@@ -500,7 +507,7 @@ Stiffness / Damping が高すぎると動きが硬く抑え込まれ（過制動
 
 下の例では、コントローラが 500 Hz を想定しているのにタイムステップが 60 Hz に設定されているため、正しく歩けていません：
 
-![タイムステップの誤り](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_lab_spot_wrong_timestep.gif)
+![タイムステップの誤り](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_lab_spot_wrong_timestep.gif)
 
 ### 6-6. 観測・行動テンソルを検証する
 

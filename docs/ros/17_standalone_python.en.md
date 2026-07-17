@@ -23,7 +23,7 @@ Because rendering/physics steps are explicitly controlled, wall-clock speed diff
 
 ## Examples
 
-All run from the Isaac Sim directory; exit with CTRL-C:
+All run from the Isaac Sim directory; exit with CTRL-C. On Windows, use the Pixi environment from [ROS 2 Installation (Other Platforms)](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/install_ros_other_platforms.html) and run each sample as `pixi run python C:\isaacsim\standalone_examples\api\isaacsim.ros2.bridge\<sample>.py`:
 
 ```bash
 ./python.sh standalone_examples/api/isaacsim.ros2.bridge/clock.py            # /sim_time, /manual_time

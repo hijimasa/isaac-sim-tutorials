@@ -9,11 +9,11 @@ title: RTX Sensors Placement and Calibration (ISP)
 
 ## Overview
 
-`isaacsim.sensors.rtx.placement` (ISP) optimizes camera placement in a stage based on coverage requirements and scene layout, and generates calibration data (direction, location, FOV polygon) saved to JSON. It has two tools: **Camera Placement** and **Camera Calibration**. Requires meters as stage unit, Z-up, and a baked NavMesh.
+Isaac Sim provides two separate extensions: **Camera Placement** (`isaacsim.sensors.rtx.placement`) optimizes camera placement in a stage based on coverage requirements and scene layout; **Camera Calibration** (`isaacsim.sensors.rtx.calibration`, split out of the placement extension in 6.0) extracts calibration data (direction, location, FOV polygon) saved to JSON. Requires meters as stage unit, Z-up, and a baked NavMesh.
 
 ## Camera Placement (`Tools > Sensors > Camera Placement`)
 
-Set **Output Path**, **Total Camera Number** (`-1` = auto), camera range (height, distance, look-down angle), stage processing (patch size, ground height), and tuning params (**Coverage Density**, **Target Coverage Ratio**, border checking, on-navmesh, etc.). Click **Place Cameras** to auto-place, then **Show Selected Camera Coverage** to visualize coverage (N colors for N density; outputs `camera_info_payload.json`).
+Set **Output Path**, **Total Camera Number** (`-1` = auto), camera range (height, distance, look-down angle), stage processing (patch size, ground height), and tuning params (**Coverage Density**, **Target Coverage Ratio**, border checking, on-navmesh, **Random Seed** for deterministic placement, **Stage Scope** X/Y bounds for edge cases without a valid NavMesh, etc.). Click **Place Cameras** to auto-place, then **Show all Camera Coverage** (or **Show Selected Camera Coverage**) to visualize coverage (N colors for N density; outputs `camera_info_payload.json`).
 
 ## Camera Calibration (`Tools > Sensors > Camera Calibration`)
 

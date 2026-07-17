@@ -9,7 +9,7 @@ title: Configuring RMPflow for a New Manipulator
 
 ## Overview
 
-This tutorial fully configures RMPflow on a new robot (Denso **Cobotta Pro 900**, 6-DOF) after creating a Robot Description File. Verify configs interactively with the **Lula Test Widget** (`Tools > Robotics > Lula Test Widget`).
+This tutorial fully configures RMPflow on a new robot (Denso **Cobotta Pro 900**, 6-DOF) after creating a Robot Description File. Tutorial assets are opened from the Content Browser at `Isaac Sim/Samples/Rigging/Cobotta_Pro_900_Assets`. Verify configs interactively with the **Lula Test Widget** (`Tools > Robotics > Lula Test Widget`; note that Lula and the Lula Test Widget are deprecated in Isaac Sim 6.0 but still work).
 
 ## Three config files
 

@@ -26,7 +26,7 @@ ros2 param set /node_name use_sim_time true
 
 Build an Action Graph with **On Playback Tick → ROS2 Context → Isaac Read Simulation Time → ROS2 Publish Clock**.
 
-![Clock publisher](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_clock_publisher.png)
+![Clock publisher](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_clock_publisher.png)
 
 Simulation time increases monotonically across stop/play by default; set `resetOnStop` to True to restart from 0 on reset. Verify with RViz2: run `rviz2`, set `ros2 param set /rviz use_sim_time true` while stopped (ROS Time becomes 0), then press Play — ROS Time follows `/clock`.
 

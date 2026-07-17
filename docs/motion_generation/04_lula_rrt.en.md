@@ -7,6 +7,9 @@ title: Lula RRT
 !!! info "Preliminary version"
     This English page is a preliminary summary. The Japanese page is the primary, fully detailed document — see it for the complete walkthrough.
 
+!!! warning "Deprecated in Isaac Sim 6.0"
+    The official page is marked Deprecated in Isaac Sim 6.0; the Robot Motion (Experimental) API is the recommended successor. Lula RRT still works in 6.0.
+
 ## Overview
 
 The **Lula RRT** class produces a collision-free path from a c-space start to a c-space or task-space target — global planning in static environments (vs RMPflow's reactive local policy).

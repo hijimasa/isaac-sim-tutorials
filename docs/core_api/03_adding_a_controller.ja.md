@@ -4,6 +4,11 @@ title: コントローラの追加
 
 # コントローラの追加
 
+!!! warning "Isaac Sim 6.0 での位置づけ"
+    このチュートリアルは Isaac Sim 6.0 の公式ドキュメントからは削除されました。
+    本ページは 5.1.0 時点の内容をもとにした本サイト独自の解説です。
+    （使用している `isaacsim.core.api` や `isaacsim.robot.wheeled_robots` などは 6.0 では非推奨（deprecated）ですが、引き続き動作します。）
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます:
@@ -17,6 +22,9 @@ title: コントローラの追加
 ### 前提条件
 
 - [チュートリアル 2: Hello Robot](02_hello_robot.md) を完了していること
+
+!!! note "本ページで使用する API について"
+    本ページのコードは 5.1.0 時点の API（`World` / `Scene` / `WheeledRobot` など）で書かれています。チュートリアル 1・2 で学んだ experimental API とはコードの書き方が異なりますが、これらの API は Isaac Sim 6.0 でも非推奨（deprecated）のまま利用可能です。`WheeledRobot` は `isaacsim.robot.wheeled_robots` 拡張が提供するクラスで、アセットの読み込み（`create_robot=True`）と車輪ジョイントの制御（`apply_action()`）をまとめて行えます。
 
 ### 所要時間
 
@@ -238,4 +246,4 @@ class HelloWorld(BaseSample):
 次のチュートリアル「[マニピュレータロボットの追加](04_adding_a_manipulator_robot.md)」に進み、マニピュレータロボットをシミュレーションに追加する方法を学びましょう。
 
 !!! note "注釈"
-    以降のチュートリアルでも主に Extension Workflow を使用して開発を進めます。Standalone Workflow への変換方法は [Hello World](01_hello_world.md#_11) で学んだ手順と同様です。
+    以降のチュートリアルでも主に Extension Workflow を使用して開発を進めます。Standalone Workflow への変換方法は [Hello World](01_hello_world.md) で学んだ手順と同様です。

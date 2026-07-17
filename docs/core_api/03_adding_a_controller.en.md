@@ -4,6 +4,11 @@ title: Adding a Controller
 
 # Adding a Controller
 
+!!! warning "Status in Isaac Sim 6.0"
+    This tutorial was removed from the official Isaac Sim 6.0 documentation.
+    This page is this site's own guide based on the 5.1.0 content.
+    (The APIs used here, such as `isaacsim.core.api` and `isaacsim.robot.wheeled_robots`, are deprecated in 6.0 but continue to work.)
+
 ## Learning Objectives
 
 After completing this tutorial, you will have learned:
@@ -18,6 +23,9 @@ After completing this tutorial, you will have learned:
 
 - Complete [Tutorial 2: Hello Robot](02_hello_robot.md) before starting this tutorial.
 
+!!! note "About the APIs used on this page"
+    The code on this page is written with the 5.1.0-era APIs (`World` / `Scene` / `WheeledRobot`, etc.). While the coding style differs from the experimental API you learned in Tutorials 1 and 2, these APIs remain available in Isaac Sim 6.0 as deprecated. `WheeledRobot` is a class provided by the `isaacsim.robot.wheeled_robots` extension that combines asset loading (`create_robot=True`) and wheel joint control (`apply_action()`).
+
 ### Estimated Time
 
 Approximately 10 minutes.
@@ -30,7 +38,7 @@ This tutorial continues editing the `hello_world.py` file from the Hello World s
 2. Click **Robotics Examples > General > Hello World**.
 3. Click the **Open Source Code** button to open `hello_world.py` in Visual Studio Code.
 
-For detailed instructions, refer to the ["Opening the Hello World Sample" section](01_hello_world.md#opening-the-hello-world-sample) in Hello World.
+For detailed instructions, refer to the ["Opening the Hello World Example" section](01_hello_world.md#opening-the-hello-world-example) in Hello World.
 
 ## Creating a Custom Controller
 
@@ -238,4 +246,4 @@ This tutorial covered the following topics:
 Proceed to the next tutorial, "[Adding a Manipulator Robot](04_adding_a_manipulator_robot.md)," to learn how to add a manipulator robot to the simulation.
 
 !!! note "Note"
-    The following tutorials continue to use the Extension Workflow for development. Converting to the Standalone Workflow follows the same approach as learned in [Hello World](01_hello_world.md#converting-to-a-standalone-application).
+    The following tutorials continue to use the Extension Workflow for development. Converting to the Standalone Workflow follows the same approach as learned in [Hello World](01_hello_world.md).

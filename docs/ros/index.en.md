@@ -14,14 +14,14 @@ Isaac Sim ships with a **ROS 2 bridge** that connects simulated robots and senso
 
 ### Prerequisites
 
-The whole series assumes ROS 2 is installed and connected to Isaac Sim. **On Windows, running ROS 2 inside WSL2 is the officially supported method** and requires extra network setup — complete the [setup page](00_setup.md) first.
+The whole series assumes ROS 2 is installed and connected to Isaac Sim. **On Windows, Pixi-based native ROS 2 (Jazzy) is now officially supported** (the legacy WSL2 method is deprecated) — complete the [setup page](00_setup.md) first.
 
 ## Tutorials
 
 ### Setup
 
 !!! example "[ROS 2 Setup (Linux / Windows)](00_setup.md)"
-    ROS 2 installation and Isaac Sim connection for Linux and Windows (WSL2).
+    ROS 2 installation and Isaac Sim connection for Linux and Windows (Pixi / WSL2).
 
 ### Getting Started with Importing and Controlling
 
@@ -48,7 +48,7 @@ The whole series assumes ROS 2 is installed and connected to Isaac Sim. **On Win
     Add noise to published camera images with Replicator augmentations.
 
 !!! example "[Tutorial 7: Publishing Camera's Data](07_camera_publishing.md)"
-    Programmatically set up CameraInfo/RGB/depth/pointcloud/TF publishers at a target rate.
+    Programmatically set up CameraInfo/RGB/depth/pointcloud/TF publishers (publish cadence follows the camera's tick_rate).
 
 !!! example "[Tutorial 8: RTX Lidar Sensors](08_rtx_lidar.md)"
     Add ray-traced lidars, publish LaserScan/PointCloud2, and visualize multiple sensors in RViz2.
@@ -57,7 +57,7 @@ The whole series assumes ROS 2 is installed and connected to Isaac Sim. **On Win
     TF publishers, odometry, the world → odom → base_link tree, and the in-viewport TF Viewer.
 
 !!! example "[Tutorial 10: ROS2 Setting Publish Rates](10_publish_rate.md)"
-    Per-publisher rates via Simulation Gate / frameSkipCount and simulation frame rate control.
+    Per-sensor rates via Simulation Gate (non-RTX) / omni:sensor:tickRate (RTX) and simulation frame rate control.
 
 !!! example "[Tutorial 11: ROS 2 Quality of Service (QoS)](11_qos.md)"
     QoS profiles for OmniGraph nodes and static publishers with transientLocal durability.
@@ -110,7 +110,7 @@ The whole series assumes ROS 2 is installed and connected to Isaac Sim. **On Win
 ### Customization
 
 !!! example "[Tutorial 25: ROS 2 Python Custom Messages](25_custom_message.md)"
-    Use custom messages with rclpy inside Isaac Sim (Linux only, Python 3.11 build).
+    Use custom messages with rclpy inside Isaac Sim (Linux / Windows via Pixi, Python 3.12 build).
 
 !!! example "[Tutorial 26: ROS 2 Python Custom OmniGraph Node](26_custom_python_node.md)"
     Build a custom OmniGraph Python node that subscribes and computes with rclpy.

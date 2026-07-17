@@ -28,10 +28,13 @@ title: 新しいマニピュレータ用の RMPflow 設定
 
 ### 概要
 
-このチュートリアルでは、Robot Description ファイル作成後に **RMPflow アルゴリズムを完全に設定する**方法を、Denso **Cobotta Pro 900**（6 自由度）を例に学びます。公式チュートリアルには Cobotta Pro 900 の URDF・USD・完成済み `robot_description.yaml` が付属しています。
+このチュートリアルでは、Robot Description ファイル作成後に **RMPflow アルゴリズムを完全に設定する**方法を、Denso **Cobotta Pro 900**（6 自由度）を例に学びます。チュートリアルアセット（Cobotta Pro 900 の URDF・USD・完成済み `robot_description.yaml` を含む）は、Content Browser の **Isaac Sim/Samples/Rigging/Cobotta_Pro_900_Assets** から開けます。
 
 !!! tip "Lula Test Widget で検証する"
     **Lula Test Widget** は、RMPflow 設定ファイルとステージ上の Articulation を選んでシナリオを実行し、RMPflow が意図通り動くか検証できる拡張機能です。Extensions メニューで有効化し、**Tools > Robotics > Lula Test Widget** からアクセスします。
+
+!!! note "Lula 系拡張機能は 6.0 で非推奨"
+    Isaac Sim 6.0 では、このチュートリアルで使う Lula / RMPflow（`isaacsim.robot_motion.lula` / `isaacsim.robot_motion.motion_generation`）と Lula Test Widget が非推奨（deprecated）になりました。引き続き動作しますが、新規開発では後継の Robot Motion (Experimental) API・cuMotion 統合の利用が推奨されています。
 
 ## RMPflow に必要な 3 つのファイル
 
@@ -45,7 +48,7 @@ title: 新しいマニピュレータ用の RMPflow 設定
 
 ## テンプレート RMPflow 設定ファイル
 
-RMPflow には 50 以上の設定可能パラメータがありますが、これらは類似の運動学構造・長さスケールのロボット間で概ね一般化できます。テンプレート（`./rmpflow_configs/template_rmpflow_config.yaml`）は Franka Emika Panda 向けに調整されていますが、多くの 6・7 自由度アームの良い出発点になります。
+RMPflow には 50 以上の設定可能パラメータがありますが、これらは類似の運動学構造・長さスケールのロボット間で概ね一般化できます。テンプレート（チュートリアルアセット内の `rmpflow_configs/template_rmpflow_config.yaml`）は Franka Emika Panda 向けに調整されていますが、多くの 6・7 自由度アームの良い出発点になります。
 
 このチュートリアルで注目する 3 つのフィールドは次のとおりです。
 
@@ -84,7 +87,7 @@ body_collision_controllers:
 
 ## ステップ 1：最小限の変更で動かす
 
-Cobotta を RMPflow でターゲット追従させるための最小限の変更です（`./rmpflow_configs/rmpflow_config_basic.yaml`）。
+Cobotta を RMPflow でターゲット追従させるための最小限の変更です（チュートリアルアセット内の `rmpflow_configs/rmpflow_config_basic.yaml`）。
 
 - `rmp_params` は当面無視してよい。
 - `joint_limit_buffers` を、テンプレートの 7 個から Cobotta の**6 自由度**に合わせて 6 個にする。

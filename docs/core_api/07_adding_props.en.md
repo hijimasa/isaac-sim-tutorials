@@ -79,7 +79,7 @@ First, create a new stage and place an object.
 
     **Result:** The Rubik's Cube falls but **passes through the ground**. Adding a Rigid Body makes it affected by gravity, but without collision detection it cannot detect contact with the ground.
 
-    ![Rubik's Cube without collision](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_1.webp)
+    ![Rubik's Cube without collision](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_1.webp)
 
 3. Press the **STOP** button.
 
@@ -91,7 +91,7 @@ First, create a new stage and place an object.
 
     **Result:** The Rubik's Cube now lands on the ground. Collision detection is now enabled thanks to the Collider attribute.
 
-    ![Rubik's Cube with collision](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_2.webp)
+    ![Rubik's Cube with collision](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_2.webp)
 
 3. Press the **STOP** button.
 
@@ -116,7 +116,7 @@ Collision shapes are normally invisible, but they can be visualized for debuggin
     - The ground (static object) collider is shown in **pink**
     - The Rubik's Cube (dynamic object) collider is shown in **green**
 
-    ![Collision shape visualization](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_3.png)
+    ![Collision shape visualization](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_3.png)
 
 !!! tip "Collision Approximation Types"
     You can change the collision shape approximation method. Select the `World/rubiks_cube/RubikCube` mesh, then choose a different approximation type in the **Approximation** tab of the **Physics/Collider** section.
@@ -144,7 +144,7 @@ Let's replace the default collision shape (mesh approximation) with a simpler sp
 
     **Result:** The Rubik's Cube rolls down the slope. Due to the sphere collider, the physics simulation treats it as a sphere rather than a box.
 
-    ![Rubik's Cube rolling with sphere collider](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_4.webp)
+    ![Rubik's Cube rolling with sphere collider](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_4.webp)
 
 8. Press the **STOP** button.
 
@@ -154,7 +154,7 @@ Set the restitution to make the object bounce.
 
 1. Left-click the Xform Rubik's Cube on the stage and change the **Translate** to `(0, 0, 1)` in the Properties panel (to drop it from a higher position).
 
-2. Right-click the Xform Rubik's Cube on the stage and select **Create > Physics > Physics Material**. In the popup, check **Rigid Body Material** and click OK. Drag-and-drop the created material into the `World/rubiks_cube/Looks` folder.<br>
+2. Right-click the Xform Rubik's Cube on the stage and select **Create > Physics > Physics Material**. In the popup, check **Rigid Body Material** and click OK. Drag-and-drop the created material into the `World/rubiks_cube/Looks` scope.<br>
    ![Create Physics Material](images/16_create_physics_material.png)
 
 3. In the Properties panel, scroll to the **Physics Material** section and set **Restitution** to `1` (perfectly elastic collision).
@@ -165,7 +165,7 @@ Set the restitution to make the object bounce.
 
     **Result:** The Rubik's Cube falls to the ground and bounces. Since the Restitution is set to 1, it bounces back with almost no energy loss.
 
-    ![Rubik's Cube with physics material](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_6.webp)
+    ![Rubik's Cube with physics material](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_6.webp)
 
 6. Press the **STOP** button.
 
@@ -175,11 +175,15 @@ Set the restitution to make the object bounce.
 !!! tip "Completed Asset"
     The completed asset for this tutorial is available in the Content Browser at **Isaac Sim > Samples > Rigging > RubiksCube > rubiks_cube.usd**.
 
+!!! tip "Which prim gets which attribute"
+    - The object's rigid body API should be applied to the **default prim** (the root Xform) of the object.
+    - The collision API should be applied to the **mesh prim** of the object (it is applied as a PhysX schema).
+
 ## Advanced: Building Complex Collision Shapes
 
 In real robotics applications, you may need accurate collisions for complex-shaped objects. In such cases, a common approach is to approximate the shape by combining multiple basic shapes (spheres, cylinders, boxes, etc.).
 
-![Bearing collision approximation](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_5.png)
+![Bearing collision approximation](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_5.png)
 
 The figure above shows an example of collision shapes for a bearing. Cylinders and rectangles are combined to approximate the complex shape.
 

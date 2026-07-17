@@ -8,10 +8,11 @@ title: 複数ロボットの追加
 
 このチュートリアルを修了すると、以下の内容を習得できます:
 
-- 異なる種類のロボットを同じシミュレーションに追加する方法
-- サブタスクを活用してタスクを構成する方法
-- タスクイベントを使ってロボット間の動作を切り替えるプログラムロジックの構築方法
-- 複数のロボットが連携して動作するシミュレーションの実装
+- 異なる種類のロボット（移動ロボットとマニピュレータ）を同じシミュレーションに追加する方法
+- `Cube`・`GeomPrim`・`RigidPrim` で押せるオブジェクトを作成する方法
+- `Articulation` クラスで種類の異なるロボットを制御する方法
+- ステートマシンロジックを使ってロボット間の動作を協調させる方法
+- `Franka` クラスによる IK ベースのエンドエフェクタ制御とグリッパー操作
 
 ## はじめに
 
@@ -25,7 +26,7 @@ title: 複数ロボットの追加
 
 ### ソースコードの準備
 
-このチュートリアルでは、引き続き Hello World サンプルの `hello_world.py` を編集していきます。前回のチュートリアルから続けて作業している場合はそのまま進めてください。別の日に作業を再開する場合は、以下の手順でソースコードを開いてください。
+このチュートリアルでは、再び Extension Workflow に戻り、Hello World サンプルの `hello_world.py` を編集していきます。以下の手順でソースコードを開いてください。
 
 1. **Windows > Examples > Robotics Examples** をアクティブにして、Robotics Examples タブを開きます。
 2. **Robotics Examples > General > Hello World** をクリックします。
@@ -44,554 +45,468 @@ title: 複数ロボットの追加
 2. **Jetbot** が後退して Franka に作業スペースを譲る
 3. **Franka** がキューブを拾い上げ、目標位置に配置する
 
-コードを4段階に分けて段階的に実装していきます。
+コードを3段階に分けて段階的に実装していきます。
 
 ## ステップ 1: シーンの作成
 
-まず、これまでのチュートリアルで使った Jetbot と Franka の両方をシーンに配置します。前回のチュートリアルで学んだ `PickPlace` タスクを**サブタスク**として再利用することで、Franka とキューブのセットアップを簡潔に記述できます。
+まず、これまでのチュートリアルで使った Jetbot・Franka・キューブをシーンに配置します。`stage_utils.add_reference_to_stage()` でロボットのアセットを読み込み、`XformPrim` で Franka の位置を調整します。
 
-```python linenums="1" hl_lines="2-5 9-13 21-22 27-37 39-42"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace
-from isaacsim.robot.wheeled_robots.robots import WheeledRobot
-from isaacsim.core.utils.nucleus import get_assets_root_path
-from isaacsim.core.api.tasks import BaseTask
+```python linenums="1" hl_lines="14-54 56-63"
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
-
-
-class RobotsPlaying(BaseTask):
-    def __init__(self, name):
-        super().__init__(name=name, offset=None)
-        self._jetbot_goal_position = np.array([1.3, 0.3, 0])
-        # PickPlace タスクをサブタスクとして再利用する
-        # キューブの初期位置と目標位置をカスタマイズ
-        self._pick_place_task = PickPlace(
-            cube_initial_position=np.array([0.1, 0.3, 0.05]),
-            target_position=np.array([0.7, -0.3, 0.0515 / 2.0]),
-        )
-        return
-
-    def set_up_scene(self, scene):
-        super().set_up_scene(scene)
-        # サブタスク（今回はPickPlace）の set_up_scene を呼び出し、Franka とキューブを配置
-        self._pick_place_task.set_up_scene(scene)
-        # Jetbot を追加
-        assets_root_path = get_assets_root_path()
-        jetbot_asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
-        self._jetbot = scene.add(
-            WheeledRobot(
-                prim_path="/World/Fancy_Jetbot",
-                name="fancy_jetbot",
-                wheel_dof_names=["left_wheel_joint", "right_wheel_joint"],
-                create_robot=True,
-                usd_path=jetbot_asset_path,
-                position=np.array([0, 0.3, 0]),
-            )
-        )
-        # サブタスクのパラメータから Franka を取得し、位置を変更
-        pick_place_params = self._pick_place_task.get_params()
-        self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
-        self._franka.set_world_pose(position=np.array([1.0, 0, 0]))
-        self._franka.set_default_state(position=np.array([1.0, 0, 0]))
-        return
-
-    def get_observations(self):
-        current_jetbot_position, current_jetbot_orientation = self._jetbot.get_world_pose()
-        observations = {
-            self._jetbot.name: {
-                "position": current_jetbot_position,
-                "orientation": current_jetbot_orientation,
-                "goal_position": self._jetbot_goal_position,
-            }
-        }
-        return observations
-
-    def get_params(self):
-        # ハードコーディングを避けるため、パラメータを動的に取得
-        pick_place_params = self._pick_place_task.get_params()
-        params_representation = pick_place_params
-        params_representation["jetbot_name"] = {"value": self._jetbot.name, "modifiable": False}
-        params_representation["franka_name"] = pick_place_params["robot_name"]
-        return params_representation
-
-    def post_reset(self):
-        self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        return
+from isaacsim.core.experimental.materials import PreviewSurfaceMaterial
+from isaacsim.core.experimental.objects import Cube
+from isaacsim.core.experimental.prims import Articulation, GeomPrim, RigidPrim, XformPrim
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
 
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
 
+    # -- setup_scene ここから -- #
     def setup_scene(self):
-        world = self.get_world()
-        world.add_task(RobotsPlaying(name="awesome_task"))
-        return
-```
-
-!!! info "サブタスクのパターン"
-    `RobotsPlaying` タスクは、内部で `PickPlace` タスクの `set_up_scene` を呼び出しています。このように既存タスクをサブタスクとして組み込むことで、同じ処理を再実装する必要がなくなります。
-
-!!! note "`set_world_pose` と `set_default_state` の違い"
-    Franka の位置変更に2つのメソッドを使っている理由は、それぞれの役割が異なるためです。
-
-    | メソッド | 役割 |
-    |---|---|
-    | `set_world_pose()` | **現在のフレーム**でのロボットの位置を即座に変更する |
-    | `set_default_state()` | **リセット時に復帰する位置**を登録する |
-
-    `set_default_state()` を省略すると、RESET ボタンを押したときに Franka が PickPlace タスク内部で設定された元の位置（原点付近）に戻ってしまい、Jetbot と重なる問題が発生します。
-
-コードを保存してシミュレーションを確認します：
-
-1. **Ctrl+S** を押して保存し、**File > New From Stage Template > Empty** → **LOAD** を実行します。
-2. Jetbot と Franka の両方がシーンに表示されることを確認します。
-
-## ステップ 2: Jetbot を動かす
-
-次に、Jetbot にコントローラを追加して、キューブを Franka の方向に押して運ぶ動作を実装します。チュートリアル 3 で使用した `WheelBasePoseController` を再利用します。
-
-```python linenums="1" hl_lines="6-7 79-89 95-96 98-104"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace
-from isaacsim.robot.wheeled_robots.robots import WheeledRobot
-from isaacsim.core.utils.nucleus import get_assets_root_path
-from isaacsim.core.api.tasks import BaseTask
-from isaacsim.robot.wheeled_robots.controllers.wheel_base_pose_controller import WheelBasePoseController
-from isaacsim.robot.wheeled_robots.controllers.differential_controller import DifferentialController
-import numpy as np
-
-
-class RobotsPlaying(BaseTask):
-    def __init__(self, name):
-        super().__init__(name=name, offset=None)
-        self._jetbot_goal_position = np.array([1.3, 0.3, 0])
-        self._pick_place_task = PickPlace(
-            cube_initial_position=np.array([0.1, 0.3, 0.05]),
-            target_position=np.array([0.7, -0.3, 0.0515 / 2.0]),
-        )
-        return
-
-    def set_up_scene(self, scene):
-        super().set_up_scene(scene)
-        self._pick_place_task.set_up_scene(scene)
         assets_root_path = get_assets_root_path()
-        jetbot_asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
-        self._jetbot = scene.add(
-            WheeledRobot(
-                prim_path="/World/Fancy_Jetbot",
-                name="fancy_jetbot",
-                wheel_dof_names=["left_wheel_joint", "right_wheel_joint"],
-                create_robot=True,
-                usd_path=jetbot_asset_path,
-                position=np.array([0, 0.3, 0]),
-            )
+
+        # 地面を追加
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
         )
-        pick_place_params = self._pick_place_task.get_params()
-        self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
-        self._franka.set_world_pose(position=np.array([1.0, 0, 0]))
-        self._franka.set_default_state(position=np.array([1.0, 0, 0]))
-        return
 
-    def get_observations(self):
-        current_jetbot_position, current_jetbot_orientation = self._jetbot.get_world_pose()
-        observations = {
-            self._jetbot.name: {
-                "position": current_jetbot_position,
-                "orientation": current_jetbot_orientation,
-                "goal_position": self._jetbot_goal_position,
-            }
-        }
-        return observations
+        # 移動ロボット Jetbot を追加
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd",
+            path="/World/Jetbot",
+        )
 
-    def get_params(self):
-        pick_place_params = self._pick_place_task.get_params()
-        params_representation = pick_place_params
-        params_representation["jetbot_name"] = {"value": self._jetbot.name, "modifiable": False}
-        params_representation["franka_name"] = pick_place_params["robot_name"]
-        return params_representation
+        # Jetbot が押すためのキューブを Jetbot の前方に追加
+        visual_material = PreviewSurfaceMaterial("/World/Materials/red")
+        visual_material.set_input_values("diffuseColor", [1.0, 0.0, 0.0])
+        cube_shape = Cube(
+            paths="/World/Cube",
+            positions=np.array([[0.15, 0.0, 0.025]]),  # Jetbot の前方
+            sizes=[1.0],
+            scales=np.array([[0.05, 0.05, 0.05]]),
+            reset_xform_op_properties=True,
+        )
+        GeomPrim(paths=cube_shape.paths, apply_collision_apis=True)
+        RigidPrim(paths=cube_shape.paths)
+        cube_shape.apply_visual_materials(visual_material)
 
-    def post_reset(self):
-        self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        return
+        # Jetbot がキューブを押し届ける先にマニピュレータ Franka を追加
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Robots/FrankaRobotics/FrankaPanda/franka.usd",
+            path="/World/Franka",
+        )
 
+        # キューブが作業範囲内に押し込まれるように Franka を配置
+        franka_xform = XformPrim("/World/Franka")
+        franka_xform.set_world_poses(positions=np.array([[0.8, -0.5, 0.0]]))
 
-class HelloWorld(BaseSample):
-    def __init__(self) -> None:
-        super().__init__()
-        return
-
-    def setup_scene(self):
-        world = self.get_world()
-        world.add_task(RobotsPlaying(name="awesome_task"))
-        return
+    # -- setup_scene ここまで -- #
 
     async def setup_post_load(self):
-        self._world = self.get_world()
-        task_params = self._world.get_task("awesome_task").get_params()
-        self._jetbot = self._world.scene.get_object(task_params["jetbot_name"]["value"])
-        self._cube_name = task_params["cube_name"]["value"]
-        # Jetbot 用のコントローラを初期化
-        self._jetbot_controller = WheelBasePoseController(
-            name="cool_controller",
-            open_loop_wheel_controller=DifferentialController(
-                name="simple_control",
-                wheel_radius=0.03,
-                wheel_base=0.1125,
-            ),
-        )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
+        # 両方のロボットの Articulation ハンドルを作成
+        self._jetbot = Articulation("/World/Jetbot")
+        self._franka = Articulation("/World/Franka")
 
-    async def setup_post_reset(self):
-        self._jetbot_controller.reset()
-        await self._world.play_async()
-        return
-
-    def physics_step(self, step_size):
-        current_observations = self._world.get_observations()
-        # Jetbot を目標位置に向かって移動させる
-        self._jetbot.apply_wheel_actions(
-            self._jetbot_controller.forward(
-                start_position=current_observations[self._jetbot.name]["position"],
-                start_orientation=current_observations[self._jetbot.name]["orientation"],
-                goal_position=current_observations[self._jetbot.name]["goal_position"],
-            )
-        )
-        return
+        # ロボットの情報を出力
+        print(f"Jetbot DOFs: {self._jetbot.num_dofs}, names: {self._jetbot.dof_names}")
+        print(f"Franka DOFs: {self._franka.num_dofs}, names: {self._franka.dof_names}")
 ```
 
-コードを保存して **PLAY** を押すと、Jetbot がキューブを押しながら Franka の方向に移動します。
+このコードのポイント：
 
-## ステップ 3: タスクイベントの追加
-
-現状では Jetbot がキューブを届けた後も動き続けてしまいます。タスクイベント（`_task_event`）を導入して、以下の3つのフェーズを切り替えるロジックを追加します：
-
-| イベント | 動作 |
+| 処理 | 説明 |
 |---|---|
-| `0` | Jetbot がキューブを Franka の近くまで押す |
-| `1` | Jetbot が後退して Franka に作業スペースを譲る |
-| `2` | Jetbot が停止する（Franka の作業準備完了） |
+| `stage_utils.add_reference_to_stage()` | ロボットの種類を問わず、USD アセットをステージに配置する |
+| `XformPrim.set_world_poses()` | プリムのワールド座標を設定する（ここでは Franka の配置に使用） |
+| `Articulation` | Jetbot（2 DOF）も Franka（9 DOF）も同じクラスでラップして制御できる |
 
-```python linenums="1" hl_lines="8 16 51-52 65-73 76 80-81 103-115"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace
-from isaacsim.robot.wheeled_robots.robots import WheeledRobot
-from isaacsim.core.utils.nucleus import get_assets_root_path
-from isaacsim.core.api.tasks import BaseTask
-from isaacsim.robot.wheeled_robots.controllers.wheel_base_pose_controller import WheelBasePoseController
-from isaacsim.robot.wheeled_robots.controllers.differential_controller import DifferentialController
-from isaacsim.core.utils.types import ArticulationAction
+**Ctrl+S** で保存し、**File > New From Stage Template > Empty** → **LOAD** を実行すると、2台のロボットとキューブがシーンに表示されます。
+
+## ステップ 2: 複数ロボットの制御
+
+次に、物理演算コールバックを追加して両方のロボットを同時に制御します。まずはシンプルに、Jetbot がキューブを前方に押し、一定ステップ後に停止する動作を実装します。
+
+制御ロジックは以下の通りです：
+
+```python linenums="1"
+        self._step_counter += 1
+        if self._step_counter < 300:
+            # Jetbot を前進させてキューブを押す
+            self._jetbot.set_dof_velocity_targets([[10.0, 10.0]])
+        else:
+            # 押し終わったら Jetbot を停止
+            self._jetbot.set_dof_velocity_targets([[0.0, 0.0]])
+```
+
+コード全体は以下の通りです：
+
+```python linenums="1" hl_lines="6 14-15 57-61 63-68 70-79 81-84"
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
-
-
-class RobotsPlaying(BaseTask):
-    def __init__(self, name):
-        super().__init__(name=name, offset=None)
-        self._jetbot_goal_position = np.array([1.3, 0.3, 0])
-        self._task_event = 0  # タスクイベント: どのフェーズにいるかを管理
-        self._pick_place_task = PickPlace(
-            cube_initial_position=np.array([0.1, 0.3, 0.05]),
-            target_position=np.array([0.7, -0.3, 0.0515 / 2.0]),
-        )
-        return
-
-    def set_up_scene(self, scene):
-        super().set_up_scene(scene)
-        self._pick_place_task.set_up_scene(scene)
-        assets_root_path = get_assets_root_path()
-        jetbot_asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
-        self._jetbot = scene.add(
-            WheeledRobot(
-                prim_path="/World/Fancy_Jetbot",
-                name="fancy_jetbot",
-                wheel_dof_names=["left_wheel_joint", "right_wheel_joint"],
-                create_robot=True,
-                usd_path=jetbot_asset_path,
-                position=np.array([0, 0.3, 0]),
-            )
-        )
-        pick_place_params = self._pick_place_task.get_params()
-        self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
-        self._franka.set_world_pose(position=np.array([1.0, 0, 0]))
-        self._franka.set_default_state(position=np.array([1.0, 0, 0]))
-        return
-
-    def get_observations(self):
-        current_jetbot_position, current_jetbot_orientation = self._jetbot.get_world_pose()
-        observations = {
-            "task_event": self._task_event,
-            self._jetbot.name: {
-                "position": current_jetbot_position,
-                "orientation": current_jetbot_orientation,
-                "goal_position": self._jetbot_goal_position,
-            }
-        }
-        return observations
-
-    def get_params(self):
-        pick_place_params = self._pick_place_task.get_params()
-        params_representation = pick_place_params
-        params_representation["jetbot_name"] = {"value": self._jetbot.name, "modifiable": False}
-        params_representation["franka_name"] = pick_place_params["robot_name"]
-        return params_representation
-
-    def pre_step(self, control_index, simulation_time):
-        if self._task_event == 0:
-            # Jetbot が目標位置に到達したかチェック
-            current_jetbot_position, _ = self._jetbot.get_world_pose()
-            if np.mean(np.abs(current_jetbot_position[:2] - self._jetbot_goal_position[:2])) < 0.04:
-                self._task_event += 1
-                self._cube_arrive_step_index = control_index
-        elif self._task_event == 1:
-            # Jetbot が 200 ステップ後退したら次のフェーズへ
-            if control_index - self._cube_arrive_step_index == 200:
-                self._task_event += 1
-        return
-
-    def post_reset(self):
-        self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        self._task_event = 0
-        return
+from isaacsim.core.experimental.materials import PreviewSurfaceMaterial
+from isaacsim.core.experimental.objects import Cube
+from isaacsim.core.experimental.prims import Articulation, GeomPrim, RigidPrim, XformPrim
+from isaacsim.core.simulation_manager import SimulationManager
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
 
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
+        self._physics_callback_id = None
+        self._step_counter = 0
 
     def setup_scene(self):
-        world = self.get_world()
-        world.add_task(RobotsPlaying(name="awesome_task"))
-        return
+        assets_root_path = get_assets_root_path()
+
+        # 地面を追加
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
+        )
+
+        # 移動ロボット Jetbot を追加
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd",
+            path="/World/Jetbot",
+        )
+
+        # Jetbot が押すためのキューブを Jetbot の前方に追加
+        visual_material = PreviewSurfaceMaterial("/World/Materials/red")
+        visual_material.set_input_values("diffuseColor", [1.0, 0.0, 0.0])
+        cube_shape = Cube(
+            paths="/World/Cube",
+            positions=np.array([[0.15, 0.0, 0.025]]),
+            sizes=[1.0],
+            scales=np.array([[0.05, 0.05, 0.05]]),
+            reset_xform_op_properties=True,
+        )
+        GeomPrim(paths=cube_shape.paths, apply_collision_apis=True)
+        RigidPrim(paths=cube_shape.paths)
+        cube_shape.apply_visual_materials(visual_material)
+
+        # マニピュレータ Franka を追加
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Robots/FrankaRobotics/FrankaPanda/franka.usd",
+            path="/World/Franka",
+        )
+
+        # Jetbot の進路の前方右側に Franka を配置
+        franka_xform = XformPrim("/World/Franka")
+        franka_xform.set_world_poses(positions=np.array([[0.8, -0.5, 0.0]]))
 
     async def setup_post_load(self):
-        self._world = self.get_world()
-        task_params = self._world.get_task("awesome_task").get_params()
-        self._jetbot = self._world.scene.get_object(task_params["jetbot_name"]["value"])
-        self._cube_name = task_params["cube_name"]["value"]
-        self._jetbot_controller = WheelBasePoseController(
-            name="cool_controller",
-            open_loop_wheel_controller=DifferentialController(
-                name="simple_control",
-                wheel_radius=0.03,
-                wheel_base=0.1125,
-            ),
+        # Articulation ハンドルを作成
+        self._jetbot = Articulation("/World/Jetbot")
+        self._franka = Articulation("/World/Franka")
+        self._cube = RigidPrim("/World/Cube")
+        self._step_counter = 0
+
+        # 物理演算コールバックを登録
+        from isaacsim.core.simulation_manager.impl.isaac_events import IsaacEvents
+
+        self._physics_callback_id = SimulationManager.register_callback(
+            self.physics_step, IsaacEvents.POST_PHYSICS_STEP
         )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
 
-    async def setup_post_reset(self):
-        self._jetbot_controller.reset()
-        await self._world.play_async()
-        return
+    def physics_step(self, dt, context):
+        # -- Jetbot の制御ここから -- #
+        self._step_counter += 1
+        if self._step_counter < 300:
+            # Jetbot を前進させてキューブを押す
+            self._jetbot.set_dof_velocity_targets([[10.0, 10.0]])
+        else:
+            # 押し終わったら Jetbot を停止
+            self._jetbot.set_dof_velocity_targets([[0.0, 0.0]])
+        # -- Jetbot の制御ここまで -- #
 
-    def physics_step(self, step_size):
-        current_observations = self._world.get_observations()
-        if current_observations["task_event"] == 0:
-            # フェーズ 0: Jetbot がキューブを押して運ぶ
-            self._jetbot.apply_wheel_actions(
-                self._jetbot_controller.forward(
-                    start_position=current_observations[self._jetbot.name]["position"],
-                    start_orientation=current_observations[self._jetbot.name]["orientation"],
-                    goal_position=current_observations[self._jetbot.name]["goal_position"],
-                )
-            )
-        elif current_observations["task_event"] == 1:
-            # フェーズ 1: Jetbot が後退する
-            self._jetbot.apply_wheel_actions(ArticulationAction(joint_velocities=[-8, -8]))
-        elif current_observations["task_event"] == 2:
-            # フェーズ 2: Jetbot を停止する
-            # 注意: 目標速度は変更しない限り維持されるため、明示的にゼロを設定する
-            self._jetbot.apply_wheel_actions(ArticulationAction(joint_velocities=[0.0, 0.0]))
-        return
+    def physics_cleanup(self):
+        if self._physics_callback_id is not None:
+            SimulationManager.deregister_callback(self._physics_callback_id)
+            self._physics_callback_id = None
 ```
 
-コードを保存して **PLAY** を押すと、Jetbot がキューブを運んだ後、後退して停止する様子を確認できます。
+コードを保存して **LOAD** を実行すると、Jetbot がキューブを Franka に向かって押していく様子を確認できます。
 
-## ステップ 4: Franka によるピック＆プレース
+![Jetbot がキューブを押す様子](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/core_api_tutorials_5_1.webp)
 
-最後に、Franka のコントローラを追加して、Jetbot が退いた後に Franka がキューブを拾い上げて目標位置に配置する動作を実装します。
+## ステップ 3: ステートマシンロジックの追加
 
-```python linenums="1" hl_lines="8 55-56 88-92 99-100 115-121 123-124"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace
-from isaacsim.robot.wheeled_robots.robots import WheeledRobot
-from isaacsim.core.utils.nucleus import get_assets_root_path
-from isaacsim.core.api.tasks import BaseTask
-from isaacsim.robot.wheeled_robots.controllers.wheel_base_pose_controller import WheelBasePoseController
-from isaacsim.robot.wheeled_robots.controllers.differential_controller import DifferentialController
-from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController
-from isaacsim.core.utils.types import ArticulationAction
+最後に、2台のロボットを協調させるステートマシンを作成します。まず Jetbot がキューブを Franka に向かって押し、次に後退してスペースを空け、最後に Franka が `Franka` クラス（チュートリアル 4 参照）の IK ベースのエンドエフェクタ制御でピック＆プレースの一連の動作を実行します。
+
+状態遷移は以下の通りです：
+
+| 状態 | 動作 | 遷移条件 |
+|---|---|---|
+| `0` | Jetbot がキューブを目標位置まで押す | キューブが目標位置に十分近づいたら `1` へ |
+| `1` | Jetbot が後退する | 100 ステップ経過で `2` へ（グリッパーを開く） |
+| `2` | Franka がピック＆プレースを実行 | `_pick_phase`（0〜5）で細分化 |
+
+ステートマシンの中核部分は以下の通りです：
+
+```python linenums="1"
+        if self._state == 0:
+            # Jetbot がキューブを Franka まで押す
+            cube_pos = self._cube.get_world_poses()[0].numpy()[0]
+            if np.linalg.norm(cube_pos[:2] - self._cube_goal[:2]) > 0.05:
+                self._jetbot.set_dof_velocity_targets([[10.0, 10.0]])
+            else:
+                self._jetbot.set_dof_velocity_targets([[0.0, 0.0]])
+                print("Cube delivered! Backing up...")
+                self._state = 1
+                self._step_counter = 0
+
+        elif self._state == 1:
+            # Jetbot が後退する
+            self._jetbot.set_dof_velocity_targets([[-8.0, -8.0]])
+            self._step_counter += 1
+            if self._step_counter > 100:
+                self._jetbot.set_dof_velocity_targets(np.array([[0.0, 0.0]]))
+                print("Franka starting pick-and-place...")
+                self._state = 2
+                self._step_counter = 0
+                self._franka.open_gripper()
+
+        elif self._state == 2:
+            # ステップカウンタを使った Franka のピック＆プレースシーケンス
+            cube_pos = self._cube.get_world_poses()[0].numpy()[0]
+            down_orient = self._franka.get_downward_orientation()
+            self._step_counter += 1
+
+            if self._pick_phase == 0:
+                # キューブの上方へ移動（120 ステップ待機）
+                self._franka.set_end_effector_pose(
+                    np.array([[cube_pos[0], cube_pos[1], cube_pos[2] + 0.2]]), down_orient
+                )
+                if self._step_counter > 120:
+                    self._pick_phase = 1
+                    self._step_counter = 0
+            elif self._pick_phase == 1:
+                # キューブへ下降（100 ステップ待機）
+                self._franka.set_end_effector_pose(
+                    np.array([[cube_pos[0], cube_pos[1], cube_pos[2] + 0.1]]), down_orient
+                )
+                if self._step_counter > 100:
+                    self._franka.close_gripper()
+                    self._pick_phase = 2
+                    self._step_counter = 0
+            elif self._pick_phase == 2:
+                # グリッパーを閉じる（50 ステップ待機）
+                self._franka.close_gripper()
+                if self._step_counter > 50:
+                    self._pick_phase = 3
+                    self._step_counter = 0
+            elif self._pick_phase == 3:
+                # キューブを持ち上げる（100 ステップ待機）
+                self._franka.set_end_effector_pose(
+                    np.array([[cube_pos[0], cube_pos[1], cube_pos[2] + 0.25]]), down_orient
+                )
+                if self._step_counter > 100:
+                    self._pick_phase = 4
+                    self._step_counter = 0
+            elif self._pick_phase == 4:
+                # 目標位置へ移動（150 ステップ待機）
+                self._franka.set_end_effector_pose(np.array([[0.3, 0.3, 0.15]]), down_orient)
+                if self._step_counter > 150:
+                    self._franka.open_gripper()
+                    self._pick_phase = 5
+                    self._step_counter = 0
+            elif self._pick_phase == 5:
+                # アームを持ち上げる（150 ステップ待機）
+                self._franka.set_end_effector_pose(
+                    np.array([[cube_pos[0], cube_pos[1], cube_pos[2] + 0.5]]), down_orient
+                )
+                if self._step_counter > 150:
+                    self._step_counter = 0
+```
+
+コード全体は以下の通りです：
+
+```python linenums="1" hl_lines="8 16 47-50 52-57 66-141 143-147"
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
-
-
-class RobotsPlaying(BaseTask):
-    def __init__(self, name):
-        super().__init__(name=name, offset=None)
-        self._jetbot_goal_position = np.array([1.3, 0.3, 0])
-        self._task_event = 0
-        self._pick_place_task = PickPlace(
-            cube_initial_position=np.array([0.1, 0.3, 0.05]),
-            target_position=np.array([0.7, -0.3, 0.0515 / 2.0]),
-        )
-        return
-
-    def set_up_scene(self, scene):
-        super().set_up_scene(scene)
-        self._pick_place_task.set_up_scene(scene)
-        assets_root_path = get_assets_root_path()
-        jetbot_asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
-        self._jetbot = scene.add(
-            WheeledRobot(
-                prim_path="/World/Fancy_Jetbot",
-                name="fancy_jetbot",
-                wheel_dof_names=["left_wheel_joint", "right_wheel_joint"],
-                create_robot=True,
-                usd_path=jetbot_asset_path,
-                position=np.array([0, 0.3, 0]),
-            )
-        )
-        pick_place_params = self._pick_place_task.get_params()
-        self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
-        self._franka.set_world_pose(position=np.array([1.0, 0, 0]))
-        self._franka.set_default_state(position=np.array([1.0, 0, 0]))
-        return
-
-    def get_observations(self):
-        current_jetbot_position, current_jetbot_orientation = self._jetbot.get_world_pose()
-        observations = {
-            "task_event": self._task_event,
-            self._jetbot.name: {
-                "position": current_jetbot_position,
-                "orientation": current_jetbot_orientation,
-                "goal_position": self._jetbot_goal_position,
-            }
-        }
-        # サブタスクの観測情報も統合する
-        observations.update(self._pick_place_task.get_observations())
-        return observations
-
-    def get_params(self):
-        pick_place_params = self._pick_place_task.get_params()
-        params_representation = pick_place_params
-        params_representation["jetbot_name"] = {"value": self._jetbot.name, "modifiable": False}
-        params_representation["franka_name"] = pick_place_params["robot_name"]
-        return params_representation
-
-    def pre_step(self, control_index, simulation_time):
-        if self._task_event == 0:
-            current_jetbot_position, _ = self._jetbot.get_world_pose()
-            if np.mean(np.abs(current_jetbot_position[:2] - self._jetbot_goal_position[:2])) < 0.04:
-                self._task_event += 1
-                self._cube_arrive_step_index = control_index
-        elif self._task_event == 1:
-            if control_index - self._cube_arrive_step_index == 200:
-                self._task_event += 1
-        return
-
-    def post_reset(self):
-        self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        self._task_event = 0
-        return
+from isaacsim.core.experimental.materials import PreviewSurfaceMaterial
+from isaacsim.core.experimental.objects import Cube
+from isaacsim.core.experimental.prims import Articulation, GeomPrim, RigidPrim, XformPrim
+from isaacsim.core.simulation_manager import SimulationManager
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.robot.experimental.manipulators.examples.franka import Franka
+from isaacsim.storage.native import get_assets_root_path
 
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
+        self._physics_callback_id = None
+        self._state = 0
 
     def setup_scene(self):
-        world = self.get_world()
-        world.add_task(RobotsPlaying(name="awesome_task"))
-        return
+        assets_root_path = get_assets_root_path()
+
+        # 地面を追加
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
+        )
+
+        # 原点に Jetbot を追加
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd",
+            path="/World/Jetbot",
+        )
+
+        # Jetbot の前方にキューブを追加
+        visual_material = PreviewSurfaceMaterial("/World/Materials/blue")
+        visual_material.set_input_values("diffuseColor", [0.0, 0.0, 1.0])
+        cube_shape = Cube(
+            paths="/World/Cube",
+            positions=np.array([[0.15, 0.0, 0.0258]]),
+            sizes=[1.0],
+            scales=np.array([[0.05, 0.05, 0.05]]),
+            reset_xform_op_properties=True,
+        )
+        GeomPrim(paths=cube_shape.paths, apply_collision_apis=True)
+        RigidPrim(paths=cube_shape.paths)
+        cube_shape.apply_visual_materials(visual_material)
+
+        # IK とグリッパー制御のため Franka クラスを使って Franka を追加
+        self._franka = Franka(robot_path="/World/Franka", create_robot=True)
+        franka_xform = XformPrim("/World/Franka")
+        franka_xform.set_world_poses(positions=[[0.8, -0.3, 0.0]])
 
     async def setup_post_load(self):
-        self._world = self.get_world()
-        task_params = self._world.get_task("awesome_task").get_params()
-        self._franka = self._world.scene.get_object(task_params["franka_name"]["value"])
-        self._jetbot = self._world.scene.get_object(task_params["jetbot_name"]["value"])
-        self._cube_name = task_params["cube_name"]["value"]
-        # Franka 用のコントローラを追加
-        self._franka_controller = PickPlaceController(
-            name="pick_place_controller",
-            gripper=self._franka.gripper,
-            robot_articulation=self._franka,
+        self._jetbot = Articulation("/World/Jetbot")
+        self._cube = RigidPrim("/World/Cube")
+        self._cube_goal = np.array([1.2, 0.0, 0.0])  # 目標: Franka が横から届く位置
+        self._step_counter = 0
+        self._pick_phase = 0
+
+        from isaacsim.core.simulation_manager.impl.isaac_events import IsaacEvents
+
+        self._physics_callback_id = SimulationManager.register_callback(
+            self.physics_step, IsaacEvents.POST_PHYSICS_STEP
         )
-        self._jetbot_controller = WheelBasePoseController(
-            name="cool_controller",
-            open_loop_wheel_controller=DifferentialController(
-                name="simple_control",
-                wheel_radius=0.03,
-                wheel_base=0.1125,
-            ),
-        )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
+        self._state = 0
+
+    def physics_step(self, dt, context):
+        # -- ステートマシンここから -- #
+        if self._state == 0:
+            # Jetbot がキューブを Franka まで押す
+            cube_pos = self._cube.get_world_poses()[0].numpy()[0]
+            if np.linalg.norm(cube_pos[:2] - self._cube_goal[:2]) > 0.05:
+                self._jetbot.set_dof_velocity_targets([[10.0, 10.0]])
+            else:
+                self._jetbot.set_dof_velocity_targets([[0.0, 0.0]])
+                print("Cube delivered! Backing up...")
+                self._state = 1
+                self._step_counter = 0
+
+        elif self._state == 1:
+            # Jetbot が後退する
+            self._jetbot.set_dof_velocity_targets([[-8.0, -8.0]])
+            self._step_counter += 1
+            if self._step_counter > 100:
+                self._jetbot.set_dof_velocity_targets(np.array([[0.0, 0.0]]))
+                print("Franka starting pick-and-place...")
+                self._state = 2
+                self._step_counter = 0
+                self._franka.open_gripper()
+
+        elif self._state == 2:
+            # ステップカウンタを使った Franka のピック＆プレースシーケンス
+            cube_pos = self._cube.get_world_poses()[0].numpy()[0]
+            down_orient = self._franka.get_downward_orientation()
+            self._step_counter += 1
+
+            if self._pick_phase == 0:
+                # キューブの上方へ移動（120 ステップ待機）
+                self._franka.set_end_effector_pose(
+                    np.array([[cube_pos[0], cube_pos[1], cube_pos[2] + 0.2]]), down_orient
+                )
+                if self._step_counter > 120:
+                    self._pick_phase = 1
+                    self._step_counter = 0
+            elif self._pick_phase == 1:
+                # キューブへ下降（100 ステップ待機）
+                self._franka.set_end_effector_pose(
+                    np.array([[cube_pos[0], cube_pos[1], cube_pos[2] + 0.1]]), down_orient
+                )
+                if self._step_counter > 100:
+                    self._franka.close_gripper()
+                    self._pick_phase = 2
+                    self._step_counter = 0
+            elif self._pick_phase == 2:
+                # グリッパーを閉じる（50 ステップ待機）
+                self._franka.close_gripper()
+                if self._step_counter > 50:
+                    self._pick_phase = 3
+                    self._step_counter = 0
+            elif self._pick_phase == 3:
+                # キューブを持ち上げる（100 ステップ待機）
+                self._franka.set_end_effector_pose(
+                    np.array([[cube_pos[0], cube_pos[1], cube_pos[2] + 0.25]]), down_orient
+                )
+                if self._step_counter > 100:
+                    self._pick_phase = 4
+                    self._step_counter = 0
+            elif self._pick_phase == 4:
+                # 目標位置へ移動（150 ステップ待機）
+                self._franka.set_end_effector_pose(np.array([[0.3, 0.3, 0.15]]), down_orient)
+                if self._step_counter > 150:
+                    self._franka.open_gripper()
+                    self._pick_phase = 5
+                    self._step_counter = 0
+            elif self._pick_phase == 5:
+                # アームを持ち上げる（150 ステップ待機）
+                self._franka.set_end_effector_pose(
+                    np.array([[cube_pos[0], cube_pos[1], cube_pos[2] + 0.5]]), down_orient
+                )
+                if self._step_counter > 150:
+                    self._step_counter = 0
+        # -- ステートマシンここまで -- #
 
     async def setup_post_reset(self):
-        self._franka_controller.reset()
-        self._jetbot_controller.reset()
-        await self._world.play_async()
-        return
+        self._state = 0
+        self._step_counter = 0
+        self._pick_phase = 0
+        self._franka.reset_to_default_pose()
 
-    def physics_step(self, step_size):
-        current_observations = self._world.get_observations()
-        if current_observations["task_event"] == 0:
-            self._jetbot.apply_wheel_actions(
-                self._jetbot_controller.forward(
-                    start_position=current_observations[self._jetbot.name]["position"],
-                    start_orientation=current_observations[self._jetbot.name]["orientation"],
-                    goal_position=current_observations[self._jetbot.name]["goal_position"],
-                )
-            )
-        elif current_observations["task_event"] == 1:
-            self._jetbot.apply_wheel_actions(ArticulationAction(joint_velocities=[-8, -8]))
-        elif current_observations["task_event"] == 2:
-            self._jetbot.apply_wheel_actions(ArticulationAction(joint_velocities=[0.0, 0.0]))
-            # Franka がキューブを拾い上げて配置する
-            actions = self._franka_controller.forward(
-                picking_position=current_observations[self._cube_name]["position"],
-                placing_position=current_observations[self._cube_name]["target_position"],
-                current_joint_positions=current_observations[self._franka.name]["joint_positions"],
-            )
-            self._franka.apply_action(actions)
-        # Franka のピック＆プレースが完了したらシミュレーションを一時停止
-        if self._franka_controller.is_done():
-            self._world.pause()
-        return
+    def physics_cleanup(self):
+        if self._physics_callback_id is not None:
+            SimulationManager.deregister_callback(self._physics_callback_id)
+            self._physics_callback_id = None
 ```
 
-!!! note "`pre_step` の `control_index` の活用"
-    `pre_step(control_index, simulation_time)` の `control_index` は物理ステップごとに自動インクリメントされるインデックスです（[チュートリアル 4](04_adding_a_manipulator_robot.md) 参照）。このコードでは、Jetbot が目標に到達した時点の `control_index` を `_cube_arrive_step_index` に記録し、そこから 200 ステップ経過したかどうかで後退フェーズの終了を判定しています。
+!!! note "Articulation と Franka クラスの使い分け"
+    Jetbot は速度指令だけで制御できるため汎用の `Articulation` クラスでラップしていますが、Franka は IK やグリッパー制御が必要なため、チュートリアル 4 で学んだ `Franka` クラス（`Articulation` の派生クラス）を使用しています。また、`setup_post_reset` で `reset_to_default_pose()` とステート変数の初期化を行うことで、**RESET** ボタンで最初からやり直せるようにしています。
 
 コードを保存してシミュレーションを確認します：
 
 1. **Ctrl+S** を押して保存し、**File > New From Stage Template > Empty** → **LOAD** を実行します。
-2. **PLAY** ボタンを押して、以下の一連の動作を確認します：
+2. 以下の一連の動作を確認します：
     - Jetbot がキューブを Franka の近くまで押して運ぶ
     - Jetbot が後退して退避する
     - Franka がキューブを拾い上げて目標位置に配置する
-    - 動作完了後にシミュレーションが一時停止する
 
-![複数ロボットの連携動作](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/core_api_tutorials_6_2.webp)
+![複数ロボットの連携動作](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/core_api_tutorials_5_2.webp)
 
 ## まとめ
 
 このチュートリアルでは以下のトピックを扱いました：
 
-1. **Jetbot** と **Franka** の2種類のロボットを同じシーンに配置
-2. 既存の `PickPlace` タスクを**サブタスク**として再利用するパターン
-3. **タスクイベント**を使ったフェーズ管理によるロボット間の動作切り替え
-4. `observations.update()` によるサブタスクの観測情報の統合
+1. **複数のロボットとオブジェクト（キューブ）**を同じシーンに配置
+2. `Cube`・`GeomPrim`・`RigidPrim` による**押せるオブジェクトの作成**
+3. **Articulation クラス**による種類の異なるロボットの制御
+4. 移動ロボット（Jetbot）がオブジェクトをマニピュレータ（Franka）まで**押し運ぶ動作**
+5. 押す・後退する・拾うを協調させる**ステートマシンロジック**の構築
+6. **Franka クラス**による IK ベースのエンドエフェクタ制御とグリッパー操作
 
 ## 次のステップ
 
-次のチュートリアル「[複数タスクの実行](06_multiple_tasks.md)」に進み、同じタスクの複数インスタンスを空間的に配置して並列実行する方法を学びましょう。
-
-!!! note "注釈"
-    以降のチュートリアルでも主に Extension Workflow を使用して開発を進めます。Standalone Workflow への変換方法は [Hello World](01_hello_world.md#_11) で学んだ手順と同様です。
+次のチュートリアル「[複数ロボットシナリオ](06_multiple_tasks.md)」に進み、ロボットシナリオをクラスとして整理し、複数インスタンスを並列実行する方法を学びましょう。

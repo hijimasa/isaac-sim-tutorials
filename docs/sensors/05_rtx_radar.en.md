@@ -9,17 +9,18 @@ title: RTX Radar Sensor
 
 ## Overview
 
-RTX Radar sensors are simulated at render time on the GPU; results are copied to the `GenericModelOutput` AOV. They are rendered using **`OmniRadar` prims** with the `OmniSensorGenericRadarWpmDmatAPI` schema. Camera-prim-based RTX Radars are deprecated as of Isaac Sim 5.0.
+RTX Radar sensors are simulated at render time on the GPU; results are copied to the `GenericModelOutput` AOV. They are rendered using **`OmniRadar` prims** with the `OmniSensorGenericRadarWpmDmatAPI` schema. In Isaac Sim 6.0 the deprecated `IsaacSensorCreateRtxRadar` command is replaced by the `isaacsim.sensors.experimental.rtx` `Radar` (authoring) + `RadarSensor` (runtime) classes.
 
 !!! warning
-    RTX Radar Doppler modeling requires **Motion BVH** to be enabled — see [RTX Sensors](03_rtx_sensors.md#motion-bvh).
+    RTX Radar requires **Motion BVH** to be enabled (Doppler effect, and therefore RTX Radar entirely). Enable it via launch flags, `SimulationApp({"enable_motion_bvh": True})`, or `carb.settings` — see [RTX Sensors](03_rtx_sensors.md).
 
 ## What you will learn
 
-- **Create via command**: `IsaacSensorCreateRtxRadar` creates a generic `OmniRadar` prim (or a Camera prim with `force_camera_prim=True` for deprecated workflows). Set attributes like `omni:sensor:tickRate`. See the `OmniSensorGenericRadarWpmDmatAPI` schema for available attributes.
-- **Collect data**: attach annotators to the `OmniRadar` prim to visualize returns — see [RTX Sensor Annotators](06_rtx_annotators.md).
+- **Create via the `Radar` class**: `Radar(path="/World/radar", tick_rate=10, translations=..., orientations=...)` creates an `OmniRadar` prim. `Radar.create()` accepts `config` (from `SUPPORTED_RADAR_CONFIGS`) or `usd_path`; pass extra `schemas=[...]` through `Radar(...)` directly.
+- **Key parameters**: `tick_rate` (Hz; known issue in 6.0 GA — Radar autotriggers regardless of `omni:sensor:tickRate`), `aux_output_level` (`NONE`/`BASIC`; `BASIC` enables radial velocity `rv_ms` in the GMO output).
+- **Collect data**: `RadarSensor(radar, annotators=["generic-model-output"])`, then `data, info = sensor.get_data("generic-model-output")` and `parse_generic_model_output_data(data)` — see [RTX Sensor Annotators](06_rtx_annotators.md).
 - **Sensor materials**: Radar returns depend on material emissivity/reflectivity — see [RTX Sensor Non-Visual Materials](07_rtx_materials.md).
 
-## Standalone example
+## Standalone examples
 
-`./python.sh standalone_examples/api/isaacsim.util.debug_draw/rtx_radar.py`
+`./python.sh standalone_examples/api/isaacsim.sensors.experimental.rtx/create_radar_basic.py` (Debug Draw visualization) and `inspect_radar_gmo.py`. For ROS 2 PointCloud2 publishing, see the official RTX Radar ROS 2 tutorial.

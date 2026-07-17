@@ -141,6 +141,9 @@ Steps:
 !!! tip "Batch-select symmetric joints"
     Joints that share the same value — like `left_hip_pitch` and `right_hip_pitch` — can be selected together with **Ctrl + click**, so that entering a value in the Properties panel applies it to all of them at once. This speeds up the work considerably.
 
+!!! warning "Note when using the Newton physics engine"
+    When using the experimental **Newton** physics engine, physics initialization might fail because reversed joints are not supported for `/h1/Joints/torso`. If this happens, select the torso joint and, under **Physics > Joint** in the Properties panel, swap the joint bodies so that **Body 0 is `/h1/torso_link`** and **Body 1 is `/h1/pelvis`**.
+
 ### 1-5. Preserve Values Across Simulation Reset
 
 By default, Isaac Sim resets to the initial state when you press Stop, which can also wipe the Drive API target values. Disable that behavior:
@@ -165,10 +168,11 @@ You should see the robot stay upright while each joint converges to its target p
 
 When you have confirmed the pose:
 
-4. Press **Stop**
-5. **Delete** the Fixed Joint you created (it is not needed for the rigged asset)
-6. Save with **Ctrl + S**
-7. (Optional) Re-enable **Edit > Preferences > Physics > Reset Simulation on Stop**
+4. Press **Stop** once the robot reaches the desired initial pose. The pose is saved to the Joint State API, and the next Play will start from this pose
+5. **Repeat Play → Stop once more** to ensure the pose is saved even after reset
+6. **Delete** the Fixed Joint you created (it is not needed for the rigged asset)
+7. Save with **Ctrl + S**
+8. (Optional) Re-enable **Edit > Preferences > Physics > Reset Simulation on Stop**
 
 !!! note "Why bother with a Fixed Joint?"
     H1 still lacks proper contact and friction settings on its feet. Pressing Play directly would cause it to fall or slip, making it impossible to tell whether it has converged to the target pose. Pinning the torso in mid-air with a Fixed Joint isolates **the joint-drive behavior alone**, so you can verify it visually.
@@ -251,7 +255,7 @@ For each joint, set the following in the Properties panel:
 ![Joint section](./images/59_joint_section.png)
 
 !!! tip "H1 has zero armature and zero friction"
-    The standard Isaac Lab H1 configuration leaves both armature and friction at 0 (equivalent to unset). Even if you do not enter values, default values will appear in `dof_properties` (confirmed in the next step). When working with a real robot, obtain the correct values from its datasheet or actuator specifications.
+    The standard Isaac Lab H1 configuration leaves both armature and friction at 0 (equivalent to unset). Even if you do not enter values, default values are used (you can confirm this in the next step). When working with a real robot, obtain the correct values from its datasheet or actuator specifications.
 
 ### 2-5. Save
 
@@ -267,26 +271,41 @@ Checking values one-by-one in the GUI is tedious. Instead, use a **Python script
 2. Paste the following script into the editor at the bottom:
 
 ```python
-from isaacsim.core.prims import SingleArticulation
+from isaacsim.core.experimental.prims import Articulation
 
-prim_path = "/h1"
-prim = SingleArticulation(prim_path=prim_path, name="h1")
+prim = Articulation("/h1")
 print(prim.dof_names)
-print(prim.dof_properties)
+
+lower, upper = prim.get_dof_limits()
+stiffnesses, dampings = prim.get_dof_gains()
+max_velocities = prim.get_dof_max_velocities()
+max_efforts = prim.get_dof_max_efforts()
+for i, name in enumerate(prim.dof_names):
+    print(
+        f"  {name}: lower={lower.numpy()[0][i]:.4f}, upper={upper.numpy()[0][i]:.4f}, "
+        f"maxVelocity={max_velocities.numpy()[0][i]:.2f}, maxEffort={max_efforts.numpy()[0][i]:.0f}, "
+        f"stiffness={stiffnesses.numpy()[0][i]:.2f}, damping={dampings.numpy()[0][i]:.2f}"
+    )
 ```
 
-### 3-2. Running and Reading the Output
+!!! note "Uses the Isaac Sim 6.0 experimental API"
+    Up to 5.1, everything was printed at once via `dof_properties` on `isaacsim.core.prims.SingleArticulation`. The official 6.0 tutorial was updated to use the **experimental API** `isaacsim.core.experimental.prims.Articulation`, retrieving each property individually with `get_dof_limits()` / `get_dof_gains()` / `get_dof_max_velocities()` / `get_dof_max_efforts()`.
 
-3. Press **Play** to start the simulation (`SingleArticulation` cannot read internal values until physics is initialized)
-4. Run the script with the **Run** button in Script Editor (or Ctrl + Enter)
-5. Two outputs appear in the console at the bottom:
+### 3-2. Run and Read the Output
 
-   ![Verification output](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_4.png)
+3. Press **Play** to start the simulation (`Articulation` cannot read internal values until physics is initialized)
+4. Execute the script with the **Run** button (or Ctrl + Enter) in the Script Editor
+5. The console below shows the `dof_names` list and one line of properties per DOF:
 
-- **`dof_names`**: list of joint names corresponding to the degrees of freedom (DOFs)
-- **`dof_properties`**: an array of properties per DOF. Each row corresponds to one joint and the columns roughly mean:
+    ```
+    left_hip_yaw: lower=-0.4300, upper=0.4300, maxVelocity=100.00, maxEffort=300, stiffness=149.54, damping=5.00
+    right_hip_yaw: lower=-0.4300, upper=0.4300, maxVelocity=100.00, maxEffort=300, stiffness=149.54, damping=5.00
+    torso: lower=-2.3500, upper=2.3500, maxVelocity=100.00, maxEffort=300, stiffness=200.00, damping=4.98
+    ...
+    ```
 
-    `(type, hasLimits, lower, upper, drive_mode, maxVelocity, maxEffort, stiffness, damping)`
+- **`dof_names`**: the list of joint names corresponding to the degrees of freedom (DOFs)
+- Each line shows that joint's range of motion (lower / upper), **maxVelocity**, **maxEffort**, **stiffness**, and **damping**
 
 ### 3-3. Checklist
 
@@ -299,7 +318,7 @@ Check the output against the following:
 - [ ] **damping** is `5.0` for the legs and `10.0` for the arms
 
 !!! warning "Output is reported on a radian basis"
-    `dof_properties` values are normalized back to a **radian basis** in the output. Even though you entered USD values in degrees, the numbers shown here can be directly compared to the policy config (Isaac Lab's `env_cfg`). If they do not match, the first thing to suspect is a unit-conversion mistake from Step 2-2.
+    The values printed by the script (such as the lower/upper limits) are normalized back to a **radian basis** in the output. Even though you entered USD values in degrees, the numbers shown here can be directly compared to the policy config (Isaac Lab's `env_cfg`). If they do not match, the first thing to suspect is a unit-conversion mistake from Step 2-2.
 
 ## Troubleshooting
 
@@ -309,8 +328,8 @@ Check the output against the following:
 | Joints settle at completely wrong positions | Stiffness/damping too small, or unit conversion missed | Verify the `× π/180` conversion in Step 2-2 — errors compound quickly |
 | Joints vibrate / oscillate | Stiffness too high, damping too low | Re-check the policy values — the actual policy numbers should be stable |
 | Drive properties have no effect after entering values | Joint State / Drive API not applied to those joints | Reselect the joints in Stage and reapply **Add > Physics > Angular Drive** |
-| Error when creating `SingleArticulation` | Simulation not running | Press **Play** before executing the Script Editor |
-| `dof_properties` values diverge from the spec | deg ↔ rad conversion mistake, or values from the wrong group entered | Cross-check against the tables in Step 2-1, group by group |
+| Error when creating `Articulation` or reading values | Simulation not running | Press **Play** before executing the Script Editor |
+| Verification script output diverges from the spec | deg ↔ rad conversion mistake, or values from the wrong group entered | Cross-check against the tables in Step 2-1, group by group |
 | Target values reset when pressing Stop | **Reset Simulation on Stop** is ON | Turn it OFF in **Edit > Preferences > Physics** (at least while working through this tutorial) |
 
 ## Summary
@@ -320,7 +339,7 @@ This tutorial covered the following topics:
 1. **Setting the initial pose** — adding Joint State / Angular Drive APIs and entering target positions after radian-to-degree conversion
 2. **Pose verification with a Fixed Joint** — temporarily pinning `torso_link` during rigging to isolate drive behavior
 3. **Configuring joint settings** — stiffness/damping (`× π/180`), Max Force (unchanged), Maximum Joint Velocity (`× 180/π`), armature, and friction
-4. **Verification script** — bulk-checking all joints via `SingleArticulation.dof_properties`
+4. **Verification script** — bulk-checking all joints with the experimental API (`isaacsim.core.experimental.prims.Articulation`) via `get_dof_gains()` and friends
 
 H1 is a representative legged robot, but the workflow of **"transcribe the policy specification's numbers into USD with unit conversions"** is exactly the same for quadrupeds (ANYmal, A1, and so on) and other humanoids. Use this procedure as a template and substitute values for your robot or policy.
 

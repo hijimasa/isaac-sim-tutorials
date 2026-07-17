@@ -42,7 +42,7 @@ title: オブジェクトベースの合成データセット生成
 ./python.sh standalone_examples/replicator/object_based_sdg/object_based_sdg.py
 ```
 
-カスタム設定ファイルは `--config` で渡します（サンプルは `object_based_sdg/config/*`。`object_based_sdg_dope_config.yaml` と `object_based_sdg_centerpose_config.yaml` はそれぞれ **DOPE / CenterPose** 形式の出力例です）：
+カスタム設定ファイルは `--config` で渡します（サンプルは `object_based_sdg/config/*`。`object_based_sdg_config.yaml` は **BasicWriter** でラベル付きアセットとメッシュディストラクタを拡張した例、`object_based_sdg_dope_config.yaml` と `object_based_sdg_centerpose_config.yaml` はそれぞれ **PoseWriter の DOPE / CenterPose** 形式の出力例です）：
 
 ```bash
 ./python.sh standalone_examples/replicator/object_based_sdg/object_based_sdg.py \
@@ -61,7 +61,7 @@ title: オブジェクトベースの合成データセット生成
 | `num_frames` / `num_cameras` | キャプチャフレーム数とカメラ数（総エントリ数は num_frames × num_cameras） |
 | `disable_render_products_between_captures` | True ならキャプチャ間でレンダープロダクトを無効化してリソースを節約 |
 | `simulation_duration_between_captures` | キャプチャ間に実行するシミュレーション時間 |
-| `camera_properties_kwargs` | カメラプロパティ（焦点距離、フォーカス距離、F 値、クリッピング範囲） |
+| `camera_properties_kwargs` | カメラプロパティ（`focal_length`、`focus_distance`、`f_stop`、`clipping_range`。6.0 でスネークケース表記に変更） |
 | `writer_type` / `writer_kwargs` | 使用するライター（PoseWriter、BasicWriter など）とその初期化パラメータ |
 | `labeled_assets_and_properties` | **学習対象**のラベル付きアセットのリスト（プロパティ付き） |
 | `shape_distractors_types` / `_num` | 形状ディストラクタの種類（capsule / cone / cylinder / sphere / cube）と数 |
@@ -72,7 +72,7 @@ title: オブジェクトベースの合成データセット生成
 
 ## ステップ 3：ヘルパー関数とカスタムランダマイザ
 
-スクリプトには、プリムへの **3D Transform 属性の付与**、**ランダムな位置・回転・スケール値の生成**（球面上・球内・2 球間の一様分布など）、**コライダーとリジッドボディの付与**のヘルパー関数が用意されています。
+スクリプトは、一般的な操作に **`rep.functional` API を直接使用**します：Transform の設定は `rep.functional.modify.pose`、アセットやカメラの作成は `rep.functional.create.reference` / `rep.functional.create.camera`、物理プロパティの付与は `rep.functional.physics.apply_rigid_body` / `apply_collider` です（独自の Transform ヘルパー関数は不要になりました）。ユーティリティモジュールには、**ランダムな位置・回転・スケール値の生成**や**球面上のランダム姿勢の生成**、**コライダーのみの付与**（静的オブジェクト用）などのヘルパー関数が残っています。セマンティックラベル関連は `isaacsim.core.experimental.utils.semantics` の `add_labels` / `remove_all_labels` / `upgrade_prim_semantics_to_labels` を使います。
 
 カスタムランダマイザの代表例：
 

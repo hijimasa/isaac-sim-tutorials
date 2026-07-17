@@ -25,7 +25,7 @@ After completing this tutorial, you will have learned:
     - **Articulation Root**: required for the asset to behave as a single articulation in the physics simulation
 
 !!! note "Relationship Between the Gain Tuner and Robot Schema"
-    The Gain Tuner in Isaac Sim 5.1 uses the **Robot Schema** (`IsaacRobotAPI`, `IsaacLinkAPI`, `IsaacJointAPI`) internally to understand the robot's structure. Specifically, the **Select Robot** dropdown lists **only prims that have Robot API applied**. Assets without the Robot Schema will be invisible to the Gain Tuner even when their articulation is enabled.
+    The Gain Tuner uses the **Robot Schema** (`IsaacRobotAPI`, `IsaacLinkAPI`, `IsaacJointAPI`) internally to understand the robot's structure. Specifically, the **Select Robot** dropdown lists **only prims that have Robot API applied**. Assets without the Robot Schema will be invisible to the Gain Tuner even when their articulation is enabled.
 
     When you import a robot from URDF in [Tutorial 6](06_setup_manipulator.md), the URDF importer applies the Robot Schema **automatically**. So as long as you stay on the URDF import path, no extra action is needed.
 
@@ -47,6 +47,10 @@ In [Tutorial 7](07_configure_manipulator.md), you learned the basics of the Gain
 4. **Tune velocity drives** — Damping in velocity-control mode
 5. **Save the gains** — write them back into the asset's physics layer
 6. **Visualize the result** — evaluate behavior on the commanded vs. measured plots
+7. **Validate with test modes** — confirm the gains with Snap-to-Limits and the Stress Test (Isaac Sim 6.0)
+
+!!! note "Restructuring of the official tutorial in Isaac Sim 6.0"
+    The official Isaac Sim 6.0 tutorial (Tutorial 11) was rewritten: starting from a **zero-gain UR10** imported from URDF, it diagnoses insufficient gains with the **Snap-to-Limits test** and demonstrates the importance of velocity limits with the **Stress Test**. The tuning methodology covered in Steps 2-4 of this page is now organized in the "Tuning Workflow" section of the official Gain Tuner Extension reference. The new 6.0 test modes are covered in Step 7.
 
 !!! note "What is a Joint Drive?"
     A joint drive in Isaac Sim is like a **virtual motor** built into each joint. When you give it a target (position or velocity), an internal **PD controller** (proportional-derivative control) computes the error against the target and produces torque to drive the joint.
@@ -90,7 +94,7 @@ From the menu, click in the following order to open the Gain Tuner window:
 
 **Tools > Robotics > Asset Editors > Gain Tuner**
 
-![Gain Tuner UI](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_gains_tuner_ui.png)
+![Gain Tuner UI](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_gain_tuner_ur10_zero_gains.png)
 
 Use the **Select Robot** dropdown at the top of the window to pick the robot to tune. Assets with the Robot Schema applied are listed automatically.
 
@@ -302,7 +306,7 @@ If you do not have write permission, or you do not want to alter the original ro
 
 After running a test, the Gain Tuner plot area shows the following:
 
-![Gain Tuner plots](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_gains_tuner_plots.png)
+![Gain Tuner plots](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_gain_tuner_ur10_snap_to_limits_tuned_gains.png)
 
 | Element | Meaning |
 |---|---|
@@ -329,6 +333,64 @@ Clicking an individual joint in the Joint List on the left shows that joint's pl
 !!! tip "Test Results Show Up Only After the Test Finishes"
     Plots may not update in real time during simulation. **Stop the simulation first**, then check the plots.
 
+## Step 7: Validation with Test Modes (Isaac Sim 6.0)
+
+The Isaac Sim 6.0 Gain Tuner offers test modes for systematically validating gains:
+
+| Test mode | Description | Purpose |
+|---|---|---|
+| **Snap-to-Limits** (default) | Drives each joint to its lower and upper limits | Verify that gains are strong enough to cover the full range of motion, and that limits, gains, and collision geometry are mutually consistent |
+| **Sinusoidal** | Drives joints with continuous sinusoidal trajectories | Evaluate tracking of smooth motion and identify under/overdamping |
+| **Step Function** | Drives joints with step changes in the target | Evaluate step response (rise time, overshoot) |
+| **Stress Test** | Drives joints with extreme random commands | Confirm stability under the harsh commands typical of reinforcement learning (Isaac Lab) |
+
+### 7-1. Snap-to-Limits Test
+
+In the official tutorial, the freshly imported UR10 (all joint gains at zero) is diagnosed as follows:
+
+1. Set the Stiffness of all joints to a small value (e.g., `10`) and Damping to `0`
+2. Select the **Snap-to-Limits** test mode and enable the **Test** checkbox for all joints
+3. Press **Play**, then **Run Test**
+
+With insufficient stiffness, `shoulder_lift_joint` and `elbow_joint`, which bear the full weight of the arm, will **Fail** (unable to reach the ends of their range of motion).
+
+!!! tip "Distinguishing Fail from Blocked"
+    A joint reported as **Blocked** may be prevented from reaching its limit by the collision geometry. Re-run with **Disable Self-Collisions** enabled; if the joint then passes, the cause is a joint limit that extends beyond what the collision geometry allows. In that case, tighten the joint limit in USD rather than adjusting gains.
+
+Example gains from the official tutorial that let the UR10 pass Snap-to-Limits:
+
+| Joint | Stiffness | Damping |
+|---|---|---|
+| shoulder_pan_joint | 500000 | 50 |
+| shoulder_lift_joint | 500000 | 50 |
+| elbow_joint | 50000 | 50 |
+| wrist_1_joint | 500 | 0.5 |
+| wrist_2_joint | 500 | 0.5 |
+| wrist_3_joint | 50 | 0.0 |
+
+!!! warning "Also watch the Max Force (maximum torque)"
+    The UR10's URDF defines per-joint max effort values (330 Nm for the shoulders, 150 Nm for the elbow, 56 Nm for the wrists), which are imported as the joint **Max Force** in USD. If a joint still fails after increasing stiffness, set **Joint > Advanced > Maximum Force** in the Properties panel to a higher value or `inf` (infinite). For the UR10, `shoulder_pan_joint` and `shoulder_lift_joint` require infinite max force to pass.
+
+### 7-2. Stress Test
+
+Once the tuned gains are applied, use the **Stress Test** to verify stability under the extreme commands typical of reinforcement learning training:
+
+1. Select **Stress Test** mode and choose the **Random Walk** sub-mode
+2. Set **Sequence** for all joints to `1` (tested in parallel)
+3. Leave **Disable Velocity Limits** off (the default), then **Play → Run Test**
+4. Confirm all joints report **Stable**
+
+Next, enable **Disable Velocity Limits** and re-run: some joints will now report **Unstable**. Without velocity limits, the PD controller responds to large position errors by generating forces that accelerate joints to extreme speeds within a single timestep, and the discrete-time solver can fail to converge, leading to energy blowup or NaN values.
+
+!!! note "The two roles of velocity limits"
+    - **Physical fidelity** — real actuators have manufacturer-specified maximum speeds (the UR10's URDF specifies roughly 2-3 rad/s per joint). Setting them in simulation reproduces the real robot's motion envelope.
+    - **Solver stability** — capping joint speed keeps per-step displacements within the range where the PhysX implicit integrator remains numerically stable.
+
+    If your application requires higher velocity limits, increase them incrementally and re-run the Stress Test after each change to confirm the solver remains stable. Repeat the comparison in the **Adversarial** sub-mode to also confirm stability under worst-case correlated configurations.
+
+!!! tip "Interpreting Stable"
+    A **Stable** result is meaningful only at the sigma and snap interval values used in the test. When assessing readiness for Isaac Lab training, record these parameters alongside the results.
+
 ## Troubleshooting
 
 | Symptom | Cause | Resolution |
@@ -353,11 +415,12 @@ This tutorial covered the following topics:
 4. **Tuning velocity drives** (Stiffness=0, track the target with Damping alone)
 5. **Saving gains to the asset** (writing to the physics layer with Save Gains to Physics Layer)
 6. **Plot-based evaluation** (commanded vs. measured)
+7. **Validation with the Snap-to-Limits test and the Stress Test** (distinguishing Fail from Blocked, velocity limits and solver stability)
 
 With these adjustments in place, the robot will move stably and responsively, providing a solid foundation for higher-level control algorithms to behave as expected.
 
 !!! tip "Going Deeper"
-    For the mathematical background of the Gain Tuner and PD control theory, refer to the Isaac Sim official documentation: [Gain Tuner Extension](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html). To implement a custom controller that writes torque commands directly, the official "Adding a Controller" tutorial is a useful reference.
+    For the mathematical background of the Gain Tuner and PD control theory, refer to the Isaac Sim official documentation: [Gain Tuner Extension](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html). To implement a custom controller that writes torque commands directly, this site's [Adding a Controller](../core_api/03_adding_a_controller.md) tutorial is a useful reference (the corresponding official tutorial was removed in 6.0).
 
 ## Next Steps
 

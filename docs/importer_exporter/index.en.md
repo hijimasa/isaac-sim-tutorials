@@ -10,12 +10,15 @@ This tutorial series covers how to import and export assets in Isaac Sim. You wi
 
 These skills are essential for integrating existing robot models into Isaac Sim's simulation environment and for using models created in Isaac Sim with other tools.
 
-![URDF import](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_import_urdf_franka.png)
+![URDF import](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.asset.importer.urdf-3.0.0_gui_2.png)
 
 ## Tutorials
 
 !!! example "[Tutorial 1: Import URDF](01_import_urdf.md)"
-    Learn how to import URDF files into Isaac Sim. Three methods are covered: direct GUI import, programmatic Python scripting, and import from ROS 2 nodes.
+    Learn how to import URDF files into Isaac Sim. Covers direct GUI import and programmatic import via the Python API and the standalone script, along with the meaning of the import settings (Robot Type / Base Type, self-collision, mesh merging, etc.).
+
+!!! example "[Tutorial 1a: Import URDF from a ROS 2 Node](01a_import_urdf_from_ros2.md)"
+    Learn how to import a URDF directly from the `/robot_description` topic published by `robot_state_publisher` in an environment with ROS 2 installed. Since it requires a ROS 2 installation, it is split out as a separate tutorial.
 
 !!! example "[Tutorial 2: Export URDF](02_export_urdf.md)"
     Learn how to use the USD to URDF Exporter to convert USD robot files to URDF format. Covers collision object mapping and exporter limitations.

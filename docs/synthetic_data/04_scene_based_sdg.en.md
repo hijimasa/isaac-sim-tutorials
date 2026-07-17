@@ -13,7 +13,7 @@ Generate offline datasets in a realistic warehouse scene: config files (YAML/JSO
 
 ## Scenario
 
-A forklift is randomly placed; a pallet is placed in front of it; boxes are scattered on the pallet with `scatter_2d(check_for_collisions=True)` each frame; a traffic cone is placed at a random bottom corner of the forklift's OBB; a short physics simulation drops boxes on a rear pallet. Three cameras (top view, randomized pallet view, driver view) feed BasicWriter (rgb, semantic_segmentation, bounding_box_3d) into `_out_scene_based_sdg`.
+A forklift is randomly placed; a pallet is placed in front of it; boxes are scattered on the pallet with `scatter_2d(check_for_collisions=True)` each frame; a traffic cone is placed at a random bottom corner of the forklift's OBB; a short physics simulation drops boxes on a rear pallet. Three cameras (top view, randomized pallet view, driver view) feed BasicWriter through a configurable backend (default: `DiskBackend`; annotators rgb, bounding_box_2d_tight, semantic_segmentation, distance_to_image_plane, bounding_box_3d, occlusion) into `_out_scene_based_sdg`. Config files now take `backend_type`/`backend_params` keys (KITTI/COCO configs use `backend_type: null`); the default renderer is `RealTimePathTracing` with `rt_subframes: 32`, `num_frames: 10`.
 
 ## Running
 
@@ -28,9 +28,10 @@ KittiWriter/CocoWriter output plugs directly into KITTI/COCO-based training pipe
 
 ## Key Implementation Points
 
-- Create `SimulationApp` before importing omni modules; load the stage with `open_stage(assets_root_path + url)`.
-- Render products are disabled until SDG starts; the driver camera is wrapped via `rep.get.prim_at_path` for graph randomization.
-- One-shot placement uses the Isaac Sim API (`prims.create_prim` + transform math); per-frame randomization uses registered Replicator graphs (`rep.randomizer.register`): scattered boxes + materials, cone placement via `rep.distribution.sequence` on OBB corners, and light randomization above the combined AABB. Triggers can be per-frame, per-interval, or manual.
+- Create `SimulationApp` before importing omni modules; load the stage with `stage_opened, _ = open_stage(assets_root_path + url)`; seed randomization with `rep.set_global_seed(42)` and `np.random.default_rng(42)`.
+- Cameras are created with `rep.functional.create.camera` under an `/SDG/Cameras` scope; render products are disabled until SDG starts; a `setup_writer(config)` helper initializes the writer with optional backend support.
+- One-shot placement uses `define_prim` + `add_reference_to_stage` + `add_labels` + `XformPrim` from `isaacsim.core.experimental`; per-frame randomization mixes direct `rep.functional` calls (`rep.functional.randomizer.scatter_2d`, `rep.functional.modify.pose` for cameras) with graph randomizers for box materials and sphere lights registered via `rep.trigger.on_custom_event` and fired with `rep.utils.send_og_event`.
+- The pre-SDG physics drop uses `SimulationManager` with experimental `GeomPrim`/`RigidPrim` classes; cleanup waits with `rep.orchestrator.wait_until_complete()` before detaching the writer and destroying render products.
 
 ## Next Steps
 

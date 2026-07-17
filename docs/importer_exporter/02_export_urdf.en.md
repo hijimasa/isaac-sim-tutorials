@@ -47,7 +47,7 @@ Once enabled, **File > Export to URDF** is added to the menu. Selecting it opens
 
 ![Export options](images/02_export_options.png)
 
-![URDF export](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_full_ext-usd_to_urdf_exporter-1.3.3_gui_urdf_export.png)
+![URDF export](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.1_full_ext-usd_to_urdf_exporter-1.3.3_gui_urdf_export.png)
 
 ## Step 2: Export the Franka Robot
 
@@ -71,7 +71,7 @@ You can check whether the exported URDF is correct in two ways:
 1. **Re-import into Isaac Sim** — convert the URDF back to USD following [Tutorial 1: Import URDF](01_import_urdf.md) and confirm the structure is preserved.
 2. **Check with an online URDF viewer** — drag and drop **the entire output directory** onto the [URDF Viewer Example](https://gkjohnson.github.io/urdf-loaders/javascript/example/bundle/index.html) site to display the URDF in the browser and move each joint with sliders.
 
-![URDF viewer](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/urdf_viewer_franka.png)
+![URDF viewer](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/urdf_viewer_franka.png)
 
 ## Step 4: Export Options
 
@@ -127,14 +127,14 @@ Let's confirm this mapping with the following experiment.
 
 4. Confirm the hand now has a sphere attached, like this:
 
-    ![USD model (sphere added)](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_usd_sphere_mesh_no_collision_visible.png)
+    ![USD model (sphere added)](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_usd_sphere_mesh_no_collision_visible.png)
 
 ### 5-2. No Collision API, Visible → Visual Mesh Only
 
 1. Export the stage in this state following the same procedure as Step 2 (the USD itself does not need to be saved).
 2. Drag the output directory onto the [URDF Viewer Example](https://gkjohnson.github.io/urdf-loaders/javascript/example/bundle/index.html) to display it.
 
-    ![URDF (sphere, no collision, visible)](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_urdf_sphere_mesh_no_collision_visible.png)
+    ![URDF (sphere, no collision, visible)](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_urdf_sphere_mesh_no_collision_visible.png)
 
 3. Enable the viewer's **Show Collision** option; all collision meshes are highlighted in gold.
 4. Confirm the **sphere is not highlighted in gold** — in the URDF, the sphere is a visual mesh and not a collision mesh.
@@ -144,7 +144,7 @@ Let's confirm this mapping with the following experiment.
 1. Back in the Franka USD, add a collision API to the sphere. Select the Sphere prim and choose **Physics > Colliders Preset** from the **+Add** button in the Properties panel.
 2. Export the stage to URDF again and drag the output directory onto the viewer (you may need to reload the viewer page before loading the new URDF).
 
-    ![URDF (sphere, collision, visible)](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_urdf_sphere_mesh_collision_visible.png)
+    ![URDF (sphere, collision, visible)](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_urdf_sphere_mesh_collision_visible.png)
 
 3. Enable **Show Collision** and confirm that **this time the sphere is highlighted in gold**. The sphere is now both a visual mesh and a collision mesh in the URDF.
 
@@ -152,11 +152,11 @@ Let's confirm this mapping with the following experiment.
 
 1. Back in the Franka USD, disable the "eye" icon next to the Sphere prim in the Stage panel to make the sphere invisible.
 
-    ![USD model (sphere invisible)](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_usd_sphere_mesh_invisible.png)
+    ![USD model (sphere invisible)](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_usd_sphere_mesh_invisible.png)
 
 2. Export again and check in the viewer. The sphere is not shown at first, but enabling **Show Collision** shows the sphere in gold. The sphere is exported only as a collision mesh, not a visual mesh.
 
-    ![URDF (sphere, collision, invisible)](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_urdf_sphere_mesh_collision_invisible.png)
+    ![URDF (sphere, collision, invisible)](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_urdf_sphere_mesh_collision_invisible.png)
 
 !!! warning "The behavior in 5-4 may not reproduce on all versions"
     Testing on Isaac Sim 5.1.0 (USD to URDF Exporter 1.3.4) on Windows, exporting with the sphere invisible (visibility = invisible) still produced the sphere **as a visual mesh as well** — it did not become collision-only (5-2 and 5-3 reproduced as described). This section follows the official documentation, but behavior may vary between exporter versions. After exporting, we recommend checking the `<visual>` / `<collision>` entries of the generated URDF directly.

@@ -141,6 +141,9 @@ H1 のロコモーションポリシーが期待する**初期姿勢**は次の�
 !!! tip "左右対称ジョイントはまとめて選択して入力"
     `left_hip_pitch` と `right_hip_pitch` のように同じ値を入れるジョイントは、**Ctrl + クリック**でまとめて選択してから Properties パネルで値を入力すると、複数ジョイントに同時反映されて作業が早くなります。
 
+!!! warning "Newton 物理エンジン使用時の注意"
+    実験的な **Newton** 物理エンジンを使用している場合、`/h1/Joints/torso` が「反転したジョイント（reversed joint）」であるために物理の初期化に失敗することがあります。その場合は torso ジョイントを選択し、Properties パネルの **Physics > Joint** でジョイントボディを入れ替えて、**Body 0 を `/h1/torso_link`**、**Body 1 を `/h1/pelvis`** にしてください。
+
 ### 1-5. シミュレーションリセット時に値を保持する設定
 
 Isaac Sim は既定で「Stop ボタンを押すと初期状態にリセット」されますが、リセット時に Drive API のターゲット値もリセットされてしまうことがあります。これを防ぎます：
@@ -165,10 +168,11 @@ Isaac Sim は既定で「Stop ボタンを押すと初期状態にリセット�
 
 確認が終わったら：
 
-4. **Stop** を押す
-5. 作成した Fixed Joint を**削除**（リギング後の本番では不要です）
-6. **Ctrl + S** で保存
-7. （任意）**Edit > Preferences > Physics > Reset Simulation on Stop** のチェックを**戻して**おく
+4. ロボットが目標の初期姿勢に達したところで **Stop** を押します。これにより姿勢が Joint State API に保存され、次回 Play 時はこの姿勢から開始されます
+5. リセット後も姿勢が保存されていることを確実にするため、**もう一度 Play → Stop を繰り返します**
+6. 作成した Fixed Joint を**削除**（リギング後の本番では不要です）
+7. **Ctrl + S** で保存
+8. （任意）**Edit > Preferences > Physics > Reset Simulation on Stop** のチェックを**戻して**おく
 
 !!! note "なぜわざわざ Fixed Joint を作るのか"
     H1 の足裏はまだ正しい接地条件・摩擦設定が入っていない状態です。そのまま Play すると倒れたり滑ったりして「ターゲット姿勢に収束したか」が判定できません。Fixed Joint で胴体を空中に固定することで、**ジョイント駆動だけの動作**を切り出して目視確認できます。
@@ -251,7 +255,7 @@ USD のスティフネス・ダンピングは「**1 度ずれたときに発生
 ![Jointセクション](./images/59_joint_section.png)
 
 !!! tip "H1 はアーマチュア・摩擦ともに 0"
-    Isaac Lab の標準 H1 設定ではアーマチュアと摩擦はいずれも 0（未設定相当）です。値を入れない場合でも `dof_properties` の出力にはデフォルト値が含まれます（次のステップで確認）。実機ロボットを扱う場合は、データシートやアクチュエータ仕様書から正確な値を取得してください。
+    Isaac Lab の標準 H1 設定ではアーマチュアと摩擦はいずれも 0（未設定相当）です。値を入れない場合でもデフォルト値が使われます（次のステップで確認できます）。実機ロボットを扱う場合は、データシートやアクチュエータ仕様書から正確な値を取得してください。
 
 ### 2-5. 保存
 
@@ -267,26 +271,41 @@ GUI で値を 1 つずつ確認するのは大変なので、**Python スクリ�
 2. 下部のエディタ領域に次のスクリプトを貼り付けます：
 
 ```python
-from isaacsim.core.prims import SingleArticulation
+from isaacsim.core.experimental.prims import Articulation
 
-prim_path = "/h1"
-prim = SingleArticulation(prim_path=prim_path, name="h1")
+prim = Articulation("/h1")
 print(prim.dof_names)
-print(prim.dof_properties)
+
+lower, upper = prim.get_dof_limits()
+stiffnesses, dampings = prim.get_dof_gains()
+max_velocities = prim.get_dof_max_velocities()
+max_efforts = prim.get_dof_max_efforts()
+for i, name in enumerate(prim.dof_names):
+    print(
+        f"  {name}: lower={lower.numpy()[0][i]:.4f}, upper={upper.numpy()[0][i]:.4f}, "
+        f"maxVelocity={max_velocities.numpy()[0][i]:.2f}, maxEffort={max_efforts.numpy()[0][i]:.0f}, "
+        f"stiffness={stiffnesses.numpy()[0][i]:.2f}, damping={dampings.numpy()[0][i]:.2f}"
+    )
 ```
+
+!!! note "Isaac Sim 6.0 の実験的 API を使用"
+    5.1 までは `isaacsim.core.prims.SingleArticulation` の `dof_properties` で一括表示していましたが、6.0 の公式チュートリアルは**実験的（experimental）API** の `isaacsim.core.experimental.prims.Articulation` を使う手順に更新されました。`get_dof_limits()` / `get_dof_gains()` / `get_dof_max_velocities()` / `get_dof_max_efforts()` で各プロパティを個別に取得します。
 
 ### 3-2. 実行と出力の読み方
 
-3. シミュレーションを **Play** で開始します（`SingleArticulation` は物理初期化後でないと内部値を読めないため）
+3. シミュレーションを **Play** で開始します（`Articulation` は物理初期化後でないと内部値を読めないため）
 4. Script Editor の **Run** ボタン（または Ctrl + Enter）でスクリプトを実行
-5. 下部のコンソールに次の 2 種類の出力が現れます：
+5. 下部のコンソールに `dof_names` の一覧と、1 行 1 DOF のプロパティ出力が現れます：
 
-   ![検証結果](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_4.png)
+    ```
+    left_hip_yaw: lower=-0.4300, upper=0.4300, maxVelocity=100.00, maxEffort=300, stiffness=149.54, damping=5.00
+    right_hip_yaw: lower=-0.4300, upper=0.4300, maxVelocity=100.00, maxEffort=300, stiffness=149.54, damping=5.00
+    torso: lower=-2.3500, upper=2.3500, maxVelocity=100.00, maxEffort=300, stiffness=200.00, damping=4.98
+    ...
+    ```
 
 - **`dof_names`**：自由度（DOF）に対応するジョイント名の一覧
-- **`dof_properties`**：各 DOF のプロパティをまとめた配列。1 行が 1 ジョイントに対応し、各列はおおむね次の意味です：
-
-    `(type, hasLimits, lower, upper, drive_mode, maxVelocity, maxEffort, stiffness, damping)`
+- 各行には、そのジョイントの可動域（lower / upper）、**maxVelocity**、**maxEffort**、**stiffness**、**damping** が表示されます
 
 ### 3-3. チェックリスト
 
@@ -299,7 +318,7 @@ print(prim.dof_properties)
 - [ ] **damping** が脚で `5.0`、腕で `10.0`
 
 !!! warning "出力はラジアン基準で表示される"
-    `dof_properties` の値は**ラジアン基準**に正規化されて表示されます。USD には度ベースで入力していたとしても、ここではポリシー設定ファイル（Isaac Lab の `env_cfg`）の値とそのまま比較できるようになっています。一致しない場合は、ステップ 2-2 の単位変換が間違っていないかを最初に疑ってください。
+    スクリプトの出力する可動域（lower / upper）などの値は**ラジアン基準**に正規化されて表示されます。USD には度ベースで入力していたとしても、ここではポリシー設定ファイル（Isaac Lab の `env_cfg`）の値とそのまま比較できるようになっています。一致しない場合は、ステップ 2-2 の単位変換が間違っていないかを最初に疑ってください。
 
 ## トラブルシューティング
 
@@ -309,8 +328,8 @@ print(prim.dof_properties)
 | 目標姿勢と全然違うところで止まる | スティフネス／ダンピングが小さすぎる、または単位変換ミス | ステップ 2-2 の `× π/180` を確認。指数的に値がズレやすい |
 | ジョイントがブルブル振動する | スティフネスが大きすぎ、ダンピングが小さすぎ | ポリシー仕様の値を再確認。実機の数値そのままで安定するはず |
 | Drive プロパティに値を入れても無視される | Joint State / Drive API がそのジョイントに適用されていない | Stage パネルで対象ジョイントを選び、**Add > Physics > Angular Drive** を再適用 |
-| `SingleArticulation` の作成でエラー | シミュレーション未実行 | **Play** を押してから Script Editor を実行 |
-| `dof_properties` の値がポリシー仕様と乖離 | 度⇄ラジアンの変換間違い、または別グループの値を入れている | ステップ 2-1 の表と照合し、グループごとに入力値を確認 |
+| `Articulation` の作成・値取得でエラー | シミュレーション未実行 | **Play** を押してから Script Editor を実行 |
+| 検証スクリプトの出力値がポリシー仕様と乖離 | 度⇄ラジアンの変換間違い、または別グループの値を入れている | ステップ 2-1 の表と照合し、グループごとに入力値を確認 |
 | Stop でターゲット値がリセットされる | **Reset Simulation on Stop** が ON | **Edit > Preferences > Physics** で OFF（チュートリアル中だけでも） |
 
 ## まとめ
@@ -320,7 +339,7 @@ print(prim.dof_properties)
 1. **初期姿勢の設定** — Joint State / Angular Drive API の追加と、ラジアン→度の変換を経たターゲット位置の入力
 2. **Fixed Joint による姿勢確認** — リギング途中に `torso_link` を一時固定して、駆動だけの挙動を可視化
 3. **ジョイント設定の構成** — スティフネス・ダンピング（`× π/180`）、Max Force（そのまま）、Max Joint Velocity（`× 180/π`）、アーマチュア・摩擦の入力
-4. **検証スクリプト** — `SingleArticulation.dof_properties` で全ジョイントを一括確認
+4. **検証スクリプト** — 実験的 API（`isaacsim.core.experimental.prims.Articulation`）の `get_dof_gains()` などで全ジョイントを一括確認
 
 H1 は脚ロボットの代表例ですが、**「ポリシー仕様の数値を、単位変換しながら USD に転記する」**という作業の流れは、四足歩行ロボット（ANYmal、A1 など）や別のヒューマノイドでも全く同じです。今回の手順をテンプレートとして、自分のロボットや別のポリシーに合わせて値を差し替えてみてください。
 

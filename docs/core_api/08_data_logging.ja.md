@@ -4,6 +4,11 @@ title: データロギング
 
 # データロギング
 
+!!! warning "Isaac Sim 6.0 での位置づけ"
+    このチュートリアルは Isaac Sim 6.0 の公式ドキュメントからは削除されました。
+    本ページは 5.1.0 時点の内容をもとにした本サイト独自の解説です。
+    （使用している `DataLogger` を含む `isaacsim.core.api` や、Follow Target サンプルが依存する `isaacsim.robot_motion.motion_generation` などは 6.0 では非推奨（deprecated）ですが、引き続き動作します。）
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます:

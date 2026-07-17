@@ -30,7 +30,7 @@ title: データオーグメンテーション
 !!! note "warp と NumPy の使い分け"
     **warp** は並列化可能な処理に特に有利で、**データが既に GPU メモリ上にある場合、GPU→CPU のメモリコピーを回避**できます。SDG のような高スループットのパイプラインでは、この差が処理速度に効いてきます。まず NumPy で処理を書いて動作を確認し、ボトルネックになったら warp カーネル化する、という進め方が現実的です。
 
-例のシナリオでは、赤いキューブを上から見るカメラを置き、毎フレームキューブをランダム回転させる Replicator グラフを作ります。適用するオーグメンテーションは、RGB の赤/青チャネル入れ替え（説明用）、HSV 変換＋ガウシアンノイズ＋RGB 逆変換の合成、深度への異なる σ のガウシアンノイズです。
+例のシナリオでは、赤いキューブを上から見るカメラを置き、キューブをランダム回転させる Replicator グラフを作ります。このグラフは**各キャプチャステップの前に送信されるカスタムイベント**でトリガーされ、毎フレームランダムな回転が適用されます。適用するオーグメンテーションは、RGB の赤/青チャネル入れ替え（説明用）、HSV 変換＋ガウシアンノイズ＋RGB 逆変換の合成、深度への異なる σ のガウシアンノイズです。
 
 ![オーグメンテーションの例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_augmentation.png)
 
@@ -41,38 +41,39 @@ title: データオーグメンテーション
 スタンドアロンで実行します：
 
 ```bash
-./python.sh standalone_examples/api/isaacsim.replicator.examples/augmentation_annotator.py
+./python.sh standalone_examples/replicator/augmentation/annotator_augmentation.py
 ```
 
 | 引数 | 既定値 | 意味 |
 |---|---|---|
 | `--use_warp` | False | オーグメンテーション関数に warp（GPU）を使う |
 | `--num_frames` | 25 | キャプチャするフレーム数 |
+| `--env_url` | （なし） | アセットルートからの相対パスで USD 環境を指定。省略時はドームライトと地面だけの空シーンを生成 |
 
 実装の流れ：
 
 1. オーグメンテーション関数を実行できるように、設定で**スクリプティングを有効化**します。
 2. RGB 用に赤/青チャネルを入れ替える関数を NumPy / warp の両方で定義します。
-3. 深度用のガウシアンノイズ関数を定義し、**AnnotatorRegistry に登録**して後から取得できるようにします。
-4. オーグメンテーションを、関数から直接、およびレジストリから、それぞれ作成します。
-5. 新しいアノテータを**オーグメンテーション込みで登録**することもできます。
-6. オーグメント済みアノテータ（rgb ×1、depth ×2）を作成してレンダープロダクトにアタッチし、データを生成します。
+3. 深度用のガウシアンノイズ関数を定義し、**`rep.annotators.register_augmentation` でレジストリに登録**して後から取得できるようにします。
+4. オーグメンテーションを、関数から直接（`rep.annotators.Augmentation.from_function`）、およびレジストリから（`rep.annotators.get_augmentation`）、それぞれ作成します。
+5. `rep.annotators.augment(source_annotator=..., augmentation=...)` で**オーグメント済みのアノテータ**を作成します。
+6. オーグメント済みアノテータ（rgb ×1、depth ×2。2 枚目は `sigma=0.5`）を、`rep.functional.create.camera` で作成したカメラのレンダープロダクトにアタッチし、データを生成します。
 
 ## ステップ 2：ライターのオーグメンテーション
 
 ライターから出力される RGB と深度のデータにガウシアンノイズを適用する例です。
 
 ```bash
-./python.sh standalone_examples/api/isaacsim.replicator.examples/augmentation_writer.py
+./python.sh standalone_examples/replicator/augmentation/writer_augmentation.py
 ```
 
-引数はステップ 1 と同じです（`--use_warp`、`--num_frames`）。
+引数はステップ 1 と同じです（`--use_warp`、`--num_frames`、`--env_url`）。
 
 実装のポイント：
 
-1. rgb（LdrColor）用のガウシアンノイズ関数（RGBA データの RGB チャネルに適用）と、深度用のノイズ関数（float32 の 2D 配列に適用）を NumPy / warp で定義し、レジストリに登録します。
+1. rgb（LdrColor）用のガウシアンノイズ関数（RGBA データの RGB チャネルに適用、`sigma=15.0`）と、深度用のノイズ関数（float32 の 2D 配列に適用）を NumPy / warp で定義し、レジストリに登録します。
 2. Replicator 組み込みの rgb 系オーグメンテーション（HSV 変換など）にもアクセスします。
-3. ライターを rgb と depth（`distance_to_camera`）のアノテータで初期化します。
+3. **DiskBackend** を初期化し、ライターを rgb と depth（`distance_to_camera`、`colorize_depth=True`）のアノテータで初期化します（`writer.initialize(backend=backend, ...)`）。
 4. **組み込みの rgb アノテータを、同じ名前 `name="rgb"` を使って `add_annotator` でオーグメント済みのものに置き換えます**。RGB のオーグメンテーションは「HSV に変換 → ガウシアンノイズ → RGB に戻す」の**合成**です。
 5. `distance_to_camera` アノテータは、組み込みの `augment_annotator` 関数でオーグメントします。
 

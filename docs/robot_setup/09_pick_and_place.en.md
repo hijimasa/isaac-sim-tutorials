@@ -20,8 +20,11 @@ After completing this tutorial, you will have learned:
 - [Tutorial 8: Generate Robot Configuration Files](08_generate_robot_config.md) completed
 - The following files created in Tutorials 7-8 should be available:
     - **USD asset** (`ur_gripper.usd`) — Created in Tutorial 7
-    - **URDF file** (`ur_gripper.urdf`) — Generated in Tutorial 8 Step 1
-    - **Lula robot description file** (`ur10e.yaml`) — Generated in Tutorial 8 Step 5
+    - **URDF file** (`ur_gripper.urdf`) — Generated in Tutorial 8 Step 1 (adjust the filename as needed)
+    - **Lula robot description file** (`ur10e.yaml`) — Exported from the Robot Description Editor
+
+!!! note "Obtaining ur10e.yaml (the Lula robot description file)"
+    Although the Lula YAML export was removed from the official 6.0 tutorial procedure, it can still be exported from the Robot Description Editor via **Export To File > Export to Lula Robot Description File**. The code on this page uses this YAML.
 
 ### Estimated Time
 
@@ -39,17 +42,28 @@ In this tutorial, you will use these artifacts to create Python scripts in **you
 4. **Follow Target with RMPFlow** — Smooth motion control including obstacle avoidance
 5. **Pick and Place Task** — Combine everything for object grasping and placement
 
-!!! tip "Bundled samples are available for reference"
-    Isaac Sim includes complete sample code equivalent to this tutorial. If you get stuck or want to verify behavior, refer to the scripts at the following path:
+!!! warning "Position in Isaac Sim 6.0"
+    The official Isaac Sim 6.0 tutorial was completely rewritten around the **Robot Motion (Experimental)** extension, using **cuMotion RMPflow** (a GPU-accelerated reactive motion planner) and **PINK differential IK** (a CPU-based inverse kinematics solver). The new official samples are located at:
 
     ```
-    standalone_examples/api/isaacsim.robot.manipulators/ur10e/
+    standalone_examples/tutorials/manipulation/
+    ├── tutorial_9_gripper_control.py        # Gripper control with the Articulation API
+    ├── tutorial_9_arm_trajectory.py         # Joint-space trajectory planning and execution (mg.Path / mg.TrajectoryFollower)
+    ├── tutorial_9_follow_target.py          # Target following with cuMotion RMPflow (--with-obstacle for obstacle avoidance)
+    ├── tutorial_9_pick_place_cumotion.py    # Pick and place with cuMotion RMPflow (specify config with --xrdf-dir)
+    └── tutorial_9_pick_place_pink.py        # Pick and place with PINK differential IK
     ```
 
-    How to run:
+    How to run (example):
     ```bash
-    ./python.sh standalone_examples/api/isaacsim.robot.manipulators/ur10e/<script_name>.py
+    ./python.sh standalone_examples/tutorials/manipulation/tutorial_9_pick_place_cumotion.py \
+        --xrdf-dir /path/to/robot/config
     ```
+
+    Point `--xrdf-dir` at the robot configuration directory assembled in [Tutorial 8](08_generate_robot_config.md) (`robot.urdf` / `robot.xrdf` / `rmp_flow.yaml`). If omitted, the built-in UR10 configuration is used (`load_cumotion_supported_robot("ur10")`). See the [official tutorial](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_pickplace_example.html) for details.
+
+!!! note "About the code on this page"
+    This page explains the implementation based on `isaacsim.core.api` / `isaacsim.robot.manipulators` / `isaacsim.robot_motion.motion_generation` (Lula) that has worked since 5.1. These APIs are **deprecated in Isaac Sim 6.0 but continue to work**. To learn the new cuMotion / PINK based APIs, see the official samples above and [Motion Generation (official documentation)](https://docs.isaacsim.omniverse.nvidia.com/latest/motion_generation/index.html).
 
 ## Step 1: Project Setup
 
@@ -170,7 +184,7 @@ Run the tutorial scripts using the Isaac Sim Python environment as follows:
 
 As the first step, learn how to control gripper open/close operations. This is the most basic operation for manipulation tasks.
 
-![Gripper control](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_gripper_control.webp)
+![Gripper control](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_gripper_control.webp)
 
 ### 2-1. Creating the Script
 
@@ -329,7 +343,7 @@ By applying small increments each step, the gripper opens and closes slowly and 
 
 Next, learn how to move the end-effector to a target position using **Inverse Kinematics (IK)**.
 
-![Follow target](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_follow_target.webp)
+![Follow target](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_follow_target.webp)
 
 !!! note "What is Inverse Kinematics (IK)?"
     Inverse kinematics is a method of computing joint angles from a desired end-effector position and orientation. Given the goal "move the hand to this position", it calculates the angle each joint should be at.
@@ -774,13 +788,13 @@ simulation_app.close()
 | **Motion smoothness** | Instantaneous movement to target angles | Smooth trajectory to reach the target |
 | **Convergence failure** | May fail to find a solution | Always outputs actions (safely stops if unreachable) |
 
-![RMPFlow follow target](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_follow_target_rmp.webp)
+![RMPFlow follow target](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_follow_target_with_obstacle.webp)
 
 ## Step 5: Basic Pick and Place Task
 
 Finally, combine everything to implement a task that grasps an object (pick) and places it at another location (place).
 
-![Pick and place](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
+![Pick and place](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_pick_place_rmp.webp)
 
 In this step, you will create 3 files:
 
@@ -1056,6 +1070,11 @@ The pick and place implementation in this tutorial is basic. It has the followin
 
 For real-world applications and more advanced manipulation tasks, refer to the **Isaac Manipulator** documentation. It provides production-level pick and place implementations combined with Foundation Pose for object detection.
 
+For implementations using the new Isaac Sim 6.0 motion generation stack (obstacle avoidance with collision-sphere-aware cuMotion RMPflow, automatic obstacle registration from the stage via `WorldBinding` / `SceneQuery`, and a CPU-based alternative with PINK differential IK), see the official samples at `standalone_examples/tutorials/manipulation/` and the following documentation:
+
+- [cuMotion Integration (official documentation)](https://docs.isaacsim.omniverse.nvidia.com/latest/cumotion/index.html)
+- [PINK Integration (official documentation)](https://docs.isaacsim.omniverse.nvidia.com/latest/pink/index.html)
+
 ## Summary
 
 This tutorial covered the following topics:
@@ -1068,7 +1087,8 @@ This tutorial covered the following topics:
 
 !!! tip "Reference Documentation"
     - [Pick and Place Example (Official Documentation)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_pickplace_example.html)
-    - [Motion Generation (Official Documentation)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_motion_motion_generation.html)
+    - [Motion Generation (Official Documentation)](https://docs.isaacsim.omniverse.nvidia.com/latest/motion_generation/index.html)
+    - [cuMotion Integration (Official Documentation)](https://docs.isaacsim.omniverse.nvidia.com/latest/cumotion/index.html)
 
 ## Next Steps
 

@@ -8,7 +8,7 @@ title: Hello World
 
 After completing this tutorial, you will have learned:
 
-- How to create a World and Scene defined by the Core API
+- How to use the Core API (experimental) to manipulate the USD stage
 - How to add a rigid body to the Stage and simulate it using Python in NVIDIA Isaac Sim
 - The differences between Extension Workflow and Standalone Workflow
 
@@ -16,7 +16,7 @@ After completing this tutorial, you will have learned:
     Scenes in Isaac Sim are managed in the **USD (Universal Scene Description)** format. Let's start by learning the following two terms, which appear frequently throughout the tutorials.
 
     - **Stage** … The container that represents the entire scene. The tree shown in the editor's Stage panel is the content of the current stage.
-    - **Prim** … An individual object placed on the stage (a node in the tree). Robots, cubes, lights, cameras, and so on are all prims, each uniquely identified by a **path** such as `/World/random_cube`.
+    - **Prim** … An individual object placed on the stage (a node in the tree). Robots, cubes, lights, cameras, and so on are all prims, each uniquely identified by a **path** such as `/World/fancy_cube`.
 
 ## Getting Started
 
@@ -24,341 +24,555 @@ After completing this tutorial, you will have learned:
 
 - This tutorial requires intermediate-level knowledge of Python and asynchronous programming.
 - Before starting, download and install [Visual Studio Code](https://code.visualstudio.com/download).
-- Before starting, review the [Quick Tutorials](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/introduction/quickstart_index.html#isaac-sim-intro-quickstart-series).
+- Before starting, review the [Quick Tutorials](https://docs.isaacsim.omniverse.nvidia.com/latest/introduction/quickstart_index.html#isaac-sim-intro-quickstart-series).
+
+!!! note "The Core API overhaul in Isaac Sim 6.0"
+    In Isaac Sim 6.0, the legacy `isaacsim.core.api` (the World / Scene based API) is **deprecated**, and the Core API tutorials have been rewritten to use `isaacsim.core.experimental.*` and `isaacsim.core.simulation_manager`. This page follows the rewritten content.
 
 ### Workflow
 
-Isaac Sim can be used as a building block in larger solutions or on its own. Because of this, there are multiple ways to achieve the same goal. These different approaches are called "Workflows."
+Isaac Sim is a building block of larger solutions, but it can also be used on its own. Because of this, there are multiple ways to achieve the same goal. These different approaches are called "Workflows".
 
-??? info "Details on the 3 Workflows (click to expand)"
+??? info "Details of the three Workflows (click to expand)"
 
-    | Workflow | Key Features | Recommended Use |
+    | Workflow | Key characteristics | Recommended use |
     |---|---|---|
-    | **GUI** | Visual, intuitive tools | World building, robot assembly, sensor attachment, visual programming with OmniGraphs |
-    | **Extension** | Async execution, hot-reload, adaptive physics stepping | Testing Python snippets, interactive GUI development, real-time responsive applications |
-    | **Standalone** | Full timing control of physics/rendering, headless execution | Large-scale RL training, systematic world generation |
+    | **GUI** | Visual, intuitive tools | World building, robot assembly, sensor mounting, visual programming with OmniGraphs |
+    | **Extension** | Asynchronous execution, hot reloading, adaptive physics stepping | Testing Python snippets, building interactive GUIs, applications requiring real-time responsiveness |
+    | **Standalone** | Control over physics/rendering timing, headless execution | Large-scale reinforcement learning training, systematic world generation |
 
-    - **GUI Workflow**: Build simulation environments using only the GUI, without writing code.
-    - **Extension Workflow**: Run Python scripts as extensions inside Isaac Sim. Hot-reload (instant reflection on save) enables high development efficiency.
-    - **Standalone Workflow**: Launch Isaac Sim directly from a Python script. Provides full control over physics and rendering timing.
+    - **GUI Workflow**: Build simulation environments using only GUI operations, without writing code.
+    - **Extension Workflow**: Run Python scripts as extensions inside Isaac Sim. Hot reloading (changes applied on save) makes development efficient.
+    - **Standalone Workflow**: Launch Isaac Sim directly from a Python script. You have full control over the timing of physics and rendering.
 
-The following tutorials primarily use the **Extension Workflow**, but objects and settings created through the Extension Workflow can also be configured via the GUI, and scripts can be rewritten for the Standalone Workflow.
+The following tutorials mainly use the **Extension Workflow**, but the objects and settings created in the Extension Workflow can also be created via the GUI, and scripts can be rewritten for the Standalone Workflow.
 
-### Opening the Hello World Sample
+### Opening the Hello World Example
 
-First, open the Hello World sample.
+First, open the Hello World example.
 
 1. Activate **Windows > Examples > Robotics Examples** to open the Robotics Examples tab.<br>
-   ![Location of Robotics Examples tab](images/01_robotics_example_place.png)
+   ![Location of the Robotics Examples tab](images/01_robotics_example_place.png)
 
 2. Click **Robotics Examples > General > Hello World**.<br>
    ![Location of Hello World](images/02_hello_world_place.png)
 
-3. Verify that the Hello World sample extension window appears in the workspace.<br>
+3. Verify that the window for the Hello World example extension is visible in the workspace.<br>
    ![Hello World window](images/03_hello_world_window.png)
 
-4. Click the **Open Source Code** button to launch the editable source code in Visual Studio Code.<br>
+4. Click the **Open Source Code** button to launch the source code for editing in Visual Studio Code.<br>
    ![Open Source Code button](images/04_open_source_code.png)
 
-5. Click the **Open Folder** button to open the directory containing the sample files.<br>
+5. Click the **Open Folder** button to open the directory containing the example files.<br>
    ![Open Folder button](images/05_open_folder.png)
 
-This folder contains the following 3 files:
+This folder contains the following three files:
 
-- `hello_world.py` — Application logic
-- `hello_world_extension.py` — Application UI elements
+- `hello_world.py` — the logic of the application
+- `hello_world_extension.py` — the UI elements of the application
 - `__init__.py`
 
-### Testing the Sample
+### Verifying the Example Works
 
-Let's try loading the Hello World sample.
+Let's try loading the Hello World example.
 
-1. Click the **LOAD** button to load the world.<br>
-   ![LOAD button](images/06_load_button.png)
-
-2. To clear the loaded world and return to the initial state, click **File > New From Stage Template > Empty** to create a new stage, then click **Don't Save** at the save confirmation.<br>
-   ![Create new stage](images/07_new_empty_world.png)
+1. Click **File > New From Stage Template > Empty** to create a new stage, and click **Don't Save** when prompted to save the current stage.<br>
+   ![Create a new stage](images/07_new_empty_world.png)
    ![Select Don't Save](images/08_close_options.png)
 
-3. Click the **LOAD** button to reload the world.
+2. Click the **LOAD** button to load the World.<br>
+   ![LOAD button](images/06_load_button.png)
 
-4. Click the **Open Source Code** button, open `hello_world.py`, and press **Ctrl+S** to hot-reload. The Hello World window will disappear from the workspace (because the extension restarted).<br>
+3. Click the **Open Source Code** button, open `hello_world.py`, and press **Ctrl+S** to hot-reload. The Hello World window disappears from the workspace (because the extension was restarted).<br>
    ![Open Source Code button](images/04_open_source_code.png)
 
-5. Reopen the Robotics Examples menu and click the **LOAD** button.
+4. Open the Robotics Examples menu again and click the **LOAD** button.
 
-Now let's extend the Hello World sample step by step.
+Now you can begin adding to this Hello World example.
 
 ## Code Overview
 
-From here, we will incrementally extend the code in `hello_world.py`. First, let's understand the basic structure of the sample.
+From here, we extend the code in `hello_world.py` step by step. First, let's review the basic structure of the example.
 
-This example inherits from `BaseSample`. `BaseSample` is a boilerplate class that handles the basic setup of robotics extension applications, providing the following features:
+This example inherits from `BaseSample`, a boilerplate class that sets up the basics of a robotics extension application. It provides the following functionality:
 
-1. Load the world with corresponding assets via button clicks
-2. Clear the world when a new stage is created
-3. Reset objects in the world to their default states
-4. Handle hot-reload
+1. Loading assets into the stage using a button
+2. Clearing the stage when a new stage is created
+3. Resetting objects to their default states
+4. Handling hot reloading
 
-**World** is the core class for interacting with the simulator in a modular way. It manages callbacks, physics stepping, scene resets, and more.
+First, import the required packages:
 
-**Scene** is an instance held within World that manages simulation assets in the USD Stage. It provides a simplified API for adding, manipulating, inspecting, and resetting assets.
+```python linenums="1"
+import isaacsim.core.experimental.utils.stage as stage_utils
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
+```
 
-```python linenums="1" hl_lines="1 12-14"
-from isaacsim.examples.interactive.base_sample import BaseSample # Robotics extension app boilerplate
+In `setup_scene`, use `stage_utils.add_reference_to_stage()` to add the ground plane asset directly to the stage:
+
+```python linenums="1"
+    # This function is called to setup the assets in the scene for the first time
+    def setup_scene(self):
+        # Add ground plane directly to the stage
+        ground_plane = stage_utils.add_reference_to_stage(
+            usd_path=get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
+        )
+```
+
+The complete code is as follows:
+
+```python linenums="1" hl_lines="2-4 14-20"
+# -- Import Isaac sim packages -- #
+import isaacsim.core.experimental.utils.stage as stage_utils
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
+
+# -- End of import Isaac sim packages -- #
+
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
 
-    # Called to set up assets in the scene for the first time
-    # Not called after hot-reload; only when loading the world from an EMPTY stage
+    # -- Set up scene -- #
+    # This function is called to setup the assets in the scene for the first time
     def setup_scene(self):
-        # World is defined in BaseSample and accessible everywhere EXCEPT __init__
-        world = self.get_world()
-        world.scene.add_default_ground_plane() # Add a default ground plane to the scene
-        return
+        # Add ground plane directly to the stage
+        ground_plane = stage_utils.add_reference_to_stage(
+            usd_path=get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
+        )
+
+    # -- End of set up scene -- #
 ```
 
-## Singleton World
+## Key Concepts
 
-World is a singleton. This means only one World can exist while NVIDIA Isaac Sim is running.
+There are three key concepts to understand when working with the Core API (experimental):
 
-In the previous section, we used `self.get_world()` to retrieve the World, but `World.instance()` also returns the same instance. Both return the identical object, but here is a guideline for when to use each:
-
-| Method | When to Use |
+| Concept | Description |
 |---|---|
-| `self.get_world()` | Inside classes that inherit from `BaseSample` (typical tutorial development) |
-| `World.instance()` | Accessing from separate files or extensions that do not inherit from `BaseSample` |
-
-The following code shows how to access the World using `World.instance()`. This approach allows you to access the current World even from classes or extensions that do not inherit from `BaseSample`.
-
-```python linenums="1" hl_lines="2 9"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.core.api import World # Import the World class directly
-
-class HelloWorld(BaseSample):
-    def __init__(self) -> None:
-        super().__init__()
-        return
-
-    def setup_scene(self):
-        world = World.instance() # Get the singleton instance
-        world.scene.add_default_ground_plane()
-        return
-```
+| **Stage Utilities** | The `stage_utils` module provides functions for directly manipulating the USD stage, such as adding references, creating prims, and managing stage hierarchy |
+| **Prim Classes** | Prim wrapper classes like `RigidPrim`, `GeomPrim`, and `Articulation` give you direct control over USD prims with physics capabilities |
+| **SimulationManager** | For callbacks and simulation events, the `SimulationManager` class provides methods to register and deregister callbacks for various simulation events |
 
 ## Adding to the Scene
 
-Use the Python API to add a cube as a rigid body to the scene.
+Use the Python API to add a cube as a rigid body to the scene. With the Core APIs, you **create the geometry first, then apply collision and rigid body properties**.
 
-```python linenums="1" hl_lines="3 13-20"
-from isaacsim.examples.interactive.base_sample import BaseSample
+Import the required packages:
+
+```python linenums="1"
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
-from isaacsim.core.api.objects import DynamicCuboid # Class for creating dynamic cubes
+from isaacsim.core.experimental.materials import PreviewSurfaceMaterial
+from isaacsim.core.experimental.objects import Cube
+from isaacsim.core.experimental.prims import GeomPrim, RigidPrim
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
+```
+
+The code for adding a cube is as follows:
+
+```python linenums="1"
+        # Create a blue visual material for the cube
+        visual_material = PreviewSurfaceMaterial("/World/Materials/blue")
+        visual_material.set_input_values("diffuseColor", [0.0, 0.0, 1.0])
+
+        # Create the cube geometry
+        self._cube_shape = Cube(
+            paths="/World/fancy_cube",
+            positions=np.array([[0.0, 0.0, 1.0]]),  # Starting position 1m above ground
+            sizes=[1.0],
+            scales=np.array([[0.5015, 0.5015, 0.5015]]),  # Scale the cube
+            reset_xform_op_properties=True,
+        )
+
+        # Apply collision APIs to enable physics collision
+        GeomPrim(paths=self._cube_shape.paths, apply_collision_apis=True)
+
+        # Make it a rigid body (dynamic object that responds to physics)
+        self._cube = RigidPrim(paths=self._cube_shape.paths)
+
+        # Apply the blue material
+        self._cube_shape.apply_visual_materials(visual_material)
+```
+
+The complete code is as follows:
+
+```python linenums="1" hl_lines="2-8 24-45"
+# -- Import Isaac sim packages -- #
+import isaacsim.core.experimental.utils.stage as stage_utils
+import numpy as np
+from isaacsim.core.experimental.materials import PreviewSurfaceMaterial
+from isaacsim.core.experimental.objects import Cube
+from isaacsim.core.experimental.prims import GeomPrim, RigidPrim
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
+
+# -- End of import Isaac sim packages -- #
+
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
 
     def setup_scene(self):
-        world = self.get_world()
-        world.scene.add_default_ground_plane()
-        fancy_cube = world.scene.add(
-            DynamicCuboid(
-                prim_path="/World/random_cube", # Path in the USD Stage
-                name="fancy_cube",              # Unique name to retrieve the object later
-                position=np.array([0, 0, 1.0]), # Position (default unit: meters)
-                scale=np.array([0.5015, 0.5015, 0.5015]), # Scale (numpy array)
-                color=np.array([0, 0, 1.0]),    # RGB (range 0-1)
-            ))
-        return
+        # Add ground plane
+        ground_plane = stage_utils.add_reference_to_stage(
+            usd_path=get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
+        )
+
+        # -- Creating a cube and apply materials -- #
+        # Create a blue visual material for the cube
+        visual_material = PreviewSurfaceMaterial("/World/Materials/blue")
+        visual_material.set_input_values("diffuseColor", [0.0, 0.0, 1.0])
+
+        # Create the cube geometry
+        self._cube_shape = Cube(
+            paths="/World/fancy_cube",
+            positions=np.array([[0.0, 0.0, 1.0]]),  # Starting position 1m above ground
+            sizes=[1.0],
+            scales=np.array([[0.5015, 0.5015, 0.5015]]),  # Scale the cube
+            reset_xform_op_properties=True,
+        )
+
+        # Apply collision APIs to enable physics collision
+        GeomPrim(paths=self._cube_shape.paths, apply_collision_apis=True)
+
+        # Make it a rigid body (dynamic object that responds to physics)
+        self._cube = RigidPrim(paths=self._cube_shape.paths)
+
+        # Apply the blue material
+        self._cube_shape.apply_visual_materials(visual_material)
+        # -- End of creating a cube and apply materials -- #
 ```
 
-Save the code and verify the simulation:
+Save the code and check the simulation:
 
 1. Press **Ctrl+S** to save the code and hot-reload Isaac Sim.
-2. Reopen the Hello World sample extension window.
-3. Click **File > New From Stage Template > Empty** to create a new world, then click **LOAD**. This is required whenever changes are made to `setup_scene`.
-4. Press the **PLAY** button to start the dynamic cube simulation and observe it falling.
+2. Open the Hello World example extension window again.
+3. Click the **LOAD** button.
+4. See the dynamic cube falling as the simulation starts automatically.
 
-![Dynamic cube falling simulation](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/core_api_tutorials_1_1.webp)
+![Falling dynamic cube simulation](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/core_api_tutorials_1_1.webp)
 
 !!! note "Note"
-    Every time you edit code, press **Ctrl+S** to save and hot-reload Isaac Sim.
+    Every time you edit the code, press **Ctrl+S** to save and hot-reload Isaac Sim.
+
+### Understanding the Prim Classes
+
+The experimental API uses a layered approach to create physics-enabled objects:
+
+| Class | Role |
+|---|---|
+| `Cube` (or other shape classes) | Creates the visual geometry on the USD stage |
+| `GeomPrim` | Wraps the geometry and can apply collision APIs for physics interactions |
+| `RigidPrim` | Adds rigid body dynamics, making the object respond to gravity and forces |
+
+This modular approach gives you fine-grained control — you can create static colliders (`GeomPrim` without `RigidPrim`) or fully dynamic objects (with both).
 
 ## Inspecting Object Properties
 
-Next, let's print the cube's world coordinates and velocity.
+Next, let's print the world pose and velocity of the cube.
 
-Here we introduce a new method, `setup_post_load`. The differences from `setup_scene` are:
+Here a new method, `setup_post_load`, appears. The differences from `setup_scene` are:
 
-| Method | When Called | Purpose |
+| Method | When it is called | Purpose |
 |---|---|---|
-| `setup_scene` | Only on first load from an empty stage | Place assets |
-| `setup_post_load` | Every time the **LOAD** button is pressed | Initialization after physics handles become active |
+| `setup_scene` | Only on first load from an empty stage | Placing assets |
+| `setup_post_load` | Every time after pressing the **LOAD** button | Initialization after physics handles become valid |
 
-`setup_post_load` is called after the world's first reset has completed (that is, after physics handles have been initialized), so it can retrieve physical properties such as position and velocity.
+`setup_post_load` is called after both `setup_scene` and one physics time step have finished, so you can retrieve physical properties such as positions and velocities.
 
-!!! note "What Are Physics Handles?"
-    A **physics handle** is an internal reference created on the physics engine (PhysX) side, used to read from and write to a simulated object. Simply placing a prim on the stage does not yet create its counterpart in the physics engine; handles are initialized when the world is reset. Only after the physics handles become active can you access properties such as position, velocity, and joint angles (properties of articulations: jointed structures).
+!!! note "What are physics handles?"
+    A **physics handle** is an internal reference created by the physics engine (PhysX) for reading and writing the simulated object. Simply placing a prim on the stage does not create the physics-engine-side entity; it is initialized when physics stepping starts. Only after the physics handles become valid can you access positions, velocities, joint angles (articulation: properties of jointed structures), and so on.
 
-```python linenums="1" hl_lines="23-33"
-from isaacsim.examples.interactive.base_sample import BaseSample
+The property query part is written as follows:
+
+```python linenums="1"
+        # Query cube properties using RigidPrim methods
+        positions, orientations = self._cube.get_world_poses()
+        # get_velocities() returns a tuple: (linear_velocities, angular_velocities)
+        linear_velocities, angular_velocities = self._cube.get_velocities()
+
+        # Convert from warp arrays to numpy for printing
+        # Note: experimental APIs return batched results (even for single objects)
+        print("Cube position is : " + str(positions.numpy()[0]))
+        print("Cube's orientation is : " + str(orientations.numpy()[0]))
+        print("Cube's linear velocity is : " + str(linear_velocities.numpy()[0]))
+```
+
+!!! note "Warp arrays and batched results"
+    The experimental APIs return batched results as **warp arrays** (a GPU-capable array type). Use `.numpy()` to convert them to numpy arrays, and index with `[0]` to get the first (and only) element when working with a single object.
+
+The complete code is as follows:
+
+```python linenums="1" hl_lines="39-53"
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
-from isaacsim.core.api.objects import DynamicCuboid
+from isaacsim.core.experimental.materials import PreviewSurfaceMaterial
+from isaacsim.core.experimental.objects import Cube
+from isaacsim.core.experimental.prims import GeomPrim, RigidPrim
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
+
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
 
     def setup_scene(self):
-        world = self.get_world()
-        world.scene.add_default_ground_plane()
-        fancy_cube = world.scene.add(
-            DynamicCuboid(
-                prim_path="/World/random_cube",
-                name="fancy_cube",
-                position=np.array([0, 0, 1.0]),
-                scale=np.array([0.5015, 0.5015, 0.5015]),
-                color=np.array([0, 0, 1.0]),
-            ))
-        return
+        # Add ground plane
+        ground_plane = stage_utils.add_reference_to_stage(
+            usd_path=get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
+        )
 
-    # Called every time after the LOAD button is pressed (after setup_scene + 1 physics step)
-    # Physics handles are active, so physical properties can be retrieved
+        # Create a blue visual material for the cube
+        visual_material = PreviewSurfaceMaterial("/World/Materials/blue")
+        visual_material.set_input_values("diffuseColor", [0.0, 0.0, 1.0])
+
+        # Create the cube geometry
+        self._cube_shape = Cube(
+            paths="/World/fancy_cube",
+            positions=np.array([[0.0, 0.0, 1.0]]),
+            sizes=[1.0],
+            scales=np.array([[0.5015, 0.5015, 0.5015]]),
+            reset_xform_op_properties=True,
+        )
+
+        # Apply collision and rigid body
+        GeomPrim(paths=self._cube_shape.paths, apply_collision_apis=True)
+        self._cube = RigidPrim(paths=self._cube_shape.paths)
+        self._cube_shape.apply_visual_materials(visual_material)
+
+    # This function is called after load button is pressed
+    # It's called once, after both setup_scene and one physics time step has finished
+    # to propagate physics handles needed to retrieve physical properties
     async def setup_post_load(self):
-        self._world = self.get_world()
-        self._cube = self._world.scene.get_object("fancy_cube") # Retrieve object by name
-        position, orientation = self._cube.get_world_pose()
-        linear_velocity = self._cube.get_linear_velocity()
-        # Printed to the terminal
-        print("Cube position is : " + str(position))
-        print("Cube's orientation is : " + str(orientation))
-        print("Cube's linear velocity is : " + str(linear_velocity))
-        return
+        # -- Begin query properties -- #
+        # Query cube properties using RigidPrim methods
+        positions, orientations = self._cube.get_world_poses()
+        # get_velocities() returns a tuple: (linear_velocities, angular_velocities)
+        linear_velocities, angular_velocities = self._cube.get_velocities()
+
+        # Convert from warp arrays to numpy for printing
+        # Note: experimental APIs return batched results (even for single objects)
+        print("Cube position is : " + str(positions.numpy()[0]))
+        print("Cube's orientation is : " + str(orientations.numpy()[0]))
+        print("Cube's linear velocity is : " + str(linear_velocities.numpy()[0]))
+        # -- End of query properties -- #
 ```
 
-## Continuous Inspection of Object Properties During Simulation
+## Continuously Inspecting Object Properties during Simulation
 
-Print the cube's pose and velocity on every physics step during simulation.
+Print the pose and velocity of the cube at every physics step executed.
 
-As mentioned in the [Workflow](#workflow) section, in the **Extension Workflow**, the application runs asynchronously and you cannot directly control physics step timing. However, you can register **physics callbacks** to execute custom logic before each physics step.
+As mentioned in [Workflow](#workflow), in the **Extension Workflow** the application runs asynchronously and you can't control when to step physics. However, you can register **physics callbacks** to ensure certain things happen before or after certain events. Use `SimulationManager` to register callbacks.
 
-```python linenums="1" hl_lines="26 29-37"
-from isaacsim.examples.interactive.base_sample import BaseSample
+First, import `SimulationManager`:
+
+```python linenums="1"
+from isaacsim.core.simulation_manager import SimulationManager
+```
+
+Add a physics callback using the `SimulationManager`:
+
+```python linenums="1"
+        # Register a physics callback using SimulationManager
+        from isaacsim.core.simulation_manager.impl.isaac_events import IsaacEvents
+
+        self._physics_callback_id = SimulationManager.register_callback(
+            self.print_cube_info, IsaacEvents.POST_PHYSICS_STEP
+        )
+```
+
+Deregister the callback during clean up:
+
+```python linenums="1"
+        # Clean up callback when the extension is unloaded
+        if self._physics_callback_id is not None:
+            SimulationManager.deregister_callback(self._physics_callback_id)
+            self._physics_callback_id = None
+```
+
+The complete code is as follows:
+
+```python linenums="1" hl_lines="7-10 18 46-52 55-63 65-71"
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
-from isaacsim.core.api.objects import DynamicCuboid
+from isaacsim.core.experimental.materials import PreviewSurfaceMaterial
+from isaacsim.core.experimental.objects import Cube
+from isaacsim.core.experimental.prims import GeomPrim, RigidPrim
+
+# -- Begin loading SimulationManager -- #
+from isaacsim.core.simulation_manager import SimulationManager
+
+# -- End of loading SimulationManager -- #
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
+
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
+        self._physics_callback_id = None
 
     def setup_scene(self):
-        world = self.get_world()
-        world.scene.add_default_ground_plane()
-        fancy_cube = world.scene.add(
-            DynamicCuboid(
-                prim_path="/World/random_cube",
-                name="fancy_cube",
-                position=np.array([0, 0, 1.0]),
-                scale=np.array([0.5015, 0.5015, 0.5015]),
-                color=np.array([0, 0, 1.0]),
-            ))
-        return
+        # Add ground plane
+        ground_plane = stage_utils.add_reference_to_stage(
+            usd_path=get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
+        )
+
+        # Create a blue visual material for the cube
+        visual_material = PreviewSurfaceMaterial("/World/Materials/blue")
+        visual_material.set_input_values("diffuseColor", [0.0, 0.0, 1.0])
+
+        # Create the cube geometry
+        self._cube_shape = Cube(
+            paths="/World/fancy_cube",
+            positions=np.array([[0.0, 0.0, 1.0]]),
+            sizes=[1.0],
+            scales=np.array([[0.5015, 0.5015, 0.5015]]),
+            reset_xform_op_properties=True,
+        )
+
+        # Apply collision and rigid body
+        GeomPrim(paths=self._cube_shape.paths, apply_collision_apis=True)
+        self._cube = RigidPrim(paths=self._cube_shape.paths)
+        self._cube_shape.apply_visual_materials(visual_material)
 
     async def setup_post_load(self):
-        self._world = self.get_world()
-        self._cube = self._world.scene.get_object("fancy_cube")
-        self._world.add_physics_callback("sim_step", callback_fn=self.print_cube_info) # Callback names must be unique
-        return
+        # -- Begin registering callback -- #
+        # Register a physics callback using SimulationManager
+        from isaacsim.core.simulation_manager.impl.isaac_events import IsaacEvents
 
-    # Physics callback called before each physics step
-    # The step_size argument is required (time width of physics step)
-    def print_cube_info(self, step_size):
-        position, orientation = self._cube.get_world_pose()
-        linear_velocity = self._cube.get_linear_velocity()
-        # Printed to the terminal
-        print("Cube position is : " + str(position))
-        print("Cube's orientation is : " + str(orientation))
-        print("Cube's linear velocity is : " + str(linear_velocity))
+        self._physics_callback_id = SimulationManager.register_callback(
+            self.print_cube_info, IsaacEvents.POST_PHYSICS_STEP
+        )
+        # -- End of registering callback -- #
+
+    # Physics callback function - called after each physics step
+    # Takes dt (delta time) and context as arguments
+    def print_cube_info(self, dt, context):
+        positions, orientations = self._cube.get_world_poses()
+        linear_velocities, angular_velocities = self._cube.get_velocities()
+
+        print("Cube position is : " + str(positions.numpy()[0]))
+        print("Cube's orientation is : " + str(orientations.numpy()[0]))
+        print("Cube's linear velocity is : " + str(linear_velocities.numpy()[0]))
+
+    def physics_cleanup(self):
+        # -- Begin deregistering callback -- #
+        # Clean up callback when the extension is unloaded
+        if self._physics_callback_id is not None:
+            SimulationManager.deregister_callback(self._physics_callback_id)
+            self._physics_callback_id = None
+        # -- End of deregistering callback -- #
 ```
+
+!!! note "Register and deregister callbacks as a pair"
+    `SimulationManager.register_callback()` returns a registration ID. So that callbacks are not left behind when the extension is unloaded or the simulation stops, the standard pattern is to call `deregister_callback()` in `physics_cleanup`.
 
 ## Resetting the World
 
-To return objects to their initial state during simulation, use the **RESET** button. Processing needed after a reset can be handled via the `setup_pre_reset` and `setup_post_reset` callbacks.
+To return objects to their initial state during simulation, use the **RESET** button. Any re-initialization needed after a reset can be done in the `setup_pre_reset` and `setup_post_reset` callbacks.
 
-!!! tip "Tip"
-    Calling `world.reset()` returns all objects to the initial state set in `setup_scene`. In the Standalone Workflow, calling `world.reset()` after adding assets properly initializes physics handles.
-
-## Converting to a Standalone Application
+## Converting the Example to a Standalone Application
 
 !!! note "Note"
     On Windows, use `python.bat` instead of `python.sh`.
 
-As mentioned in the [Workflow](#workflow) section, the **Standalone Workflow** launches Isaac Sim directly from Python, giving you full control over physics and rendering timing.
+As mentioned in [Workflow](#workflow), in the **Standalone Workflow** the robotics application is started when launched from Python right away.
 
-Standalone scripts must be run using Isaac Sim's bundled Python interpreter (`python.sh`), located in the Isaac Sim installation directory.
+Standalone scripts must be run with the Python interpreter bundled with Isaac Sim (`python.sh`), located directly under the Isaac Sim installation directory.
 
-You can place the script anywhere, but for simplicity, we recommend placing it in the same `user_examples` directory as the Hello World sample:
+You can place the script anywhere, but putting it in the same `user_examples` directory as the Hello World example keeps things organized:
 
 ```
 <Isaac Sim installation directory>/
-├── python.sh                    # Isaac Sim's bundled Python interpreter
+├── python.sh                    # Python interpreter bundled with Isaac Sim
 └── exts/
     └── isaacsim.examples.interactive/
         └── isaacsim/examples/interactive/
             └── user_examples/
-                └── my_application.py   # ← Create here
+                └── my_application.py   # ← create here
 ```
 
 !!! tip "Tip"
-    `python.sh` (or `python.bat` on Windows) is a dedicated Python environment that includes all dependencies required by Isaac Sim. Running with your system Python will result in module-not-found errors.
+    `python.sh` (`python.bat` on Windows) is a dedicated Python environment containing all the dependencies Isaac Sim needs. Running the script with a system-installed Python will fail with missing modules.
 
-Create a new `my_application.py` file in the directory shown above with the following code:
+Create a new `my_application.py` file in the directory above and add the following code:
 
-```python linenums="1" hl_lines="1-4 20-22 30-32 34"
-# Launch Isaac Sim before any other imports (required for Standalone)
-# The first two lines of any Standalone application must follow this pattern
+```python linenums="1" hl_lines="1-5 41-43 46-48 58 60"
+# Launch Isaac Sim before any other imports
+# Default first two lines in any standalone application
 from isaacsim import SimulationApp
-simulation_app = SimulationApp({"headless": False}) # Can also run with headless=True (no GUI)
 
-from isaacsim.core.api import World
-from isaacsim.core.api.objects import DynamicCuboid
+simulation_app = SimulationApp({"headless": False})  # we can also run as headless
+
+# Now import Isaac Sim modules
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
+import omni.timeline
+from isaacsim.core.experimental.materials import PreviewSurfaceMaterial
+from isaacsim.core.experimental.objects import Cube
+from isaacsim.core.experimental.prims import GeomPrim, RigidPrim
+from isaacsim.core.simulation_manager import SimulationManager
+from isaacsim.storage.native import get_assets_root_path
 
-world = World()
-world.scene.add_default_ground_plane()
-fancy_cube = world.scene.add(
-    DynamicCuboid(
-        prim_path="/World/random_cube",
-        name="fancy_cube",
-        position=np.array([0, 0, 1.0]),
-        scale=np.array([0.5015, 0.5015, 0.5015]),
-        color=np.array([0, 0, 1.0]),
-    ))
-# Call reset after adding assets to properly initialize physics handles
-# Must be called before querying articulation (articulated/jointed structure) properties
-world.reset()
-for i in range(500):
-    position, orientation = fancy_cube.get_world_pose()
-    linear_velocity = fancy_cube.get_linear_velocity()
-    # Printed to the terminal
-    print("Cube position is : " + str(position))
-    print("Cube's orientation is : " + str(orientation))
-    print("Cube's linear velocity is : " + str(linear_velocity))
-    # In Standalone, you control when physics and rendering happen
-    # Unlike Extension, everything runs synchronously
-    world.step(render=True) # Execute 1 physics step + 1 rendering step
+# Add ground plane
+ground_plane = stage_utils.add_reference_to_stage(
+    usd_path=get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd",
+    path="/World/ground",
+)
 
-simulation_app.close() # Close Isaac Sim
+# Create a blue visual material for the cube
+visual_material = PreviewSurfaceMaterial("/World/Materials/blue")
+visual_material.set_input_values("diffuseColor", [0.0, 0.0, 1.0])
+
+# Create the cube geometry
+cube_shape = Cube(
+    paths="/World/fancy_cube",
+    positions=np.array([[0.0, 0.0, 1.0]]),
+    sizes=[1.0],
+    scales=np.array([[0.5, 0.5, 0.5]]),
+    reset_xform_op_properties=True,
+)
+
+# Apply collision and rigid body
+GeomPrim(paths=cube_shape.paths, apply_collision_apis=True)
+cube = RigidPrim(paths=cube_shape.paths)
+cube_shape.apply_visual_materials(visual_material)
+
+# Start the timeline (physics simulation)
+omni.timeline.get_timeline_interface().play()
+simulation_app.update()
+
+# Run the simulation loop
+for i in range(50):
+    # Only query when physics is actively simulating
+    if SimulationManager.is_simulating():
+        positions, orientations = cube.get_world_poses()
+        linear_velocities, angular_velocities = cube.get_velocities()
+
+        # Will be shown on terminal
+        print("Cube position is : " + str(positions.numpy()[0]))
+        print("Cube's orientation is : " + str(orientations.numpy()[0]))
+        print("Cube's linear velocity is : " + str(linear_velocities.numpy()[0]))
+
+    # Step the app (physics + rendering)
+    simulation_app.update()
+
+simulation_app.close()  # close Isaac Sim
 ```
 
-Navigate to the Isaac Sim installation directory and run the script with the following command:
+Move to the Isaac Sim installation directory and run the script with the following command:
 
 ```bash
 cd <Isaac Sim installation directory>
@@ -369,15 +583,16 @@ cd <Isaac Sim installation directory>
 
 This tutorial covered the following topics:
 
-1. Overview of the **World** and **Scene** classes
-2. Adding content to the Scene with Python
-3. Initialization with `setup_post_load` and retrieving physical properties
-4. Adding physics callbacks
-5. Converting to a Standalone application
+1. Overview of the **Core APIs** (experimental) for direct stage manipulation
+2. **Adding assets to the stage** with `stage_utils`
+3. **Creating dynamic objects** with `Cube`, `GeomPrim`, and `RigidPrim`
+4. Registering physics callbacks with **SimulationManager**
+5. **Accessing dynamic properties** of objects using prim wrapper methods
+6. Converting to a Standalone application
 
 ## Next Steps
 
-Proceed to the next tutorial, "[Hello Robot](02_hello_robot.md)," to learn how to add a robot to the simulation.
+Continue to the next tutorial, [Hello Robot](02_hello_robot.md), to learn how to add a robot to the simulation.
 
 !!! note "Note"
-    The following tutorials primarily use the Extension Workflow for development. However, based on what you learned in this tutorial, converting to other Workflows follows the same approach.
+    The next tutorial mainly uses the Extension Workflow for development. However, based on what you covered in this tutorial, converting to the other workflows follows similar steps.

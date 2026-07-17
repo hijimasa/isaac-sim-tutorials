@@ -20,9 +20,9 @@ title: Driving TurtleBot using ROS 2 Messages
 
 ## Building the Graph
 
-Open **Window > Graph Editors > Action Graph**, create a new graph, and build:
+Select `/World/tb3_burger_processed` in the Stage panel (drive controller graphs belong at the robot root), open **Window > Graph Editors > Action Graph**, create a new graph named `ROS_Drive` (path `/World/tb3_burger_processed/ROS_Drive`), and build:
 
-![Turtlebot graph](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_turtlebot_graph.png)
+![Turtlebot graph](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_turtlebot_graph.png)
 
 Key nodes:
 
@@ -31,8 +31,8 @@ Key nodes:
 - **ROS2 Subscribe Twist** — set topicName to `/cmd_vel`.
 - **Break 3-Vector** — extracts forward velocity and z angular velocity from the Twist vectors.
 - **Differential Controller** — Max Angular Speed 1.0, Max Linear Speed 0.22, Wheel Distance 0.16, Wheel Radius 0.025.
-- **Articulation Controller** — Add Target = the prim holding the Articulation Root API (move it to `/World/turtlebot3_burger` if it is on `base_footprint`).
-- **Constant Token + Make Array** — joint names `wheel_left_joint`, `wheel_right_joint` (token type, not string).
+- **Articulation Controller** — set the target to `/World/tb3_burger_processed`; the asset's IsaacRobotAPI and ArticulationRootAPI resolve the articulation automatically.
+- **Constant Token + Make Array** — joint names `wheel_left_joint` first, then `wheel_right_joint` (order must match the Differential Controller's output; token type, not string).
 
 ## Verifying ROS Connections
 

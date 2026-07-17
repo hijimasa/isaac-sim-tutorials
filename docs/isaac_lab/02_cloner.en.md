@@ -10,7 +10,7 @@ After completing this tutorial, you will know:
 
 - How to duplicate environments with the **Cloner** class
 - Automatic grid placement with the **GridCloner** class
-- Accessing cloned objects with the **vectorized API** (`XFormPrimView`)
+- Accessing cloned objects with the **vectorized API** (`XformPrim`)
 - **Physics replication** and advanced parameters such as `copy_from_source`
 
 ## Getting Started
@@ -49,7 +49,7 @@ As a simple first example, let's create a scene with 4 cubes:
 
 ```python
 from isaacsim.core.cloner import Cloner    # import the Cloner interface
-from isaacsim.core.utils.stage import get_current_stage
+from isaacsim.core.experimental.utils.stage import get_current_stage
 from pxr import UsdGeom
 
 # create the base environment with one cube
@@ -87,7 +87,7 @@ If you want to specify the orientation of each clone, pass an `orientations` arg
 
 ```python
 from isaacsim.core.cloner import GridCloner    # import the GridCloner interface
-from isaacsim.core.utils.stage import get_current_stage
+from isaacsim.core.experimental.utils.stage import get_current_stage
 from pxr import UsdGeom
 
 # create the base environment with one cube
@@ -108,21 +108,24 @@ This gives you a scene with 4 cubes arranged on a grid. The placement of paralle
 
 ## Step 4: Accessing the Cloned Objects
 
-The state of the cloned objects can be read and written together through the **vectorized View APIs**. Instead of processing them one at a time in a loop, you can fetch and apply the data of all objects (or a subset) at once as tensors, which stays efficient even with many environments.
+The state of the cloned objects can be read and written together through the **vectorized APIs** of `isaacsim.core.experimental.prims`. Instead of processing them one at a time in a loop, you can fetch and apply the data of all objects (or a subset) at once as tensors, which stays efficient even with many environments.
 
 The following example gets the world poses of all cubes in the scene and lifts them up by 1.5 units in one operation:
 
 ```python
-# import the View API for XForm prims
-from isaacsim.core.prims import XFormPrimView
+# import the vectorized API for Xform prims
+import numpy as np
+from isaacsim.core.experimental.prims import XformPrim
 
-# create a View matching all 4 cubes with a wildcard
-boxes = XFormPrimView("/World/Cube_*")
+# create a wrapper matching all 4 cubes with a regex expression
+boxes = XformPrim("/World/Cube_.*")
 
 # get the world poses of all cubes
 #   - positions has shape (4, 3): X, Y, Z translation
 #   - orientations has shape (4, 4): W, X, Y, Z quaternion
 positions, orientations = boxes.get_world_poses()
+positions = positions.numpy()
+orientations = orientations.numpy()
 
 # raise the Z coordinate by 1.5
 positions[:, 2] += 1.5
@@ -130,8 +133,8 @@ positions[:, 2] += 1.5
 boxes.set_world_poses(positions, orientations)
 ```
 
-!!! note "Where the View class is imported from"
-    The body text of the official documentation says to access the clones "with the APIs of `isaacsim.core.api`", but as the sample code shows, the actual import source of `XFormPrimView` is **`isaacsim.core.prims`**.
+!!! note "What changed from the old API (XFormPrimView)"
+    Tutorials for Isaac Sim 5.x used `XFormPrimView` from `isaacsim.core.prims` and specified paths with a **wildcard** (`/World/Cube_*`). With `isaacsim.core.experimental.prims.XformPrim` in 6.0, paths are specified as a **regular expression** (`/World/Cube_.*`). Also, `get_world_poses()` returns Warp arrays, so convert them with `.numpy()` before manipulating them with NumPy.
 
 ## Step 5: Physics Replication
 
@@ -146,10 +149,10 @@ Using this feature requires additional parameters:
 cloner.clone(
     source_prim_path="/World/Ants/Ant_0",
     prim_paths=target_paths,
-    position_offsets=position_offsets,
+    positions=position_offsets,
     replicate_physics=True,
     base_env_path="/World/Ants",
-    root_path="/World/Ants/Ant_"
+    root_path="/World/Ants/Ant_",
 )
 ```
 
@@ -169,11 +172,11 @@ The Cloner has one more important option, `copy_from_source`:
 cloner.clone(
     source_prim_path="/World/Ants/Ant_0",
     prim_paths=target_paths,
-    position_offsets=position_offsets,
+    positions=position_offsets,
     replicate_physics=True,
     base_env_path="/World/Ants",
     root_path="/World/Ants/Ant_",
-    copy_from_source=True
+    copy_from_source=True,
 )
 ```
 
@@ -188,7 +191,7 @@ This tutorial covered the following topics:
 
 1. Duplicating environments and specifying positions with **Cloner**
 2. Automatic grid placement with **GridCloner**
-3. Vectorized access to the clones with **XFormPrimView**
+3. Vectorized access to the clones with **XformPrim** (`isaacsim.core.experimental.prims`)
 4. Speedups with **physics replication** and its limitations
 5. Choosing between inheritance and independent copies with **copy_from_source**
 

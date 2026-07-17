@@ -7,6 +7,9 @@ title: Lula Kinematics Solver
 !!! info "Preliminary version"
     This English page is a preliminary summary. The Japanese page is the primary, fully detailed document — see it for the complete walkthrough.
 
+!!! warning "Deprecated in Isaac Sim 6.0"
+    The official page is marked Deprecated in Isaac Sim 6.0; the Robot Motion (Experimental) API is the recommended successor. The Lula Kinematics Solver still works in 6.0.
+
 ## Overview
 
 `LulaKinematicsSolver` computes forward/inverse kinematics for a robot defined by a robot-description + URDF (same files as Lula RMPflow). It is purely kinematic (no collision spheres needed) and works at any frame in the URDF (`get_all_frame_names()`).

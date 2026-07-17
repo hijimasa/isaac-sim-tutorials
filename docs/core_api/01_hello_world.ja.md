@@ -226,7 +226,7 @@ class HelloWorld(BaseSample):
             path="/World/ground",
         )
 
-        # -- 立方体の作成とマテcenter適用 -- #
+        # -- 立方体の作成とマテリアル適用 -- #
         # 立方体用の青いビジュアルマテリアルを作成
         visual_material = PreviewSurfaceMaterial("/World/Materials/blue")
         visual_material.set_input_values("diffuseColor", [0.0, 0.0, 1.0])

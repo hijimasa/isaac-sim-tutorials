@@ -33,7 +33,7 @@ UR10 ロボットがコンベアからビン（箱）を取り、パレットに
 | シナリオ | トリガー | データ収集方式 | レンダリング |
 |---|---|---|---|
 | **ビン反転（bin flip）** | ビンが反転ヘルパーに置かれたとき | **アノテータから直接取得**して手動でディスク保存 | **PathTracing** |
-| **ビン・オン・パレット** | ビンがパレット（または既に積まれたビンの上）に置かれたとき | **BasicWriter** で暗黙的に保存 | 既定（RayTracing） |
+| **ビン・オン・パレット** | ビンがパレット（または既に積まれたビンの上）に置かれたとき | **DiskBackend＋BasicWriter** で暗黙的に保存 | 既定（RealTimePathTracing） |
 
 収集するアノテータデータは LdrColor（rgb）と instance segmentation です。
 
@@ -44,7 +44,7 @@ UR10 ロボットがコンベアからビン（箱）を取り、パレットに
 
 ## ステップ 1：実行してみる
 
-このチュートリアルは **Script Editor** から実行します（公式ページにコード全文があります）。スクリプト末尾の `NUM_CAPTURES` を変更するとキャプチャ数を変えられます。スクリプトは UR10 パレタイジングデモシーンをプログラム的に読み込み、開始します。
+このチュートリアルは **Script Editor** から実行します（公式ページにコード全文があります）。キャプチャ数と各シナリオのフレーム数は `run_example_async(num_captures, bin_flip_frames, pallet_frames)` の引数で調整でき、既定値は `DEFAULT_NUM_CAPTURES = 4`（キャプチャ対象のビン数、最大 36）、`DEFAULT_BIN_FLIP_FRAMES = 4`、`DEFAULT_PALLET_FRAMES = 16` です。スクリプトは新しいステージを作成し、`random.seed(42)` と `rep.set_global_seed(42)` でシードを固定したうえで、UR10 パレタイジングデモシーン（`isaacsim.cortex.examples.ur10_palletizing.ur10_palletizing` の `BinStacking`）をプログラム的に読み込み、開始します。
 
 ## ステップ 2：PalletizingSDGDemo クラス
 
@@ -53,6 +53,7 @@ UR10 ロボットがコンベアからビン（箱）を取り、パレットに
 | 属性 | 役割 |
 |---|---|
 | `_bin_counter` / `_num_captures` | 現在のビン番号と要求キャプチャ数の追跡 |
+| `_bin_flip_frames` / `_pallet_frames` | 各シナリオでキャプチャするフレーム数（旧クラス定数 `BIN_FLIP_SCENARIO_FRAMES` / `PALLET_SCENARIO_FRAMES` はパラメータ化された） |
 | `_active_bin` | 現在追跡中のビン |
 | `_bin_flip_scenario_done` | ビン反転シナリオの完了フラグ（ビンがヘルパーに接触し続けても再トリガーしないため） |
 | `_timeline` / `_timeline_sub` | SDG イベントに応じたシミュレーションの一時停止・再開と、状態監視のためのタイムライン購読 |
@@ -67,10 +68,10 @@ UR10 ロボットがコンベアからビン（箱）を取り、パレットに
 
 ### ビン反転シナリオ（アノテータ直接方式）
 
-1. レンダリングモードを **PathTracing** に切り替えます。
-2. `_create_bin_flip_graph` でランダム化グラフ（カメラ＋ランダム化ライト）を作成します。グラフの生成完了を保証するため、**遅延プレビューコマンド**をディスパッチしてから SDG を開始します。
-3. `rep.orchestrator.step_async` を `BIN_FLIP_SCENARIO_FRAMES` 回呼んでグラフを 1 フレームずつ進め、アノテータの `get_data()` でデータを取得してヘルパー関数でディスクに保存します。
-4. 終了後、レンダープロダクトとグラフを破棄し、レンダリングモードを **RayTracing に戻して**シミュレーションを再開します。
+1. レンダリングモードを **PathTracing** に切り替えます（`spp=16`、`total_spp=32`）。
+2. `_create_bin_flip_graph` でランダム化グラフ（カメラ＋ランダム化ライト）を作成します。アノテータは `rep.annotators.get("rgb")` と `rep.annotators.get("instance_segmentation", init_params={"colorize": True})` で取得します。
+3. `rep.orchestrator.step_async` を `self._bin_flip_frames` 回呼んでグラフを 1 フレームずつ進め、アノテータの `get_data()` でデータを取得して `omni.replicator.core.functional` の **`write_image`** でディスクに保存します（従来の PIL によるヘルパー関数は不要になりました）。
+4. 終了後、レンダープロダクトとグラフを破棄し、レンダリングモードを **RealTimePathTracing に戻して**シミュレーションを再開します。
 
 このシナリオのランダム化グラフでは、ライトの色は定義済みカラーパレットから `rep.distribution.choice(color_palette)` で選択され、カメラは定義済み位置を `rep.distribution.sequence(camera_positions)` で**順番に**移動します。どちらも `rep.trigger.on_frame()` で毎フレーム実行されます。
 
@@ -78,8 +79,8 @@ UR10 ロボットがコンベアからビン（箱）を取り、パレットに
 
 1. ランダム化グラフがビンとパレットのマテリアル・テクスチャを変更するため、**元のマテリアルをキャッシュ**しておきます。
 2. `_create_bin_and_pallet_graph` でグラフ（パレット周りをランダム移動するカメラ、ビンのマテリアル、パレットのテクスチャ）を作成します。
-3. **BasicWriter** を使い、`PALLET_SCENARIO_FRAMES` 回の `step_async` でグラフを進めながらライターに書き込ませます。
-4. 終了後、レンダープロダクトとグラフを破棄し、**キャッシュしたマテリアルを復元**してシミュレーションを再開します。最後のビンでなければ次のビンをアクティブに設定します。
+3. **DiskBackend＋BasicWriter** を使い、`self._pallet_frames` 回の `step_async` でグラフを進めながらライターに書き込ませます。
+4. 終了後、レンダープロダクトとグラフを破棄し、**キャッシュしたマテリアルを復元**します。最後のビンでなければシミュレーションを再開し、次のビンをアクティブに設定してタイムライン購読を再開します。
 
 このシナリオでは**トリガーのレートが 2 段階**に分かれています：
 

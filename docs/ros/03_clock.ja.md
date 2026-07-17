@@ -21,7 +21,7 @@ title: ROS 2 Clock
 - 複数マシンで使う場合は、Isaac Sim の起動前と、ROS メッセージを送受信するすべてのターミナルで `FASTRTPS_DEFAULT_PROFILES_FILE` 環境変数を設定しておくこと（[セットアップページ](00_setup.md)の該当節を参照）
 
 !!! warning "Windows での RViz2"
-    Windows 10 / 11 では、マシンの構成によって RViz2 が正しく開かないことがあります（WSL2 の WSLg 経由での起動を推奨します）。
+    Windows 11 では、マシンの構成によって RViz2 が正しく開かないことがあります（WSL2 の WSLg 経由での起動を推奨します）。
 
 ### 所要時間
 
@@ -55,7 +55,7 @@ ros2 param set /node_name use_sim_time true
 | **Isaac Read Simulation Time** | 現在のシミュレーション時刻を取得する |
 | **ROS2 Publish Clock** | シミュレーション時刻を `/clock` トピックにパブリッシュする |
 
-![Clock パブリッシャグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_clock_publisher.png)
+![Clock パブリッシャグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_clock_publisher.png)
 
 !!! note "シミュレーション時刻は既定で単調増加する"
     **Isaac Read Simulation Time** が返す時刻は、既定ではシミュレーションを停止して再度 Play しても 0 に戻らず、増え続けます（単調増加）。これは、リセットで時刻が巻き戻ることによる問題（TF の順序逆転など）を防ぐためです。リセットのたびに時刻を 0 から始めたい場合は、このノードの **resetOnStop** を `True` に設定してください。
@@ -84,7 +84,7 @@ ros2 param set /node_name use_sim_time true
 
 1. Action Graph を作成し、**On Playback Tick**、**ROS2 Context**、**Isaac Read System Time**、**ROS2 Publish Clock** を接続します。
 
-    ![システム時刻のパブリッシュ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_clock_publisher_system_time.png)
+    ![システム時刻のパブリッシュ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_clock_publisher_system_time.png)
 
 2. **Play** をクリックし、ROS 2 ターミナルで配信内容を確認します：
 
@@ -102,7 +102,7 @@ ros2 param set /node_name use_sim_time true
 1. 新しいステージを開き、Action Graph を作成します。
 2. **On Playback Tick**、**ROS2 Context**、**ROS2 Subscribe Clock**（外部のタイムスタンプデータを購読する）を接続します。
 
-    ![Clock サブスクライバグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_clock_subscriber.png)
+    ![Clock サブスクライバグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_clock_subscriber.png)
 
 3. **Play** をクリックしてシミュレーションを開始します。Action Graph 内で **ROS2 Subscribe Clock** ノードを選択し、Property ウィンドウで **timeStamp** 出力が 0 であることを確認します。
 4. 新しい ROS 2 ターミナルから、Clock メッセージを 1 回だけ手動でパブリッシュします：

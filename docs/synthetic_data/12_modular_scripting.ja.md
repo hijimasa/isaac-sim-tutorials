@@ -34,12 +34,20 @@ title: モジュラービヘイビアスクリプティング
 - **設定可能** — 変数が USD 属性として公開され、**UI から**コード変更なしで調整できる
 - **永続的** — ステージと一緒に保存・バージョン管理される
 
+ビヘイビア機能は 2 つのエクステンションに分かれています：
+
+- **`isaacsim.replicator.behavior`** — ビヘイビアスクリプト本体を含むコア。UI に依存せず、**ヘッドレスモード**（自動化した SDG パイプラインなど）でも動作します
+- **`isaacsim.replicator.behavior.ui`** — 公開変数を Property パネルに表示する UI
+
 ビヘイビアスクリプトの実体は `/exts/isaacsim.replicator.behavior/isaacsim/replicator/behavior/behaviors/*` にあります。既定ではタイムラインイベント（start / update / stop など）に反応するテンプレートコードを持ちます。
 
-![ビヘイビアスクリプトの公開変数](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_behavior_scripts_variables.jpg)
+![ビヘイビアスクリプトの公開変数](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_behavior_scripts_variables.jpg)
 
-!!! note "変数の公開の仕組み"
-    公開変数は、USD API でプリムに適切なネームスペース付きのカスタム属性を作ることで実装されています。UI 側（`isaacsim.replicator.behavior.ui`）は、選択したプリムの Property パネルを拡張して、スクリプトが定義した公開変数を編集可能なフィールドとして自動表示します。
+!!! note "変数の公開の仕組み（コア／UI の分離）"
+    公開変数は、USD API でプリムに共有ネームスペース付きのカスタム属性（`exposedVar:<behaviorNamespace>:<attrName>`）を作ることで実装されています。コア側が公開変数を作成・削除するたびに carb イベント `isaacsim.replicator.behavior.EXPOSED_VARS_CHANGED` を発行し、UI 側（`isaacsim.replicator.behavior.ui`）はこのイベントを購読して、選択したプリムの Property パネルを編集可能なフィールドとして自動再構築します。このイベントベースの疎結合により、コアは UI なしで動作できます。
+
+!!! note "Property パネルからスクリプトを添付するには"
+    UI からプリムにビヘイビアスクリプトを添付する（Property パネル > **Add > Python Scripting**）には、**Window > Extensions** で `omni.behavior.scripting.ui` エクステンションを有効化する必要があります（既定では無効）。コアのビヘイビア自体はこのエクステンションなしでも動作します。
 
 ## 組み込みビヘイビア一覧
 
@@ -49,13 +57,15 @@ title: モジュラービヘイビアスクリプティング
 
 | 公開変数 | 型 | 意味 |
 |---|---|---|
-| `range:minPosition` / `range:maxPosition` | Vector3d | 位置の下限・上限 |
-| `frame:useRelativeFrame` | Bool | 相対位置モード |
-| `frame:targetPrimPath` | String | 相対位置の基準プリム |
+| `range:minPosition` / `range:maxPosition` | Vector3d | ランダムオフセットの下限・上限 |
+| `frame:useRelativeFrame` | Bool | True なら初期オフセット（ターゲット指定時はターゲットからの、未指定時は自身の初期位置からの）を保持して、その上にランダムオフセットを加算。False ならランダムオフセットを絶対位置として適用 |
+| `frame:targetPrimPath` | String | 基準プリム（指定時はそのワールド位置にアンカー。空なら他プリムから独立してランダム化） |
 | `includeChildren` | Bool | 子プリムも対象にする |
 | `interval` | UInt | 更新間隔（0＝毎フレーム） |
 
-用途：背景オブジェクトの配置バリエーション、移動するターゲットに対する相対配置、グループ単位の階層ランダム化。
+`targetPrimPath` と `useRelativeFrame` の組み合わせで最終位置が決まります（空 + True＝初期位置まわりのジッター、指定 + False＝ターゲット近傍への配置、指定 + True＝相対オフセットを保ったままターゲットに追従）。
+
+用途：背景オブジェクトの配置バリエーション、移動するターゲットへの追従／近傍配置、グループ単位の階層ランダム化。
 
 ### Rotation Randomizer（rotation_randomizer.py）
 
@@ -117,7 +127,10 @@ title: モジュラービヘイビアスクリプティング
 3. **Light Randomizer** と **Look At Behavior**（カメラのターゲット追跡）を追加
 4. ランダム化されたシーン構成で合成画像をキャプチャ
 
-![ビヘイビア SDG のキャプチャ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_viewport_behavior_scripts_capture.jpg)
+!!! note "seed による再現性"
+    各ビヘイビアは公開変数 `seed` を持ち、デモスクリプトではビヘイビアインスタンスごとに固有のシードを割り当てることで、実行順序に依存しない決定的なランダム化を実現しています（物理シミュレーションを使う積み上げは非決定的で、最終位置は変わり得ます）。
+
+![ビヘイビア SDG のキャプチャ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_viewport_behavior_scripts_capture.jpg)
 
 ## まとめ
 

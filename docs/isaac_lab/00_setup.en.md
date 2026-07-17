@@ -24,6 +24,9 @@ This page collects the **setup steps** for the Isaac Lab tutorial series. From t
 | RAM | 32 GB or more |
 | GPU VRAM | 16 GB or more recommended |
 
+!!! warning "Isaac Sim 6.0 is not yet supported (as of July 2026)"
+    The tutorials on this site target Isaac Sim 6.0.1, but **Isaac Lab does not support Isaac Sim 6.0 at the time of writing, and the official installation guide still recommends Isaac Sim 5.1.0**. The steps on this page (such as installing `isaacsim==5.1.0`) therefore remain based on 5.1.0. Build your Isaac Lab training environment with Isaac Sim 5.1.0, and once a 6.0-compatible release is available, follow the latest steps in the [official installation guide](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html). (Running the trained-policy demos themselves works with Isaac Sim 6.0.1 alone.)
+
 !!! note "No WSL needed on Windows (runs natively)"
     Unlike ROS 2, **Isaac Lab runs natively on Windows 11**. The only differences from Linux are that the script is `isaaclab.bat` instead of `isaaclab.sh`, and that paths use backslashes (`\`).
 

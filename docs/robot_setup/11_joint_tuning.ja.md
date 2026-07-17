@@ -14,6 +14,7 @@ title: ジョイントドライブゲインの調整
 - **ベロシティドライブ**（速度制御）のゲイン調整手順
 - 調整したゲインをアセット（USD ファイル）に保存する方法
 - 調整結果のプロットによる可視化と評価方法
+- **Snap-to-Limits テスト**と**ストレステスト**によるゲインの検証方法（Isaac Sim 6.0 の新テストモード）
 
 ## はじめに
 
@@ -25,7 +26,7 @@ title: ジョイントドライブゲインの調整
     - **アーティキュレーションルート（Articulation Root）**：物理的にアーティキュレーションとして駆動するために必須
 
 !!! note "Gain Tuner と Robot Schema の関係"
-    Isaac Sim 5.1 の Gain Tuner は、内部的に **Robot Schema**（`IsaacRobotAPI`、`IsaacLinkAPI`、`IsaacJointAPI`）を使用してロボットの構造を把握します。具体的には、Gain Tuner ウィンドウの **Select Robot** ドロップダウンには **Robot API が適用されたプリムだけ**が表示される実装になっています。そのため Robot Schema が適用されていないアセットは、たとえアーティキュレーションが有効でも Gain Tuner からは見えません。
+    Gain Tuner は、内部的に **Robot Schema**（`IsaacRobotAPI`、`IsaacLinkAPI`、`IsaacJointAPI`）を使用してロボットの構造を把握します。具体的には、Gain Tuner ウィンドウの **Select Robot** ドロップダウンには **Robot API が適用されたプリムだけ**が表示される実装になっています。そのため Robot Schema が適用されていないアセットは、たとえアーティキュレーションが有効でも Gain Tuner からは見えません。
 
     [チュートリアル 6](06_setup_manipulator.md) で URDF からロボットをインポートする際、URDF インポーターが Robot Schema を**自動的に**適用します。したがって、URDF 経由でインポートしたロボットを使い続けている限り、追加の操作は不要です。
 
@@ -47,6 +48,10 @@ title: ジョイントドライブゲインの調整
 4. **ベロシティドライブの調整** — 速度制御モードでの Damping 調整
 5. **ゲインの保存** — 調整結果をアセットの物理レイヤーに書き戻す
 6. **結果の可視化** — 指令値と計測値のプロットで挙動を評価
+7. **テストモードによる検証** — Snap-to-Limits とストレステストでゲインの妥当性を確認（Isaac Sim 6.0）
+
+!!! note "Isaac Sim 6.0 での公式チュートリアルの再構成"
+    Isaac Sim 6.0 の公式チュートリアル（Tutorial 11）は、URDF からインポートした**ゲインゼロの UR10** を出発点に、**Snap-to-Limits テスト**でゲイン不足を診断し、**ストレステスト**で速度制限の重要性を確認する構成に書き直されました。本ページのステップ 2〜4 で扱うチューニング手法は、公式リファレンス（Gain Tuner Extension）の「Tuning Workflow」節に整理されています。6.0 の新しいテストモードはステップ 7 で扱います。
 
 !!! note "ジョイントドライブとは"
     Isaac Sim のジョイントドライブは、各ジョイントに組み込まれた**仮想モーター**のようなものです。目標値（位置または速度）を与えると、内部の **PD 制御**（比例・微分制御）が目標との差を計算してトルクを発生させ、ジョイントを駆動します。
@@ -90,7 +95,7 @@ title: ジョイントドライブゲインの調整
 
 **Tools > Robotics > Asset Editors > Gain Tuner**
 
-![Gain Tuner UI](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_gains_tuner_ui.png)
+![Gain Tuner UI](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_gain_tuner_ur10_zero_gains.png)
 
 ウィンドウ上部の **Select Robot** ドロップダウンから、調整したいロボットを選択します。Robot Schema が適用されたアセットが自動的に候補に表示されます。
 
@@ -301,7 +306,7 @@ Gain Tuner ウィンドウの **Save Gains to Physics Layer** ボタンをクリ
 
 Gain Tuner のプロット領域には、テスト実行後に以下が表示されます：
 
-![Gain Tuner プロット](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_gains_tuner_plots.png)
+![Gain Tuner プロット](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_gain_tuner_ur10_snap_to_limits_tuned_gains.png)
 
 | 表示要素 | 意味 |
 |---|---|
@@ -328,6 +333,64 @@ Gain Tuner のプロット領域には、テスト実行後に以下が表示さ
 !!! tip "テスト結果はテスト完了後にのみ表示される"
     シミュレーション実行中はリアルタイムにプロットが更新されないことがあります。**シミュレーションを停止した後**にプロットを確認してください。
 
+## ステップ 7：テストモードによる検証（Isaac Sim 6.0）
+
+Isaac Sim 6.0 の Gain Tuner には、ゲインの妥当性を体系的に検証するためのテストモードが用意されています：
+
+| テストモード | 内容 | 用途 |
+|---|---|---|
+| **Snap-to-Limits**（デフォルト） | 各ジョイントを可動域の下限・上限まで動かす | ゲインが可動域全体に到達できる強さかどうか、制限・ゲイン・コリジョン形状の整合性を確認 |
+| **Sinusoidal** | 連続した正弦波軌道で駆動 | 滑らかな軌道への追従性、不足減衰／過減衰の判定 |
+| **Step Function** | ステップ状の目標値変化で駆動 | ステップ応答（立ち上がり・オーバーシュート）の評価 |
+| **Stress Test** | 極端なランダム指令で駆動 | 強化学習（Isaac Lab）で発生するような過酷な指令に対する安定性の確認 |
+
+### 7-1. Snap-to-Limits テスト
+
+公式チュートリアルでは、URDF からインポートした直後（全ジョイントのゲインがゼロ）の UR10 に対して、次の流れでゲインを診断します：
+
+1. 全ジョイントの Stiffness に小さな値（例：`10`）、Damping に `0` を設定
+2. **Snap-to-Limits** テストモードを選択し、全ジョイントの **Test** チェックボックスを有効化
+3. **Play** を押してから **Run Test** を実行
+
+Stiffness が不足していると、アーム全体の重量を支える `shoulder_lift_joint` や `elbow_joint` が **Fail**（可動域の端に到達できない）になります。
+
+!!! tip "Fail と Blocked の見分け方"
+    **Blocked** と報告されたジョイントは、コリジョン形状が可動域の端への到達を妨げている可能性があります。**Disable Self-Collisions** を有効にして再実行し、それで Pass するなら「ジョイント制限がコリジョン形状の許容範囲を超えている」ことが原因です。この場合はゲインではなく、USD 側のジョイント制限を狭めてください。
+
+公式チュートリアルで UR10 が Snap-to-Limits に合格するゲインの例：
+
+| ジョイント | Stiffness | Damping |
+|---|---|---|
+| shoulder_pan_joint | 500000 | 50 |
+| shoulder_lift_joint | 500000 | 50 |
+| elbow_joint | 50000 | 50 |
+| wrist_1_joint | 500 | 0.5 |
+| wrist_2_joint | 500 | 0.5 |
+| wrist_3_joint | 50 | 0.0 |
+
+!!! warning "Max Force（最大トルク）にも注意"
+    UR10 の URDF にはジョイントごとの最大トルク（肩 330 Nm、肘 150 Nm、手首 56 Nm）が定義されており、USD の **Max Force** としてインポートされます。Stiffness を上げてもテストに合格しない場合は、Properties パネルの **Joint > Advanced > Maximum Force** を大きな値または `inf`（無限大）に設定してください。UR10 では `shoulder_pan_joint` と `shoulder_lift_joint` に無限大の Max Force が必要です。
+
+### 7-2. ストレステスト
+
+チューニング済みのゲインを適用したら、**Stress Test** で強化学習の学習時に典型的な極端な指令に対する安定性を確認します：
+
+1. **Stress Test** モードを選択し、**Random Walk** サブモードを選ぶ
+2. 全ジョイントの **Sequence** を `1` に設定（並列にテスト）
+3. **Disable Velocity Limits** はオフ（デフォルト）のまま **Play → Run Test**
+4. 全ジョイントが **Stable** と報告されることを確認
+
+次に、**Disable Velocity Limits** を有効にして再実行すると、一部のジョイントが **Unstable** になります。速度制限がないと、PD 制御が大きな位置誤差に対して 1 ステップで極端な速度まで加速するトルクを生成し、離散時間ソルバーが収束できずにエネルギーの発散や NaN が発生するためです。
+
+!!! note "速度制限の 2 つの役割"
+    - **物理的な忠実性** — 実機のアクチュエータにはメーカー指定の最大速度があります（UR10 の URDF では各ジョイント約 2〜3 rad/s）。シミュレーションにも設定することで実機の運動範囲を再現できます。
+    - **ソルバーの安定性** — ジョイント速度に上限を設けることで、1 ステップあたりの変位が PhysX の陰的積分器が数値的に安定を保てる範囲に収まります。
+
+    アプリケーションの都合で速度制限を上げる必要がある場合は、少しずつ上げてはストレステストを再実行し、ソルバーが安定していることを確認してください。**Adversarial** サブモードでも同じ比較を行うと、最悪ケースの相関した姿勢に対する安定性も確認できます。
+
+!!! tip "Stable の解釈"
+    **Stable** という結果は、テストで使用した sigma やスナップ間隔の値に対してのみ有効です。Isaac Lab での学習に向けた準備状況を評価する場合は、これらのパラメータを結果と一緒に記録しておきましょう。
+
 ## トラブルシューティング
 
 | 症状 | 原因 | 解決方法 |
@@ -352,11 +415,12 @@ Gain Tuner のプロット領域には、テスト実行後に以下が表示さ
 4. **ベロシティドライブの調整手順**（Stiffness=0、Damping のみで速度追従）
 5. **ゲインのアセットへの保存**（Save Gains to Physics Layer による物理レイヤーへの書き込み）
 6. **プロットによる結果の可視化と評価**（指令値と計測値の比較）
+7. **Snap-to-Limits テストとストレステスト**による検証（Fail / Blocked の切り分け、速度制限とソルバー安定性）
 
 これらの調整により、ロボットが安定かつ応答性良く動作するようになり、上位の制御アルゴリズムが期待通りに振る舞う土台が整います。
 
 !!! tip "より深く学ぶには"
-    Gain Tuner の数学的背景や PD 制御の理論については、Isaac Sim 公式ドキュメントの [Gain Tuner Extension](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html) を参照してください。また、トルク指令を直接書き込むカスタムコントローラを実装したい場合は、公式の "Adding a Controller" チュートリアルが参考になります。
+    Gain Tuner の数学的背景や PD 制御の理論については、Isaac Sim 公式ドキュメントの [Gain Tuner Extension](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html) を参照してください。また、トルク指令を直接書き込むカスタムコントローラを実装したい場合は、本サイトの[コントローラの追加](../core_api/03_adding_a_controller.md)チュートリアルが参考になります（対応する公式チュートリアルは 6.0 で削除されました）。
 
 ## 次のステップ
 

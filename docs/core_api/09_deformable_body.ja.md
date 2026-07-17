@@ -238,4 +238,4 @@ STL/OBJ/FBX 等の外部メッシュファイルを使って、任意の形状�
 
 - [Deformable Visual Authoring (Beta) — Omni Physics](https://docs.omniverse.nvidia.com/kit/docs/omni_physics/107.3/dev_guide/deformables_beta/deformable_authoring.html)
 - [Omni Physics Deformable Schema — Omni Physics](https://docs.omniverse.nvidia.com/kit/docs/omni_physics/107.3/dev_guide/deformables_beta/omniphysics_deformable_schema.html)
-- [Physics Simulation Fundamentals — Isaac Sim Documentation](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/physics/simulation_fundamentals.html)
+- [Physics Simulation Fundamentals — Isaac Sim Documentation](https://docs.isaacsim.omniverse.nvidia.com/latest/physics/simulation_fundamentals.html)

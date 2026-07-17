@@ -43,54 +43,38 @@ Content Browser から Simple Articulation を追加します。
 
 ## ステップ 2：Effort センサーを作成する
 
-**Window > Script Editor** から Script Editor を開き、`EffortSensor` ラッパークラスでセンサーを作成します。
+**Window > Script Editor** から Script Editor を開き、`EffortSensor` クラスに関節 prim のパスを渡してセンサーを作成します。このクラスは読み取り用の `get_sensor_reading()` / `get_data()` と、実行時の再設定用の `update_dof_name()` / `change_buffer_size()` を提供します（Contact・IMU・Raycast センサーと異なり、Effort センサーはスキーマを持つ独自の prim を作らないため、独立したオーサリングクラスはありません）。
 
 ```python
-from isaacsim.sensors.physics.scripts.effort_sensor import EffortSensor
-import numpy as np
+from isaacsim.sensors.experimental.physics import EffortSensor
 
-sensor = EffortSensor(
-    prim_path="/World/simple_articulation/Arm/RevoluteJoint",
-    sensor_period=0.1,
-    use_latest_data=False,
-    enabled=True
-)
+sensor = EffortSensor(path="/World/simple_articulation/Arm/RevoluteJoint", enabled=True)
 ```
 
+!!! note "センサー prim は関節そのもの"
+    渡した関節 prim がセンサーの prim になります。`EffortSensor` は構築時に Stage パネルへ別の USD prim を作成しません。エフォートの読み値はシミュレーション再生中に `get_sensor_reading()` で取得でき、Play を押した後に `reading.is_valid` を確認するとセンサーが有効かどうか分かります。
+
 !!! note "パラメータの変更"
-    `sensor_period` / `use_latest_data` / `enabled` はクラスのメンバ変数を直接変更できます。読み値の `dof_name` や `buffer_size` を変えるには、メンバ関数 `update_dof_name` / `change_buffer_size` を使います。
+    `enabled` などはクラスのメンバ変数を直接変更できます。読み値の `dof_name` や `buffer_size` を変えるには、メンバ関数 `update_dof_name` / `change_buffer_size` を使います。
 
 ## ステップ 3：Python で出力を読み取る
 
-`get_sensor_reading(self, interpolation_function=None, use_latest_data=False)` は次の 2 つのパラメータを受け取ります。
+出力の読み取り方法は 2 つあります。
 
-- **補間関数**（省略可）… デフォルトの線形補間の代わりに使う関数
-- **use_latest_data フラグ**（省略可）… センサーが物理レートより遅い場合に現在の物理ステップからデータを取得
+- `EffortSensor.get_sensor_reading()` … `is_valid` / `time` / `value` を含む `EffortSensorReading` オブジェクトを返す
+- `EffortSensor.get_data()` … `value` / `is_valid` / `time` / `physics_step` を含む構造化された辞書を返す
 
-戻り値の `EsSensorReading` オブジェクトは `is_valid` / `time` / `value` を含みます。
-
-センサーを作成したら **PLAY** で開始し、次の関数で現在フレームの読み値を取得します。
+センサーを作成したら **Play** で開始し、次の関数で現在フレームの読み値を取得します。
 
 ```python
-from isaacsim.sensors.physics.scripts.effort_sensor import EffortSensor
-
-# センサーの読み値を取得
-reading = sensor.get_sensor_reading(use_latest_data=True)
+reading = sensor.get_sensor_reading()
 ```
 
-カスタム補間関数を使う例です。
+`get_data()` を使う例です。
 
 ```python
-from isaacsim.sensors.physics.scripts.effort_sensor import EffortSensor
-
-# 入力: 過去の EsSensorReading のリスト、期待するセンサー読み取り時刻
-def interpolation_function(data, time):
-    interpolated_reading = EsSensorReading()
-    # 補間処理を行う
-    return interpolated_reading
-
-# センサーの読み値を取得
-reading = sensor.get_sensor_reading(interpolation_function)
+frame = sensor.get_data()
+print(f"Effort: {frame['value']}, valid: {frame['is_valid']}, time: {frame['time']}")
 ```
 
 ## ステップ 4：OmniGraph ワークフロー
@@ -103,7 +87,7 @@ reading = sensor.get_sensor_reading(interpolation_function)
     - **Print Text** … 文字列をコンソールに出力します。Log Level を Warning に設定し、必要なら **To Screen** をチェックして画面にも表示します。
 3. ノードを接続すると、Effort センサーの読み値が出力されます。
 
-![Effort センサーの OmniGraph](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_effort_sensor_omnigraph.png)
+![Effort センサーの OmniGraph](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_effort_sensor_omnigraph.png)
 
 !!! note
     期待どおりの読み値を得るには、関節を正しい軸に設定してください。
@@ -113,9 +97,11 @@ reading = sensor.get_sensor_reading(interpolation_function)
 このチュートリアルでは、次の内容を学びました。
 
 - Effort センサーが回転関節ではトルク、直動関節では力の大きさを測定すること
-- `EffortSensor` ラッパークラスでの作成とパラメータ変更
-- `get_sensor_reading()` とカスタム補間関数による読み取り
+- `EffortSensor` クラスでの作成とパラメータ変更
+- `get_sensor_reading()` / `get_data()` による読み取り
 - OmniGraph での Effort センサーの扱い方
+
+`EffortSensor` の詳細は [isaacsim.sensors.experimental.physics の API ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/latest/py/source/extensions/isaacsim.sensors.experimental.physics/docs/index.html)を参照してください。
 
 ## 次のステップ
 

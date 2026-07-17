@@ -28,6 +28,25 @@ title: PhysX SDK Generic センサー
 
 PhysX SDK Generic センサーは、PhysX SDK のレイキャストを使って 2 つの prim 間の深度を測定します。Isaac Sim で PhysX SDK ベースのセンサーを構築し、ground truth 深度を測定する方法のデモンストレーションとなっています。**任意のスキャンパターン**を自分で定義できるのが最大の特徴です。
 
+!!! warning "Isaac Sim 6.0 での非推奨化"
+    PhysX SDK Generic センサー（`isaacsim.sensors.physx`）は Isaac Sim 6.0 で非推奨（deprecated）となりました。
+    後継は **Physics Raycast センサー**（`isaacsim.sensors.experimental.physics.RaycastSensor`）で、
+    レイごとの原点オフセット（`rayOrigins`）と方向ベクトル（`rayDirections`）を直接指定できるため、
+    カスタムスキャンパターンの直接の置き換えになります。移行の対応関係は次のとおりです。
+
+    | PhysX SDK Generic センサー | Physics Raycast センサー |
+    |---|---|
+    | `sensor_pattern`（N×2 の azimuth/zenith 配列） | `rayDirections`（N×3 のデカルト方向ベクトル）。`dx = cos(zenith) * cos(azimuth)`、`dy = cos(zenith) * sin(azimuth)`、`dz = sin(zenith)` で変換 |
+    | `origin_offsets`（N×3 配列） | `rayOrigins`（N×3 配列）。意味は同じ |
+    | `batch_size` / `sampling_rate` / ストリーミングモード | `rayTimeOffsets`（レイごとの時間オフセット・秒）。現在の物理ステップに時間オフセットが入るレイのみ発射され、手動バッチ処理なしでスイープを実現 |
+    | `_range_sensor` Python インターフェース | `RaycastSensor` クラス |
+    | `send_next_batch()` / `set_next_batch_rays()` | 不要。全レイを作成時に定義し、タイミングは `rayTimeOffsets` で内部処理 |
+
+    詳細は[公式移行ガイド](https://docs.isaacsim.omniverse.nvidia.com/latest/migration_guides/isaac_sim_6_0/sensors_physx_generic_to_physics_raycast.html)と
+    [Physics Raycast センサーの公式ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/isaacsim_sensors_physics_raycast.html)を参照してください。
+    Raycast センサーの対話型サンプル（solid state / rotating / beam curtain の 3 構成）は
+    **Robotics Examples > Sensors > Physics Raycast Sensor** から **Load Scene** で試せます。
+
 ## ステップ 1：サンプルを実行する
 
 1. **Windows > Examples > Robotics Examples** で Robotics Examples タブを有効にします。
@@ -36,11 +55,11 @@ PhysX SDK Generic センサーは、PhysX SDK のレイキャストを使って 
 4. **Open Source Code** でソースコードを確認できます（Python API でセンサーを作成・追加・制御する例）。
 5. **PLAY** で開始します。
 
-![Generic センサーの例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_generic_sensor.webp)
+![Generic センサーの例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_viewport_generic_sensor.webp)
 
 パターンを可視化するには、レイが壁に当たって刻まれた像を保存します。出力ディレクトリを指定して **Save Pattern Image** を押し、保存された画像を開いてジグザグパターンを確認します。
 
-![スキャンパターン](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_advanced_generic_sensor_pattern.png)
+![スキャンパターン](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_advanced_generic_sensor_pattern.png)
 
 ## ステップ 2：スキャンパターンをカスタマイズする
 
@@ -110,7 +129,7 @@ sensor_pattern = np.deg2rad(sensor_pattern).T.copy()   ## 必ず .copy() を使�
 
 繰り返しを分かりやすく見せるため、上向きにスキャンする組と下向きにスキャンする組の 2 モードに分けます。正しく実行できれば、追加データを取り込まずに繰り返されることを確認できます。
 
-![繰り返しパターン](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_advanced_generic_repeat.gif)
+![繰り返しパターン](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_advanced_generic_repeat.gif)
 
 非ストリーミングモードにするには `self._streaming = False` に設定します。すると次のコードでパターンが生成されます。
 

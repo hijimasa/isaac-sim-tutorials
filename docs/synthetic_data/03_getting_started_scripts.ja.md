@@ -8,11 +8,12 @@ title: Getting Started スクリプト
 
 このチュートリアルを修了すると、以下の内容を習得できます：
 
-- Replicator ワークフローの基本設定（**capture on play の無効化、orchestrator.step、RTSubframes、DLSS 品質モード**）
+- Replicator ワークフローの基本設定（**capture on play の無効化、orchestrator.step、RTSubframes、DLSS 品質モード、wait_for_render、write-to-fabric**）
 - **BasicWriter** による基本のデータキャプチャ
 - **カスタムライターとアノテータ**による複数カメラからのデータアクセス
 - **Replicator グラフ＋カスタム USD API** の 2 方式のランダム化の併用
 - 物理シミュレーション中の**イベントトリガーによるデータキャプチャ**
+- **バッチランダム化**と `wait_for_render` / write-to-fabric による**パフォーマンス最適化**
 
 ## はじめに
 
@@ -41,7 +42,7 @@ title: Getting Started スクリプト
 
     1. 冒頭で `SimulationApp` を起動する（`simulation_app = SimulationApp(launch_config={"headless": False})`）
     2. `step_async()` / `wait_until_complete_async()` の代わりに同期版の `step()` / `wait_until_complete()` を使う（`async` / `await` が不要）
-    3. 末尾で `simulation_app.is_running()` のループと `simulation_app.close()` を書く
+    3. アプリ更新の待機に `await omni.kit.app.get_app().next_update_async()` ではなく `simulation_app.update()` を使う（例 4 など）
 
 ## 基本設定
 
@@ -342,19 +343,14 @@ import os
 import random
 
 import carb.settings
-import omni.kit.app
 import omni.replicator.core as rep
 import omni.usd
-from isaacsim.core.utils.semantics import add_labels
-from pxr import UsdGeom
 
 
-# USD API を使ったカスタムランダマイザ関数
+# グラフベースのランダマイザを使わずにプリムの位置をランダム化する
 def randomize_location(prim):
-    if not prim.GetAttribute("xformOp:translate"):
-        UsdGeom.Xformable(prim).AddTranslateOp()
-    translate = prim.GetAttribute("xformOp:translate")
-    translate.Set((random.uniform(-2, 2), random.uniform(-2, 2), random.uniform(-2, 2)))
+    random_pos = (random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1))
+    rep.functional.modify.position(prim, random_pos)
 
 
 async def run_example_async():
@@ -365,31 +361,34 @@ async def run_example_async():
     rep.set_global_seed(42)
 
     # DLSS を Quality モード（2）に設定
-    carb.settings.get_settings().set("/rtx/post/dlss/execMode", 2)
+    carb.settings.get_settings().set("rtx/post/dlss/execMode", 2)
 
-    # ステージのセットアップ
-    stage = omni.usd.get_context().get_stage()
-    cube = stage.DefinePrim("/World/Cube", "Cube")
-    add_labels(cube, labels=["MyCube"], instance_name="class")
+    # ステージのセットアップ（functional API）
+    rep.functional.create.xform(name="World")
+    cube = rep.functional.create.cube(parent="/World", name="Cube")
+    rep.functional.modify.semantics(cube, {"class": "my_cube"}, mode="add")
 
     # カスタムイベントでトリガーする Replicator ランダマイザを作成
     with rep.trigger.on_custom_event(event_name="randomize_dome_light_color"):
         rep.create.light(light_type="Dome", color=rep.distribution.uniform((0, 0, 0), (1, 1, 1)))
 
-    # ビューポートの Perspective カメラでレンダープロダクトを作成
-    rp = rep.create.render_product("/OmniverseKit_Persp", (512, 512))
+    # カメラを作成してレンダープロダクトを作成
+    cam = rep.functional.create.camera(position=(5, 5, 5), look_at=(0, 0, 0), parent="/World", name="Camera")
+    rp = rep.create.render_product(cam, (512, 512))
 
-    # BasicWriter で RGB とセマンティックセグメンテーションを書き込む
-    writer = rep.writers.get("BasicWriter")
+    # DiskBackend + BasicWriter で RGB とセマンティックセグメンテーションを書き込む
+    backend = rep.backends.get("DiskBackend")
     out_dir = os.path.join(os.getcwd(), "_out_basic_writer_rand")
+    backend.initialize(output_dir=out_dir)
     print(f"Output directory: {out_dir}")
-    writer.initialize(output_dir=out_dir, rgb=True, semantic_segmentation=True, colorize_semantic_segmentation=True)
+    writer = rep.writers.get("BasicWriter")
+    writer.initialize(backend=backend, rgb=True, semantic_segmentation=True, colorize_semantic_segmentation=True)
     writer.attach(rp)
 
     # データキャプチャをリクエスト
     for i in range(3):
         print(f"Step {i}")
-        # 1 ステップおきにカスタムイベントのランダマイザをトリガー
+        # 1 ステップおきにカスタムイベント（グラフベース）のランダマイザをトリガー
         if i % 2 == 1:
             rep.utils.send_og_event(event_name="randomize_dome_light_color")
 
@@ -400,12 +399,10 @@ async def run_example_async():
         # step はライターのトリガーのみを行う
         await rep.orchestrator.step_async(rt_subframes=32)
 
-    # ライターからデタッチしてからレンダープロダクトを破棄
+    # データの書き込み完了を待ってからリソースを解放
+    await rep.orchestrator.wait_until_complete_async()
     writer.detach()
     rp.destroy()
-
-    # データの書き込み完了を待つ
-    await rep.orchestrator.wait_until_complete_async()
 
 
 # 実行
@@ -435,23 +432,8 @@ import omni.kit.app
 import omni.replicator.core as rep
 import omni.timeline
 import omni.usd
-from isaacsim.core.utils.semantics import add_labels
-from pxr import Sdf, UsdGeom, UsdPhysics
-
-
-def add_colliders_and_rigid_body_dynamics(prim):
-    # コライダーを追加
-    if not prim.HasAPI(UsdPhysics.CollisionAPI):
-        collision_api = UsdPhysics.CollisionAPI.Apply(prim)
-    else:
-        collision_api = UsdPhysics.CollisionAPI(prim)
-    collision_api.CreateCollisionEnabledAttr(True)
-    # リジッドボディダイナミクスを追加
-    if not prim.HasAPI(UsdPhysics.RigidBodyAPI):
-        rigid_body_api = UsdPhysics.RigidBodyAPI.Apply(prim)
-    else:
-        rigid_body_api = UsdPhysics.RigidBodyAPI(prim)
-    rigid_body_api.CreateRigidBodyEnabledAttr(True)
+from isaacsim.core.experimental.prims import RigidPrim
+from pxr import UsdGeom
 
 
 async def run_example_async():
@@ -460,81 +442,89 @@ async def run_example_async():
     rep.orchestrator.set_capture_on_play(False)
 
     # DLSS を Quality モード（2）に設定
-    carb.settings.get_settings().set("/rtx/post/dlss/execMode", 2)
+    carb.settings.get_settings().set("rtx/post/dlss/execMode", 2)
 
     # ライトを追加
-    stage = omni.usd.get_context().get_stage()
-    dome_light = stage.DefinePrim("/World/DomeLight", "DomeLight")
-    dome_light.CreateAttribute("inputs:intensity", Sdf.ValueTypeNames.Float).Set(500.0)
+    rep.functional.create.xform(name="World")
+    rep.functional.create.dome_light(intensity=500, parent="/World", name="DomeLight")
 
     # コライダーとリジッドボディ付きのキューブを高さ 2 に作成
-    cube = stage.DefinePrim("/World/Cube", "Cube")
-    add_colliders_and_rigid_body_dynamics(cube)
-    if not cube.GetAttribute("xformOp:translate"):
-        UsdGeom.Xformable(cube).AddTranslateOp()
-    cube.GetAttribute("xformOp:translate").Set((0, 0, 2))
-    add_labels(cube, labels=["MyCube"], instance_name="class")
+    cube = rep.functional.create.cube(name="Cube", parent="/World")
+    rep.functional.modify.position(cube, (0, 0, 2))
+    rep.functional.modify.semantics(cube, {"class": "my_cube"}, mode="add")
+    rep.functional.physics.apply_rigid_body(cube, with_collider=True)
 
     # 隣に球も作成
-    sphere = stage.DefinePrim("/World/Sphere", "Sphere")
-    add_colliders_and_rigid_body_dynamics(sphere)
-    if not sphere.GetAttribute("xformOp:translate"):
-        UsdGeom.Xformable(sphere).AddTranslateOp()
-    sphere.GetAttribute("xformOp:translate").Set((-1, -1, 2))
-    add_labels(sphere, labels=["MySphere"], instance_name="class")
+    sphere = rep.functional.create.sphere(name="Sphere", parent="/World")
+    rep.functional.modify.position(sphere, (-1, -1, 2))
+    rep.functional.modify.semantics(sphere, {"class": "my_sphere"}, mode="add")
+    rep.functional.physics.apply_rigid_body(sphere, with_collider=True)
 
-    # レンダープロダクトとライターのセットアップ
-    rp = rep.create.render_product("/OmniverseKit_Persp", (512, 512))
-    writer = rep.writers.get("BasicWriter")
+    # カメラとレンダープロダクトのセットアップ
+    cam = rep.functional.create.camera(position=(5, 5, 5), look_at=(0, 0, 0), parent="/World", name="Camera")
+    rp = rep.create.render_product(cam, (512, 512))
+
+    # DiskBackend + BasicWriter のセットアップ
+    backend = rep.backends.get("DiskBackend")
     out_dir = os.path.join(os.getcwd(), "_out_basic_writer_sim")
+    backend.initialize(output_dir=out_dir)
     print(f"Output directory: {out_dir}")
-    writer.initialize(output_dir=out_dir, rgb=True, semantic_segmentation=True, colorize_semantic_segmentation=True)
+    writer = rep.writers.get("BasicWriter")
+    writer.initialize(backend=backend, rgb=True, semantic_segmentation=True, colorize_semantic_segmentation=True)
     writer.attach(rp)
 
     # タイムラインを開始（アプリの更新に合わせて進む）
     timeline = omni.timeline.get_timeline_interface()
     timeline.play()
 
-    # アプリを更新してシミュレーションを進める
-    drop_delta = 0.5
-    last_capture_height = cube.GetAttribute("xformOp:translate").Get()[2]
+    # ワールド座標・速度に簡単にアクセスできるよう、キューブを RigidPrim でラップ
+    cube_rigid = RigidPrim(str(cube.GetPrimPath()))
+
+    # キャプチャ中の表示切り替え用に Imageable としてもラップ
+    cube_imageable = UsdGeom.Imageable(cube)
+
+    # キャプチャ間隔（メートル）を定義
+    capture_interval_meters = 0.5
+    cube_pos = cube_rigid.get_world_poses(indices=[0])[0].numpy()
+    previous_capture_height = cube_pos[0, 2]
+
+    # アプリを更新してタイムライン（と暗黙的にシミュレーション）を進める
     for i in range(100):
-        # キューブの現在の高さと、前回キャプチャからの落下量を取得
         await omni.kit.app.get_app().next_update_async()
-        current_height = cube.GetAttribute("xformOp:translate").Get()[2]
-        drop_since_last_capture = last_capture_height - current_height
-        print(f"Step {i}; cube height: {current_height:.3f}; drop since last capture: {drop_since_last_capture:.3f}")
+        cube_pos = cube_rigid.get_world_poses(indices=[0])[0].numpy()
+        current_height = cube_pos[0, 2]
+        distance_dropped = previous_capture_height - current_height
+        print(f"Step {i}; cube height: {current_height:.3f}; drop since last capture: {distance_dropped:.3f}")
 
         # キューブが地面より下に落ちたらシミュレーションを停止
         if current_height < 0:
             print(f"\t Cube fell below the ground at height {current_height:.3f}, stopping simulation..")
-            timeline.pause()
             break
 
         # しきい値の距離だけ落下するたびにキャプチャ
-        if drop_since_last_capture >= drop_delta:
+        if distance_dropped >= capture_interval_meters:
             print(f"\t Capturing at height {current_height:.3f}")
-            last_capture_height = current_height
-            # 同じシミュレーション状態を複数フレームでキャプチャするため、タイムラインを一時停止
-            timeline.pause()
+            previous_capture_height = current_height
 
-            # delta_time=0.0 にすると、step 関数はキャプチャ中にシミュレーションを進めない
+            # delta_time=0.0 にすると、キャプチャ中にタイムラインが進まない
             await rep.orchestrator.step_async(delta_time=0.0)
 
             # キューブを非表示にしてもう一度キャプチャ
-            UsdGeom.Imageable(cube).MakeInvisible()
+            print("\t Capturing with cube hidden")
+            cube_imageable.MakeInvisible()
             await rep.orchestrator.step_async(delta_time=0.0)
-            UsdGeom.Imageable(cube).MakeVisible()
+            cube_imageable.MakeVisible()
 
             # タイムラインを再開してシミュレーションを続行
             timeline.play()
 
-    # ライターからデタッチしてからレンダープロダクトを破棄
+    # シミュレーションを一時停止
+    timeline.pause()
+
+    # データの書き込み完了を待ってからリソースを解放
+    await rep.orchestrator.wait_until_complete_async()
     writer.detach()
     rp.destroy()
-
-    # データの書き込み完了を待つ
-    await rep.orchestrator.wait_until_complete_async()
 
 
 # 実行
@@ -545,6 +535,117 @@ asyncio.ensure_future(run_example_async())
 
 ![例 4 の出力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_external_getting_started_04.jpg)
 
+## 例 5：バッチランダム化とパフォーマンス最適化
+
+functional API の**バッチ作成**（`rep.functional.create_batch`）と `ReplicatorRNG` を使って 100 個のキューブを一括作成・一括ランダム化する例です。パフォーマンス比較のため、3 つの構成——既定（`wait_for_render=True`）、ノンブロッキングキャプチャ（`wait_for_render=False`）、ノンブロッキング＋write-to-fabric 有効——を順に実行します。各実行では、ステップごとのランダム化・キャプチャ時間と、`wait_until_complete` までを含む合計時間が出力され、`wait_for_render` と write-to-fabric がスループットに与える影響を確認できます。
+
+```bash
+./python.sh standalone_examples/api/isaacsim.replicator.examples/sdg_getting_started_05.py
+```
+
+Script Editor 版：
+
+```python
+import asyncio
+import os
+import time
+
+import carb.settings
+import omni.replicator.core as rep
+import omni.usd
+
+NUM_CUBES = 100
+NUM_CAPTURES = 10
+
+
+async def run_example_async(wait_for_render, write_to_fabric):
+    print(f"\n[SDG] Running with wait_for_render={wait_for_render}, write_to_fabric={write_to_fabric}")
+    omni.usd.get_context().new_stage()
+    rep.orchestrator.set_capture_on_play(False)
+
+    settings = carb.settings.get_settings()
+    settings.set("rtx/post/dlss/execMode", 2)
+    settings.set("/exts/omni.replicator.core/enableWriteToFabric", write_to_fabric)
+
+    rng = rep.rng.ReplicatorRNG(seed=42)
+
+    # ドームライトとバッチ作成したキューブでステージをセットアップ
+    rep.functional.create.xform(name="World")
+    rep.functional.create.dome_light(intensity=500, parent="/World", name="DomeLight")
+    cubes = rep.functional.create_batch.cube(
+        count=NUM_CUBES,
+        parent="/World",
+        name="Cube",
+        semantics={"class": "my_cube"},
+    )
+    rep.functional.modify.scale(cubes, (0.2, 0.2, 0.2))
+
+    # カメラとレンダープロダクトを作成
+    cam = rep.functional.create.camera(position=(5, 5, 5), look_at=(0, 0, 0), parent="/World", name="Camera")
+    rp = rep.create.render_product(cam, (512, 512))
+
+    # BasicWriter（rgb アノテータ）でデータを書き込む
+    backend = rep.backends.get("DiskBackend")
+    out_dir = os.path.join(os.getcwd(), f"_out_fabric_{write_to_fabric}_wait_{wait_for_render}")
+    backend.initialize(output_dir=out_dir)
+    print(f"[SDG] Output directory: {out_dir}")
+    writer = rep.writers.get("BasicWriter")
+    writer.initialize(backend=backend, rgb=True)
+    writer.attach(rp)
+
+    # ランダム化とキャプチャを行い、各フェーズの時間を計測
+    randomization_times_ms = []
+    capture_times_ms = []
+    total_start = time.perf_counter()
+
+    for i in range(NUM_CAPTURES):
+        random_positions = rng.generator.uniform((-3.0, -3.0, -3.0), (3.0, 3.0, 3.0), size=(NUM_CUBES, 3))
+        random_rotations = rng.generator.uniform((0.0, 0.0, 0.0), (360.0, 360.0, 360.0), size=(NUM_CUBES, 3))
+        random_scales = rng.generator.uniform(0.1, 0.4, size=(NUM_CUBES, 3))
+
+        rand_start = time.perf_counter()
+        rep.functional.modify.pose(
+            cubes,
+            position_value=random_positions,
+            rotation_value=random_rotations,
+            scale_value=random_scales,
+        )
+        rep.functional.randomizer.display_color(cubes, rng=rng)
+        rand_ms = (time.perf_counter() - rand_start) * 1000.0
+        randomization_times_ms.append(rand_ms)
+
+        cap_start = time.perf_counter()
+        await rep.orchestrator.step_async(wait_for_render=wait_for_render)
+        cap_ms = (time.perf_counter() - cap_start) * 1000.0
+        capture_times_ms.append(cap_ms)
+
+        print(f"[SDG] Step {i}: randomization {rand_ms:.1f} ms, capture {cap_ms:.1f} ms")
+
+    # すべてのデータの書き込み完了を待つ
+    print("[SDG] Waiting for all data to be written to disk..")
+    await rep.orchestrator.wait_until_complete_async()
+    total_ms = (time.perf_counter() - total_start) * 1000.0
+
+    avg_rand = sum(randomization_times_ms) / len(randomization_times_ms)
+    avg_cap = sum(capture_times_ms) / len(capture_times_ms)
+    print(f"[SDG] Avg randomization: {avg_rand:.1f} ms, avg capture: {avg_cap:.1f} ms, total: {total_ms:.1f} ms")
+
+    writer.detach()
+    rp.destroy()
+
+
+async def run_examples_async():
+    # 構成を変えて実行し、パフォーマンスを比較
+    await run_example_async(wait_for_render=True, write_to_fabric=False)
+    await run_example_async(wait_for_render=False, write_to_fabric=False)
+    await run_example_async(wait_for_render=False, write_to_fabric=True)
+
+
+asyncio.ensure_future(run_examples_async())
+```
+
+構成ごとに別々のディレクトリへ出力され、ターミナルにはステップごとのランダム化・キャプチャ時間（ミリ秒）と合計時間が表示されるため、3 つのモードを直接比較できます。
+
 ## トラブルシューティング
 
 Getting Started スクリプトに関するトラブルシューティングは、公式の Replicator Troubleshooting ページの Getting Started Scripts Issues 節を参照してください。
@@ -553,11 +654,12 @@ Getting Started スクリプトに関するトラブルシューティングは�
 
 このチュートリアルでは以下のトピックを扱いました：
 
-1. Replicator ワークフローの**基本設定**（capture on play 無効化、step 関数、RTSubframes、DLSS Quality）
-2. **BasicWriter** による最小構成のデータキャプチャ
+1. Replicator ワークフローの**基本設定**（capture on play 無効化、step 関数、RTSubframes、DLSS Quality、wait_for_render、write-to-fabric）
+2. **BasicWriter** による最小構成のデータキャプチャ（`rep.functional` API と DiskBackend）
 3. **カスタムライター／アノテータ**によるデータアクセスと複数カメラ・複数ライターの併用
 4. **カスタムイベント（Replicator グラフ）と USD API** の 2 方式のランダム化
 5. 物理シミュレーションの**条件付きキャプチャ**と `delta_time=0.0` による状態の固定
+6. **バッチ作成・バッチランダム化**（`rep.functional.create_batch`、`ReplicatorRNG`）とパフォーマンス比較
 
 ### さらに学ぶには
 

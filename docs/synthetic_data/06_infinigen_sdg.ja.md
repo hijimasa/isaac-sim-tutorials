@@ -39,9 +39,12 @@ title: Infinigen を使った環境ベースの生成
 
 ## ステップ 1：Infinigen 環境を生成する
 
-1. [Infinigen GitHub リポジトリ](https://github.com/princeton-vl/infinigen/blob/main/docs/Installation.md)の手順で Infinigen をインストールします。
-2. [Hello Room](https://github.com/princeton-vl/infinigen/blob/main/docs/HelloRoom.md) の手順に従って室内シーンを生成します。シードを変えながらループする例（Linux）では、10 個のユニークなダイニングルームを生成し、`outputs/indoors/dining_room_$i` に保存します。
-3. export コマンドで USD 形式（`-f usdc`、`--omniverse` で Omniverse 互換）に変換し、`outputs/omniverse/dining_room_$i` に出力します。
+1. [Infinigen GitHub リポジトリ](https://github.com/princeton-vl/infinigen/blob/main/docs/source/Installation.md)の手順で Infinigen をインストールします。
+2. [Hello Room](https://github.com/princeton-vl/infinigen/blob/main/docs/source/HelloRoom.md) の手順に従って室内シーンを生成します。シードを変えながらループする例（Linux）では、Infinigen 生成用と Omniverse エクスポート用の出力フォルダを `mkdir -p` で作成しつつ、10 個のユニークなダイニングルームを生成して `outputs/indoors/dining_room_$i` に保存します（`infinigen_examples.generate_indoors` コマンド）。
+3. `infinigen.tools.export` コマンドで USD 形式（`-f usdc`、`--omniverse` で Omniverse 互換）に変換し、`outputs/omniverse/dining_room_$i` に出力します。
+
+!!! warning "Infinigen のシーン生成は Linux のみでテスト済み"
+    Infinigen は Isaac Sim の外部で保守されている外部ライブラリであり、シーン生成ステップは **Linux 上でのみテスト**されています。最新のプラットフォーム対応状況は Infinigen のプラットフォームサポート表を参照してください。
 
 ## ステップ 2：実行してみる
 
@@ -62,6 +65,7 @@ title: Infinigen を使った環境ベースの生成
 | `writers` | 使用するライターのリスト（`type`：BasicWriter、DataVisualizationWriter など、`kwargs`：各ライター固有の引数）。**複数指定可** |
 | `labeled_assets` | `auto_label`（ファイル名から正規表現 `regex_replace_pattern` / `regex_replace_repl` でラベルを自動生成）／`manual_label`（URL・ラベル・数・`gravity_disabled_chance` を個別指定） |
 | `distractors` | `shape_distractors`（プリミティブ形状）／`mesh_distractors`（メッシュ）の数・種類・重力無効確率 |
+| `physics` | `gpu_collision_stack_size`：PhysX の GPU コリジョンスタックサイズ（バイト）。PhysX 既定の 64 MB では、コライダーの多い Infinigen シーンには不足するため、**既定で 300 MB**（314572800）に設定。`collisionStackSize` のバッファオーバーフローエラーが出る場合はエラーメッセージの推奨値以上に増やす。必要に応じて `gpu_found_lost_pairs_capacity` など他の GPU メモリ設定も指定可能 |
 | `debug_mode` | true にすると天井などを非表示にして、開発・デバッグ時にシーンを見やすくする |
 
 !!! note "gravity_disabled_chance"
@@ -71,13 +75,15 @@ title: Infinigen を使った環境ベースの生成
 
 実装は次の流れで進みます：
 
-1. **環境の読み込み** — `get_usd_paths` で設定のフォルダ／ファイルから USD を収集し、サイクルしながら 1 つずつ読み込みます。
-2. **シーンのセットアップ** — `setup_env` が環境にコライダーを付与（debug_mode なら上部の壁を非表示）。`get_matching_prim_location` でダイニングテーブル（作業エリア）の位置を取得し、ラベル付きアセットとディストラクタをスポーンして物理プロパティを付与、`randomize_poses` で姿勢をランダム化します。
-3. **カメラとレンダープロダクト** — USD API でカメラプリムを定義し、`rep.create.render_product` でレンダープロダクトを作成。`disable_render_products` が true ならキャプチャ間は無効化します。
-4. **ライターのセットアップ** — `setup_writer` が設定に基づいてライターを初期化し、レンダープロダクトにアタッチします。**複数のライターを同時に使い、異なる形式のデータセットを 1 回の実行で生成**できます。
-5. **ドメインランダマイゼーション** — アセット姿勢、シーンライト、ドームライト、形状ディストラクタの色をランダム化。ランダマイザは登録後、**Replicator のトリガーで特定の間隔ごとに手動トリガー**されます。
-6. **物理シミュレーションとキャプチャ** — 初期の重なりを解消する短いシミュレーション → **浮遊状態のキャプチャ** → 落下・静止までの長いシミュレーション → **静止状態のキャプチャ**。カメラは毎キャプチャ、ランダムなターゲットアセットを注視する位置にランダム配置されます。
-7. 1 環境分のキャプチャが終わると次の環境を読み込み、`capture_counter` が総数に達するまで繰り返します。
+1. **アセットの読み込み（最初に 1 回）** — `load_auto_labeled_assets`（ファイル名から正規表現でラベルを自動生成。例：`002_banana` → `banana`）と `load_manual_labeled_assets`（明示的なラベル指定）でラベル付きアセットを読み込み、物理プロパティを付与します。どちらも**浮遊用**（重力無効）と**落下用**（重力有効）のリストを別々に返します。
+2. **PhysX GPU メモリの設定** — SDG ループの前に `configure_physics_scene` で PhysX シーンの `gpuCollisionStackSize`（既定 300 MB）などを設定し、コライダーの多い Infinigen シーンでの `PxGpuDynamicsMemoryConfig::collisionStackSize` バッファオーバーフローを防ぎます（`/PhysicsScene` プリムは環境をまたいで永続するため設定は 1 回で済みます）。
+3. **環境の読み込み** — `get_usd_paths` で設定のフォルダ／ファイルから USD を収集し（`.thumbs` フォルダはスキップ）、`cycle` でサイクルしながら 1 つずつ読み込みます。
+4. **シーンのセットアップ** — 環境にコライダーを付与（debug_mode なら上部の壁を非表示）。ダイニングテーブル（作業エリア）の位置を取得し、`randomize_poses`（`location_range` / `rotation_range` / `scale_range` を明示指定）でアセットの姿勢をランダム化します。
+5. **カメラとレンダープロダクト** — `rep.functional.create.scope` で `/Cameras` スコープを作り、`rep.functional.create.camera`（`clipping_range` 指定可）でカメラを作成して `rep.create.render_product` でレンダープロダクトを作成。`disable_render_products` が true なら作成時に無効化し、キャプチャ時のみ有効化します。
+6. **ライターのセットアップ** — `setup_writer` が設定に基づいてライター（BasicWriter、DataVisualizationWriter、PoseWriter、カスタムライターなど）を初期化し、レンダープロダクトにアタッチします。**複数のライターを同時に使い、異なる形式のデータセットを 1 回の実行で生成**できます。
+7. **ドメインランダマイゼーション** — シーンライト（USD API で作成したスフィアライト）の位置・強度・色を `randomize_lights` でランダム化。ドームライトと形状ディストラクタの色は**グラフランダマイザ**として一度登録し、`rep.utils.send_og_event` の OmniGraph イベントで環境ごとにトリガーします。
+8. **物理シミュレーションとキャプチャ** — 初期の重なりを解消する短いシミュレーション → **浮遊状態のキャプチャ**（カメラの極角 0〜75° の多様な視点）→ 落下・静止までの長いシミュレーション（約 200 フレーム、レンダリングなしで効率化）→ **静止状態のキャプチャ**（極角 0〜45° の上方寄り視点）。`path_tracing: true` ならキャプチャ時のみ PathTracing に切り替えます。
+9. 1 環境分のキャプチャが終わると次の環境を読み込み、`capture_counter` が総数に達するまで繰り返します。完了後はデータの書き込みを待ち、ライターのデタッチとレンダープロダクトの破棄を行います。
 
 ## まとめ
 

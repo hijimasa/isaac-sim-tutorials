@@ -10,12 +10,12 @@ title: インポート・エクスポートチュートリアル
 
 これらのスキルは、既存のロボットモデルを Isaac Sim のシミュレーション環境に統合したり、Isaac Sim で作成したモデルを他のツールで使用する際に不可欠です。
 
-![URDF インポート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_import_urdf_franka.png)
+![URDF インポート](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.asset.importer.urdf-3.0.0_gui_2.png)
 
 ## チュートリアル
 
 !!! example "[チュートリアル 1: URDF インポート](01_import_urdf.md)"
-    URDF ファイルを Isaac Sim にインポートする方法を学びます。GUI からの直接インポートと Python スクリプトによるプログラム的インポートを、インポート設定（ベース固定、自己衝突、Natural Frequency など）の意味とともに解説します。
+    URDF ファイルを Isaac Sim にインポートする方法を学びます。GUI からの直接インポートと Python API・スタンドアロンスクリプトによるプログラム的インポートを、インポート設定（Robot Type / Base Type、自己衝突、メッシュ結合など）の意味とともに解説します。
 
 !!! example "[チュートリアル 1a: ROS 2 ノードからの URDF インポート](01a_import_urdf_from_ros2.md)"
     ROS 2 がインストールされた環境で、`robot_state_publisher` が公開する `/robot_description` トピックから直接 URDF を取り込む方法を学びます。ROS 2 のインストールが前提となるため、独立したチュートリアルとして分けています。

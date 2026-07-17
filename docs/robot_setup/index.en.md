@@ -42,7 +42,7 @@ Learn fundamental concepts that apply to all robot types. Starting from stage se
 
 Build upon foundational knowledge to work with more complex robot structures. You will import a robot arm from URDF, connect a gripper, tune physics properties, generate configuration files, and implement pick and place tasks.
 
-![Manipulator setup](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
+![Manipulator setup](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_pick_place_rmp.webp)
 
 !!! example "[Tutorial 6: Setup a Manipulator](06_setup_manipulator.md)"
     Learn how to import the UR10e robot and Robotiq 2F-140 gripper from URDF and connect them as a single articulation.
@@ -51,10 +51,10 @@ Build upon foundational knowledge to work with more complex robot structures. Yo
     Learn how to adjust articulation solver settings, physics materials, joint effort limits, and drive gains.
 
 !!! example "[Tutorial 8: Generate Robot Configuration File](08_generate_robot_config.md)"
-    Learn how to generate configuration files for kinematics solvers using the Lula Robot Description Editor and USD to URDF Exporter.
+    Learn how to generate configuration files (URDF / XRDF) for motion planners using the Robot Description Editor and USD to URDF Exporter.
 
 !!! example "[Tutorial 9: Pick and Place Example](09_pick_and_place.md)"
-    Implement pick and place tasks combining target following with Lula Kinematics Solver and motion control with RMPFlow.
+    Implement pick and place tasks combining target following with an IK solver and motion control with RMPFlow.
 
 ## Advanced: Asset Tuning and Optimization
 
@@ -68,7 +68,7 @@ Master advanced techniques for complex robot configurations. You will learn to r
     Learn how to configure closed-loop articulation structures, mimic joints, and OmniGraph control for a Robotiq gripper.
 
 !!! example "[Tutorial 11: Tuning Joint Drive Gains](11_joint_tuning.md)"
-    Learn how to optimize position and velocity drive gains using the Gain Tuner extension.
+    Learn how to optimize position and velocity drive gains using the Gain Tuner extension, and how to validate them with the Snap-to-Limits test and the Stress Test.
 
 !!! example "[Tutorial 12: Asset Optimization](12_asset_optimization.md)"
     Learn performance optimization techniques for robot assets through mesh merging and scenegraph instancing.

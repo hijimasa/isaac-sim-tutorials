@@ -22,7 +22,7 @@ With your ROS 2 environment sourced (and internal-library env vars set for the s
 
 Open `rviz2`, add an **Image** display, and set the topic to `/rgb_augmented` — a noisy version of the Isaac Sim view appears.
 
-![Noisy camera](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_ros_tut_gui_ros2_camera_noise.gif)
+![Noisy camera](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_ros_tut_gui_ros2_camera_noise.gif)
 
 ## Code Overview
 

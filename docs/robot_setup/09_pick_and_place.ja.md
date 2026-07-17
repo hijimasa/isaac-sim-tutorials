@@ -20,8 +20,11 @@ title: ピック＆プレースの例
 - [チュートリアル 8: ロボット設定ファイルの生成](08_generate_robot_config.md) を完了していること
 - チュートリアル 7〜8 で作成した以下のファイルが手元にあること：
     - **USD アセット**（`ur_gripper.usd`）— チュートリアル 7 で作成
-    - **URDF ファイル**（`ur_gripper.urdf`）— チュートリアル 8 のステップ 1 で生成
-    - **Lula ロボット記述ファイル**（`ur10e.yaml`）— チュートリアル 8 のステップ 5 で生成
+    - **URDF ファイル**（`ur_gripper.urdf`）— チュートリアル 8 のステップ 1 で生成（ファイル名は読み替えてください）
+    - **Lula ロボット記述ファイル**（`ur10e.yaml`）— Robot Description Editor からエクスポート
+
+!!! note "ur10e.yaml（Lula ロボット記述ファイル）の入手"
+    Lula YAML のエクスポートは 6.0 の公式チュートリアル手順からは削除されましたが、Robot Description Editor の **Export To File > Export to Lula Robot Description File** から引き続きエクスポートできます。本ページのコードはこの YAML を使用します。
 
 ### 所要時間
 
@@ -39,17 +42,28 @@ title: ピック＆プレースの例
 4. **RMPFlow によるターゲット追従** — 障害物回避を含むスムーズなモーション制御
 5. **ピック＆プレースタスク** — すべてを組み合わせた物体の把持と配置
 
-!!! tip "同梱サンプルも参考にできます"
-    Isaac Sim には、このチュートリアルと同等の完成済みサンプルコードが同梱されています。行き詰まった場合や動作を確認したい場合は、以下のパスのスクリプトを参考にしてください：
+!!! warning "Isaac Sim 6.0 での位置づけ"
+    Isaac Sim 6.0 の公式チュートリアルは、**Robot Motion (Experimental)** 拡張をベースに全面的に書き直され、**cuMotion RMPflow**（GPU アクセラレーションのリアクティブモーションプランナー）と **PINK 微分 IK**（CPU ベースの逆運動学ソルバー）を使う構成になりました。新しい公式サンプルは以下にあります：
 
     ```
-    standalone_examples/api/isaacsim.robot.manipulators/ur10e/
+    standalone_examples/tutorials/manipulation/
+    ├── tutorial_9_gripper_control.py        # Articulation API によるグリッパー制御
+    ├── tutorial_9_arm_trajectory.py         # 関節空間軌道の計画と実行（mg.Path / mg.TrajectoryFollower）
+    ├── tutorial_9_follow_target.py          # cuMotion RMPflow によるターゲット追従（--with-obstacle で障害物回避）
+    ├── tutorial_9_pick_place_cumotion.py    # cuMotion RMPflow によるピック＆プレース（--xrdf-dir で設定を指定）
+    └── tutorial_9_pick_place_pink.py        # PINK 微分 IK によるピック＆プレース
     ```
 
-    実行方法：
+    実行方法（例）：
     ```bash
-    ./python.sh standalone_examples/api/isaacsim.robot.manipulators/ur10e/<スクリプト名>.py
+    ./python.sh standalone_examples/tutorials/manipulation/tutorial_9_pick_place_cumotion.py \
+        --xrdf-dir /path/to/robot/config
     ```
+
+    `--xrdf-dir` には[チュートリアル 8](08_generate_robot_config.md) で構成したロボット設定ディレクトリ（`robot.urdf` / `robot.xrdf` / `rmp_flow.yaml`）を指定します。省略すると組み込みの UR10 設定（`load_cumotion_supported_robot("ur10")`）が使われます。詳細は[公式チュートリアル](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_pickplace_example.html)を参照してください。
+
+!!! note "本ページのコードについて"
+    本ページでは、5.1 から動作している `isaacsim.core.api` / `isaacsim.robot.manipulators` / `isaacsim.robot_motion.motion_generation`（Lula）ベースの実装を解説しています。これらの API は Isaac Sim 6.0 では**非推奨（deprecated）ですが、引き続き動作します**。新しい cuMotion / PINK ベースの API を学びたい場合は、上記の公式サンプルと [Motion Generation（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/latest/motion_generation/index.html) を参照してください。
 
 ## ステップ 1：プロジェクトの準備
 
@@ -174,7 +188,7 @@ Save As で保存すると、参照先ファイル（Physics Layer など）へ�
 
 最初のステップとして、グリッパーの開閉制御を学びます。これはマニピュレーションタスクの最も基本的な操作です。
 
-![グリッパー制御](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_gripper_control.webp)
+![グリッパー制御](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_gripper_control.webp)
 
 ### 2-1. スクリプトの作成
 
@@ -333,7 +347,7 @@ if i == 800:
 
 次に、**逆運動学（IK: Inverse Kinematics）** を使って、エンドエフェクタを目標位置に移動させる方法を学びます。
 
-![ターゲット追従](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_follow_target.webp)
+![ターゲット追従](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_follow_target.webp)
 
 !!! note "逆運動学（IK）とは"
     逆運動学とは、エンドエフェクタの目標位置・姿勢から、各ジョイントの角度を逆算する手法です。「手先をこの位置に持っていきたい」という目標に対して、各関節をどの角度にすればよいかを計算します。
@@ -778,13 +792,13 @@ simulation_app.close()
 | **動作の滑らかさ** | 瞬間的に目標角度に移動 | 滑らかな軌道で目標に到達 |
 | **収束失敗** | 解が見つからない場合がある | 常にアクションを出力（到達不能でも安全に停止） |
 
-![RMPFlow ターゲット追従](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_follow_target_rmp.webp)
+![RMPFlow ターゲット追従](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_follow_target_with_obstacle.webp)
 
 ## ステップ 5：基本的なピック＆プレースタスク
 
 最後に、ここまでのすべてを組み合わせて、物体を掴んで（ピック）別の場所に置く（プレース）タスクを実装します。
 
-![ピック＆プレース](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
+![ピック＆プレース](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_pick_place_rmp.webp)
 
 このステップでは 3 つのファイルを作成します：
 
@@ -1060,6 +1074,11 @@ end_effector_offset=np.array([0, 0, 0.20])
 
 実環境への応用や、より高度なマニピュレーションタスクには、**Isaac Manipulator** のドキュメントを参照してください。Foundation Pose による物体検出と組み合わせた、プロダクションレベルのピック＆プレース実装が提供されています。
 
+また、Isaac Sim 6.0 の新しいモーション生成スタックを使った実装（衝突球を考慮した cuMotion RMPflow による障害物回避、`WorldBinding` / `SceneQuery` によるステージ上の障害物の自動登録、PINK 微分 IK による CPU ベースの代替実装など）については、公式サンプル `standalone_examples/tutorials/manipulation/` と以下のドキュメントを参照してください：
+
+- [cuMotion Integration（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/latest/cumotion/index.html)
+- [PINK Integration（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/latest/pink/index.html)
+
 ## まとめ
 
 このチュートリアルでは以下のトピックを扱いました：
@@ -1072,7 +1091,8 @@ end_effector_offset=np.array([0, 0, 0.20])
 
 !!! tip "参考ドキュメント"
     - [Pick and Place Example（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_pickplace_example.html)
-    - [Motion Generation（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_motion_motion_generation.html)
+    - [Motion Generation（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/latest/motion_generation/index.html)
+    - [cuMotion Integration（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/latest/cumotion/index.html)
 
 ## 次のステップ
 

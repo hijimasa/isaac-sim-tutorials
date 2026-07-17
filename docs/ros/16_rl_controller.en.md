@@ -9,16 +9,16 @@ title: Running a Reinforcement Learning Policy through ROS 2
 
 ## Learning Objectives
 
-Run the H1 flat terrain locomotion policy with inference in an external ROS 2 node: Isaac Sim publishes observations (IMU, joint states) and receives actions (joint commands). Requires PyTorch, the `h1_fullbody_controller` package from IsaacSim-ros_workspaces, and a robot rigged per [Rig a Legged Robot](../robot_setup/13_rig_legged_robot.md) (env file angles are radians; the GUI expects degrees). The policy walks forward and turns; it does not support backward or sideways motion.
+Run the H1 flat terrain locomotion policy with inference in an external ROS 2 node: Isaac Sim publishes observations (IMU, joint states) and receives actions (joint commands). Requires PyTorch, the `h1_fullbody_controller` package from IsaacSim-ros_workspaces, and a robot rigged per [Rig a Legged Robot](../robot_setup/13_rig_legged_robot.md) (env file angles are radians; the GUI expects degrees) — or skip rigging with the preconfigured `Isaac Sim/Samples/Rigging/H1/h1_rigged.usd` asset. The policy walks forward and turns; it does not support backward or sideways motion.
 
 ## Setup
 
 1. **IMU** — create an Imu Sensor under `/h1/pelvis` (data from other links must be transformed to the pelvis frame).
-2. **On-demand graphs** — create ActionGraphs (ROS_Imu, ROS_Joint_States, ROS_Clock) with `pipelineStage = pipelineStageOnDemand`, triggered by **On Physics Step** so they run at the physics rate:
-    - ROS_Imu: Isaac Read IMU Node (imuPrim `/h1/pelvis/Imu_Sensor`, uncheck Read Gravity) → ROS2 Publish IMU; Read Simulation Time with Reset on Stop checked.
+2. **On-demand graphs** — create ActionGraphs (ROS_Imu, ROS_Joint_States, ROS_Clock) under a `/h1/Graph` scope with `pipelineStage = pipelineStageOnDemand`, triggered by **On Physics Step** so they run at the physics rate:
+    - ROS_Imu: Isaac Read IMU Node (imuPrim `/h1/pelvis/Imu_Sensor`, uncheck Read Gravity) → ROS2 Publish IMU (Frame ID `pelvis_imu`); Read Simulation Time with Reset on Stop checked.
     - ROS_Joint_States: Publish Joint State (target `/h1`, topic `/joint_states`), Subscribe Joint State (`/joint_command`) → Articulation Controller (target `/h1`).
     - ROS_Clock: Read Simulation Time → ROS2 Publish Clock.
-3. **Scenario** — warehouse environment, robot at Z = 1.0, Physics Scene with **Time Steps Per Second 200**, GPU Dynamics off, Broadphase MBP (CPU physics for a single robot).
+3. **Scenario** — warehouse environment, robot at Z = 1.0, Root Layer **Time Codes Per Second 200**, Physics Scene with **Time Steps Per Second 200**; if using PhysX, GPU Dynamics off and Broadphase MBP (CPU physics for a single robot).
 
 Preconfigured assets: `Isaac Sim/Samples/ROS2/Robots/h1_ROS.usd` and `Scenario/h1_ros_locomotion_policy_tutorial.usd`.
 

@@ -1,470 +1,538 @@
 ---
-title: Multiple Tasks
+title: Multiple Robot Scenarios
 ---
 
-# Multiple Tasks
+# Multiple Robot Scenarios
+
+!!! note "About the former title, Multiple Tasks"
+    In Isaac Sim 6.0, the official tutorial was renamed from "Multiple Tasks" to "Multiple Robot Scenarios", and its content was overhauled from a Task-class-based approach to scenario management with Python classes. This page has been updated accordingly.
 
 ## Learning Objectives
 
 After completing this tutorial, you will have learned:
 
-- How to spatially position task assets using the `offset` parameter
-- How to avoid name collisions using `find_unique_string_name()`
-- How to manage offsets with `_task_objects` and `_move_task_objects_to_their_frame()`
-- How to instantiate and run multiple instances of the same task in parallel
+- How to organize robot scenarios into reusable Python classes
+- How to position multiple scenarios in the world using an `offset` parameter
+- How to run multiple scenarios in parallel with a simple loop
+- Adding randomization to scenario parameters
+- Best practices for managing multiple robot instances
 
 ## Getting Started
 
 ### Prerequisites
 
-- Complete [Tutorial 5: Adding Multiple Robots](05_adding_multiple_robots.md) before starting this tutorial.
+- Completed [Tutorial 5: Adding Multiple Robots](05_adding_multiple_robots.md)
 
 ### Estimated Time
 
-Approximately 15-20 minutes.
+Approximately 15–20 minutes
 
 ### Preparing the Source Code
 
-This tutorial continues editing the `hello_world.py` file from the Hello World sample. If you are continuing from the previous tutorial, you can proceed as-is. If you are resuming on a different day, follow these steps to open the source code:
+In this tutorial, you continue editing `hello_world.py` from the Hello World example. If you are continuing from the previous tutorial, proceed as is. If you are resuming on another day, open the source code with the following steps.
 
 1. Activate **Windows > Examples > Robotics Examples** to open the Robotics Examples tab.
 2. Click **Robotics Examples > General > Hello World**.
 3. Click the **Open Source Code** button to open `hello_world.py` in Visual Studio Code.
 
-For detailed instructions, refer to the ["Opening the Hello World Sample" section](01_hello_world.md) in Hello World.
+For detailed steps, see the ["Opening the Hello World Example" section of Hello World](01_hello_world.md).
 
-!!! warning "Warning"
-    Pressing **STOP** then **PLAY** may not properly reset the world. Use the **RESET** button to restart the simulation.
+!!! warning "Caution"
+    Pressing **STOP**, then **PLAY** might not reset the world properly. Use the **RESET** button instead when restarting the simulation.
 
-## Parameterizing Tasks
+## Organizing Robot Scenarios with Classes
 
-In the previous tutorial, we used a single `RobotsPlaying` task. To place multiple instances of the same task, we need to **offset the position** of each task's assets so they don't overlap.
+When working with multiple robots performing similar tasks, it's helpful to encapsulate the robot setup and control logic into **reusable classes**. This approach allows you to easily create multiple instances with different parameters (like position offsets).
 
-`BaseTask` supports an `offset` parameter that translates all assets within the task by the specified amount. The key features are:
+Organize the sequence from the previous tutorial ("the Jetbot pushes the cube to the Franka, which picks it up") into a `RobotScenario` class:
 
-| Feature | Description |
+| Method | Role |
 |---|---|
-| `offset` parameter | Passed to the task constructor, available as `self._offset` |
-| `find_unique_string_name()` | Generates unique names to avoid name/path collisions |
-| `self._task_objects` | A dictionary to register objects managed by the task |
-| `_move_task_objects_to_their_frame()` | Applies the offset to all registered objects |
+| `setup_scene()` | Creates the robots and cube for this scenario (taking `offset` into account) |
+| `initialize()` | Creates the articulation handles after the scene loads |
+| `step()` | Executes one step of the scenario logic (state machine) |
+| `reset()` | Resets the scenario state |
 
-```python linenums="1" hl_lines="10-12 14 25-26 30-34 47-52 54 101"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace
-from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController
-from isaacsim.robot.wheeled_robots.robots import WheeledRobot
-from isaacsim.core.utils.nucleus import get_assets_root_path
-from isaacsim.robot.wheeled_robots.controllers.wheel_base_pose_controller import WheelBasePoseController
-from isaacsim.robot.wheeled_robots.controllers.differential_controller import DifferentialController
-from isaacsim.core.api.tasks import BaseTask
-from isaacsim.core.utils.types import ArticulationAction
-from isaacsim.core.utils.string import find_unique_string_name  # Generate unique names
-from isaacsim.core.utils.prims import is_prim_path_valid         # Check prim path existence
-from isaacsim.core.api.objects.cuboid import VisualCuboid
+```python linenums="1" hl_lines="11-23 25-56 58-62 71-95 139-170"
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
+from isaacsim.core.experimental.objects import Cube, DomeLight, GroundPlane
+from isaacsim.core.experimental.prims import Articulation, GeomPrim, RigidPrim, XformPrim
+from isaacsim.core.simulation_manager import SimulationEvent, SimulationManager
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.robot.experimental.manipulators.examples.franka import Franka
+from isaacsim.storage.native import get_assets_root_path
 
 
-class RobotsPlaying(BaseTask):
-    def __init__(self, name, offset=None):
-        super().__init__(name=name, offset=offset)
-        self._task_event = 0
-        # Add offset so each task instance has a different goal position
-        self._jetbot_goal_position = np.array([1.3, 0.3, 0]) + self._offset
-        self._pick_place_task = PickPlace(
-            cube_initial_position=np.array([0.1, 0.3, 0.05]),
-            target_position=np.array([0.7, -0.3, 0.0515 / 2.0]),
-            offset=offset,  # Propagate the same offset to the subtask
-        )
-        return
+class RobotScenario:
+    """Encapsulates a Jetbot + Franka + Cube scenario with an offset."""
 
-    def set_up_scene(self, scene):
-        super().set_up_scene(scene)
-        self._pick_place_task.set_up_scene(scene)
-        # Generate unique names to avoid collisions across multiple instances
-        jetbot_name = find_unique_string_name(
-            initial_name="fancy_jetbot", is_unique_fn=lambda x: not self.scene.object_exists(x)
-        )
-        jetbot_prim_path = find_unique_string_name(
-            initial_name="/World/Fancy_Jetbot", is_unique_fn=lambda x: not is_prim_path_valid(x)
-        )
+    def __init__(self, name: str, offset: np.ndarray = np.array([0.0, 0.0, 0.0])):
+        self.name = name
+        self.offset = offset
+        self.state = 0
+        self.step_counter = 0
+        self.pick_phase = 0
+        self.jetbot = None
+        self.franka = None
+        self.cube = None
+        self.cube_goal = np.array([1.2, 0.0, 0.0]) + offset
+
+    def setup_scene(self):
+        """Create the robots and cube for this scenario."""
         assets_root_path = get_assets_root_path()
-        jetbot_asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
-        self._jetbot = scene.add(
-            WheeledRobot(
-                prim_path=jetbot_prim_path,
-                name=jetbot_name,
-                wheel_dof_names=["left_wheel_joint", "right_wheel_joint"],
-                create_robot=True,
-                usd_path=jetbot_asset_path,
-                position=np.array([0, 0.3, 0]),
-            )
+        base_path = f"/World/{self.name}"
+
+        # Add Jetbot
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd",
+            path=f"{base_path}/Jetbot",
         )
-        # ── (A) Register Jetbot in _task_objects (for offset application later) ──
-        self._task_objects[self._jetbot.name] = self._jetbot
+        jetbot_xform = XformPrim(f"{base_path}/Jetbot")
+        jetbot_xform.reset_xform_op_properties()
+        jetbot_xform.set_world_poses(positions=self.offset.tolist())
 
-        # ── (B) Adjust position of Franka created by the subtask ──
-        # PickPlace subtask already placed Franka, but shift X+1.0 to separate from Jetbot
-        pick_place_params = self._pick_place_task.get_params()
-        self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
-        current_position, _ = self._franka.get_world_pose()
-        self._franka.set_world_pose(position=current_position + np.array([1.0, 0, 0]))
-        self._franka.set_default_state(position=current_position + np.array([1.0, 0, 0]))
+        # Add cube in front of Jetbot
+        cube_pos = self.offset + np.array([0.15, 0.0, 0.025])
+        cube_shape = Cube(
+            paths=f"{base_path}/Cube",
+            positions=cube_pos.tolist(),
+            sizes=1.0,
+            scales=[0.05, 0.05, 0.05],
+            colors="red",
+        )
+        GeomPrim(paths=cube_shape.paths, apply_collision_apis=True)
+        RigidPrim(paths=cube_shape.paths)
 
-        # ── (C) Apply offset to all objects registered in _task_objects ──
-        self._move_task_objects_to_their_frame()
-        return
+        # Add Franka
+        franka_pos = self.offset + np.array([0.8, -0.3, 0.0])
+        self.franka = Franka(robot_path=f"{base_path}/Franka", create_robot=True)
+        franka_xform = XformPrim(f"{base_path}/Franka")
+        franka_xform.reset_xform_op_properties()
+        franka_xform.set_world_poses(positions=franka_pos.tolist())
 
-    def get_observations(self):
-        current_jetbot_position, current_jetbot_orientation = self._jetbot.get_world_pose()
-        observations = {
-            "task_event": self._task_event,
-            self._jetbot.name: {
-                "position": current_jetbot_position,
-                "orientation": current_jetbot_orientation,
-                "goal_position": self._jetbot_goal_position,
-            }
-        }
-        observations.update(self._pick_place_task.get_observations())
-        return observations
+    def initialize(self):
+        """Initialize articulation handles after scene load."""
+        base_path = f"/World/{self.name}"
+        self.jetbot = Articulation(f"{base_path}/Jetbot")
+        self.cube = RigidPrim(f"{base_path}/Cube")
 
-    def get_params(self):
-        pick_place_params = self._pick_place_task.get_params()
-        params_representation = pick_place_params
-        params_representation["jetbot_name"] = {"value": self._jetbot.name, "modifiable": False}
-        params_representation["franka_name"] = pick_place_params["robot_name"]
-        return params_representation
+    def reset(self):
+        """Reset the scenario state."""
+        self.state = 0
+        self.step_counter = 0
+        self.pick_phase = 0
+        self.franka.reset_to_default_pose()
 
-    def pre_step(self, control_index, simulation_time):
-        if self._task_event == 0:
-            current_jetbot_position, _ = self._jetbot.get_world_pose()
-            if np.mean(np.abs(current_jetbot_position[:2] - self._jetbot_goal_position[:2])) < 0.04:
-                self._task_event += 1
-                self._cube_arrive_step_index = control_index
-        elif self._task_event == 1:
-            if control_index - self._cube_arrive_step_index == 200:
-                self._task_event += 1
-        return
+    def step(self):
+        """Execute one step of the scenario logic."""
+        if self.state == 0:
+            # Jetbot pushes cube
+            cube_pos = self.cube.get_world_poses()[0].numpy()[0]
+            if np.linalg.norm(cube_pos[:2] - self.cube_goal[:2]) > 0.05:
+                self.jetbot.set_dof_velocity_targets([10.0, 10.0])
+            else:
+                self.jetbot.set_dof_velocity_targets([0.0, 0.0])
+                self.state = 1
+                self.step_counter = 0
 
-    def post_reset(self):
-        self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        self._task_event = 0
-        return
+        elif self.state == 1:
+            # Jetbot backs up
+            self.jetbot.set_dof_velocity_targets([-8.0, -8.0])
+            self.step_counter += 1
+            if self.step_counter > 100:
+                self.jetbot.set_dof_velocity_targets([0.0, 0.0])
+                self.state = 2
+                self.step_counter = 0
+                self.franka.open_gripper()
+
+        elif self.state == 2:
+            # Franka pick-and-place
+            self._franka_pick_place()
+
+    def _franka_pick_place(self):
+        """Execute Franka pick-and-place state machine."""
+        cube_pos = self.cube.get_world_poses()[0].numpy()[0]
+        down_orient = self.franka.get_downward_orientation()
+        self.step_counter += 1
+
+        if self.pick_phase == 0:
+            self.franka.set_end_effector_pose(np.array([cube_pos[0], cube_pos[1], cube_pos[2] + 0.2]), down_orient)
+            if self.step_counter > 120:
+                self.pick_phase = 1
+                self.step_counter = 0
+        elif self.pick_phase == 1:
+            self.franka.set_end_effector_pose(np.array([cube_pos[0], cube_pos[1], cube_pos[2] + 0.1]), down_orient)
+            if self.step_counter > 100:
+                self.pick_phase = 2
+                self.step_counter = 0
+        elif self.pick_phase == 2:
+            self.franka.close_gripper()
+            if self.step_counter > 100:
+                self.pick_phase = 3
+                self.step_counter = 0
+        elif self.pick_phase == 3:
+            _, current_position, _ = self.franka.get_current_state()
+            target = current_position + np.array([0.1, 0.0, 0.08])
+            self.franka.set_end_effector_pose(position=target, orientation=down_orient)
+            if self.step_counter > 150:
+                self.step_counter = 0
+                self.pick_phase = 4
+        elif self.pick_phase == 4:
+            _, current_position, _ = self.franka.get_current_state()
+            target = current_position + np.array([0.1, 0.0, 0.01])
+            self.franka.set_end_effector_pose(position=target, orientation=down_orient)
+            if self.step_counter > 150:
+                self.step_counter = 0
+                self.pick_phase = 5
+        elif self.pick_phase == 5:
+            self.franka.open_gripper()
+            if self.step_counter > 150:
+                self.step_counter = 0
+                self.state = 6  # Done
 
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
+        self._physics_callback_id = None
+        self._scenarios = []
 
     def setup_scene(self):
-        world = self.get_world()
-        # Place the task with an offset
-        world.add_task(RobotsPlaying(name="awesome_task", offset=np.array([0, -1.0, 0])))
-        # Place a visual cube at the origin as a position reference
-        VisualCuboid(
-            prim_path="/new_cube_1",
-            name="visual_cube",
-            position=np.array([1.0, 0, 0.05]),
-            scale=np.array([0.1, 0.1, 0.1]),
-        )
-        return
+        GroundPlane("/World/ground_plane")
+        dome_light = DomeLight("/World/DomeLight")
+        dome_light.set_intensities(1000)
+
+        # Create a single scenario
+        self._scenario = RobotScenario(name="scenario_0", offset=np.array([0.0, 0.0, 0.0]))
+        self._scenario.setup_scene()
 
     async def setup_post_load(self):
-        self._world = self.get_world()
-        task_params = self._world.get_task("awesome_task").get_params()
-        self._franka = self._world.scene.get_object(task_params["franka_name"]["value"])
-        self._jetbot = self._world.scene.get_object(task_params["jetbot_name"]["value"])
-        self._cube_name = task_params["cube_name"]["value"]
-        self._franka_controller = PickPlaceController(
-            name="pick_place_controller",
-            gripper=self._franka.gripper,
-            robot_articulation=self._franka,
+        self._scenario.initialize()
+
+        self._physics_callback_id = SimulationManager.register_callback(
+            self.physics_step, event=SimulationEvent.PHYSICS_POST_STEP
         )
-        self._jetbot_controller = WheelBasePoseController(
-            name="cool_controller",
-            open_loop_wheel_controller=DifferentialController(
-                name="simple_control",
-                wheel_radius=0.03,
-                wheel_base=0.1125,
-            ),
-        )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
+
+    def physics_step(self, dt, context):
+        self._scenario.step()
 
     async def setup_post_reset(self):
-        self._franka_controller.reset()
-        self._jetbot_controller.reset()
-        await self._world.play_async()
-        return
+        self._scenario.reset()
 
-    def physics_step(self, step_size):
-        current_observations = self._world.get_observations()
-        if current_observations["task_event"] == 0:
-            self._jetbot.apply_wheel_actions(
-                self._jetbot_controller.forward(
-                    start_position=current_observations[self._jetbot.name]["position"],
-                    start_orientation=current_observations[self._jetbot.name]["orientation"],
-                    goal_position=current_observations[self._jetbot.name]["goal_position"],
-                )
-            )
-        elif current_observations["task_event"] == 1:
-            self._jetbot.apply_wheel_actions(ArticulationAction(joint_velocities=[-8.0, -8.0]))
-        elif current_observations["task_event"] == 2:
-            self._jetbot.apply_wheel_actions(ArticulationAction(joint_velocities=[0.0, 0.0]))
-            actions = self._franka_controller.forward(
-                picking_position=current_observations[self._cube_name]["position"],
-                placing_position=current_observations[self._cube_name]["target_position"],
-                current_joint_positions=current_observations[self._franka.name]["joint_positions"],
-            )
-            self._franka.apply_action(actions)
-        if self._franka_controller.is_done():
-            self._world.pause()
-        return
+    def physics_cleanup(self):
+        if self._physics_callback_id is not None:
+            SimulationManager.deregister_callback(self._physics_callback_id)
+            self._physics_callback_id = None
 ```
 
-Note that `set_up_scene` deals with **two categories** of offset application:
+!!! note "Use unique prim paths per scenario"
+    `RobotScenario` builds **unique prim paths** like `/World/scenario_0/Jetbot` from the scenario name. This prevents prim path collisions when adding multiple scenarios.
 
-| Target | How Offset is Applied | Description |
-|---|---|---|
-| Subtask objects (Franka, cube) | Pass `offset` to `PickPlace` **(done in the constructor)** | The subtask applies the offset internally via its own `_task_objects` and `_move_task_objects_to_their_frame()` |
-| This task's objects (Jetbot) | Register in `_task_objects` → `_move_task_objects_to_their_frame()` **(A, C)** | Objects you add yourself must be registered and offset by yourself |
+Press **Ctrl+S** to save, then run **File > New From Stage Template > Empty** → **LOAD**. One Jetbot + Franka pair performs the cube handover.
 
-Step **(B)** is separate from offset application — it shifts Franka an additional 1.0 along the X axis so it doesn't overlap with Jetbot. This is an extra adjustment on top of the offset already applied by the subtask.
+![Running a robot scenario](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/core_api_tutorials_6_1.webp)
 
-Save the code and verify the simulation:
+## Scaling to Multiple Scenarios
 
-1. Press **Ctrl+S** to save, then do **File > New From Stage Template > Empty** and click **LOAD**.
-2. Press **PLAY** to observe the robots operating at a position offset by -1.0 along the Y axis.
-3. Compare with the white cube near the origin to verify the task assets are offset.
+Now that the scenario is a class, you can run multiple instances in parallel simply by creating them in a loop. Apply the following changes.
 
-## Running Multiple Tasks in Parallel
+Set the number of scenarios:
 
-Now that the task is parameterized with `offset`, we can instantiate multiple copies and run them in parallel. Here we place 3 `RobotsPlaying` tasks side by side along the Y axis.
+```python linenums="1"
+        self._num_scenarios = 3  # Number of parallel scenarios
+```
 
-Key points when handling multiple tasks:
+Create the scenarios:
 
-- **Make task event keys unique** — Prefix with the task name (`self.name + "_event"`) so observations from different tasks don't collide
-- **Manage controllers in lists** — Store controllers corresponding to each task in lists
-- **`world_cleanup()`** — Initialize lists during hot reload
+```python linenums="1"
+        # Create multiple scenarios with Y-axis offsets
+        for i in range(self._num_scenarios):
+            offset = np.array([0.0, (i - 1) * 2.0, 0.0])  # Spread along Y-axis
+            scenario = RobotScenario(name=f"scenario_{i}", offset=offset, randomize=False)
+            scenario.setup_scene()
+            self._scenarios.append(scenario)
+```
 
-```python linenums="1" hl_lines="14 21 64 97-105 108-111 113-128 134-138 141-162 164-170"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.core.utils.nucleus import get_assets_root_path
-from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace
-from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController
-from isaacsim.robot.wheeled_robots.robots import WheeledRobot
-from isaacsim.robot.wheeled_robots.controllers.wheel_base_pose_controller import WheelBasePoseController
-from isaacsim.robot.wheeled_robots.controllers.differential_controller import DifferentialController
-from isaacsim.core.api.tasks import BaseTask
-from isaacsim.core.utils.types import ArticulationAction
-from isaacsim.core.utils.string import find_unique_string_name
-from isaacsim.core.utils.prims import is_prim_path_valid
+Initialize the scenarios:
+
+```python linenums="1"
+        # Initialize all scenarios
+        for scenario in self._scenarios:
+            scenario.initialize()
+```
+
+Step all scenarios:
+
+```python linenums="1"
+        # Step all scenarios
+        for scenario in self._scenarios:
+            scenario.step()
+```
+
+Reset all scenarios:
+
+```python linenums="1"
+        # Reset all scenarios
+        for scenario in self._scenarios:
+            scenario.reset()
+```
+
+Clean up:
+
+```python linenums="1"
+        self._scenarios = []
+```
+
+The complete code is as follows (the `RobotScenario` class also gains a `randomize` parameter used in the next section):
+
+```python linenums="1" hl_lines="14 19 26-31 152-154 161-168 171-175 182-186 189-193 200-201"
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
+from isaacsim.core.experimental.objects import Cube, DomeLight, GroundPlane
+from isaacsim.core.experimental.prims import Articulation, GeomPrim, RigidPrim, XformPrim
+from isaacsim.core.simulation_manager import SimulationEvent, SimulationManager
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.robot.experimental.manipulators.examples.franka import Franka
+from isaacsim.storage.native import get_assets_root_path
 
 
-class RobotsPlaying(BaseTask):
-    def __init__(self, name, offset=None):
-        super().__init__(name=name, offset=offset)
-        self._task_event = 0
-        self._jetbot_goal_position = np.array([np.random.uniform(1.2, 1.6), 0.3, 0]) + self._offset
-        self._pick_place_task = PickPlace(
-            cube_initial_position=np.array([0.1, 0.3, 0.05]),
-            target_position=np.array([0.7, -0.3, 0.0515 / 2.0]),
-            offset=offset,
-        )
-        return
+class RobotScenario:
+    """Encapsulates a Jetbot + Franka + Cube scenario with an offset."""
 
-    def set_up_scene(self, scene):
-        super().set_up_scene(scene)
-        self._pick_place_task.set_up_scene(scene)
-        jetbot_name = find_unique_string_name(
-            initial_name="fancy_jetbot", is_unique_fn=lambda x: not self.scene.object_exists(x)
-        )
-        jetbot_prim_path = find_unique_string_name(
-            initial_name="/World/Fancy_Jetbot", is_unique_fn=lambda x: not is_prim_path_valid(x)
-        )
+    def __init__(self, name: str, offset: np.ndarray = np.array([0.0, 0.0, 0.0]), randomize: bool = False):
+        self.name = name
+        self.offset = offset
+        self.state = 0
+        self.step_counter = 0
+        self.randomize = randomize
+        self.pick_phase = 0
+        self.jetbot = None
+        self.franka = None
+        self.cube = None
+        self.cube_goal = np.array([1.2, 0.0, 0.0]) + offset
+
+        # Randomize cube goal position if enabled
+        if self.randomize:
+            random_x = np.random.uniform(1.0, 1.6)
+            self.cube_goal = np.array([random_x, 0.0, 0.0]) + offset
+        else:
+            self.cube_goal = np.array([1.2, 0.0, 0.0]) + offset
+
+    def setup_scene(self):
+        """Create the robots and cube for this scenario."""
         assets_root_path = get_assets_root_path()
-        jetbot_asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
-        self._jetbot = scene.add(
-            WheeledRobot(
-                prim_path=jetbot_prim_path,
-                name=jetbot_name,
-                wheel_dof_names=["left_wheel_joint", "right_wheel_joint"],
-                create_robot=True,
-                usd_path=jetbot_asset_path,
-                position=np.array([0, 0.3, 0]),
-            )
+        base_path = f"/World/{self.name}"
+
+        # Add Jetbot
+        stage_utils.add_reference_to_stage(
+            usd_path=assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd",
+            path=f"{base_path}/Jetbot",
         )
-        # (A) Register Jetbot in _task_objects
-        self._task_objects[self._jetbot.name] = self._jetbot
-        # (B) Shift Franka created by subtask X+1.0 to separate from Jetbot
-        pick_place_params = self._pick_place_task.get_params()
-        self._franka = scene.get_object(pick_place_params["robot_name"]["value"])
-        current_position, _ = self._franka.get_world_pose()
-        self._franka.set_world_pose(position=current_position + np.array([1.0, 0, 0]))
-        self._franka.set_default_state(position=current_position + np.array([1.0, 0, 0]))
-        # (C) Apply offset to all objects registered in _task_objects
-        self._move_task_objects_to_their_frame()
-        return
+        jetbot_xform = XformPrim(f"{base_path}/Jetbot")
+        jetbot_xform.reset_xform_op_properties()
+        jetbot_xform.set_world_poses(positions=self.offset.tolist())
 
-    def get_observations(self):
-        current_jetbot_position, current_jetbot_orientation = self._jetbot.get_world_pose()
-        observations = {
-            # Use task name as prefix to avoid key collisions across multiple tasks
-            self.name + "_event": self._task_event,
-            self._jetbot.name: {
-                "position": current_jetbot_position,
-                "orientation": current_jetbot_orientation,
-                "goal_position": self._jetbot_goal_position,
-            }
-        }
-        observations.update(self._pick_place_task.get_observations())
-        return observations
+        # Add cube in front of Jetbot
+        cube_pos = self.offset + np.array([0.15, 0.0, 0.025])
+        cube_shape = Cube(
+            paths=f"{base_path}/Cube",
+            positions=cube_pos.tolist(),
+            sizes=1.0,
+            scales=[0.05, 0.05, 0.05],
+            colors="red",
+        )
+        GeomPrim(paths=cube_shape.paths, apply_collision_apis=True)
+        RigidPrim(paths=cube_shape.paths)
 
-    def get_params(self):
-        pick_place_params = self._pick_place_task.get_params()
-        params_representation = pick_place_params
-        params_representation["jetbot_name"] = {"value": self._jetbot.name, "modifiable": False}
-        params_representation["franka_name"] = pick_place_params["robot_name"]
-        return params_representation
+        # Add Franka
+        franka_pos = self.offset + np.array([0.8, -0.3, 0.0])
+        self.franka = Franka(robot_path=f"{base_path}/Franka", create_robot=True)
+        franka_xform = XformPrim(f"{base_path}/Franka")
+        franka_xform.reset_xform_op_properties()
+        franka_xform.set_world_poses(positions=franka_pos.tolist())
 
-    def pre_step(self, control_index, simulation_time):
-        if self._task_event == 0:
-            current_jetbot_position, _ = self._jetbot.get_world_pose()
-            if np.mean(np.abs(current_jetbot_position[:2] - self._jetbot_goal_position[:2])) < 0.04:
-                self._task_event += 1
-                self._cube_arrive_step_index = control_index
-        elif self._task_event == 1:
-            if control_index - self._cube_arrive_step_index == 200:
-                self._task_event += 1
-        return
+    def initialize(self):
+        """Initialize articulation handles after scene load."""
+        base_path = f"/World/{self.name}"
+        self.jetbot = Articulation(f"{base_path}/Jetbot")
+        self.cube = RigidPrim(f"{base_path}/Cube")
 
-    def post_reset(self):
-        self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        self._task_event = 0
-        return
+    def reset(self):
+        """Reset the scenario state."""
+        self.state = 0
+        self.step_counter = 0
+        self.pick_phase = 0
+        self.franka.reset_to_default_pose()
+
+    def step(self):
+        """Execute one step of the scenario logic."""
+        if self.state == 0:
+            # Jetbot pushes cube
+            cube_pos = self.cube.get_world_poses()[0].numpy()[0]
+            if np.linalg.norm(cube_pos[:2] - self.cube_goal[:2]) > 0.05:
+                self.jetbot.set_dof_velocity_targets([10.0, 10.0])
+            else:
+                self.jetbot.set_dof_velocity_targets([0.0, 0.0])
+                self.state = 1
+                self.step_counter = 0
+
+        elif self.state == 1:
+            # Jetbot backs up
+            self.jetbot.set_dof_velocity_targets([-8.0, -8.0])
+            self.step_counter += 1
+            if self.step_counter > 100:
+                self.jetbot.set_dof_velocity_targets([0.0, 0.0])
+                self.state = 2
+                self.step_counter = 0
+                self.franka.open_gripper()
+
+        elif self.state == 2:
+            # Franka pick-and-place
+            self._franka_pick_place()
+
+    def _franka_pick_place(self):
+        """Execute Franka pick-and-place state machine."""
+        cube_pos = self.cube.get_world_poses()[0].numpy()[0]
+        down_orient = self.franka.get_downward_orientation()
+        self.step_counter += 1
+
+        if self.pick_phase == 0:
+            self.franka.set_end_effector_pose(np.array([cube_pos[0], cube_pos[1], cube_pos[2] + 0.2]), down_orient)
+            if self.step_counter > 120:
+                self.pick_phase = 1
+                self.step_counter = 0
+        elif self.pick_phase == 1:
+            self.franka.set_end_effector_pose(np.array([cube_pos[0], cube_pos[1], cube_pos[2] + 0.1]), down_orient)
+            if self.step_counter > 100:
+                self.pick_phase = 2
+                self.step_counter = 0
+        elif self.pick_phase == 2:
+            self.franka.close_gripper()
+            if self.step_counter > 100:
+                self.pick_phase = 3
+                self.step_counter = 0
+        elif self.pick_phase == 3:
+            _, current_position, _ = self.franka.get_current_state()
+            target = current_position + np.array([0.1, 0.0, 0.08])
+            self.franka.set_end_effector_pose(position=target, orientation=down_orient)
+            if self.step_counter > 150:
+                self.step_counter = 0
+                self.pick_phase = 4
+        elif self.pick_phase == 4:
+            _, current_position, _ = self.franka.get_current_state()
+            target = current_position + np.array([0.1, 0.0, 0.01])
+            self.franka.set_end_effector_pose(position=target, orientation=down_orient)
+            if self.step_counter > 150:
+                self.step_counter = 0
+                self.pick_phase = 5
+        elif self.pick_phase == 5:
+            self.franka.open_gripper()
+            if self.step_counter > 150:
+                self.step_counter = 0
+                self.state = 6  # Done
 
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        # Manage controllers and objects for each task in lists
-        self._tasks = []
-        self._num_of_tasks = 3
-        self._franka_controllers = []
-        self._jetbot_controllers = []
-        self._jetbots = []
-        self._frankas = []
-        self._cube_names = []
-        return
+        self._physics_callback_id = None
+        self._scenarios = []
+        # -- Begin setting scenario number -- #
+        self._num_scenarios = 3  # Number of parallel scenarios
+        # -- End of setting scenario number -- #
 
     def setup_scene(self):
-        world = self.get_world()
-        # Place 3 tasks offset along the Y axis
-        for i in range(self._num_of_tasks):
-            world.add_task(RobotsPlaying(name="my_awesome_task_" + str(i), offset=np.array([0, (i * 2) - 3, 0])))
-        return
+        GroundPlane("/World/ground_plane")
+        dome_light = DomeLight("/World/DomeLight")
+        dome_light.set_intensities(1000)
+
+        # -- Begin creating scenarios -- #
+        # Create multiple scenarios with Y-axis offsets
+        for i in range(self._num_scenarios):
+            offset = np.array([0.0, (i - 1) * 2.0, 0.0])  # Spread along Y-axis
+            scenario = RobotScenario(name=f"scenario_{i}", offset=offset, randomize=False)
+            scenario.setup_scene()
+            self._scenarios.append(scenario)
+        # -- End of creating scenarios -- #
 
     async def setup_post_load(self):
-        self._world = self.get_world()
-        for i in range(self._num_of_tasks):
-            self._tasks.append(self._world.get_task(name="my_awesome_task_" + str(i)))
-            task_params = self._tasks[i].get_params()
-            self._frankas.append(self._world.scene.get_object(task_params["franka_name"]["value"]))
-            self._jetbots.append(self._world.scene.get_object(task_params["jetbot_name"]["value"]))
-            self._cube_names.append(task_params["cube_name"]["value"])
-            self._franka_controllers.append(
-                PickPlaceController(
-                    name="pick_place_controller",
-                    gripper=self._frankas[i].gripper,
-                    robot_articulation=self._frankas[i],
-                    events_dt=[0.008, 0.002, 0.5, 0.1, 0.05, 0.05, 0.0025, 1, 0.008, 0.08],
-                )
-            )
-            self._jetbot_controllers.append(
-                WheelBasePoseController(
-                    name="cool_controller",
-                    open_loop_wheel_controller=DifferentialController(
-                        name="simple_control",
-                        wheel_radius=0.03,
-                        wheel_base=0.1125,
-                    ),
-                )
-            )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
+        # -- Begin initializing scenarios -- #
+        # Initialize all scenarios
+        for scenario in self._scenarios:
+            scenario.initialize()
+        # -- End of initializing scenarios -- #
+
+        self._physics_callback_id = SimulationManager.register_callback(
+            self.physics_step, event=SimulationEvent.PHYSICS_POST_STEP
+        )
+
+    def physics_step(self, dt, context):
+        # -- Begin stepping scenarios -- #
+        # Step all scenarios
+        for scenario in self._scenarios:
+            scenario.step()
+        # -- End of stepping scenarios -- #
 
     async def setup_post_reset(self):
-        for i in range(len(self._tasks)):
-            self._franka_controllers[i].reset()
-            self._jetbot_controllers[i].reset()
-        await self._world.play_async()
-        return
+        # -- Begin resetting scenarios -- #
+        # Reset all scenarios
+        for scenario in self._scenarios:
+            scenario.reset()
+        # -- End of resetting scenarios -- #
 
-    def physics_step(self, step_size):
-        current_observations = self._world.get_observations()
-        # Process all tasks in a loop
-        for i in range(len(self._tasks)):
-            if current_observations[self._tasks[i].name + "_event"] == 0:
-                self._jetbots[i].apply_wheel_actions(
-                    self._jetbot_controllers[i].forward(
-                        start_position=current_observations[self._jetbots[i].name]["position"],
-                        start_orientation=current_observations[self._jetbots[i].name]["orientation"],
-                        goal_position=current_observations[self._jetbots[i].name]["goal_position"],
-                    )
-                )
-            elif current_observations[self._tasks[i].name + "_event"] == 1:
-                self._jetbots[i].apply_wheel_actions(ArticulationAction(joint_velocities=[-8.0, -8.0]))
-            elif current_observations[self._tasks[i].name + "_event"] == 2:
-                self._jetbots[i].apply_wheel_actions(ArticulationAction(joint_velocities=[0.0, 0.0]))
-                actions = self._franka_controllers[i].forward(
-                    picking_position=current_observations[self._cube_names[i]]["position"],
-                    placing_position=current_observations[self._cube_names[i]]["target_position"],
-                    current_joint_positions=current_observations[self._frankas[i].name]["joint_positions"],
-                )
-                self._frankas[i].apply_action(actions)
-        return
-
-    def world_cleanup(self):
-        # Initialize lists during hot reload
-        self._tasks = []
-        self._franka_controllers = []
-        self._jetbot_controllers = []
-        self._jetbots = []
-        self._frankas = []
-        self._cube_names = []
-        return
+    def physics_cleanup(self):
+        if self._physics_callback_id is not None:
+            SimulationManager.deregister_callback(self._physics_callback_id)
+            self._physics_callback_id = None
+        # -- Begin remove all scenarios -- #
+        self._scenarios = []
+        # -- End of remove all scenarios -- #
 ```
 
-!!! note "Explicitly specifying `events_dt`"
-    As explained in [Tutorial 4](04_adding_a_manipulator_robot.md), `events_dt` is a list that controls the execution speed of each state in `PickPlaceController`. When multiple Frankas operate simultaneously, the default values may cause timing mismatches and unstable behavior, so here we explicitly specify the values to synchronize the motion speed across all robots.
+Save the code and check the simulation:
 
-Save the code and verify the simulation:
+1. Press **Ctrl+S** to save, then run **File > New From Stage Template > Empty** → **LOAD**.
+2. Watch three Jetbot + Franka pairs operate side by side simultaneously.
 
-1. Press **Ctrl+S** to save, then do **File > New From Stage Template > Empty** and click **LOAD**.
-2. Press the **PLAY** button and observe 3 sets of Jetbot + Franka operating simultaneously side by side.
+![Multiple scenarios running in parallel](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/core_api_tutorials_6_2.webp)
 
-![Multiple tasks running in parallel](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/core_api_tutorials_6_2.webp)
+## Adding Randomization
+
+To make simulations more interesting, you can add **randomization** to the scenario parameters. When the `randomize` constructor parameter is enabled, `RobotScenario` randomly samples the cube goal position. Set `randomize=True` when creating each scenario in `setup_scene`:
+
+```python linenums="1"
+for i in range(self._num_scenarios):
+    offset = np.array([0.0, (i - 1) * 2.0, 0.0])  # Spread along Y-axis
+    scenario = RobotScenario(name=f"scenario_{i}", offset=offset, randomize=True)
+    scenario.setup_scene()
+    self._scenarios.append(scenario)
+```
+
+This changes how far each Jetbot pushes its cube, so you can see the scenarios progress differently.
+
+## Best Practices for Scaling
+
+When creating large-scale multi-robot simulations:
+
+- **Use unique paths**: Each scenario should use unique USD prim paths to avoid conflicts. The `RobotScenario` class uses the scenario name to create unique paths like `/World/scenario_0/Jetbot`.
+- **Manage state independently**: Each scenario instance maintains its own state variables, allowing scenarios to progress independently.
+- **Clean up properly**: The `physics_cleanup` method ensures callbacks are deregistered and scenario lists are cleared when the simulation is stopped.
+- **Consider performance**: With many scenarios, consider reducing physics step frequency or using GPU-accelerated simulation for better performance.
 
 ## Summary
 
 This tutorial covered the following topics:
 
-1. **Spatial positioning** of tasks using the `offset` parameter
-2. **Name collision avoidance** with `find_unique_string_name()`
-3. **Offset management** with `_task_objects` and `_move_task_objects_to_their_frame()`
-4. **Parallel management** of controllers and tasks using lists
-5. **Hot reload support** with `world_cleanup()`
-
-!!! tip "Further Reading"
-    For an example of combining different types of tasks, refer to the standalone sample included with Isaac Sim: `standalone_examples/api/isaacsim.robot.manipulators/universal_robots/multiple_tasks.py`.
+1. Organizing robot scenarios into **reusable Python classes**
+2. Using the `offset` parameter to **position multiple scenarios** in the world
+3. **Scaling to multiple parallel scenarios** with a simple loop
+4. Adding **randomization** to scenario parameters
+5. **Best practices** for managing multiple robot instances
 
 ## Next Steps
 
-Proceed to the next tutorial, "[Adding Props](07_adding_props.md)", to learn how to configure physics attributes on objects via the GUI.
+Continue to the next tutorial, [Adding Props](07_adding_props.md), to learn how to configure physics attributes on objects via the GUI.
 
 !!! note "Note"
-    The following tutorials continue to use the Extension Workflow for development. Converting to the Standalone Workflow follows the same approach as learned in [Hello World](01_hello_world.md).
+    The following tutorials also mainly use the Extension Workflow for development. Converting to the Standalone Workflow follows the same steps you learned in [Hello World](01_hello_world.md).

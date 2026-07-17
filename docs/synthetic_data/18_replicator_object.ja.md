@@ -17,7 +17,7 @@ title: オブジェクト シミュレーションと合成データ生成（IRO
 
 ### 前提条件
 
-- Isaac Sim 5.1 が起動できること
+- Isaac Sim 6.0.1 が起動できること
 - [Replicator の概要](01_replicator_overview.md) を理解していること
 - YAML の基本を理解していること
 
@@ -29,10 +29,13 @@ title: オブジェクト シミュレーションと合成データ生成（IRO
 
 **isaacsim.replicator.object（IRO）** は、**コード変更が不要**な拡張機能で、小売の物体検出からロボティクスまで幅広いタスクのモデル訓練用合成データを生成します。可変（mutable）なシーンを記述した YAML 記述ファイル（またはそれらを積み重ねた階層）を入力とし、RGB・2D/3D バウンディングボックス・セグメンテーションマスクなどのグラフィックスコンテンツと記述ファイルを出力します。
 
-![IRO の概要](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_overview.png)
+![IRO の概要](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_overview.png)
 
 !!! note "IRO の価値"
     合成データによる深層学習は需要が高い一方、3D ソフトの習得（UI パネルへの習熟など）には時間がかかります。IRO は、Maya や 3ds Max の経験がないデータサイエンティストでも、**マクロ**を使ってドメインランダム化されたシーンを抽象的・直感的・コンパクトに記述できることを目指しています。ドメインランダム化では、詳細な 3D コンテンツより「シーンをどうランダム化するかのルール」と「ルール間の関係」が重要になります。
+
+!!! note "Chat IRO：自然言語インターフェース（6.0 の新機能）"
+    **Chat IRO** は、シーンを平易な英語で記述すると IRO の記述ファイル（YAML）を自動生成する新しい拡張機能です。生成した設定をステージに適用してビューポートで即座にプレビューでき、シミュレーションの実行や YAML の保存・読み込みにも対応しており、手動で YAML を編集せずに素早く反復的にシーンをオーサリングできます。
 
 ## エンドツーエンドのパイプライン
 
@@ -43,9 +46,9 @@ title: オブジェクト シミュレーションと合成データ生成（IRO
 
 ## ステップ 1：UI から実行する
 
-1. **Window > Extensions** で `isaacsim.replicator.object` を検索し、緑のカプセルアイコンで有効化します。
-2. 有効化されると、右上に **Object Detection SDG** パネルが表示され、**Tools > Action and Event Data Generation** に Object Detection SDG と Distribution Visualizer が追加されます。
-3. パネル右側のフォルダアイコン（または VS Code アイコン）で拡張機能のルートフォルダを開きます。`PATH_TO_EXTENSION/isaacsim/replicator/object/configs` に多数の YAML 記述ファイルがあります（まずは `demo_kaleidoscope.yaml` がおすすめ）。
+1. **Window > Extensions** で `isaacsim.replicator.object.core` と `isaacsim.replicator.object.ui` を検索し、有効化します。
+2. 有効化されると、右上に **Object SDG** パネルが表示され、**Tools > Action and Event Data Generation** に Object SDG と Distribution Visualizer が追加されます。
+3. パネル右側のフォルダアイコン（または VS Code アイコン）で拡張機能のルートフォルダを開きます。`PATH_TO_CORE_EXTENSION/isaacsim/replicator/object/core/configs` に多数の YAML 記述ファイルがあります（まずは `demo_kaleidoscope.yaml` がおすすめ。空きスペース検出は `demo_empty_space.yaml`）。
 4. `global.yaml` の `output_path` を、出力を保存するローカルフォルダに更新します。
 5. Simulate ボタン下のドロップダウンから `demo_kaleidoscope` を選び、**Simulate** をクリックして開始します。進捗はプログレスバーで表示されます。
 
@@ -60,9 +63,9 @@ Isaac Sim の Docker コンテナで実行できます。`global.yaml` の `outp
 docker run --gpus device=0 --entrypoint /bin/bash -v LOCAL_PATH:/tmp --network host -it ISAAC_SIM_DOCKER_CONTAINER_URL
 
 # 例：demo_kaleidoscope でシミュレーション起動
-bash isaac-sim.sh --no-window --enable isaacsim.replicator.object --allow-root \
+bash isaac-sim.sh --no-window --enable isaacsim.replicator.object.core --allow-root \
   --/log/file=/tmp/isaacsim.replicator.object.log --/log/level=warn --/windowless=True \
-  --/config/file=PATH_TO_EXTENSION/isaacsim/replicator/object/configs/demo_kaleidoscope.yaml
+  --/config/file=PATH_TO_CORE_EXTENSION/isaacsim/replicator/object/core/configs/demo_kaleidoscope.yaml
 ```
 
 ログ `/tmp/isaacsim.replicator.object.log` を `METROPERF` でフィルタすると拡張機能のメッセージを確認できます。
@@ -72,16 +75,19 @@ bash isaac-sim.sh --no-window --enable isaacsim.replicator.object --allow-root \
 
 ## ステップ 3：埋め込みインターフェースで素早く試す
 
-ディスクへの書き出しが不要なときは、埋め込みインターフェースが記述ファイルのプロトタイピングに便利です。記述ファイルを選び、Object Detection SDG パネルの **Initialize Scene Randomization** で読み込むと、ランダム化シンボルが作成・接続されます。以降、**Randomize Scene** をクリックするたびにシーンがランダム化されます。物理的にプレビューするには左側の三角の Play ボタンを押します。
+ディスクへの書き出しが不要なときは、埋め込みインターフェースが記述ファイルのプロトタイピングに便利です。記述ファイルを選び、Object SDG パネルの **Initialize Scene Randomization** で読み込むと、ランダム化シンボルが作成・接続されます。以降、**Randomize Scene** をクリックするたびにシーンがランダム化されます。物理的にプレビューするには左側の三角の Play ボタンを押します。
 
-![埋め込みインターフェース](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_ui_embedded_interface.webp)
+!!! note
+    **Initialize Scene Randomization** をクリックしてから **Randomize Scene** をクリックするまでの間、ビューポートが真っ黒に見えるのは正常です。この段階で何かを見たい場合は、prim を選択して「F」キーでフォーカスしてください。
+
+![埋め込みインターフェース](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_ui_embedded_interface.webp)
 
 ## 出力
 
 シミュレーション後、出力は `output_path` に保存され、内容は出力スイッチ設定で決まります。例として `demo_bottle` は RGB 画像とセグメンテーションを出力します。
 
-![bottle の RGB](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_bottle_image.jpg)
-![bottle のセグメンテーション](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_bottle_segmentation.png)
+![bottle の RGB](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_bottle_image.jpg)
+![bottle のセグメンテーション](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_bottle_segmentation.png)
 
 2D バウンディングボックスは次の形式です（4 つの正の数が `x_min, y_min, x_max, y_max`。`-1` はオクルージョン率の位置で、ボトルは透明なため `-1`）。
 
@@ -105,12 +111,12 @@ bottle_2 0 -1.0 0 1281 462 1854 2159 0 0 0 0 0 0 0
 
 テーブルの上にランダムなオブジェクトを落とすシーンを作ります。ドームライト用 HDRI（`PATH_TO_HDRI`）、テーブル USD（`PATH_TO_TABLE`）、散布するオブジェクトの USD フォルダ（`PATH_TO_OBJECTS`）があるとします。まずビューポートにアセットをドラッグして配置範囲を把握し、オブジェクトの妥当な位置範囲（例：`(-13, 100, -70)` 〜 `(13, 100, 70)`）を決めます。
 
-![ドラッグ＆ドロップで確認](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_drag_and_drop.webp)
+![ドラッグ＆ドロップで確認](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_drag_and_drop.webp)
 
 ```yaml
 isaacsim.replicator.object:
   # 最小限
-  version: 0.4.x
+  version: 0.x.y
   num_frames: 3
   seed: 0
   output_path: PATH_TO_OUTPUT
@@ -188,7 +194,7 @@ isaacsim.replicator.object:
 
 **Simulate** を押すと RGB 画像とセグメンテーションマスクが生成されます。
 
-![生成された RGB](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_step_by_step_rgb.jpg)
+![生成された RGB](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_step_by_step_rgb.jpg)
 
 !!! warning
     記述の YAML フォーマット（インデントなど）が正しいか確認してください。`mapping values are not allowed here` エラーはフォーマットの問題であることが多いです。
@@ -197,9 +203,9 @@ isaacsim.replicator.object:
 
 **シーン編集**：埋め込みインターフェースで作成したシーンでは、立方体を作成して translate と size を変え（回転は不可）、その空間範囲に含まれる prim の可視性を切り替えられます（**Toggle Visibility of selected region** ボタン。事前に立方体を選択しておく必要があります）。
 
-![可視性の切り替え](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_toggle_visibility.webp)
+![可視性の切り替え](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_ext-isaacsim.replicator.object-0.4.2_viewport_toggle_visibility.webp)
 
-**カタログ**：記述ファイルで使える要素は、Setting / Mutable / Camera / Geometry / Light / Mutable Attribute / Transformation / Harmonizer / Macro / Distribution Visualizer / Randomization Dependency のカタログにまとめられています。型が期待される箇所には、後で評価されるマクロ文字列（例：`$[index]`）も使えます。
+**カタログ**：記述ファイルで使える要素は、Setting / Mutable / Camera / Geometry / **Force** / Light / Mutable Attribute / Transformation / Harmonizer / **Empty Space Detection**（6.0 の新機能：シーン内の空きスペースの検出。`demo_empty_space.yaml` 参照）/ Macro / Distribution Visualizer / Randomization Dependency のカタログにまとめられています。型が期待される箇所には、後で評価されるマクロ文字列（例：`$[index]`）も使えます。
 
 !!! note "使用している 3rd-party ライブラリ"
     py3dbp（改変, MIT）、PyYaml（MIT）、trimesh（MIT）、regex（Apache）。

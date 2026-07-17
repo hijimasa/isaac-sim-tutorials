@@ -21,3 +21,6 @@ OmniGraph を使ったグラフの作成・編集・拡張のチュートリア�
 - [カスタム Python ノード](03_custom_python_nodes.md) — `.ogn` と Python で独自ノードを作る
 - [カスタム C++ ノード](04_custom_cpp_nodes.md) — C++ でノードを実装する
 - [よく使う OmniGraph ショートカット](05_shortcuts.md) — コントローラグラフを数クリックで生成する
+
+!!! note "本サイト補足：カスタム IPC ノード（Isaac Sim 6.0 新設）"
+    Isaac Sim 6.0 の公式ドキュメントには、プロセス間通信（IPC）を行うカスタム OmniGraph ノードの構築ページが新設されています。本サイトには対応ページがまだないため、必要な場合は公式の [Building Custom IPC OmniGraph Nodes](https://docs.isaacsim.omniverse.nvidia.com/latest/omnigraph/omnigraph_custom_ipc_nodes.html) を参照してください。

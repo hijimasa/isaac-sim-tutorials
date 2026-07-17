@@ -13,8 +13,11 @@ Tutorials for using RTX, physics-based, and PhysX SDK sensors in Isaac Sim.
 Isaac Sim sensors fall into three families:
 
 - **Camera / depth sensors** — based on the USD Camera prim; images, depth, and calibration.
-- **RTX sensors** — physically based rendering via the RTX renderer, interacting with non-visual materials (LiDAR / Radar).
+- **RTX sensors** — physically based rendering via the RTX renderer, interacting with non-visual materials (LiDAR / Radar / Acoustic).
 - **Physics-based / PhysX SDK sensors** — ground-truth contact, IMU, and range via CPU physics or raycasts.
+
+!!! note "API reorganization in Isaac Sim 6.0"
+    In Isaac Sim 6.0, `isaacsim.sensors.camera` / `isaacsim.sensors.rtx` are replaced by `isaacsim.sensors.experimental.rtx`, and `isaacsim.sensors.physics` by `isaacsim.sensors.experimental.physics` (the old extensions are deprecated). The tutorials are updated for the new APIs.
 
 ## Tutorials
 
@@ -38,11 +41,14 @@ Isaac Sim sensors fall into three families:
 - [Contact Sensor](10_contact_sensor.md)
 - [Effort Sensor](11_effort_sensor.md)
 - [IMU Sensor](12_imu_sensor.md)
-- [Proximity Sensor](13_proximity_sensor.md)
 
 ### PhysX SDK Sensors
 
 - [PhysX SDK Sensors](14_physx_sensors.md)
+- [Proximity Sensor](13_proximity_sensor.md)
 - [PhysX SDK Generic Sensor](15_physx_generic.md)
 - [PhysX SDK Lidar](16_physx_lidar.md)
 - [PhysX SDK Lightbeam Sensor](17_physx_lightbeam.md)
+
+!!! note "New official topics in 6.0"
+    The Isaac Sim 6.0 docs add pages for structured light cameras, the RTX Acoustic sensor, multi-tick rendering, custom RTX sensor profiles, the joint state sensor, and the physics raycast sensor — see the official sensors section.

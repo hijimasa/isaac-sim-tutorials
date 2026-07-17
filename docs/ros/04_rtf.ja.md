@@ -40,12 +40,12 @@ title: ROS 2 RTF のパブリッシュ
 1. **Tools > Robotics > ROS 2 OmniGraphs > Generic Publisher** を開きます。パラメータのポップアップウィンドウが表示されます。
 2. **Publish RTF as Float32** を選択して **OK** をクリックします。
 
-    ![RTF パラメータ設定](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_rtf_param.png)
+    ![RTF パラメータ設定](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_rtf_param.png)
 
 3. **Isaac Real Time Factor** ノードが汎用の **ROS2 Publisher** ノード（`std_msgs/msg/Float32` を配信するよう設定済み）に接続された、新しい Action Graph が作成されます。
 4. Stage パネルで `/Graph/ROS_GenericPub` にある Action Graph プリムを右クリックし、**Open Graph** を選択します。自動生成されたグラフが次と一致することを確認します：
 
-    ![RTF グラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_rtf_graph.png)
+    ![RTF グラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_rtf_graph.png)
 
 5. **Play** をクリックしてシミュレーションを開始します。
 6. ROS 2 を source したターミナルで、Isaac Sim からパブリッシュされる RTF の値を確認します：

@@ -32,6 +32,14 @@ title: Cosmos 合成データ生成
 
 このチュートリアルでは、倉庫環境を自律走行する Carter Nova ロボットの前面カメラから、CosmosWriter で同期マルチモーダルデータをキャプチャします。
 
+CosmosWriter の主なユースケースは次のとおりです：
+
+- **Sim-to-Real 転移** — Cosmos Transfer により、シミュレーション映像をマテリアル・照明・環境条件の異なるフォトリアルなシーンに変換
+- **ドメイン適応** — 1 つのシミュレーションから、シーンスタイル・マテリアル・照明のバリエーションを持つ多様な学習データを生成（高価なシミュレーションの再実行や実データ収集が不要）
+- **データオーグメンテーション** — ロボットの動作・オブジェクト位置・シーン構造を保ったまま、視覚的バリエーションを増やして限られたデータセットを拡張
+
+ロボティクスでの sim-to-real 変換の実例は [Cosmos Cookbook Robotics Gallery](https://nvidia-cosmos.github.io/cosmos-cookbook/gallery/robotics_inference.html) を参照してください。合成キッチンシーンを、キャビネットのスタイルやロボットのマテリアル、照明条件を変えたフォトリアル環境に変換する例が紹介されています。
+
 ![Cosmos 倉庫キャプチャ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.1_replicator_tut_viewport_cosmos_warehouse.webp)
 
 ## CosmosWriter が生成するデータ
@@ -53,8 +61,11 @@ title: Cosmos 合成データ生成
 スタンドアロンで実行します（Windows では `python.bat`）：
 
 ```bash
-./python.sh standalone_examples/api/isaacsim.replicator.examples/cosmos_writer_warehouse.py
+./python.sh standalone_examples/replicator/cosmos_writer_warehouse.py
 ```
+
+!!! note "スクリプトの場所の変更"
+    Isaac Sim 6.0 でサンプルの場所が `standalone_examples/api/isaacsim.replicator.examples/` から `standalone_examples/replicator/` に移動しました。
 
 Script Editor 版のコードも公式ページに掲載されています。スクリプトは倉庫環境を読み込み、ナビゲーション付きの Carter Nova を追加してターゲットを設定し、SDG パイプラインを実行します。
 
@@ -75,7 +86,7 @@ Script Editor 版のコードも公式ページに掲載されています。ス
 - `pause_timeline=False` により、**キャプチャ中もロボットは移動し続ける**（ナビゲーションの進行が映像として残る）
 - キャプチャの合間にシミュレーションを進めて走行を進行させる
 
-出力は**クリップ単位**に整理され、各クリップが Cosmos Transfer への入力となる連続フレーム列になります。
+出力は**クリップ単位**に整理され、各クリップが Cosmos Transfer への入力となる連続フレーム列になります。各モダリティは PNG シーケンスに加えて **MP4 動画**（`rgb.mp4`、`depth.mp4`、`segmentation.mp4`、`shaded_seg.mp4`、`edges.mp4`）としても出力され、MP4 はそのまま Cosmos Transfer の制御入力として渡せます（PNG はフレーム単位の確認やカスタム処理用）。
 
 ## ステップ 3：高度な設定
 
@@ -90,7 +101,12 @@ Script Editor 版のコードも公式ページに掲載されています。ス
 
 ## ステップ 4：Cosmos Transfer でデータを使う
 
-生成したデータは Cosmos Transfer の制御ブランチにマッピングして使います。単一制御（例：edge のみ）とマルチモーダル制御（複数ブランチの重み付き併用）の設定例が公式ページに掲載されています。
+生成したデータは Cosmos Transfer の制御ブランチにマッピングして使います。単一制御（例：edge のみ）とマルチモーダル制御（複数ブランチの重み付き併用）の設定例が公式ページに掲載されています。生成した MP4 は [Cosmos Transfer1](https://docs.nvidia.com/cosmos/latest/transfer1/index.html) または [Transfer2.5](https://docs.nvidia.com/cosmos/latest/transfer2.5/index.html) にそのまま渡せます。
+
+[Cosmos Cookbook Robotics Gallery](https://nvidia-cosmos.github.io/cosmos-cookbook/gallery/robotics_inference.html) には、このワークフローの実例として次が紹介されています：
+
+- **エッジのみの制御** — ロボットの動作を正確に保ったまま、シミュレーション映像を多様なキッチンスタイル（白・赤・木目のキャビネット）やロボットのマテリアル（プラスチック・金属・ゴールド）に変換
+- **マルチ制御** — 深度・エッジ・セグメンテーションの制御を組み合わせた精密なシーン操作
 
 !!! note "運用上の注意点"
     - **制御の重み**：高いほど制御信号に忠実、低いほど生成の自由度が増します。合計が 1.0 を超えると自動的に正規化されます。

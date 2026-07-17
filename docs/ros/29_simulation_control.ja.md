@@ -30,6 +30,11 @@ title: ROS 2 Simulation Control
 
     パッケージのソースコードは [simulation_interfaces リポジトリ](https://github.com/ros-simulation/simulation_interfaces)を参照してください。
 
+!!! note "simulation_interfaces のバージョンについて"
+    このエクステンションは **simulation_interfaces 1.5.0 以降**を対象としています。インストールされているパッケージにサービスや SimulatorFeatures 定数が存在しない場合、該当サービスは登録をスキップし、GetSimulatorFeatures の応答からもその機能が除外されます（起動時に利用できない型を示す警告がログに出ます）。
+
+    RoboStack Jazzy（Pixi ベースの ROS 2 ワークスペースが使用）は現在 simulation_interfaces 1.2.0 を同梱しており、SpawnEntities が含まれていません。SpawnEntities を追加した 1.5.0 以降が RoboStack Jazzy に反映されるまで、Pixi / Jazzy ワークスペースではこのサービスは利用できません。
+
 ### 所要時間
 
 約 30 分（リファレンスとしても使えます）
@@ -72,7 +77,10 @@ ROS 2 Simulation Control エクステンションは、ROS 標準の **ROS 2 Sim
 | `/get_entity_state` | 特定エンティティの姿勢・速度・加速度の取得 |
 | `/get_entities_states` | 複数エンティティの状態のフィルタ付き一括取得 |
 | `/delete_entity` | 特定エンティティの削除 |
-| `/spawn_entity` | 新しいエンティティの指定位置へのスポーン |
+| `/get_spawnables` | スポーン可能な USD アセットの一覧取得 |
+| `/spawn_entity` | 新しいエンティティの指定位置へのスポーン（**非推奨** — `/spawn_entities` を使用） |
+| `/spawn_entities` | 複数エンティティの一括スポーン（Humble は simulation_interfaces >= 1.4.0、Jazzy は >= 1.5.0 が必要） |
+| `/get_entity_bounds` | エンティティのワールド座標系 AABB（軸並行バウンディングボックス）の取得 |
 | `/reset_simulation` | シミュレーション環境の初期状態へのリセット |
 | `/set_entity_state` | 特定エンティティの状態（姿勢・速度）の設定 |
 | `/step_simulation` | 指定フレーム数のステップ実行 |
@@ -180,7 +188,30 @@ ros2 service call /get_entities_states simulation_interfaces/srv/GetEntitiesStat
     - 加速度は現在の API では提供されないため、**常にゼロ**が報告されます。
     - 多数のエンティティの状態が必要な場合は、GetEntityState を繰り返すより GetEntitiesStates のほうが効率的です。
 
+### スポーン可能アセットの照会（GetSpawnables）
+
+スポーンに使える USD アセットを検索します。既定では Isaac アセットルートパスの `/Isaac/Samples/ROS2/Robots` を検索し、`sources` フィールドで独自の検索パスを追加できます：
+
+```bash
+# 既定のスポーン可能アセットをすべて一覧
+ros2 service call /get_spawnables simulation_interfaces/srv/GetSpawnables
+# ローカルパスを追加して一覧
+ros2 service call /get_spawnables simulation_interfaces/srv/GetSpawnables "{sources: ['/home/user/custom_robots']}"
+# 複数ソースを指定
+ros2 service call /get_spawnables simulation_interfaces/srv/GetSpawnables "{sources: ['/home/user/robots', '/opt/isaac_assets/robots']}"
+```
+
+!!! note "GetSpawnables の挙動"
+    - 既定の検索パスは `/Isaac/Samples/ROS2/Robots`（深さ 2 まで検索）です。
+    - `sources` に追加したパスは再帰的（深さ無制限）に検索されます。
+    - 各結果は `uri`（アセットの完全 URI）、`description`（拡張子なしのファイル名）、空の `spawn_bounds` を持つ Spawnable として返ります。
+    - アセットルートパスが利用できず `sources` も指定されていない場合は RESULT_OPERATION_FAILED が返ります。
+    - **Windows ユーザー（WSL 含む）**：`sources` のパスにはネイティブの Windows パス（例：`C:/Users/foo/robots`）を使ってください。`/mnt/c/Users/foo/robots` のような WSL 形式のパスは Isaac Sim の Windows プロセスからアクセスできず、結果が返りません。
+
 ### スポーンと削除（SpawnEntity / DeleteEntity）
+
+!!! warning "SpawnEntity は非推奨"
+    SpawnEntity サービスは非推奨（deprecated）です。代わりに `/spawn_entities` サービスを使ってください。SpawnEntities はバッチ処理とエンティティごとのエラー報告に対応しており、単一・複数どちらのワークフローにも適しています。
 
 ```bash
 # 基本のスポーン（既定位置）
@@ -203,6 +234,48 @@ ros2 service call /delete_entity simulation_interfaces/srv/DeleteEntity "{entity
     - スポーンされたプリムには追跡用の `simulationInterfacesSpawned` 属性が付きます（後述の ResetSimulation が削除対象を特定するために使います）。
     - 名前が重複していて `allow_renaming: false` の場合は NAME_NOT_UNIQUE（101）、名前が空なら NAME_INVALID（102）、USD の解析失敗は RESOURCE_PARSE_ERROR（106）が返ります。
     - 削除は、保護されたプリム（`is_prim_no_delete()` が真）に対しては RESULT_OPERATION_FAILED を返します。
+
+### 一括スポーン（SpawnEntities）
+
+1 回のリクエストで複数のエンティティをスポーンします。`spawn_requests` の各エントリは `SpawnEntity.msg` の形式に従い、それぞれ独立に処理されます。成否はエンティティごとに `results` リストで報告されます：
+
+```bash
+# 2 つのエンティティを指定位置にスポーン
+ros2 service call /spawn_entities simulation_interfaces/srv/SpawnEntities "{
+  spawn_requests: [
+    {
+      name: 'Robot1', allow_renaming: false,
+      entity_resource: {uri: '/path/to/robot.usd'},
+      initial_pose: {pose: {position: {x: 0.0, y: 0.0, z: 0.0}, orientation: {w: 1.0, x: 0.0, y: 0.0, z: 0.0}}}
+    },
+    {
+      name: 'Robot2', allow_renaming: true,
+      entity_resource: {uri: '/path/to/robot.usd'},
+      initial_pose: {pose: {position: {x: 2.0, y: 0.0, z: 0.0}, orientation: {w: 1.0, x: 0.0, y: 0.0, z: 0.0}}}
+    }
+  ]
+}"
+```
+
+!!! note "SpawnEntities の挙動"
+    - このサービスには ROS 2 Humble では simulation_interfaces >= 1.4.0、Jazzy では >= 1.5.0 が必要です。
+    - 各エントリは（SpawnEntity のフラットな `uri` フィールドではなく）`entity_resource.uri` フィールドを使います。
+    - エンティティごとの結果は `results` リストで返るので、個々の成否は各 SpawnResult を確認してください。
+    - 1 つでもスポーンに失敗すると、集約の `result` フィールドは ENTITIES_SPAWN_FAILED になります。
+    - そのほかの SpawnEntity のルール（自動リネーム、`simulationInterfacesSpawned` 属性の付与など）は各エントリに適用されます。
+
+### バウンディングボックスの取得（GetEntityBounds）
+
+エンティティのワールド座標系での軸並行バウンディングボックス（AABB）を計算して返します：
+
+```bash
+ros2 service call /get_entity_bounds simulation_interfaces/srv/GetEntityBounds "{entity: '/World/Cube'}"
+```
+
+!!! note "GetEntityBounds の挙動"
+    - `type=TYPE_BOX` と、AABB の最小コーナー・最大コーナーの 2 点を持つ Bounds メッセージが返ります。
+    - バウンディングボックスは USD の既定タイムコードで計算され、default purpose のプリムのみが含まれます。
+    - エンティティが存在しない場合は RESULT_NOT_FOUND、計算に失敗した場合は RESULT_OPERATION_FAILED が返ります。
 
 ### 状態の設定（SetEntityState）
 
@@ -246,7 +319,7 @@ ros2 service call /reset_simulation simulation_interfaces/srv/ResetSimulation
 # ローカルの USD ファイル
 ros2 service call /load_world simulation_interfaces/srv/LoadWorld "{uri: '/path/to/world.usd'}"
 # Isaac Sim のサンプル環境
-ros2 service call /load_world simulation_interfaces/srv/LoadWorld "{uri: 'https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Environments/Simple_Room/simple_room.usd'}"
+ros2 service call /load_world simulation_interfaces/srv/LoadWorld "{uri: 'https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Environments/Simple_Room/simple_room.usd'}"
 ```
 
 対応形式は USD（.usd / .usda / .usdc / .usdz）のみです。**再生中は読み込めません**（停止または一時停止してから呼び出します）。パスが直接見つからない場合は、既定のアセットルートパスを前置して再試行されます。
@@ -268,6 +341,9 @@ ros2 service call /get_available_worlds simulation_interfaces/srv/GetAvailableWo
 
 GetAvailableWorlds は既定で Isaac Sim の `/Isaac/Environments` と `/Isaac/Samples/ROS2/Scenario` を検索します。`offline_only: true` でローカルファイルシステムのみの検索、TagsFilter は FILTER_MODE_ANY（既定）／FILTER_MODE_ALL に対応します。
 
+!!! note "Windows での additional_sources のパス指定"
+    Windows ユーザー（WSL 含む）は、`additional_sources` のパスにネイティブの Windows パス（例：`C:/Users/foo/worlds`）を使ってください。`/mnt/c/Users/foo/worlds` のような WSL 形式のパスは Isaac Sim の Windows プロセスからアクセスできず、結果が返りません。
+
 ## 技術的な詳細
 
 このエクステンションは `omni.timeline` インターフェースでシミュレーション状態を制御し、標準的なサービスとして ROS 2 インターフェースを提供します。実装には次が含まれます：
@@ -284,9 +360,10 @@ GetAvailableWorlds は既定で Isaac Sim の `/Isaac/Environments` と `/Isaac/
 
 1. **ROS 2 Simulation Control エクステンション**の概要と有効化
 2. ROS 2 サービスによる**シミュレーション状態制御**（再生・一時停止・停止・ステップ）
-3. **エンティティの操作**（スポーン・削除・状態の取得と設定）
-4. **ワールドの管理**（読み込み・アンロード・一覧照会）
-5. フィードバック付きステップ実行のための **ROS 2 アクション**
+3. **エンティティの操作**（スポーン・一括スポーン・削除・状態の取得と設定・バウンディングボックスの取得）
+4. **スポーン可能アセットと利用可能ワールドの照会**
+5. **ワールドの管理**（読み込み・アンロード・一覧照会）
+6. フィードバック付きステップ実行のための **ROS 2 アクション**
 
 これで ROS 2 チュートリアルシリーズは完了です。
 

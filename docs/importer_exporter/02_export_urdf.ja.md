@@ -47,7 +47,7 @@ title: URDF エクスポート
 
 ![Export options](images/02_export_options.png)
 
-![URDF エクスポート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_full_ext-usd_to_urdf_exporter-1.3.3_gui_urdf_export.png)
+![URDF エクスポート](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.1_full_ext-usd_to_urdf_exporter-1.3.3_gui_urdf_export.png)
 
 ## ステップ 2：Franka ロボットをエクスポートする
 
@@ -71,7 +71,7 @@ title: URDF エクスポート
 1. **Isaac Sim に再インポートする** — [チュートリアル 1: URDF インポート](01_import_urdf.md)の手順で URDF を再び USD に変換し、構造が保たれているか確認します。
 2. **オンラインの URDF ビューアで確認する** — [URDF Viewer Example](https://gkjohnson.github.io/urdf-loaders/javascript/example/bundle/index.html) のサイトに**出力ディレクトリごと**ドラッグ＆ドロップすると、ブラウザ上で URDF を表示し、各ジョイントをスライダで動かして確認できます。
 
-![URDF ビューア](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/urdf_viewer_franka.png)
+![URDF ビューア](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/urdf_viewer_franka.png)
 
 ## ステップ 4：エクスポートオプション
 
@@ -126,14 +126,14 @@ URDF では 1 つのリンクに対して、次の 2 種類のメッシュを別
         メニューバーの **Create > Mesh > Sphere** から作成すると、プリムを選択していても選択プリムの子にはならず、ステージのルート（例：`/World/Sphere`）に作成されます。その場合は、Stage パネルで Sphere を `panda_hand` の上にドラッグ＆ドロップして子プリムに移動してください。
 4. ハンド部分に球体が付いた、次のような状態になっていることを確認します：
 
-    ![USD モデル（球体追加）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_usd_sphere_mesh_no_collision_visible.png)
+    ![USD モデル（球体追加）](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_usd_sphere_mesh_no_collision_visible.png)
 
 ### 5-2. コリジョン API なし・可視 → ビジュアルメッシュのみ
 
 1. この状態のステージをステップ 2 と同じ手順でエクスポートします（USD 自体を保存する必要はありません）。
 2. 出力ディレクトリを [URDF Viewer Example](https://gkjohnson.github.io/urdf-loaders/javascript/example/bundle/index.html) にドラッグして表示します。
 
-    ![URDF（球体・コリジョンなし・可視）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_urdf_sphere_mesh_no_collision_visible.png)
+    ![URDF（球体・コリジョンなし・可視）](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_urdf_sphere_mesh_no_collision_visible.png)
 
 3. ビューアの **Show Collision** オプションを有効にすると、すべてのコリジョンメッシュが金色でハイライト表示されます。
 4. **球体は金色にハイライトされない**ことを確認します。URDF 上では球体はビジュアルメッシュであり、コリジョンメッシュではないためです。
@@ -143,7 +143,7 @@ URDF では 1 つのリンクに対して、次の 2 種類のメッシュを別
 1. Franka の USD に戻り、球体にコリジョン API を追加します。Sphere プリムを選択し、Properties パネルの **+Add** ボタンから **Physics > Colliders Preset** を選択します。
 2. ステージを再度 URDF にエクスポートし、出力ディレクトリをビューアにドラッグします（新しい URDF を読み込む前に、ビューアのページを再読み込みする必要がある場合があります）。
 
-    ![URDF（球体・コリジョンあり・可視）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_urdf_sphere_mesh_collision_visible.png)
+    ![URDF（球体・コリジョンあり・可視）](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_urdf_sphere_mesh_collision_visible.png)
 
 3. **Show Collision** を有効にすると、**今度は球体が金色にハイライトされる**ことを確認します。球体は URDF 上でビジュアルメッシュとコリジョンメッシュの両方になっています。
 
@@ -151,11 +151,11 @@ URDF では 1 つのリンクに対して、次の 2 種類のメッシュを別
 
 1. Franka の USD に戻り、Stage パネルで Sphere プリムの横にある「目」のアイコンを無効にして、球体を不可視にします。
 
-    ![USD モデル（球体・不可視）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_usd_sphere_mesh_invisible.png)
+    ![USD モデル（球体・不可視）](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_usd_sphere_mesh_invisible.png)
 
 2. 再度エクスポートしてビューアで確認します。最初は球体が表示されませんが、**Show Collision** を有効にすると球体が金色で表示されます。球体はコリジョンメッシュのみとして出力されており、ビジュアルメッシュにはなっていません。
 
-    ![URDF（球体・コリジョンあり・不可視）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/franka_urdf_sphere_mesh_collision_invisible.png)
+    ![URDF（球体・コリジョンあり・不可視）](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/franka_urdf_sphere_mesh_collision_invisible.png)
 
 !!! warning "5-4 の挙動はバージョンによって再現しないことがある"
     Isaac Sim 5.1.0（USD to URDF Exporter 1.3.4）の Windows 環境で検証したところ、Sphere を不可視（visibility = invisible）にしてエクスポートしても、球体は**ビジュアルメッシュとしても出力されたまま**で、「コリジョンのみ」にはなりませんでした（5-2・5-3 の挙動は記載どおり再現）。この節の内容は公式ドキュメントに基づいていますが、エクスポーターのバージョンによって挙動が異なる可能性があります。エクスポート後は出力された URDF の `<visual>` / `<collision>` を直接確認することをおすすめします。

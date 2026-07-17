@@ -10,7 +10,7 @@ title: Cloner 入門
 
 - **Cloner** クラスを使った環境の複製
 - **GridCloner** クラスによるグリッド状の自動配置
-- 複製したオブジェクトへの**ベクトル化 API**（`XFormPrimView`）でのアクセス
+- 複製したオブジェクトへの**ベクトル化 API**（`XformPrim`）でのアクセス
 - **Physics Replication**（物理レプリケーション）と `copy_from_source` などの応用パラメータ
 
 ## はじめに
@@ -49,7 +49,7 @@ title: Cloner 入門
 
 ```python
 from isaacsim.core.cloner import Cloner    # Cloner インターフェースをインポート
-from isaacsim.core.utils.stage import get_current_stage
+from isaacsim.core.experimental.utils.stage import get_current_stage
 from pxr import UsdGeom
 
 # キューブ 1 個のベース環境を作成
@@ -87,7 +87,7 @@ cloner.clone(source_prim_path="/World/Cube_0", prim_paths=target_paths, position
 
 ```python
 from isaacsim.core.cloner import GridCloner    # GridCloner インターフェースをインポート
-from isaacsim.core.utils.stage import get_current_stage
+from isaacsim.core.experimental.utils.stage import get_current_stage
 from pxr import UsdGeom
 
 # キューブ 1 個のベース環境を作成
@@ -108,21 +108,24 @@ cloner.clone(source_prim_path="/World/Cube_0", prim_paths=target_paths)
 
 ## ステップ 4：複製したオブジェクトにアクセスする
 
-複製したオブジェクトの状態は、**ベクトル化された View API** でまとめて読み書きできます。ループで 1 個ずつ処理する代わりに、全オブジェクト（または一部）のデータをテンソルとして一括で取得・適用できるため、環境数が多くても効率的です。
+複製したオブジェクトの状態は、`isaacsim.core.experimental.prims` の**ベクトル化された API** でまとめて読み書きできます。ループで 1 個ずつ処理する代わりに、全オブジェクト（または一部）のデータをテンソルとして一括で取得・適用できるため、環境数が多くても効率的です。
 
 以下は、シーン内の全キューブのワールド座標を取得し、まとめて 1.5 単位持ち上げる例です：
 
 ```python
-# XForm プリム用の View API をインポート
-from isaacsim.core.prims import XFormPrimView
+# Xform プリム用のベクトル化 API をインポート
+import numpy as np
+from isaacsim.core.experimental.prims import XformPrim
 
-# ワイルドカードで 4 つのキューブ全部にマッチする View を作成
-boxes = XFormPrimView("/World/Cube_*")
+# 正規表現で 4 つのキューブ全部にマッチするラッパーを作成
+boxes = XformPrim("/World/Cube_.*")
 
 # 全キューブのワールド座標を取得
 #   - positions は shape (4, 3)：X, Y, Z の並進
 #   - orientations は shape (4, 4)：W, X, Y, Z のクォータニオン
 positions, orientations = boxes.get_world_poses()
+positions = positions.numpy()
+orientations = orientations.numpy()
 
 # Z 座標を 1.5 増やして持ち上げる
 positions[:, 2] += 1.5
@@ -130,8 +133,8 @@ positions[:, 2] += 1.5
 boxes.set_world_poses(positions, orientations)
 ```
 
-!!! note "View クラスのインポート元"
-    公式ドキュメントの本文には「`isaacsim.core.api` の API でアクセスする」とありますが、サンプルコードが示すとおり、`XFormPrimView` の実際のインポート元は **`isaacsim.core.prims`** です。
+!!! note "旧 API（XFormPrimView）からの変更点"
+    Isaac Sim 5.x のチュートリアルでは `isaacsim.core.prims` の `XFormPrimView` を使い、パスを**ワイルドカード**（`/World/Cube_*`）で指定していました。6.0 の `isaacsim.core.experimental.prims.XformPrim` では、パスは**正規表現**（`/World/Cube_.*`）で指定します。また、`get_world_poses()` の戻り値は Warp 配列なので、NumPy で加工する場合は `.numpy()` で変換してから操作します。
 
 ## ステップ 5：Physics Replication（物理レプリケーション）
 
@@ -146,10 +149,10 @@ boxes.set_world_poses(positions, orientations)
 cloner.clone(
     source_prim_path="/World/Ants/Ant_0",
     prim_paths=target_paths,
-    position_offsets=position_offsets,
+    positions=position_offsets,
     replicate_physics=True,
     base_env_path="/World/Ants",
-    root_path="/World/Ants/Ant_"
+    root_path="/World/Ants/Ant_",
 )
 ```
 
@@ -169,11 +172,11 @@ Cloner にはもう 1 つ重要なオプション、`copy_from_source` があり
 cloner.clone(
     source_prim_path="/World/Ants/Ant_0",
     prim_paths=target_paths,
-    position_offsets=position_offsets,
+    positions=position_offsets,
     replicate_physics=True,
     base_env_path="/World/Ants",
     root_path="/World/Ants/Ant_",
-    copy_from_source=True
+    copy_from_source=True,
 )
 ```
 
@@ -188,7 +191,7 @@ cloner.clone(
 
 1. **Cloner** による環境の複製と位置指定
 2. **GridCloner** によるグリッド自動配置
-3. **XFormPrimView** によるクローンへのベクトル化アクセス
+3. **XformPrim**（`isaacsim.core.experimental.prims`）によるクローンへのベクトル化アクセス
 4. **Physics Replication** による高速化とその制限
 5. **copy_from_source** による継承／独立コピーの使い分け
 

@@ -16,14 +16,17 @@ title: ROS 2 Navigation（Nav2）
 ## はじめに
 
 !!! warning "サポートの制限"
-    Isaac Sim との ROS 2 Navigation は **Linux で完全サポート**されています。Windows では部分的なサポートであり、エラーが発生する可能性があります。`isaac_ros_navigation_goal` パッケージも同様に Linux のみ完全サポートです。
+    Isaac Sim との ROS 2 Navigation は **Linux と、Pixi ベースでインストールした Windows で完全サポート**されています。Windows（WSL）では部分的なサポートであり、エラーが発生する可能性があります。`isaac_ros_navigation_goal` パッケージは Linux のみ完全サポートです。
+
+!!! warning "Windows のマルチ GPU 環境での既知の問題"
+    Windows のマルチ GPU システムでは、このシーンの読み込み・再生時にアプリケーションが致命的にクラッシュすることがあります。これは既知の問題で、将来のリリースで修正される予定です。
 
 ### 前提条件
 
 - Isaac Sim を起動する前に、ターミナルで ROS 2 インストールを source しておくこと
 - **Nav2** がインストールされていること（[Nav2 インストールページ](https://docs.nav2.org/getting_started/index.html#installation)参照）
 - ROS 2 ブリッジエクステンション（`isaacsim.ros2.bridge`）が有効であること
-- `carter_navigation`、`iw_hub_navigation`、`isaac_ros_navigation_goal` の各 ROS 2 パッケージが必要です。これらは [ROS 2 セットアップ](00_setup.md)でビルドした ros2_ws に含まれており、launch ファイル・ナビゲーションパラメータ・ロボットモデルを提供します
+- `carter_navigation`、`iw_hub_navigation`、`isaac_ros_navigation_goal` の各 ROS 2 パッケージが必要です。これらは [ROS 2 セットアップ](00_setup.md)でビルドした ros2_ws に含まれており、launch ファイル・ナビゲーションパラメータ・ロボットモデルを提供します。ワークスペースが正しくビルド・source されていることを確認してください
 
 ### 所要時間
 
@@ -44,13 +47,13 @@ title: ROS 2 Navigation（Nav2）
 | `/point_cloud` | sensor_msgs/PointCloud |
 | `/scan` | sensor_msgs/LaserScan（外部の [pointcloud_to_laserscan](https://index.ros.org/p/pointcloud_to_laserscan/) ノードが配信） |
 
-![Nav2 ブロック図](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_sample_ros2_nav_1.png)
+![Nav2 ブロック図](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_sample_ros2_nav_1.png)
 
 ## ステップ 1：占有マップを生成する
 
 Nav2 には環境の**占有マップ**が必要です。Isaac Sim の **Occupancy Map Generator** エクステンションで倉庫環境のマップを生成します。
 
-1. **Window > Examples > Robotics Examples** を開き、**ROS2 > Navigation > Nova Carter** のサンプルを開いて、[Nova Carter ロボット](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/assets/nova_carter_landing_page.html)入りの倉庫シナリオを読み込みます。
+1. **Window > Examples > Robotics Examples** を開き、**ROS2 > Navigation > Nova Carter** のサンプルを開いて、[Nova Carter ロボット](https://docs.isaacsim.omniverse.nvidia.com/latest/assets/nova_carter_landing_page.html)入りの倉庫シナリオを読み込みます。
 2. ビューポート左上の **Camera** をクリックし、ドロップダウンから **Top** を選択します。
 3. **Tools > Robotics > Occupancy Map** を開きます。
 4. Occupancy Map エクステンションで、**Origin** が X: 0.0, Y: 0.0, Z: 0.0 になっていることを確認し、**Lower Bound** の Z を `0.1`、**Upper Bound** の Z を `0.62` に設定します。
@@ -60,20 +63,19 @@ Nav2 には環境の**占有マップ**が必要です。Isaac Sim の **Occupan
 
 5. Stage で `warehouse_with_forklifts` プリムを選択し、Occupancy Map エクステンションで **BOUND SELECTION** をクリックします。マップの範囲が選択した倉庫プリムを含むように更新されたことを確認します：
 
-    ![占有マップのパラメータ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_sample_ros_nav_2.png)
+    ![占有マップのパラメータ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_sample_ros_nav_2.png)
 
-    ![占有マップの範囲（Top ビュー）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_ros_tut_viewport_ros_nav_occupancy_map.png)
+    ![占有マップの範囲（Top ビュー）](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_ros_tut_viewport_ros_nav_occupancy_map.png)
 
 6. Stage から `Nova_Carter_ROS` プリムを**削除**します（ロボット自身がマップに写り込まないようにするためです）。
 7. **CALCULATE** → **VISUALIZE IMAGE** の順にクリックすると、Visualization ポップアップが表示されます。
 8. **Rotate Image** で **180 度**、**Coordinate Type** で **ROS Occupancy Map Parameters File (YAML)** を選択し、**RE-GENERATE IMAGE** をクリックします（ROS のカメラと Isaac Sim のカメラは座標系が異なるためです）。
-9. 下のフィールドに YAML 形式の占有マップパラメータが表示されるので、全文をコピーします。
-10. `carter_warehouse_navigation.yaml` という名前の YAML ファイルを作成し、`carter_navigation` パッケージの maps ディレクトリ（`<ros2_ws>/src/navigation/carter_navigation/maps/carter_warehouse_navigation.yaml`）に置いて、コピーしたテキストを貼り付けます。
-11. Isaac Sim の Visualization タブに戻り、**Save Image** をクリックします。画像は `carter_warehouse_navigation.png` という名前で、パラメータファイルと同じディレクトリに保存します。
+9. **Save YAML** をクリックし、YAML ファイルを `carter_navigation` パッケージの maps ディレクトリ（`~/<ros2_ws>/src/navigation/carter_navigation/maps/carter_warehouse_navigation.yaml`）に保存します。
+10. Isaac Sim の Visualization タブに戻り、**Save Image** をクリックします。画像は `carter_warehouse_navigation.png` という名前で、パラメータファイルと同じディレクトリに保存します。
 
 保存した画像が次のようになっていることを確認します：
 
-![倉庫の占有マップ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_sample_ros_nav_warehouse_map.png)
+![倉庫の占有マップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_sample_ros_nav_warehouse_map.png)
 
 これで Nav2 で使える占有マップの準備ができました。
 
@@ -252,7 +254,7 @@ launch ファイル（`isaac_ros_navigation_goal/launch` 配下）のパラメ�
 1. **Robotics Examples > ROS2 > Navigation > Nova Carter** で **Load Sample Scene** をクリックして倉庫シナリオを読み込みます。
 2. **Robotics Examples > ROS2 > Navigation > Add Waypoint Follower** を開き、パラメータウィンドウを表示します。
 
-    ![Waypoint Follower パラメータ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_waypoint_follower_parameters.png)
+    ![Waypoint Follower パラメータ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_waypoint_follower_parameters.png)
 
 | パラメータ | 説明 |
 |---|---|

@@ -25,7 +25,7 @@ Replicator を中心とした合成データ生成（SDG: Synthetic Data Generat
     GUI だけで合成データを記録します。カスタムライターや Data Visualization ライター、ランダマイズカメラとの組み合わせも扱います。
 
 !!! example "[チュートリアル 3: Getting Started スクリプト](03_getting_started_scripts.md)"
-    スクリプトベースの SDG の基本設定（capture on play、step、RTSubframes、DLSS）と、BasicWriter・カスタムライター・2 方式のランダム化・条件付きキャプチャの 4 つの実例を学びます。
+    スクリプトベースの SDG の基本設定（capture on play、step、RTSubframes、DLSS、wait_for_render、write-to-fabric）と、BasicWriter・カスタムライター・2 方式のランダム化・条件付きキャプチャ・バッチランダム化の 5 つの実例を学びます。
 
 ### SDG チュートリアル
 

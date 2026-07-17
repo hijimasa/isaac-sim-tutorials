@@ -46,7 +46,7 @@ In this tutorial, you will use the **Robotiq 2F-85 parallel gripper** to learn h
 5. **Configuring joint drives and mimic joints** — Adding drive control and mimic linkage to control the gripper fingers
 6. **Optimizing collision meshes** — Adjusting collision shapes for grasping
 7. **Saving the configuration** — Saving changes to each layer
-8. **Gripper control with OmniGraph** — Opening and closing the gripper by toggling a Boolean variable
+8. **Gripper control with OmniGraph** — Opening and closing the gripper by toggling an input signal
 
 !!! note "What is a closed-loop structure?"
     A closed-loop structure is a mechanism where links and joints are connected in a ring. For example, the two fingers of a parallel gripper are each connected to the body through multiple links, and they form a closed loop when grasping an object at the tip. In contrast, serial robot arms such as the UR10e are connected in a single chain (open loop) from base to end-effector.
@@ -297,7 +297,7 @@ The following elements will be added to the scene. They can be built all at once
 
 **Scene elements**:
 
-- **Cylinder (grasp target)**: scale `[0.05, 0.05, 0.2]`, position X=0.12, mass 0.10 kg
+- **Cylinder (grasp target)**: scale `[0.05, 0.05, 0.2]`, position X=0.12, mass 0.20 kg, collider approximated as **Convex Hull**
 - **Ground plane**: position Z=-0.1
 - **Physics Scene**: GPU Dynamics disabled
 
@@ -315,9 +315,11 @@ stage = omni.usd.get_context().get_stage()
 xform = UsdGeom.Xform.Define(stage, "/World/Xform")
 xform_1 = UsdGeom.Xform.Define(stage, "/World/Xform_1")
 
-# Apply Rigid Body API
+# Apply Rigid Body API and mass
 for node in [xform, xform_1]:
     UsdPhysics.RigidBodyAPI.Apply(node.GetPrim())
+    mass_api = UsdPhysics.MassAPI.Apply(node.GetPrim())
+    mass_api.CreateMassAttr(0.1)
 
 # Create the fixed joint
 fixed_joint = UsdPhysics.FixedJoint.Define(
@@ -360,11 +362,13 @@ cylinder_prim = stage.GetPrimAtPath(path)
 cylinder_prim.GetAttribute("xformOp:scale").Set((0.05, 0.05, 0.2))
 cylinder_prim.GetAttribute("xformOp:translate").Set((0.12, 0, 0))
 
-# Add physics attributes to the cylinder
+# Add physics attributes to the cylinder (collider approximated as Convex Hull)
 cylinder_body = UsdPhysics.RigidBodyAPI.Apply(cylinder_prim)
 UsdPhysics.CollisionAPI.Apply(cylinder_prim)
+mesh_collision = UsdPhysics.MeshCollisionAPI.Apply(cylinder_prim)
+mesh_collision.CreateApproximationAttr().Set("convexHull")
 massAPI = UsdPhysics.MassAPI.Apply(cylinder_body.GetPrim())
-massAPI.CreateMassAttr(0.10)
+massAPI.CreateMassAttr(0.20)
 
 # Create the Physics Scene
 scene = UsdPhysics.Scene.Define(stage, Sdf.Path("/physicsScene"))
@@ -385,11 +389,13 @@ physxSceneAPI.CreateEnableGPUDynamicsAttr(False)
 
 After running the script, verify that the test scaffold (prismatic joints) operates correctly:
 
-1. Open **Tools > Physics > Physics Inspector** from the menu
-2. In the Stage panel, select `Xform`, `Xform_1`, and the gripper prims
-3. Start and stop the simulation, then click the **Refresh** button in the Physics Inspector
-4. Drag the **Joint_X** Drive Target slider and confirm the gripper moves forward and backward
-5. Similarly, verify vertical movement with **Joint_Z**
+1. Start the simulation
+2. Select **Joint_X** in the Stage panel and, in the **Joint Drive** section of the Properties panel, set **Target Position** to `1` to confirm the gripper moves forward
+3. Similarly, set the **Target Position** of **Joint_Z** to `1` to confirm the gripper rises
+4. Reset the Target Positions to `0` after verifying
+
+!!! tip "Using the Physics Inspector"
+    With **Tools > Physics > Physics Inspector**, you can also try out joint behavior by manipulating the Drive Target sliders without running the simulation. If nothing shows up, start and stop the simulation, then click the refresh button.
 
 !!! warning "Fingers rotate freely at this stage"
     At this point, no drives are configured on the gripper fingers, so the fingers rotate freely like a ragdoll. This is expected; you will resolve it in the next step by configuring joint drives and a mimic joint.
@@ -403,7 +409,7 @@ Configure joint drives and a mimic joint to control the gripper fingers. Because
 
 ### 5-1. Adding a Drive to the Main Drive Joint
 
-Add an Angular Drive to `finger_joint` and configure it for force control.
+Add an Angular Drive to `finger_joint` and configure it for a weak, force-limited position control (force-driven grasp).
 
 1. Select `finger_joint` in the Stage panel
 2. In the Properties panel, click **Add > Physics > Angular Drive**
@@ -411,13 +417,18 @@ Add an Angular Drive to `finger_joint` and configure it for force control.
 
     | Parameter | Value | Description |
     |---|---|---|
-    | Stiffness | `0.0` | Disables position control |
-    | Damping | `5,000` | Damping for velocity control |
-    | Max Force | `180.0` | Maximum grip force (Newtons, based on datasheet) |
-    | Max Actuator Velocity | `130` deg/s | Maximum joint velocity (based on datasheet) |
+    | Stiffness | `10` | Very weak position control |
+    | Damping | `0.1` | Damping |
+    | Max Force | `16.5` N | Maximum grip force (based on datasheet) |
+    | Maximum Joint Velocity | `130` deg/s | Maximum joint velocity (based on datasheet, set under Joint > Advanced) |
 
-!!! note "Meaning of Stiffness = 0 (force control)"
-    Setting `Stiffness = 0` disables position control, leaving only `Damping` for velocity control. This allows the gripper to grasp an object with a constant torque. With position control (Stiffness > 0), excessive force may be generated as the joint tries to reach its target position even after contact.
+4. Select all the joints on the gripper and, in the Properties panel, add **Add > Physics > Joint State** (Joint State Linear for prismatic joints)
+
+!!! note "Weak position control that approximates force control"
+    By keeping the Stiffness extremely small and limiting the output torque with **Max Force**, the drive moves toward the target position while clamping objects with a bounded force on contact ("force-driven grasp"). If the Stiffness is too high, excessive force is generated as the joint tries to reach its target position even after contact.
+
+!!! note "Parameter changes in Isaac Sim 6.0"
+    Up to 5.1, the official tutorial used **velocity-based force control** with Stiffness `0` / Damping `5000` / Max Force `180 N`. In 6.0, this changed to the **position-based control** above with Stiffness `10` / Damping `0.1` / Max Force `16.5 N`. The official 6.0 procedure also flips the joint limits of `finger_joint` and `right_outer_knuckle_joint` to lower `-75` / upper `0`. On this page, the **joint orientations themselves were fixed** in Step 2-3, so the limits remain `0`-`75` and a **positive target value corresponds to closing**.
 
 !!! note "Do not add a drive to `right_outer_knuckle_joint`"
     The opposite finger is configured as a mimic joint in the next section (5-2). Mimic joints automatically inherit the drive characteristics of their reference joint, so an individual drive is not needed (and would in fact cause the drives to interfere).
@@ -466,48 +477,43 @@ This setting allows the fingertips to remain parallel while the gripper closes, 
     If you see a warning like the one above, you have set Stiffness on the joint itself.
 
 !!! warning "Without this setting, the finger links fold inward"
-    Without the Drive Stiffness on the outer finger joints, the outer finger links (`outer_finger`) will fold inward and become inverted immediately after the simulation starts, preventing the gripper from closing properly. The Drive's Stiffness functions as a "spring that returns the fingers to a parallel posture."
+    Without the Drive Stiffness on the finger joints, the finger links will fold inward and become inverted immediately after the simulation starts, preventing the gripper from closing properly. The Drive's Stiffness functions as a "spring that returns the fingers to a parallel posture."
+
+!!! note "Change from 5.1"
+    Up to 5.1, the official tutorial set Stiffness `0.05` on `left/right_outer_finger_joint`. In 6.0, the procedure changed to setting Stiffness `0.0002` / Damping `0.00001` / Max Force `0.5 N` on `left/right_inner_finger_joint`. If the joint layout of your asset version differs, adjust the target joints and values so the fingertips stay parallel.
 
 ### 5-4. Verifying the Gripper Alone
 
 !!! info "Switch the working file to `Robotiq_2F_85_config.usd` from here on"
     Step 5-4 onward is verification work. In `_config.usd`, the gripper is held in place by the test scaffold (prismatic joints), so the body does not fall when the simulation runs and you can more easily verify open/close motion. In the Layer tab, switch the edit target to `_config.usd`, then **return to the Stage panel and select prims such as `finger_joint` to operate on them** (changes from this section onward may go into `_config.usd`, but final drive value adjustments should be recorded back in `_edit.usd`).
 
-Verify that the gripper alone operates correctly with the configuration so far. Because `Stiffness = 0` (force control) is set, `Target Position` is ignored and you **specify the drive direction with `Target Velocity`**. The Physics Inspector's Drive Target slider only manipulates `Target Position` and cannot change `Target Velocity`, so here you directly edit the `finger_joint` Angular Drive to verify operation:
+Verify that the gripper alone operates correctly with the configuration so far. Because it is set to weak position control (Stiffness `10`), you can **command open/close with `Target Position`**:
 
 1. Start the simulation (Play button)
 2. Select `finger_joint` in the Stage panel
-3. Open the **Angular Drive** section in the Properties panel
-4. Directly change the **Target Velocity** value to verify open/close motion:
-    - A positive value (e.g., `+1.0`) closes the fingers
-    - A negative value (e.g., `-1.0`) opens the fingers
+3. Open the **Joint Drive** section in the Properties panel
+4. Change the **Target Position** value to verify open/close motion:
+    - `40` (degrees) closes the fingers
+    - Returning it to `0` opens the fingers
     - Confirm that the left and right fingers move in sync due to the mimic joint
-5. After verification, stop the simulation and reset Target Velocity to `0.0`
+5. After verification, stop the simulation and reset Target Position to `0`
 
-!!! tip "If you only want to verify with position control in Physics Inspector"
-    The Physics Inspector's Drive Target slider only manipulates `Target Position`, so the fingers will not move with the force-control configuration here (`Stiffness = 0`). To verify with the slider, you would need to temporarily put a small value (e.g., `100`) in `Stiffness`. However, since the final configuration in this tutorial is velocity control, **the recommended procedure is to directly change the Angular Drive's `Target Velocity`**.
+!!! note "Sign difference from the official tutorial"
+    The official 6.0 procedure flips the joint limits to `-75` to `0`, so it closes at `-40` degrees. On this page the joint orientations themselves were fixed in Step 2-3, so it closes at `+40` degrees.
 
-### 5-5. Optimizing Physics Steps
+### 5-5. Grasp Test
 
-When grasping heavy objects (maximum payload of 2.5 kg), increase the timestep to ensure contact stability:
+Test grasping the cylinder by lifting the gripper and moving it forward while closing:
 
-- Set the **Steps Per Second** of the Physics Scene to at least **80**
+1. Start the simulation
+2. Set the **Target Position** of **Joint_X** to `0.1` (Joint Drive section of the Properties panel)
+3. Set the **Target Position** of **Joint_Z** to `0.1`
+4. Set the **Target Position** of `finger_joint` to `40` degrees (closing direction)
+5. Confirm the gripper grasps the cylinder while moving forward and rising
 
-!!! tip "Trade-off between step count and performance"
-    Increasing the step count improves simulation accuracy but also increases computational cost. Increase the step count only when the gripper's grasp is unstable; the default value (60) is fine when the grasp is stable.
-
-### 5-6. Tuning the Grip Force
-
-This is a test for tuning the actual grasping behavior and grip force. **Max Force = 180 N** is the maximum value from the datasheet, but during testing it is common to start with a smaller value (e.g., `5.0` N) and observe the grasping behavior while tuning.
-
-1. Change the cylinder's scale X to `0.08` (a slightly thicker cylinder)
-2. Move the cylinder's position X to `0.13`
-3. Temporarily lower the **Max Force** of the `finger_joint` Angular Drive to `5.0`
-4. Run the simulation and verify that the cylinder is stably grasped in parallel
-5. Once the grasp is stable, adjust Max Force based on the expected weight of grasped objects (return to around `180.0` for the maximum payload of 2.5 kg)
-
-!!! note "Why temporarily lower Max Force"
-    With the maximum value (180 N), excessive grip force is applied to thin cylinders or light objects, leading to behaviors such as the cylinder being knocked away or the physics calculations becoming unstable. A good practice during testing is to start with a small value and find an appropriate value while observing the grasping behavior.
+!!! tip "If the grasp is unstable"
+    - When grasping heavy objects (maximum payload of 2.5 kg), increasing the Physics Scene's **Steps Per Second** to **80** or more stabilizes the contacts (at increased computational cost).
+    - If the grip force is so strong that the object gets knocked away, temporarily lower the `finger_joint` **Max Force** and tune while observing the behavior.
 
 ## Step 6: Collision Meshes and Self-Collision
 
@@ -579,149 +585,57 @@ After verifying, click **Save Layer** on both layers to save them.
 !!! info "Working file: `Robotiq_2F_85_config.usd`"
     OmniGraph-based gripper control is a test-scene-specific element. Work with `_config.usd` open.
 
-Manipulating the gripper with the Physics Inspector slider is cumbersome. Use OmniGraph to build a system that controls gripper open/close by simply toggling a Boolean variable.
+Manipulating joint target values in the Properties panel is cumbersome. Use OmniGraph to control gripper open/close with a single input signal.
 
-### 8-1. Creating an Action Graph
+Isaac Sim 6.0 provides a **prebuilt control graph file** that writes the finger joint target position directly from a graph. Insert it as a layer and use it.
 
-1. Open **Window > Graph Editors > Action Graph** from the menu
-2. Click the **New Action Graph** icon
-3. Rename the created Action Graph to `Gripper_Controller`
+### 8-1. Inserting the Controller Graph Layer
 
-### 8-2. Constructing the Graph
+A control graph is provided in the official assets at `Samples/Rigging/Gripper/Robotiq 2F-85/Robotiq_2F_85_complete/Robotiq_2F_85_controller.usd`. Insert it into `Robotiq_2F_85_config.usd` as a layer:
 
-The gripper control graph operates with the following logic (described in detail in the next section):
+1. Open the **Layer** tab
+2. Click **Insert Sub-Layer**
+3. Find `Robotiq_2F_85_controller.usd` in the `Samples/Rigging/Gripper/Robotiq 2F-85/Robotiq_2F_85_complete` folder and click **Open**
 
-1. Prepare a **Boolean variable** (open/close instruction) and a **Float variable** (absolute speed)
-2. Switch the sign of the Float variable based on the Boolean variable (e.g., negative for closing, positive for opening)
-3. Write the resulting value to `finger_joint`'s `targetVelocity`
-4. Through the mimic joint, the right finger moves in sync with `finger_joint`
+### 8-2. How the Graph Works
 
-#### 8-2-1. Adding Variables
+In this graph, the upper and lower limits of the finger joints are used to calculate the gripper's range of motion, mapping the input signal (0-1) to the joint target position in degrees. The target position is written to the prim using the **Write Prim Attribute** (Write Target) node.
 
-This tutorial uses **Variables**, which were not covered before. Variables in an Action Graph are shared between nodes within the graph, and the graph's behavior can be controlled by changing values from outside.
+Main components:
 
-1. Click the **[+ Add]** button in the **Variables** panel (left side) of the Action Graph editor
-2. A new variable is added; click the **variable name** and rename it to `close`
-3. Confirm that the **type** (default `Bool`) is `Bool` (change via the dropdown if necessary)
-
-    ![Adding the close variable](./images/55_add_close_variable.png)
-
-4. Add another variable in the same way, naming it `speed` and changing its type to `Float`
-
-    ![Adding the speed variable](./images/56_add_speed_variable.png)
-
-!!! tip "How to change a variable's type"
-    A variable's type can be changed via the dropdown in the **Type** column of the list. In addition to basic types such as `Bool`, `Int`, `Float`, and `String`, you can also select multi-element types such as `Vector3f`.
-
-#### 8-2-2. Placing and Connecting Nodes
-
-Build the Action Graph using the following completed form as a reference:
-
-![Completed Gripper Controller](./images/57_gripper_controller_action_graph.png)
-
-Required nodes and their roles:
-
-1. **On Variable Change** — Trigger for graph execution (fires on variable change)
-2. **Read Variable Node** (for `close`) — Reads the Boolean variable `close`
-3. **Read Variable Node** (for `speed`) — Reads the Float variable `speed`
-4. **Boolean Not** — Inverts the value of the Boolean variable `close`
-5. **To Float** — Converts `close` value to a Float (True=1.0, False=0.0)
-6. **To Float** — Converts the inverted value of `close` to a Float
-7. **Constant Float** — Outputs the constant `-1.0` (used to invert the sign for the opening direction)
-8. **Multiply** — Multiplies the float-converted `close` and `speed` (**closing direction** velocity. `+speed` when close=true, `0` when false)
-9. **Multiply** — Multiplies the float-converted inverted `close` value by `Constant Float` (`-1.0` when close=false, `0` when true)
-10. **Multiply** — Multiplies the result of step 9 by `speed` (**opening direction** velocity. `-speed` when close=false, `0` when true)
-11. **Add** — Adds the opening-direction velocity and the closing-direction velocity (since one of them is always 0, the active value is selected as the result)
-12. **Write Prim Attribute** — Writes the value to `finger_joint`'s `targetVelocity`
-
-#### 8-2-3. Configuring Each Node
-
-##### On Variable Change
-
-- Select `close` for **Variable Name**
-- This causes the node to fire when the `close` variable changes
-
-##### Constant Float
-
-- Enter `-1.0` in **Value**
-- This value is used to invert the sign for the opening direction
-
-##### Write Prim Attribute
-
-This node writes to the joint's target velocity. Configure the following parameters:
-
-| Parameter | Value |
+| Element | Role |
 |---|---|
-| **Prim** | `/World/Robotiq_2F_85/Robotiq_2F_85/finger_joint` |
-| **Attribute Name** | `drive:angular:physics:targetVelocity` |
-| **Attribute Type** | `float` |
-
-!!! tip "How to specify the Prim"
-    You can use the icon to the right of the Prim field to select a prim from the Stage panel, or enter the path directly. The prim path may differ depending on the gripper placement in `_config.usd`. Select `finger_joint` in the Stage panel to confirm the exact path.
-
-#### 8-2-4. Connection Flow
-
-The graph computes two paths — the **opening direction velocity** and the **closing direction velocity** — and sums them to produce the final target velocity. When `close` is False, only the opening direction has a meaningful value, and when `close` is True, only the closing direction does (the other is 0).
-
-**Opening direction path** (outputs `-speed` when `close = false`):
-
-1. `close` variable → **Boolean Not** Value In
-2. **Boolean Not** Value Out → **To Float** (top) Value
-3. **To Float** (top) Float → **Multiply** (top) A
-4. **Constant Float** Value → **Multiply** (top) B
-5. **Multiply** (top) Product → **Multiply** (middle) A
-6. `speed` variable → **Multiply** (middle) B
-7. **Multiply** (middle) Product → **Add** A
-
-**Closing direction path** (outputs `+speed` when `close = true`):
-
-1. `close` variable → **To Float** (bottom) Value
-2. **To Float** (bottom) Float → **Multiply** (bottom) A
-3. `speed` variable → **Multiply** (bottom) B
-4. **Multiply** (bottom) Product → **Add** B
-
-**Execution flow and write**:
-
-1. **Add** Sum → **Write Prim Attribute** Values
-2. **On Variable Change** Changed → **Write Prim Attribute** Exec In
-
-#### 8-2-5. How It Works
-
-The graph's calculation result is as follows:
-
-| `close` value | Opening direction output | Closing direction output | Add result (targetVelocity) |
-|---|---|---|---|
-| `false` (open) | `1.0 × (-1.0) × speed = -speed` | `0.0 × speed = 0` | `-speed` |
-| `true` (close) | `0.0 × (-1.0) × speed = 0` | `1.0 × speed = +speed` | `+speed` |
-
-In other words, a positive velocity (closing direction) is written to `finger_joint`'s `targetVelocity` when `close = true`, and a negative velocity (opening direction) is written when `close = false`. Because the joint orientations were aligned in Step 2-3, a positive velocity corresponds to the gripper closing motion.
+| `input_signal` variable | Input signal (float): `1` opens the gripper, `0` closes it |
+| **Read Upper Limit / Read Lower Limit** | Nodes that read the upper and lower limits of the finger joint |
+| **Isaac Read Simulation Time** | Node that reads the simulation time (with reset on stop enabled) |
+| **On Playback Tick** | Node that ticks the graph on every frame |
+| **Write Prim Attribute** | Node that writes the target position to the finger joint prim |
 
 !!! tip "More on OmniGraph"
     For basic OmniGraph usage, refer to what you learned in [Tutorial 5: Rig a Mobile Robot](05_rig_mobile_robot.md). For gripper control, instead of differential control (Differential Controller), you directly set the joint drive's target value.
 
-!!! note "Why targetVelocity instead of targetPosition"
-    In Step 5-1, you configured `finger_joint`'s drive as **force control** (Stiffness=0, only Damping). With this setting, the position target (`targetPosition`) is ignored, and the drive force is determined by the velocity target (`targetVelocity`) and Damping. Therefore, the gripper open/close is controlled by writing to `targetVelocity` here.
+!!! note "Site note: about the hand-built graph from the 5.1 version"
+    Up to 5.1, this page walked through hand-building an Action Graph that wrote `targetVelocity` with a Boolean variable and a speed sign flip. In 6.0, the drive changed to position-based control (see Step 5-1), so the procedure changed to using the officially provided graph that **writes the target position**. If you want to build your own graph, construct one that writes the target position (degrees) to the `drive:angular:physics:targetPosition` attribute of `finger_joint`.
 
 ### 8-3. Verifying Operation
 
-1. Set the value of the `speed` variable (e.g., `100.0`)
-    - In the **Variables** panel of the Action Graph editor, select `speed` and enter the value in **Default Value**
+1. In the **Variables** panel of the Action Graph editor, set the value of `input_signal` to `0.5`
 2. Start the simulation (Play button on the timeline)
-3. Toggle the checkbox of `close` (Default Value) in the **Variables** panel to verify gripper open/close:
-    - **True** (checked): the gripper moves in the closing direction
-    - **False** (unchecked): the gripper moves in the opening direction
+3. Confirm that the gripper opens and closes:
+    - `input_signal = 0`: the gripper closes
+    - `input_signal = 1`: the gripper opens
 
 ![Operation verification](images/58_play_closed_loop_rigging.webp)
 
-!!! tip "Tuning the speed value"
-    If the `speed` value is too large, the fingers may move too quickly and grasping may become unstable. Start with a value around `50` to `150`, and adjust while observing the grasping behavior.
+!!! note "Completed asset"
+    The fully configured asset is located in the `Samples/Rigging/Gripper/Robotiq 2F-85_complete` folder. You can compare it against your own asset.
 
 ## Troubleshooting
 
 | Symptom | Cause | Solution |
 |---|---|---|
 | Self-collision is not working | Articulation Root configuration missing | Verify that **Self Collision Enabled** is checked at the articulation root |
-| Outer finger links fold inward and invert at simulation start | Outer finger joints' Drive Stiffness not set | Add an **Angular Drive** to `left/right_outer_finger_joint` and set Stiffness to `0.05` (note this is the Drive's Stiffness, not the joint's Stiffness attribute) |
+| Finger links fold inward and invert at simulation start | Parallelism spring (finger joint Drive Stiffness) not set | Add an **Angular Drive** to `left/right_inner_finger_joint` and set Stiffness `0.0002` / Damping `0.00001` / Max Force `0.5 N` (note this is the Drive's Stiffness, not the joint's Stiffness attribute) |
 | Grasping heavy objects is unstable | Insufficient timesteps | Increase Physics Scene's **Steps Per Second** to 80 or more |
 | Gaps in the collision mesh | Inappropriate approximation type | Change the fingertip mesh approximation to **Convex Decomposition** |
 | Cannot change Collider Approximation | Parent Xform's Instanceable is enabled | Uncheck **Instanceable** on the parent Xform |
@@ -738,11 +652,11 @@ This tutorial covered the following topics:
 2. **Choosing between Payload and Reference** — Selecting the appropriate composition method for scene construction
 3. **Joint visualization and orientation correction** — Verifying with gizmos and fixing with Rotation offsets
 4. **Breaking the closed loop** — Converting to a kinematic tree using `Exclude From Articulation`
-5. **Configuring joint drives** — Achieving force control by balancing Stiffness, Damping, and Max Force
+5. **Configuring joint drives** — Achieving a force-limited grasp (force-driven grasp) by balancing Stiffness, Damping, and Max Force
 6. **Mimic joint** — Synchronously controlling multiple joints with a single input
 7. **Optimizing collision meshes** — Accurate contact detection with Convex Decomposition
 8. **Self-collision** — Enabling collision among links within an articulation
-9. **Gripper control with OmniGraph** — Open/close control with an Action Graph leveraging Variables
+9. **Gripper control with OmniGraph** — Open/close control using the officially provided controller graph layer
 
 ## Next Steps
 

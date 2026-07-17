@@ -46,7 +46,7 @@ Samples/Rigging/Gripper/Robotiq 2F-85
 5. **ジョイントドライブとミミックジョイントの設定** — グリッパーの指を制御するドライブとミミック連動の追加
 6. **コリジョンメッシュの最適化** — 把持のための衝突形状の調整
 7. **設定の保存** — レイヤーごとに変更を保存
-8. **OmniGraph によるグリッパー制御** — Boolean 変数の切り替えでグリッパーを開閉
+8. **OmniGraph によるグリッパー制御** — 入力信号の切り替えでグリッパーを開閉
 
 !!! note "閉ループ構造とは"
     閉ループ構造とは、リンクとジョイントが環状に接続された機構のことです。例えば、パラレルグリッパーの 2 本の指は、それぞれ複数のリンクを介してボディに接続されており、先端で物体を挟むことで閉じたループを形成します。一方、UR10e のようなシリアルロボットアームは、ベースからエンドエフェクタまで一本の鎖状（開ループ）に接続されています。
@@ -297,7 +297,7 @@ CAD からインポートされたジョイントでは、回転軸の向きが 
 
 **シーン要素**:
 
-- **シリンダー（把持対象）**: スケール `[0.05, 0.05, 0.2]`、位置 X=0.12、質量 0.10 kg
+- **シリンダー（把持対象）**: スケール `[0.05, 0.05, 0.2]`、位置 X=0.12、質量 0.20 kg、コライダーは **Convex Hull** 近似
 - **グランドプレーン**: 位置 Z=-0.1
 - **Physics Scene**: GPU Dynamics 無効
 
@@ -315,9 +315,11 @@ stage = omni.usd.get_context().get_stage()
 xform = UsdGeom.Xform.Define(stage, "/World/Xform")
 xform_1 = UsdGeom.Xform.Define(stage, "/World/Xform_1")
 
-# Rigid Body API の適用
+# Rigid Body API と質量の適用
 for node in [xform, xform_1]:
     UsdPhysics.RigidBodyAPI.Apply(node.GetPrim())
+    mass_api = UsdPhysics.MassAPI.Apply(node.GetPrim())
+    mass_api.CreateMassAttr(0.1)
 
 # 固定ジョイントの作成
 fixed_joint = UsdPhysics.FixedJoint.Define(
@@ -360,11 +362,13 @@ cylinder_prim = stage.GetPrimAtPath(path)
 cylinder_prim.GetAttribute("xformOp:scale").Set((0.05, 0.05, 0.2))
 cylinder_prim.GetAttribute("xformOp:translate").Set((0.12, 0, 0))
 
-# シリンダーに物理属性を追加
+# シリンダーに物理属性を追加（コライダーは Convex Hull 近似）
 cylinder_body = UsdPhysics.RigidBodyAPI.Apply(cylinder_prim)
 UsdPhysics.CollisionAPI.Apply(cylinder_prim)
+mesh_collision = UsdPhysics.MeshCollisionAPI.Apply(cylinder_prim)
+mesh_collision.CreateApproximationAttr().Set("convexHull")
 massAPI = UsdPhysics.MassAPI.Apply(cylinder_body.GetPrim())
-massAPI.CreateMassAttr(0.10)
+massAPI.CreateMassAttr(0.20)
 
 # Physics Scene の作成
 scene = UsdPhysics.Scene.Define(stage, Sdf.Path("/physicsScene"))
@@ -385,11 +389,13 @@ physxSceneAPI.CreateEnableGPUDynamicsAttr(False)
 
 スクリプト実行後、テスト足場（プリズマティックジョイント）が正しく動作することを確認します：
 
-1. メニューから **Tools > Physics > Physics Inspector** を開きます
-2. Stage パネルで `Xform`、`Xform_1`、およびグリッパーのプリムを選択します
-3. シミュレーションを開始・停止し、Physics Inspector の**リフレッシュ**ボタンをクリックします
-4. **Joint_X** の Drive Target スライダーをドラッグして、グリッパーが前後に移動することを確認します
-5. 同様に **Joint_Z** で上下移動を確認します
+1. シミュレーションを開始します
+2. Stage パネルで **Joint_X** を選択し、Properties パネルの **Joint Drive** セクションで **Target Position** を `1` に設定して、グリッパーが前方に移動することを確認します
+3. 同様に **Joint_Z** の **Target Position** を `1` に設定して、グリッパーが上昇することを確認します
+4. 確認後は Target Position を `0` に戻します
+
+!!! tip "Physics Inspector を使う場合"
+    **Tools > Physics > Physics Inspector** を使うと、シミュレーションを実行せずにジョイントの Drive Target をスライダーで操作して挙動を試すこともできます。表示されない場合はシミュレーションを開始・停止してからリフレッシュボタンをクリックしてください。
 
 !!! warning "この段階では指が自由に回転します"
     この時点ではグリッパーの指にドライブが設定されていないため、指がラグドールのように自由に回転します。これは正常な動作で、次のステップでジョイントドライブとミミックジョイントを設定して解決します。
@@ -403,7 +409,7 @@ physxSceneAPI.CreateEnableGPUDynamicsAttr(False)
 
 ### 5-1. メイン駆動ジョイントへのドライブ追加
 
-`finger_joint` に Angular Drive を追加し、力制御で動作するように設定します。
+`finger_joint` に Angular Drive を追加し、力制限付きの弱い位置制御（force-driven grasp）で動作するように設定します。
 
 1. Stage パネルで `finger_joint` を選択
 2. Properties パネルで **Add > Physics > Angular Drive** をクリック
@@ -411,13 +417,18 @@ physxSceneAPI.CreateEnableGPUDynamicsAttr(False)
 
     | パラメータ | 値 | 説明 |
     |---|---|---|
-    | Stiffness | `0.0` | 位置制御を無効化 |
-    | Damping | `5,000` | 速度制御のダンピング |
-    | Max Force | `180.0` | 最大把持力（ニュートン、データシートに基づく値） |
-    | Max Actuator Velocity | `130` deg/s | 最大関節速度（データシートに基づく値） |
+    | Stiffness | `10` | ごく弱い位置制御 |
+    | Damping | `0.1` | ダンピング |
+    | Max Force | `16.5` N | 最大把持力（データシートに基づく値） |
+    | Maximum Joint Velocity | `130` deg/s | 最大関節速度（データシートに基づく値、Joint > Advanced タブで設定） |
 
-!!! note "Stiffness = 0 の意味（力制御）"
-    `Stiffness = 0` に設定すると位置制御が無効になり、`Damping` のみで速度制御を行います。これにより、グリッパーが物体を把持する際に、一定のトルクで物体を挟み込む動作が実現できます。位置制御（Stiffness > 0）にすると、物体に接触しても目標位置に到達しようとして過大な力が発生する可能性があります。
+4. グリッパーのすべてのジョイントを選択し、Properties パネルで **Add > Physics > Joint State**（プリズマティックジョイントの場合は Joint State Linear）を追加します
+
+!!! note "力制御に近い弱い位置制御"
+    Stiffness を極端に小さく、**Max Force** で出力トルクを制限することで、目標位置に向かって動きつつ、物体に接触したら一定の力で挟み込む「force-driven grasp」を実現します。Stiffness を大きくしすぎると、物体に接触しても目標位置に到達しようとして過大な力が発生します。
+
+!!! note "Isaac Sim 6.0 でのパラメータ変更"
+    5.1 までの公式チュートリアルは Stiffness `0` / Damping `5000` / Max Force `180 N` の**速度ベースの力制御**でしたが、6.0 では上記の Stiffness `10` / Damping `0.1` / Max Force `16.5 N` の**位置ベースの制御**に変更されました。また、6.0 の公式手順では `finger_joint` と `right_outer_knuckle_joint` のジョイント制限を lower `-75`／upper `0` に反転させています。本ページではステップ 2-3 でジョイントの**向き自体を修正**しているため、制限は `0`〜`75` のままで、**正の目標値が「閉じる」方向**に対応します。
 
 !!! note "`right_outer_knuckle_joint` にはドライブを追加しません"
     反対側の指は次節（5-2）でミミックジョイントとして設定します。ミミックジョイントは参照ジョイントのドライブ特性を自動的に継承するため、個別のドライブは不要です（むしろ追加するとドライブ同士が干渉します）。
@@ -440,21 +451,25 @@ physxSceneAPI.CreateEnableGPUDynamicsAttr(False)
 
 ### 5-3. 指の平行性を維持するスプリング
 
-Robotiq 2F-85 グリッパーには、指先を平行に保つためのスプリング機構があります。これを再現するために、外側の指ジョイントに弱い剛性を持つ Angular Drive を設定します：
+Robotiq 2F-85 グリッパーには、指先を平行に保つためのスプリング機構があります。これを再現するために、内側の指ジョイントに弱い剛性を持つ Angular Drive を設定します：
 
-1. Stage パネルで `left_outer_finger_joint` を選択
+1. Stage パネルで `left_inner_finger_joint` を選択
 2. Properties パネルで **Add > Physics > Angular Drive** をクリック
 3. 以下のパラメータを設定：
 
     | パラメータ | 値 | 説明 |
     |---|---|---|
-    | Stiffness | `0.05` | 弱い剛性で平行を維持 |
-    | Damping | `0.0` | ダンピングなし |
+    | Stiffness | `0.0002` | 弱い剛性で平行を維持 |
+    | Damping | `0.00001` | ごく弱いダンピング |
+    | Max Force | `0.5` N | スプリングの最大出力 |
     | Target Position | `0.0` | 平行な状態を目標位置とする |
 
-4. `right_outer_finger_joint` にも同じ設定を適用します
+4. `right_inner_finger_joint` にも同じ設定を適用します
 
 この設定により、グリッパーが閉じる際に指先が平行を保ちながら動き、物体に接触するまで抵抗なく閉じることができます。
+
+!!! note "5.1 からの変更"
+    5.1 までの公式チュートリアルでは `left/right_outer_finger_joint` に Stiffness `0.05` を設定していましたが、6.0 では `left/right_inner_finger_joint` に Stiffness `0.0002` / Damping `0.00001` / Max Force `0.5 N` を設定する手順に変更されました。使用しているアセットのバージョンによってジョイント構成が異なる場合は、指先の平行が保たれるように該当ジョイントと値を調整してください。
 
 !!! warning "Drive の Stiffness を使うこと"
     ジョイント自体の **Stiffness 属性ではなく**、必ず **Angular Drive の Stiffness** に設定してください。アーティキュレーション内のジョイントでは、ジョイント自体の Stiffness 属性は無視されるため、Drive 経由でのみ剛性を効かせることができます。
@@ -473,41 +488,33 @@ Robotiq 2F-85 グリッパーには、指先を平行に保つためのスプリ
 !!! info "ここからは作業ファイルを `Robotiq_2F_85_config.usd` に切り替えます"
     5-4 以降は動作検証のステップです。`_config.usd` ではテスト足場（プリズマティックジョイント）でグリッパーが固定されているため、シミュレーションを実行しても本体が落下せず、開閉動作の確認がしやすくなります。Layer タブで `_config.usd` を編集ターゲットに切り替えた後、**Stage パネルに戻って `finger_joint` などのプリムを選択して操作してください**（次節以降の変更は `_config.usd` に入っても構いませんが、ドライブ値の最終調整は `_edit.usd` に戻してから記録します）。
 
-ここまでの設定でグリッパー単体が正しく動作するか確認します。`Stiffness = 0`（力制御）に設定したため、`Target Position` は無視され、**`Target Velocity` で駆動方向を指定**します。Physics Inspector の Drive Target スライダーは `Target Position` のみを扱い `Target Velocity` を変更できないため、ここでは `finger_joint` の Angular Drive を直接書き換えて動作を確認します：
+ここまでの設定でグリッパー単体が正しく動作するか確認します。弱い位置制御（Stiffness `10`）に設定したため、**`Target Position` で開閉を指示**できます：
 
 1. シミュレーションを開始（再生ボタン）
 2. Stage パネルで `finger_joint` を選択
-3. Properties パネルの **Angular Drive** セクションを開く
-4. **Target Velocity** の値を直接変更して開閉動作を確認：
-    - 正の値（例：`+1.0`）にすると指が閉じる
-    - 負の値（例：`-1.0`）にすると指が開く
+3. Properties パネルの **Joint Drive** セクションを開く
+4. **Target Position** の値を変更して開閉動作を確認：
+    - `40`（度）にすると指が閉じる
+    - `0` に戻すと指が開く
     - ミミック設定により、左右の指が同期して動くことを確認
-5. 確認後はシミュレーションを停止し、Target Velocity を `0.0` に戻す
+5. 確認後はシミュレーションを停止し、Target Position を `0` に戻す
 
-!!! tip "Physics Inspector で位置制御の確認だけ行いたい場合"
-    Physics Inspector の Drive Target スライダーは `Target Position` のみを操作するため、力制御（`Stiffness = 0`）の本構成では指は動きません。スライダーで動作確認したい場合は一時的に `Stiffness` に小さな値（例：`100`）を入れる必要がありますが、本チュートリアルの最終構成は速度制御なので、**Angular Drive の `Target Velocity` を直接変更する手順を推奨します**。
+!!! note "公式チュートリアルとの符号の違い"
+    公式 6.0 手順ではジョイント制限を `-75`〜`0` に反転させているため「`-40` 度で閉じる」となっていますが、本ページではステップ 2-3 でジョイントの向き自体を修正しているため「`+40` 度で閉じる」となります。
 
-### 5-5. 物理ステップの最適化
+### 5-5. 把持テスト
 
-重い物体（最大ペイロード 2.5 kg）を把持する場合、接触の安定性を確保するためにタイムステップを増やす必要があります：
+グリッパーを持ち上げて前進させながら閉じ、シリンダーを把持するテストを行います：
 
-- Physics Scene の **Steps Per Second** を最低 **80** 以上に設定
+1. シミュレーションを開始します
+2. **Joint_X** の **Target Position** を `0.1` に設定（Properties パネルの Joint Drive セクション）
+3. **Joint_Z** の **Target Position** を `0.1` に設定
+4. `finger_joint` の **Target Position** を `40` 度（閉じる方向）に設定
+5. グリッパーが前進・上昇しながらシリンダーを把持することを確認します
 
-!!! tip "ステップ数とパフォーマンスのトレードオフ"
-    ステップ数を増やすとシミュレーションの精度が上がりますが、計算コストも増加します。グリッパーの把持が不安定な場合にのみステップ数を増やし、安定している場合はデフォルト値（60）のままで問題ありません。
-
-### 5-6. 把持力の調整テスト
-
-実際の把持動作と把持力を調整するためのテストです。**Max Force = 180 N** はデータシート上の最大値ですが、テストでは小さな値（例：`5.0` N）から始めて、把持の挙動を観察しながら調整します。
-
-1. シリンダーのスケール X を `0.08` に変更（やや太いシリンダー）
-2. シリンダーの位置 X を `0.13` に移動
-3. `finger_joint` の Angular Drive の **Max Force** を `5.0` に一時的に下げる
-4. シミュレーションを実行し、シリンダーが安定して平行把持されることを確認
-5. 把持が安定したら、想定する把持物の重量に応じて Max Force を調整（最大ペイロード 2.5 kg 把持なら `180.0` 程度に戻す）
-
-!!! note "なぜ Max Force を一時的に下げるのか"
-    最大値（180 N）のままだと、薄いシリンダーや軽い物体に対して過大な把持力がかかり、シリンダーが弾き飛ばされる・物理計算が不安定になるなどの挙動が起きやすくなります。テスト時は小さな値から始めて、把持の挙動を確認しながら適切な値を見つけるのがコツです。
+!!! tip "把持が不安定な場合"
+    - 重い物体（最大ペイロード 2.5 kg）を把持する場合は、Physics Scene の **Steps Per Second** を **80** 以上に増やすと接触が安定します（計算コストは増加します）。
+    - 把持力が強すぎて物体が弾かれる場合は、`finger_joint` の **Max Force** を一時的に小さな値に下げて挙動を確認しながら調整してください。
 
 ## ステップ 6：コリジョンメッシュとセルフコリジョン
 
@@ -579,149 +586,57 @@ Robotiq 2F-85 グリッパーには、指先を平行に保つためのスプリ
 !!! info "作業ファイル：`Robotiq_2F_85_config.usd`"
     OmniGraph によるグリッパー制御はテストシーン固有の要素です。`_config.usd` を開いた状態で作業してください。
 
-Physics Inspector のスライダーでグリッパーを操作するのは手間がかかります。OmniGraph を使って、Boolean 変数の切り替えだけでグリッパーの開閉を制御する仕組みを構築します。
+Properties パネルでジョイントの目標値を操作するのは手間がかかります。OmniGraph を使って、1 つの入力信号でグリッパーの開閉を制御する仕組みを利用します。
 
-### 8-1. Action Graph の作成
+Isaac Sim 6.0 には、指ジョイントの目標位置をグラフから直接書き込む**制御グラフ済みのファイル**が用意されています。これをレイヤーとして挿入して使用します。
 
-1. メニューから **Window > Graph Editors > Action Graph** を開く
-2. **New Action Graph** アイコンをクリック
-3. 作成された Action Graph を `Gripper_Controller` にリネーム
+### 8-1. 制御グラフレイヤーの挿入
 
-### 8-2. グラフの構成
+公式アセットの `Samples/Rigging/Gripper/Robotiq 2F-85/Robotiq_2F_85_complete/Robotiq_2F_85_controller.usd` に制御グラフが用意されています。これを `Robotiq_2F_85_config.usd` にレイヤーとして挿入します：
 
-グリッパー制御グラフは以下のロジックで動作します（次の節で詳細を説明しています）：
+1. **Layer** タブを開きます
+2. **Insert Sub-Layer** をクリックします
+3. `Samples/Rigging/Gripper/Robotiq 2F-85/Robotiq_2F_85_complete` フォルダの `Robotiq_2F_85_controller.usd` を選択して **Open** をクリックします
 
-1. **Boolean 変数**（開/閉の指示）と **Float 変数**（速度の絶対値）を用意する
-2. Boolean 変数に応じて、Float 変数の符号を切り替える（閉じる場合は負、開く場合は正など）
-3. 切り替えた値を `finger_joint` の `targetVelocity` に書き込む
-4. ミミックジョイントにより、`finger_joint` の動きに連動して右側の指も同期して動く
+### 8-2. グラフの仕組み
 
-#### 8-2-1. 変数の追加
+このグラフでは、指ジョイントの上限・下限からグリッパーの可動範囲を計算し、入力信号（0〜1）をジョイント目標位置（度）にマッピングします。目標位置は **Write Prim Attribute**（Write Target）ノードでプリムに書き込まれます。
 
-このチュートリアルでは、これまで扱っていなかった**変数（Variables）**を使います。Action Graph の変数は、グラフ内のノード間で共有でき、外部から値を変更することでグラフの挙動を制御できます。
+主な構成要素：
 
-1. Action Graph エディターの **Variables** パネル（左側）にある **[+ Add]** ボタンをクリックします
-2. 新しい変数が追加されるので、**変数名** をクリックして `close` にリネームします
-3. **型**（デフォルトは `Bool`）が `Bool` であることを確認します（必要に応じてドロップダウンから変更）
-
-    ![close 変数の追加](./images/55_add_close_variable.png)
-
-4. 同様にもう 1 つ変数を追加し、名前を `speed` 、型を `Float` に変更します
-
-    ![speed 変数の追加](./images/56_add_speed_variable.png)
-
-!!! tip "変数の型を変更する方法"
-    変数の型はリストの **Type** 列のドロップダウンから変更できます。`Bool`、`Int`、`Float`、`String` などの基本型のほか、`Vector3f` など複数要素の型も選択可能です。
-
-#### 8-2-2. ノードの配置と接続
-
-以下の完成形を見本に、Action Graph を構築します：
-
-![Gripper Controller の完成形](./images/57_gripper_controller_action_graph.png)
-
-必要なノードと配置：
-
-1. **On Variable Change** — グラフ実行のトリガー（変数変更時に発火）
-2. **Read Variable Node**（`close` 用）— Boolean 変数 `close` を取得
-3. **Read Variable Node**（`speed` 用）— Float 変数 `speed` を取得
-4. **Boolean Not** — Boolean 変数 `close` の値を反転
-5. **To Float** — `close` の値を Float 値に変換（True=1.0、False=0.0）
-6. **To Float** — `close` の反転した値を Float 値に変換
-7. **Constant Float** — 定数 `-1.0` を出力（開く方向の符号反転に使用）
-8. **Multiply** — float 変換した `close` と `speed` を乗算（**閉じる方向**の速度。close=true のとき `+speed`、false のとき `0`）
-9. **Multiply** — float 変換した `close` の反転値と `Constant Float` を乗算（close=false のとき `-1.0`、true のとき `0`）
-10. **Multiply** — 上記 9 番の結果と `speed` を乗算（**開く方向**の速度。close=false のとき `-speed`、true のとき `0`）
-11. **Add** — 開く方向の速度と閉じる方向の速度を加算（どちらか一方が 0 になるため、結果として有効な値が選択される）
-12. **Write Prim Attribute** — `finger_joint` の `targetVelocity` に値を書き込む
-
-#### 8-2-3. 各ノードの設定
-
-##### On Variable Change
-
-- **Variable Name** に `close`を選択
-- これによって`close`変数変更時に発火します
-
-##### Constant Float
-
-- **Value** に `-1.0` を入力
-- この値は閉じる方向に動かすときの符号反転に使用します
-
-##### Write Prim Attribute
-
-ジョイントの目標速度に書き込むノードです。以下のパラメータを設定：
-
-| パラメータ | 値 |
+| 要素 | 役割 |
 |---|---|
-| **Prim** | `/World/Robotiq_2F_85/Robotiq_2F_85/finger_joint` |
-| **Attribute Name** | `drive:angular:physics:targetVelocity` |
-| **Attribute Type** | `float` |
-
-!!! tip "Prim の指定方法"
-    Prim フィールドの右側にあるアイコンから Stage パネルでプリムを選択するか、直接パスを入力できます。プリムパスは `_config.usd` 内のグリッパー配置によって異なる場合があります。Stage パネルで `finger_joint` を選択して正確なパスを確認してください。
-
-#### 8-2-4. 接続のフロー
-
-このグラフは「**開く方向の速度**」「**閉じる方向の速度**」の 2 系統を計算し、それらを足し合わせて最終的な目標速度を作ります。`close` が False のとき開く方向のみが有効値になり、True のとき閉じる方向のみが有効値になります（もう一方は 0 になる）。
-
-**開く方向の経路**（`close = false` のときに `-speed` を出力）：
-
-1. `close` 変数 → **Boolean Not** の Value In
-2. **Boolean Not** の Value Out → **To Float**（上側）の Value
-3. **To Float**（上側）の Float → **Multiply**（上段）の A
-4. **Constant Float** の Value → **Multiply**（上段）の B
-5. **Multiply**（上段）の Product → **Multiply**（中段）の A
-6. `speed` 変数 → **Multiply**（中段）の B
-7. **Multiply**（中段）の Product → **Add** の A
-
-**閉じる方向の経路**（`close = true` のときに `+speed` を出力）：
-
-1. `close` 変数 → **To Float**（下側）の Value
-2. **To Float**（下側）の Float → **Multiply**（下段）の A
-3. `speed` 変数 → **Multiply**（下段）の B
-4. **Multiply**（下段）の Product → **Add** の B
-
-**実行フローと書き込み**：
-
-1. **Add** の Sum → **Write Prim Attribute** の Values
-2. **On Variable Change** の Changed → **Write Prim Attribute** の Exec In
-
-#### 8-2-5. 動作の仕組み
-
-このグラフの計算結果は次のようになります：
-
-| `close` の値 | 開く方向の出力 | 閉じる方向の出力 | Add の結果（targetVelocity） |
-|---|---|---|---|
-| `false`（開く） | `1.0 × (-1.0) × speed = -speed` | `0.0 × speed = 0` | `-speed` |
-| `true`（閉じる） | `0.0 × (-1.0) × speed = 0` | `1.0 × speed = +speed` | `+speed` |
-
-つまり、`close = true` のときに正の速度（閉じる方向）、`close = false` のときに負の速度（開く方向）が `finger_joint` の `targetVelocity` に書き込まれます。ステップ 2-3 でジョイントの向きを揃えたため、正の速度がグリッパーを閉じる動きに対応します。
+| `input_signal` 変数 | 入力信号（float）。`1` でグリッパーを開き、`0` で閉じる |
+| **Read Upper Limit / Read Lower Limit** | 指ジョイントの上限・下限を読み取るノード |
+| **Isaac Read Simulation Time** | シミュレーション時間を読み取るノード（reset on stop 有効） |
+| **On Playback Tick** | 毎フレームグラフを実行するノード |
+| **Write Prim Attribute** | 指ジョイントのプリムに目標位置を書き込むノード |
 
 !!! tip "OmniGraph の詳細"
     OmniGraph の基本的な使い方は、[チュートリアル 5: モバイルロボットのリギング](05_rig_mobile_robot.md) で学んだ内容を参考にしてください。グリッパー制御では、差分制御（Differential Controller）ではなくジョイントドライブのターゲット値を直接設定する形になります。
 
-!!! note "なぜ targetPosition ではなく targetVelocity なのか"
-    ステップ 5-1 で `finger_joint` のドライブを **力制御**（Stiffness=0、Damping のみ）に設定しました。この設定では位置目標（`targetPosition`）は無視され、速度目標（`targetVelocity`）と Damping によって駆動力が決まります。そのため、ここでは `targetVelocity` を書き換えることでグリッパーを開閉制御します。
+!!! note "本サイト補足：5.1 版の自作グラフについて"
+    5.1 までの本ページでは、Boolean 変数と速度符号の切り替えで `targetVelocity` を書き込む Action Graph を自作する手順を紹介していました。6.0 ではドライブが位置ベースの制御に変わったため（ステップ 5-1 参照）、公式提供の**目標位置を書き込むグラフ**を使用する手順に変更されています。自作する場合は、`finger_joint` の `drive:angular:physics:targetPosition` 属性に目標位置（度）を書き込むグラフを構築してください。
 
 ### 8-3. 動作確認
 
-1. `speed` 変数の値を設定します（例：`100.0`）
-    - Action Graph エディターの **Variables** パネルで `speed` を選択し、**Default Value** に値を入力
-2. シミュレーションを開始（タイムラインの Play ボタン）
-3. **Variables** パネルで `close` のチェックボックス（Default Value）を切り替えてグリッパーの開閉を確認します
-    - **True**（チェックあり）: グリッパーが閉じる方向に移動
-    - **False**（チェックなし）: グリッパーが開く方向に移動
+1. Action Graph エディターの **Variables** パネルで `input_signal` の値を `0.5` に設定します
+2. シミュレーションを開始（タイムラインの Play ボタン）します
+3. グリッパーが開閉することを確認します
+    - `input_signal = 0`: グリッパーが閉じる
+    - `input_signal = 1`: グリッパーが開く
 
 ![動作確認](images/58_play_closed_loop_rigging.webp)
 
-!!! tip "speed の値の調整"
-    `speed` の値が大きすぎると指が勢いよく動きすぎて把持が安定しない場合があります。`50` 〜 `150` 程度から始めて、把持の挙動を見ながら調整してください。
+!!! note "完成済みアセット"
+    完全に設定が完了したアセットは、`Samples/Rigging/Gripper/Robotiq 2F-85_complete` フォルダにあります。自分のアセットと比較して確認できます。
 
 ## トラブルシューティング
 
 | 症状 | 原因 | 解決方法 |
 |---|---|---|
 | セルフコリジョンが機能しない | Articulation Root の設定漏れ | アーティキュレーションルートで **Self Collision Enabled** がチェックされていることを確認 |
-| シミュレーション開始時に外側指のリンクが折れて裏返る | 外側指ジョイントの Drive Stiffness 未設定 | `left/right_outer_finger_joint` に **Angular Drive** を追加し Stiffness を `0.05` に設定（ジョイント自体の Stiffness 属性ではない点に注意） |
+| シミュレーション開始時に指のリンクが折れて裏返る | 平行維持スプリング（指ジョイントの Drive Stiffness）未設定 | `left/right_inner_finger_joint` に **Angular Drive** を追加し Stiffness `0.0002` / Damping `0.00001` / Max Force `0.5 N` を設定（ジョイント自体の Stiffness 属性ではない点に注意） |
 | 重い物体の把持が不安定 | タイムステップ不足 | Physics Scene の **Steps Per Second** を 80 以上に増加 |
 | コリジョンメッシュに隙間がある | 近似タイプが不適切 | 指先メッシュの近似を **Convex Decomposition** に変更 |
 | Collider Approximation を変更できない | 親 Xform の Instanceable が有効 | 親 Xform で **Instanceable** のチェックを外す |
@@ -738,11 +653,11 @@ Physics Inspector のスライダーでグリッパーを操作するのは手�
 2. **Payload と Reference の使い分け** — シーン構築での合成方法の選択
 3. **ジョイントの可視化と向きの修正** — ギズモを使った確認と Rotation オフセットによる修正
 4. **閉ループの分断** — `Exclude From Articulation` を使ってキネマティックツリーに変換
-5. **ジョイントドライブの設定** — Stiffness、Damping、Max Force のバランス調整による力制御の実現
+5. **ジョイントドライブの設定** — Stiffness、Damping、Max Force のバランス調整による力制限付き把持（force-driven grasp）の実現
 6. **ミミックジョイント** — 1 つの入力で複数のジョイントを同期制御
 7. **コリジョンメッシュの最適化** — Convex Decomposition による正確な接触判定
 8. **セルフコリジョン** — アーティキュレーション内のリンク同士の衝突を有効化
-9. **OmniGraph によるグリッパー制御** — Variables を活用した Action Graph での開閉制御
+9. **OmniGraph によるグリッパー制御** — 公式提供の制御グラフレイヤーを使った開閉制御
 
 ## 次のステップ
 

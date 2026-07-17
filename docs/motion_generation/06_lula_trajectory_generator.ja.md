@@ -4,6 +4,9 @@ title: Lula Trajectory Generator
 
 # Lula Trajectory Generator
 
+!!! warning "Isaac Sim 6.0 で非推奨（Deprecated）"
+    公式ドキュメントでは、このページは Isaac Sim 6.0 で **Deprecated** とマークされました。新規開発には後継の **Robot Motion (Experimental)** API の利用が推奨されています。Lula Trajectory Generator は 6.0 でも引き続き動作します。
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます：

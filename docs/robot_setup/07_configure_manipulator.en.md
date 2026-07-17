@@ -48,33 +48,35 @@ We will use the assets created in Tutorial 6. If you have not completed it yet, 
 
 | Asset | Path | Purpose |
 |---|---|---|
-| **UR10e + Gripper (connected)** | `Samples > Rigging > Manipulator > import_manipulator > ur10e > ur > ur_gripper.usd` | Completed asset from Tutorial 6 |
-| **Fully configured (reference)** | `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur > ur_gripper.usd` | Completed asset for this tutorial (reference) |
+| **UR10e + Gripper (connected)** | `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur_gripper > ur.usda` | Completed asset from Tutorial 6 (starting point for this tutorial) |
+| **Fully configured (reference)** | `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur_set_physx > ur.usda` | Completed asset for this tutorial (reference) |
+
+!!! tip "Using the prebuilt asset"
+    When using the prebuilt asset, it is officially recommended to download it to your local machine for easier access before opening it.
 
 ## Step 1: Adjust the Articulation
 
 In manipulation tasks, numerous joints and mimic joints work in coordination, so the default solver settings may lack sufficient accuracy. In this step, we will adjust solver iteration counts and sleep conditions to improve simulation accuracy and stability.
 
-### 1-1. Open the UR10e Physics Layer
+### 1-1. Insert the PhysX Layer as a Sublayer
 
-If you imported from URDF in Tutorial 6, a **Physics Layer** file with a `_physics` suffix (e.g., `ur10e_physics.usd`) was generated in the UR10e asset folder. Open this file in Isaac Sim.
+Following the [Asset Structure Guideline](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html), Isaac Sim 6.0 assets are split into an **interface file** (`ur.usda`) and **payload layers** (such as `payloads/Physics/physx.usda`). PhysX-specific settings are saved to the `physx.usda` layer.
 
-!!! warning "Why do you need to open the Physics Layer directly?"
-    USD is a file format with a layered structure. When importing from URDF, the robot asset is split into a **main layer** (visuals and hierarchy) and a **Physics Layer** (physics properties and joint drives).
+1. Open the interface file `ur.usda` and select the **Layer** tab in the upper-right corner.
+2. Click the **Insert Sublayer** icon at the bottom of the Layer panel (the orange arrow with stacked layers icon).
+3. In the file dialog, navigate to `<asset location>/Manipulator/configure_manipulator/ur10e/ur_gripper/payloads/Physics/`, select `physx.usda`, and click **Open** to insert it as a sublayer.
+4. Left-click the `physx.usda` layer, then right-click and select **Set Authoring Layer**. All subsequent changes will now be saved to the `physx.usda` layer.
 
-    When you modify parameters through Isaac Sim's GUI (Property panel), the changes are written to the **currently open layer**. If you open the top-level USD file (such as `ur_gripper.usd`) and modify physics parameters, the changes will be written to the top-level layer and will not be reflected in the Physics Layer.
+!!! warning "Why switch the Authoring Layer?"
+    USD is a file format with a layered structure. When you modify parameters through Isaac Sim's GUI (Property panel), the changes are written to the **current Authoring Layer**. If you make changes without switching, the PhysX settings will be written to the root layer instead of the physics configuration layer.
 
-    To save physics settings in the correct location, you must **open the target Physics Layer file directly** before making changes.
+### 1-2. Create and Configure the Articulation
 
-### 1-2. Enable and Configure the Articulation
+1. Select the `ur/Geometry/World` prim in the **Stage** panel.
 
-1. Select the `ur10e/root_joint` prim in the **Stage** panel.
+2. In the **Property** panel, locate the **Physics > Articulation** section. If there is no **Articulation(PhysX)**, create one via **+ Add > Physics > Articulation(PhysX)**.
 
-2. In the **Property** panel, locate the **Physics > Articulation Root** section.
-
-3. Verify that the **Articulation Enabled** checkbox is checked (it is on by default).
-
-4. Set the following parameters:
+3. Set the following parameters:
 
     | Parameter | Default | Value | Description |
     |---|---|---|---|
@@ -85,7 +87,24 @@ If you imported from URDF in Tutorial 6, a **Physics Layer** file with a `_physi
 
     ![Articulation properties](images/32_setting_articulation_property.png)
 
-5. Save the changes with **Ctrl + S**.
+4. Next to the `physx.usda` (Authoring Layer) label in the Layer panel, click the **blue files icon** to save the changes to the `physx.usda` layer.
+
+5. Verify that the Articulation(PhysX) prim is created in the `physx.usda` layer and the properties are set correctly:
+
+    ```usda
+    over "Geometry"
+    {
+        over "world" (
+            prepend apiSchemas = ["PhysxArticulationAPI"]
+        )
+        {
+            float physxArticulation:sleepThreshold = 0.00005
+            int physxArticulation:solverPositionIterationCount = 64
+            int physxArticulation:solverVelocityIterationCount = 4
+            float physxArticulation:stabilizationThreshold = 0.00001
+        }
+    }
+    ```
 
 !!! note "Parameter Details"
     - **Solver Position/Velocity Iterations Count**: Increasing iteration counts improves simulation accuracy but also increases computational cost. Robots with many degrees of freedom like the UR10e + gripper, or robots with mimic joints, require higher iteration counts.
@@ -98,7 +117,7 @@ Without friction on the gripper fingertips, objects will slip and fall even when
 
 ### 2-1. Open the Robotiq 2F-140 Physics Layer
 
-Close the UR10e Physics Layer opened in Step 1, and open the Robotiq 2F-140 gripper's Physics Layer. Open the file with the `_physics` suffix (e.g., `robotiq_2f_140_physics.usd`) in the gripper's asset folder.
+Close the UR10e stage opened in Step 1, and open the Robotiq 2F-140 gripper's Physics Layer. Open the file with the `_physics` suffix (e.g., `robotiq_2f_140_physics.usd`) in the gripper's asset folder.
 
 If using the Isaac Sim bundled asset, open `Samples > Rigging > Manipulator > import_manipulator > robotiq_2f_140 > configuration > robotiq_2f_140_physics.usd`.
 
@@ -108,10 +127,10 @@ If using the Isaac Sim bundled asset, open `Samples > Rigging > Manipulator > im
 
 2. Select **Create > Physics > Physics Material > Rigid Body Material**.
 
-3. Move the created `PhysicsMaterial` prim to the **Looks** folder:
-    - Drag and drop `PhysicsMaterial` into the `robotiq_arg2f_140_model/Looks` folder.
+3. Rename the material to **finger** (right-click > Rename).
 
-4. Rename the material to **finger** (right-click > Rename).
+    !!! note "Procedure change in Isaac Sim 6.0"
+        The step "move the PhysicsMaterial to the `Looks` folder" from the official 5.1 procedure was removed in 6.0. Leaving the material where it was created is fine.
 
 ### 2-3. Configure Friction Coefficients
 
@@ -135,7 +154,7 @@ Apply the created friction material to the left and right fingertip colliders of
 
 2. Locate the **Physics > Physics materials on selected models** section in the **Property** panel.
 
-3. Select the material created earlier: `/World/robotiq_arg2f_140_model/Looks/finger`.
+3. Select the `finger` material created earlier.
 
 4. Similarly, apply the same material to `colliders/right_inner_finger/mesh_1/box`.
 
@@ -172,9 +191,9 @@ Use the Physics Inspector tool to verify that the settings from the previous ste
 
 ### 4-1. Open the Asset
 
-Open the top-level UR10e asset created in Tutorial 6 (e.g., `ur_gripper.usd`). This file references the Physics Layers modified in Steps 1–3, so the changes are automatically reflected.
+Open the top-level UR10e asset created in Tutorial 6 (e.g., `ur.usda`). This file references the physics layers modified in Steps 1–3, so the changes are automatically reflected.
 
-If using the Isaac Sim bundled asset, open `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur > ur_gripper.usd`.
+If using the Isaac Sim bundled asset, open `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur_set_physx > ur.usda`.
 
 ### 4-2. Launch Physics Inspector
 
@@ -202,6 +221,9 @@ If using the Isaac Sim bundled asset, open `Samples > Rigging > Manipulator > co
 ## Step 5: Tune Gains with Gain Tuner
 
 Finally, we will adjust the gains (control parameters) for each joint. Gains are important parameters that determine how quickly and accurately joints reach their target positions.
+
+!!! note "Position in the official tutorials"
+    In the Isaac Sim 6.0 official documentation, setting gains with the Gain Tuner moved to [Tutorial 6](06_setup_manipulator.md) (right after import). This page keeps the procedure as a review. A more systematic tuning methodology is covered in [Tutorial 11](11_joint_tuning.md).
 
 !!! note "What Are Gains?"
     Gains are parameters for **PD control** (Proportional-Derivative control) of joints.
@@ -272,7 +294,7 @@ This tutorial covered the following topics:
 5. **Joint gain tuning with Gain Tuner**: Optimized PD gains using Natural Frequency and Damping Ratio
 
 !!! tip "Reference Asset"
-    The fully configured asset can be found in the Content browser at `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur > ur_gripper.usd`.
+    The fully configured asset can be found in the Content browser at `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur_set_physx > ur.usda`.
 
 ## Next Steps
 

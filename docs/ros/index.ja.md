@@ -14,14 +14,14 @@ Isaac Sim には **ROS 2 ブリッジ**が用意されており、OmniGraph ノ�
 
 ### 前提条件
 
-シリーズ全体を通して、ROS 2 のインストールと Isaac Sim との接続設定が完了していることが前提です。**特に Windows では ROS 2 を WSL2 で動かすのが公式サポート方式**であり、追加のネットワーク設定が必要です。まず[セットアップページ](00_setup.md)を完了してください。
+シリーズ全体を通して、ROS 2 のインストールと Isaac Sim との接続設定が完了していることが前提です。**Windows では Pixi によるネイティブ ROS 2（Jazzy）が正式サポート**されました（従来の WSL2 方式は非推奨扱いです）。まず[セットアップページ](00_setup.md)を完了してください。
 
 ## チュートリアル
 
 ### セットアップ
 
 !!! example "[ROS 2 セットアップ（Linux / Windows）](00_setup.md)"
-    ROS 2 のインストールから Isaac Sim との接続確認までを、Linux と Windows（WSL2）それぞれの手順で解説します。シリーズを始める前に必ず完了してください。
+    ROS 2 のインストールから Isaac Sim との接続確認までを、Linux と Windows（Pixi / WSL2）それぞれの手順で解説します。シリーズを始める前に必ず完了してください。
 
 ### インポートと操縦の基本
 
@@ -48,7 +48,7 @@ Isaac Sim には **ROS 2 ブリッジ**が用意されており、OmniGraph ノ�
     Replicator の Augmentation でカメラ画像にノイズを加えて配信します。
 
 !!! example "[チュートリアル 7: カメラデータのパブリッシュ](07_camera_publishing.md)"
-    Python スクリプトからカメラの各種パブリッシャ（CameraInfo・RGB・深度・ポイントクラウド・TF）を指定周波数でセットアップします。
+    Python スクリプトからカメラの各種パブリッシャ（CameraInfo・RGB・深度・ポイントクラウド・TF）をセットアップします（配信レートはカメラの tick_rate で決まります）。
 
 !!! example "[チュートリアル 8: RTX Lidar センサー](08_rtx_lidar.md)"
     レイトレーシングベースの RTX Lidar を追加し、LaserScan / PointCloud2 を配信して、複数センサーを RViz2 でまとめて可視化します。
@@ -57,7 +57,7 @@ Isaac Sim には **ROS 2 ブリッジ**が用意されており、OmniGraph ノ�
     TF パブリッシャの使い分け、オドメトリの配信、world → odom → base_link の TF 構成、TF Viewer での可視化を学びます。
 
 !!! example "[チュートリアル 10: ROS 2 パブリッシュレートの設定](10_publish_rate.md)"
-    Simulation Gate と frameSkipCount でセンサーごとの配信レートを設定し、シミュレーションフレームレートを制御します。
+    Simulation Gate（非 RTX センサー）と omni:sensor:tickRate（RTX センサー）でセンサーごとの配信レートを設定し、シミュレーションフレームレートを制御します。
 
 !!! example "[チュートリアル 11: ROS 2 Quality of Service（QoS）](11_qos.md)"
     QoS プロファイルの設定方法と、transientLocal を使ったスタティックパブリッシャの作成を学びます。
@@ -110,7 +110,7 @@ Isaac Sim には **ROS 2 ブリッジ**が用意されており、OmniGraph ノ�
 ### カスタマイズ
 
 !!! example "[チュートリアル 25: ROS 2 Python カスタムメッセージ](25_custom_message.md)"
-    Python 3.11 でビルドしたカスタムメッセージパッケージを rclpy から使います（Linux のみ）。
+    Python 3.12 でビルドしたカスタムメッセージパッケージを rclpy から使います（Linux / Windows は Pixi 方式のみ）。
 
 !!! example "[チュートリアル 26: ROS 2 Python カスタム OmniGraph ノード](26_custom_python_node.md)"
     rclpy で購読と計算を行うカスタム OmniGraph Python ノードをエクステンションとして作成します。

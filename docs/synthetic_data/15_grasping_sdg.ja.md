@@ -43,11 +43,11 @@ Grasping SDG は、**グリッパーとオブジェクトのペアに対する�
 
 このチュートリアルでは、設定済みのグリッパーと把持対象 3 オブジェクト（リジッドボディ＋コライダー付き、初期は重力無効）を含むサンプルステージを使います：**Isaac Sim > Samples > Replicator > Stage > sdg_grasping_xarm.usd**
 
-![Grasping のステージ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_tut_gui_grasping_stage.jpg)
+![Grasping のステージ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_tut_gui_grasping_stage.jpg)
 
 ## UI の構成
 
-![Grasping UI](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_tut_gui_grasping_ui_window.jpg)
+![Grasping UI](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_tut_gui_grasping_ui_window.jpg)
 
 ### Gripper セクション
 
@@ -80,7 +80,7 @@ Grasping SDG は、**グリッパーとオブジェクトのペアに対する�
 - **Grasp Poses** — 生成した候補姿勢の管理（生成数の指定・クリア・ビューポートでの可視化とサイクル確認）
 - **Trimesh** — サンプラーが内部で使う三角形メッシュのデバッグ可視化
 
-![生成された把持姿勢](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_tut_viewport_grasping_poses.jpg)
+![生成された把持姿勢](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_tut_viewport_grasping_poses.jpg)
 
 !!! tip
     グリッパーの開き幅やスタンドオフ距離の値を決めるには、Measure Tool が便利です。

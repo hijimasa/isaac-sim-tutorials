@@ -18,7 +18,7 @@ title: カメラへのノイズ付加
 - [チュートリアル 5: ROS 2 カメラ](05_camera.md)を完了していること
 - ROS 2 ブリッジが有効であること
 - [omni.replicator](https://docs.omniverse.nvidia.com/extensions/latest/ext_replicator.html) の概念（アノテータ、ライター）に触れたことがあること
-- スタンドアロンワークフローで ROS 2 メッセージングを使うため、[セットアップページ](00_setup.md)の「内部ライブラリをターミナルから明示的に指定する」環境変数を設定しておくこと
+- スタンドアロンワークフローで ROS 2 メッセージングを使うため、[セットアップページ](00_setup.md)の「（オプション）内部 ROS 2 ライブラリを使う」の手順（スタンドアロンスクリプト用の環境変数設定）を完了しておくこと。ネイティブ ROS 2 を source して実行する場合はそのままで構いません
 
 ### 所要時間
 
@@ -45,7 +45,7 @@ title: カメラへのノイズ付加
 6. RViz 画面のどこかに Image ウィンドウが追加され、Display ウィンドウに **Image** のメニュー項目が現れます。Image ウィンドウを使いやすい場所にドッキングします。
 7. Display メニューの Image を展開し、**Image Topic** を `/rgb_augmented` に変更します。Isaac Sim の映像に少しノイズが乗ったバージョンが RViz の Image ウィンドウに表示されることを確認します。
 
-![ノイズ付きカメラ画像](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_ros_tut_gui_ros2_camera_noise.gif)
+![ノイズ付きカメラ画像](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_ros_tut_gui_ros2_camera_noise.gif)
 
 ## コード解説
 
@@ -71,6 +71,8 @@ set_camera_prim_path(render_product_path, CAMERA_STAGE_PATH)
 サンプルでは warp（GPU）版と numpy（CPU）版の基本的なノイズ関数が示されています（簡潔さのため、色値の範囲外チェックは省略されています）：
 
 ```python
+import warp as wp
+
 # GPU ノイズカーネル（説明用）。入力は RGBA、出力は RGB
 @wp.kernel
 def image_gaussian_noise_warp(
@@ -90,6 +92,8 @@ def image_gaussian_noise_warp(
 ```
 
 ```python
+import numpy as np
+
 # CPU ノイズカーネル
 def image_gaussian_noise_np(data_in: np.ndarray, seed: int, sigma: float = 25.0):
     np.random.seed(seed)
@@ -101,6 +105,8 @@ def image_gaussian_noise_np(data_in: np.ndarray, seed: int, sigma: float = 25.0)
 どちらの関数も `rep.Augmentation.from_function()` で Augmentation として登録できます。標準の `rgb` アノテータの出力にノイズ処理を合成した、新しいアノテータ `rgb_gaussian_noise` を登録します：
 
 ```python
+import omni.replicator.core as rep
+
 # rgba にノイズを加えて rgb で出力する拡張アノテータを登録する
 # CPU 版を使う場合は image_gaussian_noise_warp を image_gaussian_noise_np に、
 # device を "cpu" に変更する
@@ -127,7 +133,7 @@ rep.annotators.register(
 ```python
 # 拡張画像を使う新しいライターを作成する
 rep.writers.register_node_writer(
-    name=f"CustomROS2PublishImage",
+    name="CustomROS2PublishImage",
     node_type_id="isaacsim.ros2.bridge.ROS2PublishImage",
     annotators=[
         "rgb_gaussian_noise",
@@ -150,7 +156,7 @@ rep.writers.register_node_writer(
 
 ```python
 # ライターを作成してレンダープロダクトにアタッチする
-writer = rep.writers.get(f"CustomROS2PublishImage")
+writer = rep.writers.get("CustomROS2PublishImage")
 writer.initialize(topicName="rgb_augmented", frameId="sim_camera")
 writer.attach([render_product_path])
 ```

@@ -10,7 +10,7 @@ title: シミュレーション内ランダム化 — AMR ナビゲーション
 
 - USD / Isaac Sim API による**シーンランダム化**（アセット姿勢、背景環境の切り替え）
 - **特定のシミュレーションイベント**（ロボットが対象に接近したとき）での合成データ収集
-- 実行時性能を上げるための**レンダープロダクトの動的な作成・破棄**
+- 実行時性能を上げるための**レンダープロダクトの動的な有効化・無効化**
 - 同一シミュレーションインスタンス内での **Replicator キャプチャグラフの作成・破棄**
 
 ## はじめに
@@ -36,6 +36,8 @@ title: シミュレーション内ランダム化 — AMR ナビゲーション
 - キャプチャ後、対象を再ランダム化してシミュレーションを継続
 - `env_interval` フレームごとに**背景環境ごと切り替え**、`num_frames` で終了
 
+背景環境は既定で `DEFAULT_ENV_URLS` のリストをサイクルします。リストのエントリが `None` の場合は、USD 環境を読み込む代わりに、Replicator のドームライトとコライダー付き平面からなる**汎用環境**を `/Environment` 以下に生成します。
+
 左右カメラ（`<..>/stereo_cam_<left/right>_sensor_frame/camera_sensor_<left/right>`）から LdrColor（rgb）アノテータのデータを収集し、既定では `<working_dir>/_out_nav_sdg_demo` に 9 フレーム分書き込みます。
 
 ![各環境での収集データ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_amr_data.png)
@@ -52,9 +54,10 @@ title: シミュレーション内ランダム化 — AMR ナビゲーション
 
 | 引数 | 既定値 | 意味 |
 |---|---|---|
-| `--use_temp_rp` | False | **一時レンダープロダクト**を使う（キャプチャ時のみ作成・破棄して性能向上） |
+| `--use_temp_rp` | False | **一時レンダープロダクト**を使う（キャプチャ時のみ有効化して性能向上） |
 | `--num_frames` | 9 | キャプチャするフレーム数 |
 | `--env_interval` | 3 | 背景環境を切り替えるキャプチャ間隔 |
+| `--env_urls` | （なし） | 背景環境のリストを指定。**`DEFAULT_ENV_URLS` を完全に置き換える**。`None` を指定すると汎用環境を生成 |
 
 すべての引数を指定した実行例：
 
@@ -74,15 +77,20 @@ Script Editor から実行する場合のコードも公式ページに掲載さ
 | `_dolly` | ナビゲーションの目標であり、Carter との距離の追跡対象 |
 | `_dolly_light` | 毎キャプチャ、ドリーの上に置かれるランダム化ライト |
 | `_props` | 毎キャプチャ、ドリーの上に配置して落とすプロップのリスト |
-| `_cycled_env_urls` | サイクルする背景環境のパス群 |
+| `_cycled_env_urls` | サイクルする背景環境のパス群（Replicator で生成する汎用環境を表す `None` を含められる） |
 | `_timeline` / `_timeline_sub` | タイムラインの制御と、SDG トリガーのフィードバックループとなる tick 購読 |
 | `_trigger_distance` | SDG をトリガーする Carter とドリーの距離（**キャプチャごとに再ランダム化**） |
 | `_writer` / `_render_products` | ライターと、左右カメラの 2 つのレンダープロダクト |
-| `_use_temp_rp` | True ならフレームキャプチャごとにレンダープロダクトを作成・破棄 |
+| `_use_temp_rp` | True なら非キャプチャ時にレンダープロダクトを無効化（False なら常に有効） |
+
+クラス定数 `ENVIRONMENT_SCOPE_PATH` により、USD 参照環境と汎用環境（フォールバック）の両方を同じ `/Environment` スコープの下で管理し、切り替えの一貫性を保っています。タイムラインの tick 購読は `carb.eventdispatcher.get_eventdispatcher().observe_event(event_name=omni.timeline.GLOBAL_EVENT_CURRENT_TIME_TICKED, ...)` で登録します（従来の `create_subscription_to_pop_by_type` から変更）。
 
 ## ステップ 3：ワークフローを理解する
 
-**start 関数** — ナビゲーション向けの物理シーン、Nova Carter、ターゲット Xform 付きナビゲーショングラフ、ドリー、ランダム化ライト、プロップを持つ環境を作り、タイムライン購読（コールバック `_on_timeline_event`）を登録します。
+**start 関数** — 選択された環境リストを解決し（`env_urls=None` なら `DEFAULT_ENV_URLS` を使用）、ナビゲーション向けの物理シーン、Nova Carter、ターゲット Xform 付きナビゲーショングラフ、ドリー、ランダム化ライト、プロップを持つ環境を作り、タイムライン購読（コールバック `_on_timeline_event`）を登録します。環境の切り替えは `_load_environment` に集約されており、常に共有の `/Environment` スコープを再構築します。エントリが `None` の場合は `rep.functional.create.dome_light`・`rep.functional.create.plane`・`rep.functional.physics.apply_collider` で汎用環境を生成します。
+
+!!! note "センサーカメラの tick レート（マルチティックレンダリング対応）"
+    `_setup_sdg` は Nova Carter の front_hawk 左右カメラに `omni:sensor:tickRate = 0`（オートトリガー）を設定します。Isaac Sim 6.0 のマルチティックレンダリングでは、センサーごとの tick スケジューラが `rep.orchestrator.step_async` と同期しなくなり、ライターにフレームが届かないことがあるためです。オートトリガーを強制することでセンサーカメラをオーケストレータと同期させます（このワークアラウンドは将来のリリースで不要になる予定です）。
 
 **_on_timeline_event** — タイムラインの tick ごとに Carter とドリーの距離をチェックし、十分近づいたら：
 

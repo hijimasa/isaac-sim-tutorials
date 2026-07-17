@@ -8,7 +8,7 @@ title: ROS 2 Navigation (Nav2)
     This is a concise English version. See the Japanese page for the full detailed walkthrough.
 
 !!! warning
-    Fully supported on Linux; partially supported on Windows. Requires Nav2 plus the `carter_navigation`, `iw_hub_navigation`, and `isaac_ros_navigation_goal` packages from the Isaac Sim ROS workspaces. Source ROS 2 before launching Isaac Sim.
+    Fully supported on Linux and on Windows with the Pixi-based installation; partially supported on Windows (WSL). On multi-GPU Windows systems this scene may currently crash the application (known issue). Requires Nav2 plus the `carter_navigation`, `iw_hub_navigation`, and `isaac_ros_navigation_goal` packages from the Isaac Sim ROS workspaces. Source ROS 2 before launching Isaac Sim.
 
 ## Topics Published to Nav2
 
@@ -16,7 +16,7 @@ title: ROS 2 Navigation (Nav2)
 
 ## Occupancy Map
 
-Open **Robotics Examples > ROS2 > Navigation > Nova Carter**, switch the camera to Top, open **Tools > Robotics > Occupancy Map** (Origin 0/0/0, Lower Z 0.1, Upper Z 0.62 — the Nova Carter lidar height), select `warehouse_with_forklifts`, **BOUND SELECTION**, delete the robot prim, then **CALCULATE → VISUALIZE IMAGE** with Rotate 180° and ROS YAML coordinate type. Save the YAML as `carter_navigation/maps/carter_warehouse_navigation.yaml` and the image as `carter_warehouse_navigation.png`.
+Open **Robotics Examples > ROS2 > Navigation > Nova Carter**, switch the camera to Top, open **Tools > Robotics > Occupancy Map** (Origin 0/0/0, Lower Z 0.1, Upper Z 0.62 — the Nova Carter lidar height), select `warehouse_with_forklifts`, **BOUND SELECTION**, delete the robot prim, then **CALCULATE → VISUALIZE IMAGE** with Rotate 180° and ROS YAML coordinate type. Click **Save YAML** to save `carter_navigation/maps/carter_warehouse_navigation.yaml`, and save the image as `carter_warehouse_navigation.png`.
 
 ## Running Nav2
 

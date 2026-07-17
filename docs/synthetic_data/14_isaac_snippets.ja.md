@@ -16,7 +16,7 @@ title: 便利なスニペット集
 
 ### 概要
 
-**完全なコードは[公式ページ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/replicator_tutorials/tutorial_replicator_isaac_snippets.html)を参照**してください。このページでは各スニペットの目的・使いどころ・スタンドアロン版の実行コマンドを整理します。
+**完全なコードは[公式ページ](https://docs.isaacsim.omniverse.nvidia.com/latest/replicator_tutorials/tutorial_replicator_isaac_snippets.html)を参照**してください。このページでは各スニペットの目的・使いどころ・スタンドアロン版の実行コマンドを整理します。
 
 ## スニペット 1：複数カメラからのアノテータ／カスタムライターデータ
 
@@ -82,6 +82,14 @@ title: 便利なスニペット集
 ./python.sh standalone_examples/api/isaacsim.replicator.examples/cosmos_writer_simple.py
 ```
 
+## スニペット 8：デフォーマブルを使った合成データ生成
+
+**デフォーマブル（変形体）物理**を使った SDG の例です。デフォーマブルなアセット（バナナやマーカーなど）をクレートに落下させ、各アセットの最下点の頂点がトリガー高さを横切ったタイミングで RGB とセマンティックセグメンテーションをキャプチャします。`VolumeDeformableMaterial`・`DeformablePrim` と、トリガー検出のためのデフォーマブル Tensor API（`get_nodal_positions` など）を使用し、キャプチャごとのマテリアル色のランダム化もオプションで行えます。
+
+```bash
+./python.sh standalone_examples/api/isaacsim.replicator.examples/sdg_deformables.py
+```
+
 ## まとめ
 
 | スニペット | 使いどころ |
@@ -92,6 +100,7 @@ title: 便利なスニペット集
 | モーションブラー | Real-Time / Path Tracing 両対応のブラー表現と物理 FPS の調整 |
 | カスタム FPS の購読／データアクセス | キャプチャレートとシミュレーションレートの分離 |
 | Cosmos Writer 簡易例 | マルチモーダル出力の最小構成 |
+| デフォーマブル SDG | 変形体物理と頂点位置ベースのトリガーキャプチャ |
 
 これで Replicator チュートリアル群（カスタマイズ編）は完了です。
 

@@ -32,7 +32,7 @@ title: cuRobo と cuMotion
 ![cuRobo](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_advanced_cuRobo.gif)
 
 !!! warning "既知の制限"
-    - cuRobo 内での NvBlox 例には既知の問題があります。cuRobo の更新で解決され次第、このチュートリアルも更新されます。
+    - この cuRobo / cuMotion チュートリアル（公式ページ）は**今後メンテナンスされません**。同等の機能の多くは、公式の [cuMotion Integration](https://docs.isaacsim.omniverse.nvidia.com/latest/cumotion/index.html) セクション（`isaacsim.robot_motion.cumotion`）で提供されています。
     - この cuRobo チュートリアルは **aarch64 プラットフォームではサポートされていません**。
 
 ## インストール

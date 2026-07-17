@@ -18,8 +18,17 @@ title: スタンドアロンワークフローでの ROS 2 ブリッジ
 - 公式ドキュメントの Workflows と [Core API チュートリアル 1: Hello World](../core_api/01_hello_world.md) を完了し、2 つのワークフロー（Standalone と Extension）を理解していること
 - スタンドアロンワークフローで ROS 2 メッセージングを使うため、[セットアップページ](00_setup.md)の「内部ライブラリをターミナルから明示的に指定する」の環境変数を設定しておくこと
 
+!!! note "Windows でのスタンドアロン ROS 2 サンプル（Pixi）"
+    Windows のスタンドアロン ROS 2 サンプルは **Pixi** の Python 環境を使います。公式の [ROS 2 Installation (Other Platforms)](https://docs.isaacsim.omniverse.nvidia.com/latest/installation/install_ros_other_platforms.html) の Pixi セットアップを済ませた上で、Pixi ワークスペースから次の形式でコマンドを実行します：
+
+    ```bash
+    pixi run python C:\isaacsim\standalone_examples\api\isaacsim.ros2.bridge\<サンプル名>.py
+    ```
+
+    サンプルスクリプト自体は `isaac_sim_package_path`（既定：`C:\isaacsim`）が指すローカルの Isaac Sim バイナリインストール（またはソースクローン）から実行され、シミュレータのランタイムは Pixi 環境にインストールされた PyPI の `isaacsim` パッケージからインポートされます。`isaac_sim_package_path` を変更した場合は、コマンドの `C:\isaacsim` の部分を読み替えてください。この一時的な分離は、同梱の `python.bat` / `python.sh` ランチャーの依存関係の問題を避けるためのもので、将来のリリースで解消される予定です。以降のサンプルのコマンドは Linux（`./python.sh`）表記です。
+
 !!! warning "Windows での RViz2"
-    Windows 10 / 11 では、マシンの構成によって RViz2 が正しく開かないことがあります（WSL2 の WSLg 経由での起動を推奨します）。
+    Windows 11 では、マシンの構成によって RViz2 が正しく開かないことがあります（WSL2 の WSLg 経由での起動を推奨します）。
 
 ### 所要時間
 
@@ -162,7 +171,7 @@ Displays 内の **Right Camera - RGB** と **Left Camera - RGB** が有効にな
 
 ### MoveIt 2
 
-**複数の USD ステージの追加**と、ROS 2 コンポーネントノード入りの Action Graph を手動で作成・手動で tick する方法のデモです。毎フレーム、Clock・Joint State が配信され、Joint State サブスクライバが spin され、TF が配信されます：
+**複数の USD ステージの追加**と、ROS 2 コンポーネントノード入りの Action Graph を手動で作成し自動で tick させる方法のデモです。毎フレーム、Clock・Joint State が配信され、Joint State サブスクライバが spin され、TF が配信されます：
 
 ```bash
 ./python.sh standalone_examples/api/isaacsim.ros2.bridge/moveit.py

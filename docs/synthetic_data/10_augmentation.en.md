@@ -14,16 +14,18 @@ Augment rgb and depth annotator data with warp (GPU) or NumPy (CPU) kernels — 
 ## Annotator Augmentation
 
 ```bash
-./python.sh standalone_examples/api/isaacsim.replicator.examples/augmentation_annotator.py   # --use_warp --num_frames 25
+./python.sh standalone_examples/replicator/augmentation/annotator_augmentation.py   # --use_warp --num_frames 25 --env_url ...
 ```
 
-Enable scripting, define NumPy/warp functions, register noise functions in the AnnotatorRegistry, build augmentations from functions or the registry (optionally registering a new augmented annotator), then attach the augmented annotators (1× rgb, 2× depth) to a render product.
+Enable scripting, define NumPy/warp functions, register noise functions via `rep.annotators.register_augmentation`, build augmentations from functions (`Augmentation.from_function`) or the registry (`rep.annotators.get_augmentation`), create augmented annotators with `rep.annotators.augment(...)`, then attach them (1× rgb, 2× depth) to a render product from a `rep.functional.create.camera` camera. `--env_url` loads a USD environment; omitted, an empty dome-light + ground-plane scene is built.
 
 ## Writer Augmentation
 
 ```bash
-./python.sh standalone_examples/api/isaacsim.replicator.examples/augmentation_writer.py      # --use_warp --num_frames 25
+./python.sh standalone_examples/replicator/augmentation/writer_augmentation.py      # --use_warp --num_frames 25 --env_url ...
 ```
+
+The writer is initialized through a `DiskBackend` (`writer.initialize(backend=backend, rgb=True, distance_to_camera=True, colorize_depth=True)`).
 
 Replace the writer's built-in rgb annotator with an augmented one using the same `name="rgb"` via `add_annotator` (HSV → gaussian noise → RGB composition); augment `distance_to_camera` with the built-in `augment_annotator`.
 

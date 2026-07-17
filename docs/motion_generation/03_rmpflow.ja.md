@@ -11,7 +11,7 @@ title: Lula RMPflow
 
 このチュートリアルを修了すると、以下の内容を習得できます：
 
-- `RmpFlow` クラスを直接インスタンス化してモーションを生成する方法
+- カスタムのロボット記述ファイルを使い、`RmpFlow` クラスを直接インスタンス化してモーションを生成する方法
 - `ArticulationMotionPolicy` でポリシーをロボットに接続する方法
 - 動的障害物・ロボットベースの移動に対応させる方法
 - サポート済みロボットの設定を名前で簡単に読み込む方法
@@ -33,7 +33,10 @@ title: Lula RMPflow
 **RMPflow** は、動的障害物を回避しながらタスク空間のターゲットへ到達する滑らかなモーションを生成する、反応型のローカルモーションポリシーです。このチュートリアルでは、`RmpFlow` クラスを直接使ってモーションを生成する方法を、基本→世界状態→簡易ロード→デバッグの順に段階的に学びます。
 
 !!! tip "サンプル拡張機能"
-    公式ドキュメントには、ターゲット追従・世界認識・デバッグ機能を含む完全な RMPflow サンプル拡張機能（`scenario.py`）が用意されています。以下のコードは、その `scenario.py` を基本機能から完成形へ組み上げていくものです。
+    チュートリアルに沿って進めるには、Isaac Sim 6.0 を起動して **Window > Extensions** を開き、**Motion Generation Examples**（`isaacsim.robot_motion.motion_generation.examples`）を検索して有効化します（見つからない場合は検索バーから `@feature` を外して再検索してください）。この拡張機能に、ターゲット追従・世界認識・デバッグ機能を含む完全な RMPflow サンプル（`scenario.py`）が入っています。以下のコードは、その `scenario.py` を基本機能から完成形へ組み上げていくものです。
+
+!!! note "Motion Generation Examples は非推奨"
+    Motion Generation Examples（`isaacsim.robot_motion.motion_generation.examples`）は Isaac Sim 6.0.0 で非推奨になりました（Isaac Sim ソースリポジトリでは `source/deprecated/` 配下に移動。拡張機能 ID は変わりません）。代替として `isaacsim.robot_motion.cumotion.examples` 拡張機能と公式の cuMotion Integration チュートリアルが推奨されています。
 
 ## ステップ 1：RmpFlow インスタンスでモーションを生成する
 
@@ -46,7 +49,7 @@ import os
 from isaacsim.core.utils.extensions import get_extension_path_from_name
 from isaacsim.core.utils.stage import add_reference_to_stage
 from isaacsim.core.prims import SingleArticulation as Articulation
-from isaacsim.core.utils.nucleus import get_assets_root_path
+from isaacsim.storage.native import get_assets_root_path
 from isaacsim.core.prims import SingleXFormPrim as XFormPrim
 from isaacsim.core.utils.numpy.rotations import euler_angles_to_quats
 from isaacsim.core.api.objects.cuboid import FixedCuboid
@@ -150,7 +153,7 @@ rmp_config = load_supported_motion_policy_config("Franka", "RMPflow")
 self._rmpflow = RmpFlow(**rmp_config)  # 辞書を展開して初期化
 ```
 
-執筆時点でサポートされているロボット例：`Franka`, `UR3`〜`UR16e`, `Rizon4`, `Cobotta_Pro_900/1300`, `RS007L/N`ほか川崎系, `FestoCobot`, `Techman_TM12`, `Kuka_KR210`, `Fanuc_CRX10IAL`。`load_supported_motion_policy_config()` がサポート済みロボットを読み込む最も簡単な方法です。
+執筆時点でサポートされているロボット例：`Franka`, `UR3`〜`UR16e`, `Rizon4`, `Cobotta_Pro_900/1300`, `RS007L/N`ほか川崎系, `Techman_TM12`, `Kuka_KR210`, `Fanuc_CRX10IAL`。`load_supported_motion_policy_config()` がサポート済みロボットを読み込む最も簡単な方法です。
 
 ## ステップ 4：デバッグ機能
 

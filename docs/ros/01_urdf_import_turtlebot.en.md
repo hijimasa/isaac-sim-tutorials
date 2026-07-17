@@ -15,7 +15,7 @@ Set up a [Turtlebot3](https://emanual.robotis.com/docs/en/platform/turtlebot3/ov
 
 - Completed ROS 2 Installation (ROS 2 available, ROS 2 extension enabled, environment variables set)
 - Basic understanding of ROS workspaces
-- `sudo apt install ros-$ROS_DISTRO-xacro`
+- xacro: `sudo apt install ros-$ROS_DISTRO-xacro` (Linux) / `pixi add ros-$ROS_DISTRO-xacro` (Windows Pixi)
 
 ## Importing TurtleBot URDF
 
@@ -33,20 +33,24 @@ Set up a [Turtlebot3](https://emanual.robotis.com/docs/en/platform/turtlebot3/ov
     xacro ./turtlebot3_burger.urdf "namespace:=${namespace:+$namespace/}" > tb3_burger_processed.urdf
     ```
 
-3. On a new stage, drag **Isaac Sim/Environments/Simple_Room/simple_room.usd** onto the stage and zero out its Translate.
-4. **File > Import** the processed URDF. Select **Referenced Model**, set **Moveable Base**, and set `wheel_left_joint` / `wheel_right_joint` drive targets to **Velocity**.
-5. Click **Import**, place the robot just above the floor, press **Play**, and verify it falls onto the floor.
+    On Windows (Pixi): `xacro .\turtlebot3_burger.urdf "namespace:=" > tb3_burger_processed.urdf` in Command Prompt; in PowerShell pipe through `Out-File -Encoding utf8` (plain `>` writes UTF-16 LE, which the importer cannot parse).
 
-![Turtlebot import](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_ros_tut_gui_tb_urdf_import.png)
+3. **File > Import** the processed URDF. Set **Base Type** to **Mobile**, optionally set **Robot Type** to **Wheeled**, then click **Import** — the importer automatically opens the generated USD (robot prim: `/World/tb3_burger_processed`).
+
+![Turtlebot import](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_ros_tut_gui_tb_urdf_import.png)
 
 ## Tune the Robot
 
 - **Friction** — adjust wheel/ground friction coefficients if wheels slip.
 - **Mass/inertia** — add or edit the **Physics > Mass** category on rigid-body prims when URDF values are missing.
-- **Joints** — for velocity drives set stiffness 0 with non-zero damping; for this Turtlebot try **Damping 10000000.0 / Stiffness 0.0**.
+- **Joint gains** — open **Tools > Robotics > Asset Editors > Gain Tuner**, select the robot, set **Damping 10000000.0** for `wheel_left_joint` / `wheel_right_joint`, and click **Save Gains to Physics Layer**. (Velocity drives need stiffness 0 with non-zero damping.)
 
-!!! note
-    The imported robot is loaded as a *reference*. If parameter changes don't stick, edit the original USD found via **References > Asset Path**.
+## Assemble the Scene
+
+On a new stage, drag **Isaac Sim/Environments/Simple_Room/simple_room.usd** onto the stage and zero out its Translate, then drag the Turtlebot USD asset onto the stage. Place it just above the floor (the official screenshot uses `(0, 1.5, -0.75)`), press **Play**, and verify it falls onto the floor.
+
+!!! warning
+    On multi-GPU Windows systems, loading and playing this scene may currently crash the application (known issue).
 
 ## Next Steps
 

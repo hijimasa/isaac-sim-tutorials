@@ -10,8 +10,8 @@ title: IMU センサー
 
 - IMU センサーが加速度計・ジャイロの読み値を出力する仕組み
 - IMU センサーのプロパティ（フィルタ幅など）
-- GUI・Python コマンド・Python ラッパークラスでの作成方法
-- OmniGraph での読み取り、重力の扱い、カスタム補間
+- GUI・Python API（`IMU` オーサリングクラス + `IMUSensor` ランタイムクラス）での作成方法
+- OmniGraph での読み取りと重力の扱い
 
 ## はじめに
 
@@ -28,9 +28,14 @@ title: IMU センサー
 
 Isaac Sim の IMU センサーは、物体の運動を追跡し、シミュレートされた**加速度計**と**ジャイロスコープ**の読み値を出力します。実機の IMU と同様、ローカルの x, y, z 軸での加速度と角速度をステージ単位で測定します。
 
+!!! note "Isaac Sim 6.0 での API 変更"
+    Isaac Sim 6.0 では、従来の `isaacsim.sensors.physics` 拡張機能の IMU センサーは非推奨（deprecated）となり、
+    `isaacsim.sensors.experimental.physics.IMUSensor` に置き換えられました。本ページのコードは新 API に対応しています。
+    詳細は[公式移行ガイド](https://docs.isaacsim.omniverse.nvidia.com/latest/migration_guides/isaac_sim_6_0/sensors_physics_to_experimental_physics.html)を参照してください。
+
 !!! note "IMU センサーのプロパティ"
     - **enabled** … センサーの動作/停止を切り替えます。
-    - **sensor period** … 測定間隔。物理デルタタイムより短い周期は常に最新の物理データを出力します。センサー周波数が物理周波数を超えることはできません。
+    - **sensorPeriod** … 測定間隔。`isaacsim.robot.schema` 6.2.0 以降は非推奨で、非推奨の `isaacsim.sensors.physics` 拡張機能でのみ使用されます。新しい `isaacsim.sensors.experimental.physics` 拡張機能は毎物理ステップで読み取ります。
     - **angularVelocityFilterWidth** … 角速度の移動平均のサイズ。大きくすると角速度出力が滑らかになります。
     - **linearAccelerationFilterWidth** … 線形加速度の移動平均のサイズ。大きくすると加速度出力が滑らかになります。
     - **orientationFilterWidth** … 姿勢の移動平均のサイズ。大きくすると姿勢出力が滑らかになります。
@@ -46,7 +51,7 @@ Isaac Sim の IMU センサーは、物体の運動を追跡し、シミュレ�
 3. 位置・姿勢は `Imu_Sensor` prim を選択して Property タブの **Transform** で変更します。
 4. その他のプロパティ（filter width、enable/disable、sensor period）は **Raw USD Properties** から変更します。
 
-![IMU センサーの作成](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_create_imu_sensor_2.webp)
+![IMU センサーの作成](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_create_imu_sensor_2.webp)
 
 ### IMU の例
 
@@ -56,7 +61,7 @@ Isaac Sim の IMU センサーは、物体の運動を追跡し、シミュレ�
 4. **Open Source Code** でソースコードを確認できます（Ant を読み込み、Python API でセンサーを追加する例）。
 5. **PLAY** で開始し、**SHIFT + 左クリック**で Ant をドラッグすると読み値が変化します。
 
-![IMU の例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_create_imu_sensor.webp)
+![IMU の例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_create_imu_sensor.webp)
 
 ## ステップ 2：OmniGraph ワークフロー
 
@@ -73,7 +78,7 @@ Simple Articulation を追加します。Content Browser で `Robots/IsaacSim/Si
 !!! note
     一般に、センサーは正しくデータを報告するために**剛体 prim** に追加する必要があります。このロボットの prim はすでに剛体なので、このケースでは特別な操作は不要です。
 
-![IMU の OmniGraph シーン](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_create_imu_sensor_1.webp)
+![IMU の OmniGraph シーン](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_create_imu_sensor_1.webp)
 
 ### OmniGraph のセットアップ
 
@@ -87,7 +92,7 @@ Simple Articulation を追加します。Content Browser で `Robots/IsaacSim/Si
 
 ## ステップ 3：Standalone Python でセンサーを作成する
 
-まず、GroundPlane・DynamicCuboid・PhysicsScene を追加してシーンを準備します。
+まず、GroundPlane・コリジョンと剛体を設定した Cube prim・PhysicsScene を追加してシーンを準備します。
 
 ```python
 from isaacsim import SimulationApp
@@ -95,61 +100,71 @@ from isaacsim import SimulationApp
 simulation_app = SimulationApp({"headless": False})
 
 import numpy as np
-from isaacsim.core.api.objects import DynamicCuboid
-from isaacsim.core.api.objects.ground_plane import GroundPlane
-from isaacsim.core.api.physics_context import PhysicsContext
+import omni.usd
+from isaacsim.core.experimental.objects import Cube, GroundPlane
+from isaacsim.core.experimental.prims import GeomPrim, RigidPrim
+from pxr import UsdPhysics
 
-PhysicsContext()
-GroundPlane(prim_path="/World/groundPlane", size=10, color=np.array([0.5, 0.5, 0.5]))
-DynamicCuboid(prim_path="/World/Cube",
-    position=np.array([-.5, -.2, 1.0]),
-    scale=np.array([.5, .5, .5]),
-    color=np.array([.2, .3, 0.]))
+# 物理シーンを作成する
+stage = omni.usd.get_context().get_stage()
+UsdPhysics.Scene.Define(stage, "/World/PhysicsScene")
+
+# 地面と、コリジョン・剛体を設定した動的な立方体を追加する
+GroundPlane("/World/groundPlane", sizes=10, colors=np.array([0.5, 0.5, 0.5]))
+Cube(
+    "/World/Cube",
+    positions=np.array([-0.5, -0.2, 1.0]),
+    scales=np.array([0.5, 0.5, 0.5]),
+    colors=np.array([0.2, 0.3, 0.0]),
+)
+RigidPrim("/World/Cube")
+GeomPrim("/World/Cube", apply_collision_apis=True)
 ```
 
-### Python コマンドで作成する
+### Python API で作成する
 
-`IsaacSensorCreateImuSensor` コマンドで作成します。必須引数は親パスのみです。
+`IMU.create()`（オーサリングクラス）でセンサー prim を作成し、`IMUSensor`（ランタイムクラス）でラップしてデータにアクセスします。パスには親 prim のパスを含める必要があり、残りの引数は省略可能です。
 
 ```python
-import omni.kit.commands
-from pxr import Gf
+import numpy as np
+from isaacsim.sensors.experimental.physics import IMU, IMUSensor
 
-success, _isaac_sensor_prim = omni.kit.commands.execute(
-    "IsaacSensorCreateImuSensor",
-    path="imu_sensor",
-    parent="/World/Cube",
-    sensor_period=1,
-    linear_acceleration_filter_size=10,
-    angular_velocity_filter_size=10,
-    orientation_filter_size=10,
-    translation=Gf.Vec3d(0, 0, 0),
-    orientation=Gf.Quatd(1, 0, 0, 0),
+sensor = IMUSensor(
+    IMU.create(
+        "/World/Cube/imu_sensor",
+        linear_acceleration_filter_size=10,
+        angular_velocity_filter_size=10,
+        orientation_filter_size=10,
+        translations=np.array([[0.0, 0.0, 0.0]]),
+        orientations=np.array([[1.0, 0.0, 0.0, 0.0]]),
+    )
 )
 ```
 
-### Python ラッパークラスで作成する
+### Python ラッパーで作成する
 
-`IMUSensor` ラッパークラスを使うと、プロパティ設定やデータ取得のヘルパー関数が使えます。
+`IMU` オーサリングオブジェクトを直接構築して `IMUSensor` でラップすることもできます。`IMU` コンストラクタは、既存のセンサー prim をラップするか、デフォルト属性で新規作成します。`IMUSensor` ランタイムは `get_sensor_reading()` / `get_data()` を提供します。USD 属性（フィルタ幅など）の変更は、構築後に `sensor.imu` でアクセスできるオーサリングオブジェクト経由で行います。
 
 ```python
-from isaacsim.sensors.physics import IMUSensor
 import numpy as np
+from isaacsim.sensors.experimental.physics import IMU, IMUSensor
 
 IMUSensor(
-    prim_path="/World/Cube/Imu",
-    name="imu",
-    frequency=60,  # または dt=1./60
-    translation=np.array([0, 0, 0]),  # または position=np.array([0, 0, 0])
-    orientation=np.array([1, 0, 0, 0]),
-    linear_acceleration_filter_size=10,
-    angular_velocity_filter_size=10,
-    orientation_filter_size=10,
+    IMU(
+        "/World/Cube/Imu",
+        translations=np.array([[0.0, 0.0, 0.0]]),  # または positions=np.array([[0.0, 0.0, 0.0]])
+        orientations=np.array([[1.0, 0.0, 0.0, 0.0]]),
+        linear_acceleration_filter_size=10,
+        angular_velocity_filter_size=10,
+        orientation_filter_size=10,
+    )
 )
 ```
 
 !!! note
-    `translation` と `position`、`frequency` と `dt` は同時に指定できません。パラメータ変更には `set_frequency` / `set_dt` などのクラス API や USD 属性 API を使います。
+    `translations`（ローカル座標系）と `positions`（ワールド座標系）は同時に指定できません（排他）。各入力引数の使い方は IMUSensor の Python API ドキュメントを参照してください。
+
+    フィルタ幅を構築時に設定するには、上のスニペットのように `IMU.create()`（または `IMU(path, ...)`）に渡します。構築後に変更するには、センサー prim（`sensor.imu.prims[0]` でアクセス可能）の USD 属性（`linearAccelerationFilterWidth` / `angularVelocityFilterWidth` / `orientationFilterWidth`）を設定します。フィルタ幅はシミュレーション開始時にセンサーが作成される際に C++ ランタイムへ取り込まれるため、変更を反映するにはシミュレーションを停止して再開してください。`IMUSensor` は毎物理ステップで読み取ります。
 
 ## ステップ 4：センサー出力を読み取る
 
@@ -157,62 +172,52 @@ IMU は **PLAY 時に動的に作成**されます。実行中にセンサー pr
 
 読み取り方法は 3 つあります。
 
-- センサーインターフェースの `get_sensor_reading()`
-- `IMUSensor` クラスの `get_current_frame()`
+- `IMUSensor.get_sensor_reading(read_gravity=True)` … 生の C++ 構造体を直接返す
+- `IMUSensor.get_data(read_gravity=True)` … 構造化された辞書を返す
 - OmniGraph ノード **Isaac Read IMU Node**
 
 ### get_sensor_reading()
 
-`get_sensor_reading(sensor_path, interpolation_function=None, use_latest_data=False, read_gravity=True)` は、prim パス・補間関数（省略可）・use_latest_data フラグ（省略可）を受け取ります。戻り値の `IsSensorReading` は `is_valid` / `time` / `lin_acc_x, y, z` / `ang_vel_x, y, z` / `orientation` を持ちます。
+`IMUSensor.get_sensor_reading(read_gravity=True)` は、`is_valid` / `time` / `linear_acceleration_x, _y, _z` / `angular_velocity_x, _y, _z` / `orientation_w, _x, _y, _z` プロパティを持つ `ImuSensorReading`（C++ 構造体）を返します。センサーは毎物理ステップで C++ バックエンドを読み取ります。重力加速度を除外するには `read_gravity=False` を渡します。
 
-重力の影響を含めて現在の物理ステップから読み取る例です。
+重力の影響を含めて読み取る例です。
 
 ```python
-from isaacsim.sensors.physics import _sensor
+from isaacsim.sensors.experimental.physics import IMUSensor
 
-_imu_sensor_interface = _sensor.acquire_imu_sensor_interface()
-_imu_sensor_interface.get_sensor_reading("/World/Cube/Imu", use_latest_data=True, read_gravity=True)
+sensor = IMUSensor("/World/Cube/Imu")
+sensor.get_sensor_reading(read_gravity=True)
 ```
 
-重力なし・カスタム補間関数を使う例です。
+重力なしで読み取る例です。
 
 ```python
-from isaacsim.sensors.physics import _sensor
-from typing import List
+from isaacsim.sensors.experimental.physics import IMUSensor
 
-# 入力: 過去の IsSensorReading のリスト、期待するセンサー読み取り時刻
-def interpolation_function(data: List[_sensor.IsSensorReading], time: float) -> _sensor.IsSensorReading:
-    interpolated_reading = _sensor.IsSensorReading()
-    # 補間処理を行う
-    return interpolated_reading
-
-_imu_sensor_interface = _sensor.acquire_imu_sensor_interface()
-_imu_sensor_interface.get_sensor_reading("/World/Cube/Imu", interpolation_function=interpolation_function, read_gravity=False)
+sensor = IMUSensor("/World/Cube/Imu")
+sensor.get_sensor_reading(read_gravity=False)
 ```
 
-!!! note "カスタム補間と重力"
-    カスタム補間を使い、かつ read gravity フラグが有効な場合、センサーは生の加速度測定値を補間関数に渡し、その後に重力変換を適用します。
+### get_data()
 
-### get_current_frame()
-
-`get_current_frame(read_gravity=True)` は `get_sensor_reading()` のラッパーで、`lin_acc` / `ang_vel` / `orientation` / `time` / `physics_step` をキーとする辞書を返します。
+`IMUSensor` ランタイムクラスの `get_data(read_gravity=True)` メンバー関数は `get_sensor_reading()` のラッパーで、`time` / `physics_step` / `linear_acceleration`（shape `(3,)` の np.ndarray）/ `angular_velocity`（shape `(3,)` の np.ndarray）/ `orientation`（shape `(4,)` の np.ndarray、wxyz 順）をキーとする辞書を返します。
 
 ```python
-from isaacsim.sensors.physics import IMUSensor
 import numpy as np
+from isaacsim.sensors.experimental.physics import IMU, IMUSensor
 
 sensor = IMUSensor(
-    prim_path="/World/Cube/Imu",
-    name="imu",
-    frequency=60,
-    translation=np.array([0, 0, 0]),
-    orientation=np.array([1, 0, 0, 0]),
-    linear_acceleration_filter_size=10,
-    angular_velocity_filter_size=10,
-    orientation_filter_size=10,
+    IMU(
+        "/World/Cube/Imu",
+        translations=np.array([[0.0, 0.0, 0.0]]),
+        orientations=np.array([[1.0, 0.0, 0.0, 0.0]]),
+        linear_acceleration_filter_size=10,
+        angular_velocity_filter_size=10,
+        orientation_filter_size=10,
+    )
 )
 
-value = sensor.get_current_frame()
+value = sensor.get_data()
 print(value)
 ```
 
@@ -222,8 +227,10 @@ print(value)
 
 - IMU センサーが加速度計・ジャイロの読み値をローカル軸で出力すること
 - フィルタ幅で出力の滑らかさを調整できること
-- GUI・Python コマンド・`IMUSensor` ラッパークラスでの作成方法
-- `get_sensor_reading()` / `get_current_frame()` での読み取りと重力・カスタム補間の扱い
+- GUI・Python API（`IMU` オーサリングクラス + `IMUSensor` ランタイムクラス）での作成方法
+- `get_sensor_reading()` / `get_data()` での読み取りと重力の扱い
+
+`IMUSensor` の詳細は [isaacsim.sensors.experimental.physics の API ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/latest/py/source/extensions/isaacsim.sensors.experimental.physics/docs/index.html)を参照してください。
 
 ## 次のステップ
 

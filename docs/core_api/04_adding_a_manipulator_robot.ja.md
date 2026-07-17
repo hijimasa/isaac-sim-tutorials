@@ -8,390 +8,297 @@ title: マニピュレータロボットの追加
 
 このチュートリアルを修了すると、以下の内容を習得できます:
 
-- マニピュレータロボット（Franka Panda）をシーンに追加する方法
-- `PickPlaceController` を使ったピック＆プレース動作の実装
-- `BaseTask` を継承してタスクをモジュール化する方法
-- Isaac Sim に用意されている既存のタスククラスの利用方法
+- `Franka` クラスを使ってマニピュレータロボット（Franka Panda）をシーンに追加する方法
+- 逆運動学（IK）によるエンドエフェクタ制御とグリッパー制御の基本 API
+- `FrankaPickPlace` クラスを使ったピック＆プレース動作の実行
+- ピック＆プレースのステートマシン（状態機械）の理解とカスタマイズ
 
 ## はじめに
 
 ### 前提条件
 
-- [チュートリアル 3: コントローラの追加](03_adding_a_controller.md) を完了していること
+- [チュートリアル 2: Hello Robot](02_hello_robot.md) を完了していること
+
+!!! note "このチュートリアルは Standalone Workflow で進めます"
+    これまでのチュートリアルは Extension Workflow（`hello_world.py` の編集）で進めてきましたが、このチュートリアルでは **Standalone の Python スクリプト**を使用します。スクリプトは Isaac Sim 同梱の Python 環境（`python.sh` / Windows は `python.bat`）で実行してください。実行方法は [Hello World の「サンプルをスタンドアロンアプリケーションに変換」](01_hello_world.md)で学んだ手順と同様です。
 
 ### 所要時間
 
 約 15〜20 分
 
-### ソースコードの準備
+## Franka ロボットのあるシーンの作成
 
-このチュートリアルでは、引き続き Hello World サンプルの `hello_world.py` を編集していきます。前回のチュートリアルから続けて作業している場合はそのまま進めてください。別の日に作業を再開する場合は、以下の手順でソースコードを開いてください。
+`Franka` クラスを使って、Franka ロボットと、ロボットがつかむためのキューブをシーンに追加します。`Franka` クラスは `Articulation` を継承しており、逆運動学（IK）やグリッパー制御を含む高レベルな制御メソッドを提供します。
 
-1. **Windows > Examples > Robotics Examples** をアクティブにして、Robotics Examples タブを開きます。
-2. **Robotics Examples > General > Hello World** をクリックします。
-3. **Open Source Code** ボタンをクリックし、Visual Studio Code で `hello_world.py` を開きます。
+コンストラクタで `create_robot=True` を指定すると、`Franka` クラスが指定パスに Franka ロボットの USD アセットを自動的にスポーンします。
 
-詳しい手順は [Hello World の「サンプルを開く」セクション](01_hello_world.md#hello-world_1)を参照してください。
+以下のスクリプトを `create_franka_scene.py` などの名前で作成します：
 
-!!! warning "注意"
-    **STOP** → **PLAY** の操作ではワールドが正しくリセットされない場合があります。シミュレーションをやり直す場合は、**RESET** ボタンを使用してください。
+```python linenums="1" hl_lines="13-15 20 28-29 31-40 42-46"
+"""地面・Franka ロボット・青いキューブのあるシーンを作成する。"""
 
-## シーンの作成
+import argparse
 
-これまでのチュートリアルでは車輪型ロボット（Jetbot）を使用してきましたが、ここでは新しいタイプのロボット——**マニピュレータ（ロボットアーム）**をシーンに追加します。
+parser = argparse.ArgumentParser()
+parser.add_argument("--test", action="store_true")
+args, _ = parser.parse_known_args()
 
-Isaac Sim には Franka Panda ロボット用の専用クラス `Franka` が用意されており、グリッパーやエンドエフェクタへのアクセスなど、マニピュレータに特化した機能を提供します。
+from isaacsim import SimulationApp
 
-```python linenums="1" hl_lines="3-4 18-19 21-28"
-from isaacsim.examples.interactive.base_sample import BaseSample
-# Franka 関連のタスク・コントローラを含む拡張機能
-from isaacsim.robot.manipulators.examples.franka import Franka
-from isaacsim.core.api.objects import DynamicCuboid
-import numpy as np
+simulation_app = SimulationApp({"headless": False})
 
+import isaacsim.core.experimental.utils.app as app_utils
 
-class HelloWorld(BaseSample):
-    def __init__(self) -> None:
-        super().__init__()
-        return
+app_utils.enable_extension("isaacsim.robot.experimental.manipulators.examples")
 
-    def setup_scene(self):
-        world = self.get_world()
-        world.scene.add_default_ground_plane()
-        # Franka はグリッパーやエンドエフェクタのインスタンスを持つ
-        # ロボット固有クラス
-        franka = world.scene.add(
-            Franka(prim_path="/World/Fancy_Franka", name="fancy_franka")
-        )
-        # Franka がつかむためのキューブを追加
-        world.scene.add(
-            DynamicCuboid(
-                prim_path="/World/random_cube",
-                name="fancy_cube",
-                position=np.array([0.3, 0.3, 0.3]),     # キューブの初期位置
-                scale=np.array([0.0515, 0.0515, 0.0515]),# キューブのサイズ
-                color=np.array([0, 0, 1.0]),              # 青色
-            )
-        )
-        return
+from isaacsim.core.experimental.objects import Cube, DomeLight, GroundPlane
+from isaacsim.core.experimental.prims import GeomPrim, RigidPrim
+from isaacsim.core.simulation_manager import SimulationManager
+from isaacsim.robot.experimental.manipulators.examples.franka import Franka
+
+DEVICE = "cpu"
+
+GroundPlane("/World/ground_plane")
+dome_light = DomeLight("/World/DomeLight")
+dome_light.set_intensities(1000)
+
+# Franka ロボットを作成
+robot = Franka(robot_path="/World/robot", create_robot=True)
+
+# ロボットがつかむための青いキューブを作成
+cube_shape = Cube(
+    paths="/World/Cube",
+    positions=[0.5, 0.0, 0.0258],
+    sizes=1.0,
+    scales=[0.0515, 0.0515, 0.0515],
+    colors="blue",
+)
+GeomPrim(paths=cube_shape.paths, apply_collision_apis=True)
+RigidPrim(paths=cube_shape.paths)
+
+SimulationManager.setup_simulation(dt=1.0 / 60.0, device=DEVICE)
+physics_scene = SimulationManager.get_physics_scenes()[0]
+physics_scene.set_enabled_gpu_dynamics(False)
+app_utils.play()
+app_utils.update_app(steps=20)
+
+step_count = 0
+max_test_steps = 60
+while simulation_app.is_running():
+    simulation_app.update()
+    step_count += 1
+    if args.test and step_count >= max_test_steps:
+        break
+
+app_utils.stop()
+simulation_app.close()
 ```
 
-コードを保存してシミュレーションを確認します：
+スクリプトを実行すると、Franka ロボットとキューブが配置されたウィンドウが開き、ウィンドウを閉じるまでシミュレーションが実行されます。
 
-1. **Ctrl+S** を押してコードを保存し、Isaac Sim をホットリロードします。
-2. **File > New From Stage Template > Empty** でワールドを新規作成してから、**LOAD** ボタンを押します。
-3. Franka ロボットと青いキューブがシーンに表示されることを確認します。
-
-## PickAndPlace コントローラの利用
-
-次に、Franka のピック＆プレースコントローラを使って、キューブを拾い上げて別の場所に移動させます。
-
-`PickPlaceController` はステートマシン（状態機械）として動作し、以下の一連の動作を自動的に実行します：
-
-1. キューブの位置まで移動
-2. グリッパーを閉じてキューブを把持
-3. 目標位置まで移動
-4. グリッパーを開いてキューブを配置
-
-??? info "`events_dt` パラメータ（各ステートの実行速度）"
-    `PickPlaceController` は内部的に上記の4ステップをさらに細かい **10 個のステート**（移動、下降、閉じ、持ち上げ、移動、下降、開き、持ち上げなど）に分割しています。`events_dt` パラメータは各ステートの実行速度（1 ステップあたりの補間量）を制御するリストです。
-
-    デフォルト値が設定されているため通常は指定不要ですが、複数ロボットを同時に動かす場合や動作速度を調整したい場合に明示的に指定できます。詳しくは [チュートリアル 6](06_multiple_tasks.md) で使用します。
-
-```python linenums="1" hl_lines="4 33-38 40-41 50-56 58-59"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka import Franka
-from isaacsim.core.api.objects import DynamicCuboid
-from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController  # ピック＆プレースコントローラ
-import numpy as np
-
-
-class HelloWorld(BaseSample):
-    def __init__(self) -> None:
-        super().__init__()
-        return
-
-    def setup_scene(self):
-        world = self.get_world()
-        world.scene.add_default_ground_plane()
-        franka = world.scene.add(
-            Franka(prim_path="/World/Fancy_Franka", name="fancy_franka")
-        )
-        world.scene.add(
-            DynamicCuboid(
-                prim_path="/World/random_cube",
-                name="fancy_cube",
-                position=np.array([0.3, 0.3, 0.3]),
-                scale=np.array([0.0515, 0.0515, 0.0515]),
-                color=np.array([0, 0, 1.0]),
-            )
-        )
-        return
-
-    async def setup_post_load(self):
-        self._world = self.get_world()
-        self._franka = self._world.scene.get_object("fancy_franka")
-        self._fancy_cube = self._world.scene.get_object("fancy_cube")
-        # PickPlaceController を初期化
-        self._controller = PickPlaceController(
-            name="pick_place_controller",
-            gripper=self._franka.gripper,            # グリッパーのインスタンス
-            robot_articulation=self._franka,          # ロボットのアーティキュレーション
-        )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        # グリッパーを開いた状態に設定
-        self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        # 非同期ワークフロー（Extension Worlflowなど）では async 版の play を使う
-        await self._world.play_async()
-        return
-
-    # RESET ボタン押下後に呼ばれる
-    # ワールド内のリセット処理をここで行う
-    async def setup_post_reset(self):
-        self._controller.reset()
-        self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        await self._world.play_async()
-        return
-
-    def physics_step(self, step_size):
-        cube_position, _ = self._fancy_cube.get_world_pose()
-        goal_position = np.array([-0.3, -0.3, 0.0515 / 2.0])  # 配置先の目標位置
-        current_joint_positions = self._franka.get_joint_positions()
-        # コントローラがピック＆プレースの各段階に応じたアクションを計算
-        actions = self._controller.forward(
-            picking_position=cube_position,
-            placing_position=goal_position,
-            current_joint_positions=current_joint_positions,
-        )
-        self._franka.apply_action(actions)
-        # ステートマシンが最終状態に到達したらシミュレーションを一時停止
-        if self._controller.is_done():
-            self._world.pause()
-        return
+```bash
+cd <Isaac Sim インストールディレクトリ>
+./python.sh create_franka_scene.py
 ```
 
-コードを保存してシミュレーションを確認します：
+このスクリプトのポイント：
 
-1. **Ctrl+S** を押して保存し、**File > New From Stage Template > Empty** → **LOAD** を実行します。
-2. **PLAY** ボタンを押して、Franka がキューブを拾い上げて目標位置に配置する様子を確認します。
-3. 動作が完了するとシミュレーションが自動的に一時停止します。
+| 処理 | 説明 |
+|---|---|
+| `app_utils.enable_extension()` | `Franka` クラスを提供する拡張機能 `isaacsim.robot.experimental.manipulators.examples` を有効化する |
+| `Franka(robot_path=..., create_robot=True)` | Franka の USD アセットのスポーンとラッパー作成を一度に行う |
+| `SimulationManager.setup_simulation()` | 物理演算の時間刻み（`dt`）と実行デバイス（CPU/GPU）を設定する |
+| `app_utils.play()` / `app_utils.update_app()` | タイムラインを再生し、アプリを指定ステップ数だけ進める |
 
-![Franka によるピック＆プレース動作](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/core_api_tutorials_4_1.webp)
-
-## タスクとは？
-
-ここまでのコードでは、シーンの作成（`setup_scene`）、コントローラの初期化（`setup_post_load`）、物理ステップの処理（`physics_step`）がすべて `HelloWorld` クラスに混在しています。
-
-**Task** は、シーン内の特定の作業（タスク）をモジュール化するための仕組みです。`BaseTask` を継承してタスククラスを定義すると、以下の処理を独立して管理できます：
+`Franka` クラスはロボット制御のための以下の主要メソッドを提供します：
 
 | メソッド | 説明 |
 |---|---|
-| `set_up_scene` | タスクに必要なアセットをシーンに配置 |
-| `get_observations` | タスクの解決に必要な観測情報を返す |
-| `pre_step(control_index, simulation_time)` | 各物理ステップの前に実行される処理（タスク達成判定など） |
-| `post_reset` | リセット後の初期化処理 |
+| `set_end_effector_pose(position, orientation)` | 逆運動学（IK）でエンドエフェクタを移動する |
+| `open_gripper()` / `close_gripper()` | グリッパーを開閉する |
+| `get_current_state()` | DOF 位置とエンドエフェクタの姿勢を取得する |
+| `get_downward_orientation()` | 下向きのエンドエフェクタ姿勢のクォータニオンを取得する |
+| `reset_to_default_pose()` | ロボットをホームポジションにリセットする |
 
-`pre_step` の引数 `control_index` は物理ステップごとに自動でインクリメントされるインデックス（0, 1, 2, ...）、`simulation_time` はシミュレーション開始からの経過時間（秒）です。いずれも World が自動的に渡すため、ユーザーが手動で管理する必要はありません。
+!!! note "逆運動学（IK）とは"
+    **逆運動学（Inverse Kinematics）**は、エンドエフェクタ（手先）の目標位置・姿勢から、それを実現する各関節の角度を逆算する計算です。`set_end_effector_pose()` を呼ぶだけで、各関節の角度は `Franka` クラスが内部で自動計算してくれます。
 
-タスクをモジュール化することで、同じタスクを異なるロボットやシーンで再利用できるようになります。
+## FrankaPickPlace による完全なピック＆プレース
 
-### 既存の PickPlace タスクを利用する
+完全なピック＆プレース動作には `FrankaPickPlace` クラスを使用します。このクラスの `setup_scene()` メソッドは、ピック＆プレースに必要なすべての要素（Franka ロボット、地面、操作対象のキューブ）をスポーンします。
 
-まずは Isaac Sim に用意されている既存のタスクを使って、タスクの基本的な使い方を学びましょう。Franka の場合、`PickPlace` タスクを使うことで、前のセクションと同等の処理をより整理されたコードで実現できます。
+```python linenums="1" hl_lines="19 27-30 35-39 41-53"
+"""FrankaPickPlace を使ったピック＆プレース。"""
 
-既存タスクの特徴：
+import argparse
 
-- `get_params()` でタスクのパラメータ（ロボット名、キューブ名など）を動的に取得可能
-- `set_params()` でシミュレーション中にパラメータを変更可能
-- `world.get_observations()` でタスクが提供する観測情報を一括取得可能
+parser = argparse.ArgumentParser()
+parser.add_argument("--test", action="store_true")
+args, _ = parser.parse_known_args()
 
-```python linenums="1" hl_lines="2-3 11 17-20 22-23"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka.tasks import PickPlace        # 既存のタスク
-from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController
+from isaacsim import SimulationApp
 
+simulation_app = SimulationApp({"headless": False})
 
-class HelloWorld(BaseSample):
-    def __init__(self) -> None:
-        super().__init__()
-        return
+import isaacsim.core.experimental.utils.app as app_utils
 
-    def setup_scene(self):
-        world = self.get_world()
-        # 既存の PickPlace タスクを追加
-        world.add_task(PickPlace(name="awesome_task"))
-        return
+app_utils.enable_extension("isaacsim.robot.experimental.manipulators.examples")
 
-    async def setup_post_load(self):
-        self._world = self.get_world()
-        # タスクからパラメータを動的に取得
-        # {"task_param_name": {"value": [value], "modifiable": [True/False]}}
-        task_params = self._world.get_task("awesome_task").get_params()
-        self._franka = self._world.scene.get_object(task_params["robot_name"]["value"])
-        self._cube_name = task_params["cube_name"]["value"]
-        self._controller = PickPlaceController(
-            name="pick_place_controller",
-            gripper=self._franka.gripper,
-            robot_articulation=self._franka,
-        )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
+from isaacsim.core.experimental.objects import DomeLight, GroundPlane
+from isaacsim.core.simulation_manager import SimulationManager
+from isaacsim.robot.experimental.manipulators.examples.franka import FrankaPickPlace
 
-    async def setup_post_reset(self):
-        self._controller.reset()
-        await self._world.play_async()
-        return
+DEVICE = "cpu"
 
-    def physics_step(self, step_size):
-        current_observations = self._world.get_observations()
-        actions = self._controller.forward(
-            picking_position=current_observations[self._cube_name]["position"],
-            placing_position=current_observations[self._cube_name]["target_position"],
-            current_joint_positions=current_observations[self._franka.name]["joint_positions"],
-        )
-        self._franka.apply_action(actions)
-        if self._controller.is_done():
-            self._world.pause()
-        return
+GroundPlane("/World/ground_plane")
+dome_light = DomeLight("/World/DomeLight")
+dome_light.set_intensities(1000)
+
+# FrankaPickPlace はロボットとキューブをスポーンし、ピック＆プレースの
+# ステートマシンを提供する
+controller = FrankaPickPlace()
+controller.setup_scene()
+
+SimulationManager.setup_simulation(dt=1.0 / 60.0, device=DEVICE)
+physics_scene = SimulationManager.get_physics_scenes()[0]
+physics_scene.set_enabled_gpu_dynamics(False)
+app_utils.play()
+# controller.reset() の前にアーティキュレーションの物理テンソルエンティティが
+# 有効になるよう、数ステップ実行しておく
+app_utils.update_app(steps=20)
+controller.reset()
+
+# メインループ: 完了するまで毎物理フレームでピック＆プレースを1ステップ進める
+step_count = 0
+max_test_steps = sum(controller.events_dt) + 60
+while simulation_app.is_running():
+    simulation_app.update()
+    step_count += 1
+    if app_utils.is_playing():
+        if not controller.is_done():
+            controller.forward()
+        else:
+            print("Pick-and-place completed")
+            app_utils.pause()
+            if args.test:
+                break
+    if args.test and step_count >= max_test_steps:
+        raise RuntimeError("Pick-and-place did not complete within the test step budget")
+
+app_utils.stop()
+simulation_app.close()
 ```
 
-前のセクションのコードと比較すると、`setup_scene` がシンプルになっていることがわかります。シーンの構築（Franka やキューブの配置）はタスク内部で自動的に行われるため、`HelloWorld` クラスではタスクの追加とコントローラの実行に集中できます。
+スクリプトを実行すると、ロボットがキューブを拾い上げて配置するまでの全フェーズを自動的に実行します。
 
-## カスタムタスクの作成
+![Franka によるピック＆プレース動作](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/core_api_tutorials_4_1.webp)
 
-既存タスクの使い方がわかったところで、次は `BaseTask` を継承して独自のタスクを作成してみましょう。カスタムタスクを作ることで、タスク達成の判定やビジュアルフィードバックなど、独自のロジックを追加できます。
+## ピック＆プレースのステートマシンを理解する
 
-以下のコードでは `FrankaPlaying` タスクを定義し、キューブが目標位置に到達したら色を緑に変える機能を追加しています。
+`FrankaPickPlace` クラスは、以下のフェーズを持つステートマシン（状態機械）として動作します：
 
-```python linenums="1" hl_lines="5 8-62 69 78-81"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.robot.manipulators.examples.franka import Franka
-from isaacsim.core.api.objects import DynamicCuboid
-from isaacsim.robot.manipulators.examples.franka.controllers import PickPlaceController
-from isaacsim.core.api.tasks import BaseTask  # タスクの基底クラス
-import numpy as np
+| フェーズ | 動作 | デフォルトのステップ数 |
+|---|---|---|
+| 0 | キューブ上方の x, y 位置へ移動 | 60 |
+| 1 | キューブへ下降 | 40 |
+| 2 | グリッパーを閉じて把持 | 20 |
+| 3 | キューブを持ち上げる | 40 |
+| 4 | キューブを目標位置へ移動 | 80 |
+| 5 | グリッパーを開いて解放 | 20 |
+| 6 | 上方へ退避 | 20 |
 
+各フェーズの所要ステップ数はコンストラクタに `events_dt` を渡してカスタマイズできます。また、`setup_scene()` の引数でキューブの初期位置・サイズ・目標位置を変更できます：
 
-class FrankaPlaying(BaseTask):
-    # ここでは BaseTask の一部のメソッドのみオーバーライドしている
-    # calculate_metrics, is_done など他にもオーバーライド可能なメソッドがある
-    def __init__(self, name):
-        super().__init__(name=name, offset=None)
-        self._goal_position = np.array([-0.3, -0.3, 0.0515 / 2.0])
-        self._task_achieved = False
-        return
-
-    # タスクに必要なアセットをシーンに配置する
-    def set_up_scene(self, scene):
-        super().set_up_scene(scene)
-        scene.add_default_ground_plane()
-        self._cube = scene.add(
-            DynamicCuboid(
-                prim_path="/World/random_cube",
-                name="fancy_cube",
-                position=np.array([0.3, 0.3, 0.3]),
-                scale=np.array([0.0515, 0.0515, 0.0515]),
-                color=np.array([0, 0, 1.0]),
-            )
-        )
-        self._franka = scene.add(
-            Franka(prim_path="/World/Fancy_Franka", name="fancy_franka")
-        )
-        return
-
-    # タスクの解決に必要な観測情報を返す
-    def get_observations(self):
-        cube_position, _ = self._cube.get_world_pose()
-        current_joint_positions = self._franka.get_joint_positions()
-        observations = {
-            self._franka.name: {
-                "joint_positions": current_joint_positions,
-            },
-            self._cube.name: {
-                "position": cube_position,
-                "goal_position": self._goal_position,
-            },
-        }
-        return observations
-
-    # 各物理ステップの前に呼ばれる
-    # タスク達成の判定やビジュアルのフィードバックを行う
-    def pre_step(self, control_index, simulation_time):
-        cube_position, _ = self._cube.get_world_pose()
-        if not self._task_achieved and np.mean(np.abs(self._goal_position - cube_position)) < 0.02:
-            # キューブが目標位置に到達したら色を緑に変更
-            self._cube.get_applied_visual_material().set_color(color=np.array([0, 1.0, 0]))
-            self._task_achieved = True
-        return
-
-    # リセット後に呼ばれる
-    # グリッパーを開いた状態にし、キューブの色を青に戻す
-    def post_reset(self):
-        self._franka.gripper.set_joint_positions(self._franka.gripper.joint_opened_positions)
-        self._cube.get_applied_visual_material().set_color(color=np.array([0, 0, 1.0]))
-        self._task_achieved = False
-        return
-
-
-class HelloWorld(BaseSample):
-    def __init__(self) -> None:
-        super().__init__()
-        return
-
-    def setup_scene(self):
-        world = self.get_world()
-        # タスクをワールドに追加する
-        world.add_task(FrankaPlaying(name="my_first_task"))
-        return
-
-    async def setup_post_load(self):
-        self._world = self.get_world()
-        # ワールドが初回リセット時にタスクの set_up_scene を呼び出し済み
-        # なのでタスク内のオブジェクトを取得できる
-        self._franka = self._world.scene.get_object("fancy_franka")
-        self._controller = PickPlaceController(
-            name="pick_place_controller",
-            gripper=self._franka.gripper,
-            robot_articulation=self._franka,
-        )
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
-
-    async def setup_post_reset(self):
-        self._controller.reset()
-        await self._world.play_async()
-        return
-
-    def physics_step(self, step_size):
-        # タスクからすべての観測情報を取得
-        current_observations = self._world.get_observations()
-        actions = self._controller.forward(
-            picking_position=current_observations["fancy_cube"]["position"],
-            placing_position=current_observations["fancy_cube"]["goal_position"],
-            current_joint_positions=current_observations["fancy_franka"]["joint_positions"],
-        )
-        self._franka.apply_action(actions)
-        if self._controller.is_done():
-            self._world.pause()
-        return
+```python linenums="1"
+# 各フェーズのステップ数をカスタマイズ
+controller = FrankaPickPlace(events_dt=[80, 60, 30, 60, 100, 30, 30])
+# キューブの位置・サイズ・目標位置をカスタマイズ
+controller.setup_scene(
+    cube_initial_position=[0.4, 0.2, 0.0258], cube_size=[0.05, 0.05, 0.05], target_position=[-0.4, 0.2, 0.12]
+)
 ```
 
-カスタムタスクでは、既存タスクにはない独自の機能（`pre_step` でのキューブの色変更など）を追加できます。一方、シーン構築や観測情報の定義を自前で実装する必要があります。
+コード全体は以下の通りです：
+
+```python linenums="1" hl_lines="27-34"
+"""FrankaPickPlace を使ったピック＆プレース。"""
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--test", action="store_true")
+args, _ = parser.parse_known_args()
+
+from isaacsim import SimulationApp
+
+simulation_app = SimulationApp({"headless": False})
+
+import isaacsim.core.experimental.utils.app as app_utils
+
+app_utils.enable_extension("isaacsim.robot.experimental.manipulators.examples")
+
+from isaacsim.core.experimental.objects import DomeLight, GroundPlane
+from isaacsim.core.simulation_manager import SimulationManager
+from isaacsim.robot.experimental.manipulators.examples.franka import FrankaPickPlace
+
+DEVICE = "cpu"
+
+GroundPlane("/World/ground_plane")
+dome_light = DomeLight("/World/DomeLight")
+dome_light.set_intensities(1000)
+
+# -- カスタムセットアップここから -- #
+# 各フェーズのステップ数をカスタマイズ
+controller = FrankaPickPlace(events_dt=[80, 60, 30, 60, 100, 30, 30])
+# キューブの位置・サイズ・目標位置をカスタマイズ
+controller.setup_scene(
+    cube_initial_position=[0.4, 0.2, 0.0258], cube_size=[0.05, 0.05, 0.05], target_position=[-0.4, 0.2, 0.12]
+)
+# -- カスタムセットアップここまで -- #
+
+SimulationManager.setup_simulation(dt=1.0 / 60.0, device=DEVICE)
+physics_scene = SimulationManager.get_physics_scenes()[0]
+physics_scene.set_enabled_gpu_dynamics(False)
+app_utils.play()
+# controller.reset() の前にアーティキュレーションの物理テンソルエンティティが
+# 有効になるよう、数ステップ実行しておく
+app_utils.update_app(steps=20)
+controller.reset()
+
+# メインループ: 完了するまで毎物理フレームでピック＆プレースを1ステップ進める
+step_count = 0
+max_test_steps = sum(controller.events_dt) + 60
+while simulation_app.is_running():
+    simulation_app.update()
+    step_count += 1
+    if app_utils.is_playing():
+        if not controller.is_done():
+            controller.forward()
+        else:
+            print("Pick-and-place completed")
+            app_utils.pause()
+            if args.test:
+                break
+    if args.test and step_count >= max_test_steps:
+        raise RuntimeError("Pick-and-place did not complete within the test step budget")
+
+app_utils.stop()
+simulation_app.close()
+```
+
+!!! tip "参考: さらに詳しいサンプル"
+    `--device`、`--ik-method`、`--test` オプションを備えた完全なスタンドアロンのピック＆プレースサンプルは、Isaac Sim 付属の `standalone_examples/api/isaacsim.robot.experimental.manipulators/franka/pick_place.py` を参照してください。
 
 ## まとめ
 
 このチュートリアルでは以下のトピックを扱いました：
 
-1. **Franka Panda** マニピュレータロボットのシーンへの追加
-2. **PickPlaceController** を使ったピック＆プレース動作の実装
-3. 既存の **PickPlace** タスクを使ったタスクの基本的な利用方法
-4. **BaseTask** を継承したカスタムタスクの作成と独自ロジックの追加
+1. `create_robot=True` を指定した **Franka クラス**によるマニピュレータロボットの追加
+2. **逆運動学（IK）とグリッパー制御**のための主要メソッド
+3. `FrankaPickPlace.setup_scene()` による**ピック＆プレースシーンの一括スポーン**
+4. `forward()` メソッドによる**ピック＆プレース動作の実行**
+5. ピック＆プレースの**ステートマシンの理解とカスタマイズ**
 
 ## 次のステップ
 
 次のチュートリアル「[複数ロボットの追加](05_adding_multiple_robots.md)」に進み、複数のロボットが連携するシミュレーションの構築方法を学びましょう。
-
-!!! note "注釈"
-    以降のチュートリアルでも主に Extension Workflow を使用して開発を進めます。Standalone Workflow への変換方法は [Hello World](01_hello_world.md#_11) で学んだ手順と同様です。

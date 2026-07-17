@@ -9,10 +9,10 @@ title: Hello Robot
 このチュートリアルを修了すると、以下の内容を習得できます:
 
 - Nucleus サーバーからロボットアセットをシーンに読み込む方法
-- `Robot` クラスを使用してロボットプリムをラップし、高レベル API でアクセスする方法
-- アーティキュレーション（関節構造）のジョイントに速度指令を送ってロボットを動かす方法
-- 物理演算コールバックを使ってシミュレーション中に継続的にアクションを適用する方法
-- `WheeledRobot` クラスを使って車輪型ロボットをより簡潔に制御する方法
+- `Articulation` クラスを使用してロボットプリムをラップし、高レベル API でアクセスする方法
+- `set_dof_velocity_targets()` でジョイントに速度指令を送ってロボットを動かす方法
+- `SimulationManager` の物理演算コールバックを使ってシミュレーション中に継続的にアクションを適用する方法
+- ジョイント名やインデックスを指定して特定のジョイントだけを制御する方法
 
 ## はじめに
 
@@ -58,66 +58,88 @@ title: Hello Robot
 
 ### Python API によるロボットの追加
 
-ロボットアセットは Omniverse Nucleus サーバーに格納されています。`get_assets_root_path()` でアセットのルートパスを取得し、`add_reference_to_stage()` でアセットを USD Stage に読み込みます。
+ロボットアセットは Omniverse Nucleus サーバーに格納されています。`get_assets_root_path()` でアセットのルートパスを取得し、`stage_utils.add_reference_to_stage()` でアセットを USD Stage に読み込みます。
 
 ただし、`add_reference_to_stage()` だけではロボットの 3D モデルと物理プロパティが Stage 上に配置されるだけで、関節の位置取得や速度指令といった**ロボットとしての制御**はできません。制御するには低レベルな USD API や PhysX API を直接操作する必要があります。
 
-そこで、読み込んだロボットのプリムを `Robot` クラスでラップし、`world.scene.add()` で Scene に登録します。`Robot` クラスは既存のプリムを**参照するだけ**で、プリムのコピーや変換は行いません。同じ `/World/Fancy_Robot` プリムに対して、`get_joint_positions()` や `apply_action()` などの高レベル API を提供する Python オブジェクトを作成します。
+そこで、読み込んだロボットのプリムを `Articulation` クラスでラップします。`Articulation` クラスは既存のプリムを**参照するだけ**で、プリムのコピーや変換は行いません。同じ `/World/Fancy_Robot` プリムに対して、`get_dof_positions()` や `set_dof_velocity_targets()` などの高レベル API を提供する Python オブジェクトを作成します。
 
 | 処理 | 役割 |
 |---|---|
-| `add_reference_to_stage()` | USD Stage 上にロボットのプリムを作成する |
-| `Robot(prim_path=...)` | 既存のプリムを参照し、高レベル API を提供する Python ラッパーを作成する |
-| `world.scene.add()` | ラッパーを Scene に登録し、World のライフサイクル（reset/step）と連携させる |
+| `stage_utils.add_reference_to_stage()` | USD Stage 上にロボットのプリムを作成する |
+| `Articulation(path)` | 既存のプリムを参照し、関節制御の高レベル API を提供する Python ラッパーを作成する |
 
-```python linenums="1" hl_lines="2-4 17-30 33-37"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.core.utils.nucleus import get_assets_root_path  # Nucleus アセットパス取得
-from isaacsim.core.utils.stage import add_reference_to_stage   # USD Stage へのアセット追加
-from isaacsim.core.api.robots import Robot                     # ロボット高レベル API クラス
+まず必要なパッケージをインポートします：
+
+```python linenums="1"
 import carb
+import isaacsim.core.experimental.utils.stage as stage_utils
+from isaacsim.core.experimental.prims import Articulation
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
+```
+
+`setup_scene` で Jetbot をステージに追加します：
+
+```python linenums="1"
+        # Jetbot ロボットをステージに追加
+        asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
+        stage_utils.add_reference_to_stage(usd_path=asset_path, path="/World/Fancy_Robot")
+```
+
+`setup_post_load` で `Articulation` クラスでラップします：
+
+```python linenums="1"
+        # 制御のために Jetbot を Articulation クラスでラップ
+        self._jetbot = Articulation("/World/Fancy_Robot")
+```
+
+コード全体は以下の通りです：
+
+```python linenums="1" hl_lines="2-6 28-32 34-43"
+# -- Isaac パッケージのインポートここから -- #
+import carb
+import isaacsim.core.experimental.utils.stage as stage_utils
+from isaacsim.core.experimental.prims import Articulation
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
+
+# -- Isaac パッケージのインポートここまで -- #
 
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
 
     def setup_scene(self):
-        world = self.get_world()
-        world.scene.add_default_ground_plane()
-
-        # Nucleus サーバーから /Isaac フォルダのルートパスを取得
-        assets_root_path = get_assets_root_path()
-        if assets_root_path is None:
-            # carb でターミナルに警告・エラー・情報を出力できる
-            carb.log_error("Could not find nucleus server with /Isaac folder")
-
-        asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
-        # USD ファイルへの参照として新しい XFormPrim を作成する
-        # メモリのポインタと同様の仕組み
-        add_reference_to_stage(usd_path=asset_path, prim_path="/World/Fancy_Robot")
-
-        # Jetbot のプリムルートを Robot クラスでラップし、Scene に追加する
-        # これにより高レベル API で属性の取得・設定や物理ハンドルの初期化が可能になる
-        # 注意: この呼び出しは Stage 上に Jetbot を新規作成するわけではない
-        #       add_reference_to_stage で既に作成済み
-        jetbot_robot = world.scene.add(
-            Robot(prim_path="/World/Fancy_Robot", name="fancy_robot")
+        # 地面を追加
+        ground_plane = stage_utils.add_reference_to_stage(
+            usd_path=get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
         )
 
-        # リセット前はアーティキュレーション情報にアクセスできない（物理ハンドル未初期化のため）
-        # setup_post_load は初回リセット後に呼ばれるので、そこでアクセスする
-        print("Num of degrees of freedom before first reset: " + str(jetbot_robot.num_dof))  # None と出力される
-        return
+        # Nucleus サーバーからアセットのルートパスを取得
+        assets_root_path = get_assets_root_path()
+        if assets_root_path is None:
+            carb.log_error("Could not find nucleus server with /Isaac folder")
+            return
+
+        # -- Jetbot の追加ここから -- #
+        # Jetbot ロボットをステージに追加
+        asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
+        stage_utils.add_reference_to_stage(usd_path=asset_path, path="/World/Fancy_Robot")
+        # -- Jetbot の追加ここまで -- #
 
     async def setup_post_load(self):
-        self._world = self.get_world()
-        self._jetbot = self._world.scene.get_object("fancy_robot")
-        # 初回リセット後はアーティキュレーション情報にアクセス可能
-        print("Num of degrees of freedom after first reset: " + str(self._jetbot.num_dof))  # 2 と出力される
-        print("Joint Positions after first reset: " + str(self._jetbot.get_joint_positions()))
-        return
+        # -- アーティキュレーションここから -- #
+        # 制御のために Jetbot を Articulation クラスでラップ
+        self._jetbot = Articulation("/World/Fancy_Robot")
+        # -- アーティキュレーションここまで -- #
+
+        # Jetbot の情報を出力
+        print("Number of DOFs: " + str(self._jetbot.num_dofs))
+        print("DOF names: " + str(self._jetbot.dof_names))
+        print("Joint Positions: " + str(self._jetbot.get_dof_positions().numpy()))
 ```
 
 !!! info "参照（Reference）について"
@@ -128,118 +150,140 @@ class HelloWorld(BaseSample):
 1. **Ctrl+S** を押してコードを保存し、Isaac Sim をホットリロードします。
 2. Hello World サンプル拡張機能のウィンドウを再度開きます。
 3. **File > New From Stage Template > Empty** でワールドを新規作成してから、**LOAD** ボタンを押します。
-4. ターミナルの出力を確認します。
+4. Jetbot がシーンに表示され、ターミナルに自由度（DOF）数やジョイント名が出力されることを確認します。
+
+シーンはロードされましたが、ロボットはまだ動きません。次のセクションでロボットを動かす方法を説明します。
 
 ### 物理ハンドルに関する重要なポイント
 
-`setup_scene` と `setup_post_load` で表示される `num_dof`（自由度の数）が異なることに注目してください。
-
-| タイミング | `num_dof` の値 | 理由 |
-|---|---|---|
-| `setup_scene`（リセット前） | `None` | 物理ハンドルが未初期化 |
-| `setup_post_load`（リセット後） | `2` | 物理ハンドルが初期化済み（左右の車輪） |
+`Articulation` クラスの作成とプロパティ取得を `setup_scene` ではなく `setup_post_load` で行っていることに注目してください。
 
 !!! warning "注意"
-    アーティキュレーション（関節構造）のプロパティ（自由度、ジョイント位置など）は、最初のリセットが行われるまでアクセスできません。これらの情報を取得する処理は、必ず `setup_post_load` 以降で行ってください。
+    アーティキュレーション（関節構造）のプロパティ（自由度、ジョイント位置など）は、物理ハンドルが初期化されるまでアクセスできません。`setup_post_load` は物理ステップ 1 回分が完了した後に呼ばれるため、これらの情報に安全にアクセスできます。アーティキュレーションを扱う処理は、必ず `setup_post_load` 以降で行ってください。
 
 ## ロボットを動かす
 
-次に、Jetbot の車輪に速度指令を送って動かします。
+次に、Jetbot の車輪のジョイントにランダムな速度指令を送って動かします。
 
-ロボットの動作制御には **ArticulationController**（アーティキュレーションコントローラ）を使用します。これは**暗黙的な PD コントローラ**として動作し、PD ゲインの設定、アクションの適用、制御モードの切り替えなどを行えます。
+ジョイントへの速度指令には `Articulation` クラスの `set_dof_velocity_targets()` を使用します。これは物理エンジンに組み込まれた**暗黙的な PD コントローラ**への目標速度の設定です。
 
 ??? info "暗黙的な PD コントローラとは（クリックで展開）"
     実際のロボットでは、モータに「目標位置」や「目標速度」を指定すると、モータドライバ内の制御器が目標値と現在値の差に応じて電流（トルク）を計算し、関節を動かします。
 
-    Isaac Sim の物理エンジン（PhysX）でも同様の仕組みが内部に組み込まれています。`joint_positions` や `joint_velocities` で目標値を指定すると、PhysX が内部で **PD 制御（比例-微分制御）** を行い、目標に追従するために必要な力を自動計算します。
+    Isaac Sim の物理エンジン（PhysX）でも同様の仕組みが内部に組み込まれています。目標位置や目標速度を指定すると、PhysX が内部で **PD 制御（比例-微分制御）** を行い、目標に追従するために必要な力を自動計算します。
 
     $$
     F = K_p \cdot (x_{\text{target}} - x_{\text{current}}) + K_d \cdot (\dot{x}_{\text{target}} - \dot{x}_{\text{current}})
     $$
 
-    この PD コントローラはユーザーが明示的に実装するのではなく、物理エンジンに**暗黙的に**組み込まれているため、「暗黙的な PD コントローラ」と呼ばれます。$K_p$（比例ゲイン）と $K_d$（微分ゲイン）は `ArticulationController` を通じて調整できます。
+    この PD コントローラはユーザーが明示的に実装するのではなく、物理エンジンに**暗黙的に**組み込まれているため、「暗黙的な PD コントローラ」と呼ばれます。
 
-`ArticulationAction` には以下の3つのパラメータを指定できます：
+毎物理ステップで速度指令を送るために、チュートリアル 1 で学んだ `SimulationManager` の物理演算コールバックを使用します。
 
-| パラメータ | 説明 |
-|---|---|
-| `joint_positions` | 各ジョイントの目標位置 |
-| `joint_velocities` | 各ジョイントの目標速度 |
-| `joint_efforts` | 各ジョイントに適用するトルク/力 |
+`SimulationManager` をインポートします：
 
-いずれも `numpy` 配列、`list`、または `None`（その自由度には指令を送らない）を指定できます。
+```python linenums="1"
+from isaacsim.core.simulation_manager import SimulationManager
+```
 
-```python linenums="1" hl_lines="2 30-33 36-37 39-47"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.core.utils.types import ArticulationAction  # ジョイント指令のデータ型
-from isaacsim.core.utils.nucleus import get_assets_root_path
-from isaacsim.core.utils.stage import add_reference_to_stage
-from isaacsim.core.api.robots import Robot
-import numpy as np
+コールバックを登録します：
+
+```python linenums="1"
+        # 毎物理ステップでアクションを送るための物理演算コールバックを登録
+        from isaacsim.core.simulation_manager.impl.isaac_events import IsaacEvents
+
+        self._physics_callback_id = SimulationManager.register_callback(
+            self.send_robot_actions, IsaacEvents.POST_PHYSICS_STEP
+        )
+```
+
+指令を送る関数を定義します：
+
+```python linenums="1"
+    def send_robot_actions(self, dt, context):
+        # 車輪のジョイントにランダムな目標速度を適用する
+        # Jetbot は 2 つの DOF を持つ: left_wheel_joint と right_wheel_joint
+        random_velocities = 5 * np.random.rand(1, 2)  # 形状: (1, num_dofs)
+        self._jetbot.set_dof_velocity_targets(random_velocities)
+```
+
+コード全体は以下の通りです：
+
+```python linenums="1" hl_lines="6-9 17 40-47 49-56 58-62"
 import carb
+import isaacsim.core.experimental.utils.stage as stage_utils
+import numpy as np
+from isaacsim.core.experimental.prims import Articulation
+
+# -- SimulationManager のインポートここから -- #
+from isaacsim.core.simulation_manager import SimulationManager
+
+# -- SimulationManager のインポートここまで -- #
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
 
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
+        self._physics_callback_id = None
 
     def setup_scene(self):
-        world = self.get_world()
-        world.scene.add_default_ground_plane()
+        # 地面を追加
+        ground_plane = stage_utils.add_reference_to_stage(
+            usd_path=get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
+        )
+
+        # Nucleus サーバーからアセットのルートパスを取得
         assets_root_path = get_assets_root_path()
         if assets_root_path is None:
             carb.log_error("Could not find nucleus server with /Isaac folder")
+            return
+
+        # Jetbot ロボットをステージに追加
         asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
-        add_reference_to_stage(usd_path=asset_path, prim_path="/World/Fancy_Robot")
-        jetbot_robot = world.scene.add(
-            Robot(prim_path="/World/Fancy_Robot", name="fancy_robot")
-        )
-        return
+        stage_utils.add_reference_to_stage(usd_path=asset_path, path="/World/Fancy_Robot")
 
     async def setup_post_load(self):
-        self._world = self.get_world()
-        self._jetbot = self._world.scene.get_object("fancy_robot")
-        # アーティキュレーションコントローラを取得（初回リセット後のみ呼び出し可能）
-        # PD ゲインの設定やアクションの適用に使用する
-        self._jetbot_articulation_controller = self._jetbot.get_articulation_controller()
-        # 物理演算コールバックを追加し、毎ステップごとにアクションを適用する
-        self._world.add_physics_callback("sending_actions", callback_fn=self.send_robot_actions)
-        return
+        # 制御のために Jetbot を Articulation クラスでラップ
+        self._jetbot = Articulation("/World/Fancy_Robot")
 
-    # 物理演算コールバック: 各ステップで呼ばれ、ロボットにアクションを送信する
-    def send_robot_actions(self, step_size):
-        # apply_action は ArticulationAction を受け取り、各ジョイントに指令を送る
-        # joint_positions, joint_efforts, joint_velocities を指定可能
-        # None を指定した自由度にはこのステップでは指令を送らない
-        # 同じ処理は self._jetbot.apply_action(...) からも呼び出せる
-        self._jetbot_articulation_controller.apply_action(
-            ArticulationAction(
-                joint_positions=None,
-                joint_efforts=None,
-                joint_velocities=5 * np.random.rand(2,)  # 左右の車輪にランダムな速度を指定
-            )
+        # -- コールバック登録ここから -- #
+        # 毎物理ステップでアクションを送るための物理演算コールバックを登録
+        from isaacsim.core.simulation_manager.impl.isaac_events import IsaacEvents
+
+        self._physics_callback_id = SimulationManager.register_callback(
+            self.send_robot_actions, IsaacEvents.POST_PHYSICS_STEP
         )
-        return
+        # -- コールバック登録ここまで -- #
+
+    # -- アクション送信ここから -- #
+    def send_robot_actions(self, dt, context):
+        # 車輪のジョイントにランダムな目標速度を適用する
+        # Jetbot は 2 つの DOF を持つ: left_wheel_joint と right_wheel_joint
+        random_velocities = 5 * np.random.rand(1, 2)  # 形状: (1, num_dofs)
+        self._jetbot.set_dof_velocity_targets(random_velocities)
+
+    # -- アクション送信ここまで -- #
+
+    def physics_cleanup(self):
+        # 拡張機能のアンロード時にコールバックをクリーンアップ
+        if self._physics_callback_id is not None:
+            SimulationManager.deregister_callback(self._physics_callback_id)
+            self._physics_callback_id = None
 ```
 
-!!! note "2つの `apply_action` の使い分け"
-    コード中のコメントにある通り、同じ処理は `self._jetbot.apply_action(...)` でも呼び出せます。それぞれの特徴は以下の通りです：
-
-    | 呼び出し方 | 特徴 |
-    |---|---|
-    | `robot.get_articulation_controller().apply_action()` | PD ゲインの変更や制御モードの切り替えなど、ArticulationController の詳細な設定にアクセスできる |
-    | `robot.apply_action()` | 簡潔に書ける。内部で ArticulationController を呼び出しているため動作は同じ |
-
-    PD ゲインの調整が不要な場合は `robot.apply_action()` で十分です。次のチュートリアルからはこちらの簡潔な書き方を使用します。
+!!! note "速度指令の配列形状"
+    experimental API はバッチ処理を前提としているため、`set_dof_velocity_targets()` に渡す配列の形状は `(オブジェクト数, DOF 数)` になります。Jetbot 1 台の場合は `(1, 2)` の配列（左右の車輪）を渡します。
 
 コードを保存してシミュレーションを確認します：
 
 1. **Ctrl+S** を押してコードを保存し、Isaac Sim をホットリロードします。
 2. **File > New From Stage Template > Empty** でワールドを新規作成してから、**LOAD** ボタンを押します。
-3. **PLAY** ボタンを押して、Jetbot がランダムに動き回る様子を確認します。
+3. Jetbot がランダムな速度で動き回る様子を確認します。
 
-![Jetbot がランダムに動き回る様子](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/core_api_tutorials_2_2.webp)
+![Jetbot がランダムに動き回る様子](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/core_api_tutorials_2_2.webp)
 
 毎ステップで左右の車輪にランダムな速度（0〜5 の範囲）を適用しているため、Jetbot は不規則に動きます。
 
@@ -260,87 +304,111 @@ class HelloWorld(BaseSample):
 **問題 3: 5秒後に停止させる** — シミュレーション開始から5秒後に Jetbot を停止させてみましょう。
 
 ??? tip "ヒント（クリックで展開）"
-    `step_size` を毎ステップ累積して経過時間を計算し、条件分岐で停止させます。
+    コールバックの引数 `dt` を毎ステップ累積して経過時間を計算し、条件分岐で停止させます。
 
-## WheeledRobot クラスを使う
+## 特定のジョイントを制御する
 
-ここまでは汎用的な `Robot` クラスを使用していました。Isaac Sim には、特定のロボットタイプに特化したクラスも用意されています。車輪型ロボットの場合は `WheeledRobot` クラスを使うことで、より簡潔にコードを記述できます。
+ジョイントは名前またはインデックスを指定して個別に制御することもできます。車輪ジョイントのインデックスを取得し、特定のジョイントにだけ速度を適用する方法を見てみましょう。
 
-`Robot` クラスと `WheeledRobot` クラスの違いを見てみましょう：
+車輪ジョイントのインデックスを取得します：
 
-| 特徴 | `Robot` クラス | `WheeledRobot` クラス |
-|---|---|---|
-| アセット読み込み | `add_reference_to_stage` + `Robot()` の2段階 | `WheeledRobot()` で一括（`create_robot=True`） |
-| 車輪のジョイント | インデックスで指定 | ジョイント名で指定可能 |
-| アクション適用 | `get_articulation_controller().apply_action()` | `apply_wheel_actions()` で直接指定 |
+```python linenums="1"
+        # 利用可能な DOF 名を出力
+        print("Available DOFs:", self._jetbot.dof_names)
 
-```python linenums="1" hl_lines="3 15-23 30-31"
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.core.utils.nucleus import get_assets_root_path
-from isaacsim.robot.wheeled_robots.robots import WheeledRobot  # 車輪型ロボット専用クラス
-from isaacsim.core.utils.types import ArticulationAction
+        # 特定の車輪ジョイントのインデックスを取得
+        self._wheel_indices = self._jetbot.get_dof_indices(["left_wheel_joint", "right_wheel_joint"]).numpy()
+        print("Wheel indices:", self._wheel_indices)
+```
+
+インデックスを指定して車輪速度を設定します：
+
+```python linenums="1"
+        # 特定の DOF インデックスに目標速度を適用
+        wheel_velocities = np.array([[10.0, 10.0]])  # 両輪同速 = 前進
+        self._jetbot.set_dof_velocity_targets(wheel_velocities, dof_indices=self._wheel_indices)
+```
+
+コード全体は以下の通りです：
+
+```python linenums="1" hl_lines="31-38 48-52"
+import carb
+import isaacsim.core.experimental.utils.stage as stage_utils
 import numpy as np
+from isaacsim.core.experimental.prims import Articulation
+from isaacsim.core.simulation_manager import SimulationManager
+from isaacsim.examples.base.base_sample_experimental import BaseSample
+from isaacsim.storage.native import get_assets_root_path
 
 
 class HelloWorld(BaseSample):
     def __init__(self) -> None:
         super().__init__()
-        return
+        self._physics_callback_id = None
 
     def setup_scene(self):
-        world = self.get_world()
-        world.scene.add_default_ground_plane()
-        assets_root_path = get_assets_root_path()
-        jetbot_asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
-        # WheeledRobot はアセットの読み込みと Robot ラッパーの作成を一度に行う
-        self._jetbot = world.scene.add(
-            WheeledRobot(
-                prim_path="/World/Fancy_Robot",
-                name="fancy_robot",
-                wheel_dof_names=["left_wheel_joint", "right_wheel_joint"],  # 車輪のジョイント名
-                create_robot=True,       # USD アセットの読み込みも同時に行う
-                usd_path=jetbot_asset_path,
-            )
+        # 地面を追加
+        ground_plane = stage_utils.add_reference_to_stage(
+            usd_path=get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd",
+            path="/World/ground",
         )
-        return
+
+        # Jetbot ロボットをステージに追加
+        assets_root_path = get_assets_root_path()
+        asset_path = assets_root_path + "/Isaac/Robots/NVIDIA/Jetbot/jetbot.usd"
+        stage_utils.add_reference_to_stage(usd_path=asset_path, path="/World/Fancy_Robot")
 
     async def setup_post_load(self):
-        self._world = self.get_world()
-        self._jetbot = self._world.scene.get_object("fancy_robot")
-        self._world.add_physics_callback("sending_actions", callback_fn=self.send_robot_actions)
-        return
+        # Jetbot を Articulation クラスでラップ
+        self._jetbot = Articulation("/World/Fancy_Robot")
 
-    def send_robot_actions(self, step_size):
-        # apply_wheel_actions で車輪に直接アクションを適用できる
-        self._jetbot.apply_wheel_actions(
-            ArticulationAction(
-                joint_positions=None,
-                joint_efforts=None,
-                joint_velocities=5 * np.random.rand(2,)  # 左右の車輪にランダムな速度を指定
-            )
+        # -- インデックス取得ここから -- #
+        # 利用可能な DOF 名を出力
+        print("Available DOFs:", self._jetbot.dof_names)
+
+        # 特定の車輪ジョイントのインデックスを取得
+        self._wheel_indices = self._jetbot.get_dof_indices(["left_wheel_joint", "right_wheel_joint"]).numpy()
+        print("Wheel indices:", self._wheel_indices)
+        # -- インデックス取得ここまで -- #
+
+        # 物理演算コールバックを登録
+        from isaacsim.core.simulation_manager.impl.isaac_events import IsaacEvents
+
+        self._physics_callback_id = SimulationManager.register_callback(
+            self.send_robot_actions, IsaacEvents.POST_PHYSICS_STEP
         )
-        return
+
+    def send_robot_actions(self, dt, context):
+        # -- 車輪速度の設定ここから -- #
+        # 特定の DOF インデックスに目標速度を適用
+        wheel_velocities = np.array([[10.0, 10.0]])  # 両輪同速 = 前進
+        self._jetbot.set_dof_velocity_targets(wheel_velocities, dof_indices=self._wheel_indices)
+        # -- 車輪速度の設定ここまで -- #
+
+    def physics_cleanup(self):
+        if self._physics_callback_id is not None:
+            SimulationManager.deregister_callback(self._physics_callback_id)
+            self._physics_callback_id = None
 ```
 
-`WheeledRobot` を使った場合のポイント：
-
-- `add_reference_to_stage` の呼び出しが不要（`create_robot=True` でアセット読み込みも含まれる）
-- `wheel_dof_names` で車輪のジョイント名を明示的に指定できる
-- `apply_wheel_actions()` で車輪に特化したアクション適用が可能
+Jetbot のように全ジョイントが制御対象の場合はインデックス指定は必須ではありませんが、多数のジョイントを持つロボット（マニピュレータなど）で一部のジョイントだけを制御したい場合に、この方法が役立ちます。
 
 ## まとめ
 
 このチュートリアルでは以下のトピックを扱いました：
 
-1. **Nucleus サーバー**からロボットアセットを読み込みシーンに追加する方法
-2. **Robot クラス**でロボットプリムをラップし、高レベル API でアクセスする方法
-3. **ArticulationController** と **ArticulationAction** によるジョイント制御
-4. **物理演算コールバック**を使ったシミュレーション中の継続的なアクション適用
-5. **WheeledRobot クラス**を使った車輪型ロボットの簡潔な制御
+1. `stage_utils.add_reference_to_stage()` による**ロボットのステージへの追加**
+2. **Articulation クラス**でロボットプリムをラップし、高レベル API でアクセスする方法
+3. `set_dof_velocity_targets()` による**速度制御**
+4. **SimulationManager** を使った物理演算コールバックの登録
+5. ジョイント名・インデックスによる**特定ジョイントの制御**
 
 ## 次のステップ
 
 次のチュートリアル「[コントローラの追加](03_adding_a_controller.md)」に進み、ロボットにコントローラを追加してより高度な動作を実現する方法を学びましょう。
 
-!!! note "注釈"
-    以降のチュートリアルでも主に Extension Workflow を使用して開発を進めます。Standalone Workflow への変換方法は [Hello World](01_hello_world.md#_11) で学んだ手順と同様です。
+!!! note "公式チュートリアルでの次のステップ"
+    「コントローラの追加」は Isaac Sim 6.0 の公式ドキュメントからは削除されたページで、本サイトでは 5.1.0 時点の内容をもとにした独自解説として保持しています。公式のチュートリアルシリーズでは、次は「[マニピュレータロボットの追加](04_adding_a_manipulator_robot.md)」に進みます。
+
+!!! tip "さらに学ぶには"
+    Isaac Sim には車輪型ロボットやマニピュレータ向けの拡張機能（`isaacsim.robot.experimental.wheeled_robots`、`isaacsim.robot.experimental.manipulators.examples` など）も用意されています。`standalone_examples/api/isaacsim.robot.experimental.manipulators/franka` や `standalone_examples/api/isaacsim.robot.experimental.manipulators/universal_robots/` にあるスタンドアロンサンプルも参考にしてください。

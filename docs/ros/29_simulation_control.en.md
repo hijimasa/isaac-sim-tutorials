@@ -11,12 +11,15 @@ title: ROS2 Simulation Control
 
 Control Isaac Sim itself over ROS 2 using the standard [simulation_interfaces](https://github.com/ros-simulation/simulation_interfaces) package (`sudo apt install ros-<distro>-simulation-interfaces`) — enabling simulator-agnostic automated-testing workflows.
 
+!!! note
+    The extension targets simulation_interfaces 1.5.0 or newer; services missing from the installed package skip registration (a startup warning names the unavailable type). RoboStack Jazzy (used by the Pixi-based workspaces) currently ships 1.2.0, which lacks SpawnEntities.
+
 Enable the extension with `./isaac-sim.sh --/isaac/startup/ros_sim_control_extension=True` or via the Extension Manager (`isaacsim.ros2.sim_control`).
 
 ## Capabilities
 
 - **Simulation state** — `/set_simulation_state` (0 stopped / 1 playing / 2 paused / 3 quitting), `/get_simulation_state`, `/step_simulation` (must be paused; blocks until done), and the `/simulate_steps` action (per-step feedback, cancelable).
-- **Entities** — `/get_entities` (POSIX-regex filter over prim paths), `/get_entity_info`, `/get_entity_state` / `/get_entities_states` (pose always; velocities only with RigidBodyAPI; acceleration always zero), `/spawn_entity` (URI → USD reference, empty URI → Xform; spawned prims get a `simulationInterfacesSpawned` attribute), `/delete_entity`, `/set_entity_state` (world frame only), `/reset_simulation` (removes all spawned prims and restarts the timeline).
+- **Entities** — `/get_entities` (POSIX-regex filter over prim paths), `/get_entity_info`, `/get_entity_state` / `/get_entities_states` (pose always; velocities only with RigidBodyAPI; acceleration always zero), `/spawn_entity` (deprecated — use `/spawn_entities`; URI → USD reference, empty URI → Xform; spawned prims get a `simulationInterfacesSpawned` attribute), `/spawn_entities` (batch spawn with per-entity results; requires simulation_interfaces >= 1.4.0 on Humble, >= 1.5.0 on Jazzy; each entry uses `entity_resource.uri`), `/get_entity_bounds` (world-space AABB), `/get_spawnables` (discover spawnable USD assets; default search path /Isaac/Samples/ROS2/Robots, extra paths via `sources`), `/delete_entity`, `/set_entity_state` (world frame only), `/reset_simulation` (removes all spawned prims and restarts the timeline).
 - **Worlds** — `/load_world` (USD formats only; not while playing), `/unload_world`, `/get_current_world`, `/get_available_worlds` (searches /Isaac/Environments and /Isaac/Samples/ROS2/Scenario; supports TagsFilter, additional_sources, offline_only).
 
 Example:

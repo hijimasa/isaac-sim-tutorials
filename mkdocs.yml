@@ -100,7 +100,7 @@ plugins:
               - コントローラの追加: core_api/03_adding_a_controller.md
               - マニピュレータロボットの追加: core_api/04_adding_a_manipulator_robot.md
               - 複数ロボットの追加: core_api/05_adding_multiple_robots.md
-              - 複数タスクの実行: core_api/06_multiple_tasks.md
+              - 複数ロボットシナリオ: core_api/06_multiple_tasks.md
               - 属性の追加: core_api/07_adding_props.md
               - データロギング: core_api/08_data_logging.md
               - 変形可能物体（Deformable Body）: core_api/09_deformable_body.md
@@ -123,6 +123,7 @@ plugins:
             - インポート・エクスポート:
               - importer_exporter/index.md
               - URDF インポート: importer_exporter/01_import_urdf.md
+              - ROS 2 ノードからの URDF インポート: importer_exporter/01a_import_urdf_from_ros2.md
               - URDF エクスポート: importer_exporter/02_export_urdf.md
               - MJCF インポート: importer_exporter/03_import_mjcf.md
               - 一般 3D モデルのインポート: importer_exporter/04_general_3d_model_importer.md
@@ -249,7 +250,7 @@ plugins:
               - Adding a Controller: core_api/03_adding_a_controller.md
               - Adding a Manipulator Robot: core_api/04_adding_a_manipulator_robot.md
               - Adding Multiple Robots: core_api/05_adding_multiple_robots.md
-              - Multiple Tasks: core_api/06_multiple_tasks.md
+              - Multiple Robot Scenarios: core_api/06_multiple_tasks.md
               - Adding Props: core_api/07_adding_props.md
               - Data Logging: core_api/08_data_logging.md
               - Deformable Body: core_api/09_deformable_body.md
@@ -272,6 +273,7 @@ plugins:
             - Import & Export:
               - importer_exporter/index.md
               - Import URDF: importer_exporter/01_import_urdf.md
+              - Import URDF from a ROS 2 Node: importer_exporter/01a_import_urdf_from_ros2.md
               - Export URDF: importer_exporter/02_export_urdf.md
               - Import MJCF: importer_exporter/03_import_mjcf.md
               - Importing General 3D Models: importer_exporter/04_general_3d_model_importer.md

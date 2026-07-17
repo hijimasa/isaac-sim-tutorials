@@ -15,10 +15,10 @@ Extend the running UR10 palletizing demo to trigger SDG at specific events **wit
 
 Two capture events, monitored via timeline ticks + overlap checks around the active bin:
 
-- **Bin flip** (bin on the flipping helper): PathTracing render mode; data taken directly from rgb + instance segmentation annotators via `get_data()` and saved with helper functions; lights randomized from a color palette (`rep.distribution.choice`), camera cycled through predefined positions (`rep.distribution.sequence`), both `on_frame()`.
-- **Bin on pallet**: BasicWriter; original materials cached and restored afterwards; bin material colors randomized every frame, pallet textures (`rep.randomizer.texture`) and camera poses every 4 frames (`on_frame(interval=4)`).
+- **Bin flip** (bin on the flipping helper): PathTracing render mode (`spp=16`, `total_spp=32`); data taken directly from rgb + instance segmentation annotators via `get_data()` and saved with `write_image` from `omni.replicator.core.functional`; lights randomized from a color palette (`rep.distribution.choice`), camera cycled through predefined positions (`rep.distribution.sequence`), both `on_frame()`; afterwards the render mode returns to RealTimePathTracing.
+- **Bin on pallet**: DiskBackend + BasicWriter; original materials cached and restored afterwards; bin material colors randomized every frame, pallet textures (`rep.randomizer.texture`) and camera poses every 4 frames (`on_frame(interval=4)`).
 
-Both scenarios dispatch a delayed preview command so graphs are fully built before `step_async`, then destroy render products and graphs and resume the timeline. Run from the Script Editor (full code on the official page; adjust `NUM_CAPTURES`).
+Both scenarios destroy render products and graphs afterwards and resume the timeline. Run from the Script Editor (full code on the official page); captures and per-scenario frame counts are parameters of `run_example_async(num_captures, bin_flip_frames, pallet_frames)` (defaults 4 / 4 / 16), and the demo loads `BinStacking` from `isaacsim.cortex.examples.ur10_palletizing`.
 
 ## Next Steps
 

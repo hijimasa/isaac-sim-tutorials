@@ -24,6 +24,9 @@ Isaac Lab チュートリアルシリーズに関連する**セットアップ�
 | メモリ | 32 GB 以上 |
 | GPU VRAM | 16 GB 以上推奨 |
 
+!!! warning "Isaac Sim 6.0 には未対応（2026 年 7 月時点）"
+    本サイトのチュートリアルは Isaac Sim 6.0.1 を基準にしていますが、**Isaac Lab は本ページ執筆時点で Isaac Sim 6.0 に対応しておらず、公式インストールガイドも Isaac Sim 5.1.0 の使用を推奨しています**。そのため本ページの手順（`isaacsim==5.1.0` のインストールなど）は 5.1.0 前提のままです。Isaac Lab で学習を回す環境は Isaac Sim 5.1.0 で構築し、6.0 対応版がリリースされたら[公式インストールガイド](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html)の最新手順に従ってください（学習済みポリシーのデモ実行自体は Isaac Sim 6.0.1 単体で可能です）。
+
 !!! note "Windows は WSL 不要（ネイティブ動作）"
     ROS 2 と異なり、**Isaac Lab は Windows 11 でネイティブに動作**します。Linux との違いは、スクリプトが `isaaclab.sh` ではなく `isaaclab.bat` になること、パス区切りがバックスラッシュ（`\`）になることくらいです。
 

@@ -41,7 +41,9 @@ Isaac Sim provides two ways to import URDF files:
 This tutorial uses the **Direct URDF Importer**, which does not require ROS 2.
 
 !!! note "If you want to use the ROS 2 URDF Importer"
-    If you have ROS 2 installed, you can also import via **File > Import from ROS 2 URDF Node**. In that case, publish the URDF with `ros2 launch ur_description view_ur.launch.py ur_type:=ur10e` and specify the node name `robot_state_publisher` in Isaac Sim. See the [official documentation](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_import_assemble_manipulator.html) for details.
+    If you have ROS 2 installed, you can also import via **File > Import from ROS 2 URDF Node**. In that case, publish the URDF with `ros2 launch ur_description view_ur.launch.py ur_type:=ur10e`, then in Isaac Sim type the node name `robot_state_publisher` in the **ROS2 Node** field, click **Find Node**, and set **Robot Type** to `Manipulator` and **Base Type** to `Fixed`.
+
+    Isaac Sim 6.0 uses **Python 3.12**, so your ROS 2 environment must also run Python 3.12. Ubuntu 24.04 + ROS 2 Jazzy works as-is, but on Ubuntu 22.04 (Python 3.10) the workspace must be rebuilt with the Isaac Sim ROS Workspace `build_ros.sh` script. On Windows, only Pixi-based ROS 2 Jazzy is supported, and WSL2 does not support this workflow. See the [official documentation](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_import_assemble_manipulator.html) for details.
 
 ### Reference Assets
 
@@ -50,9 +52,12 @@ Sample assets bundled with Isaac Sim can be used as references. Access them from
 | Asset | Path | Purpose |
 |---|---|---|
 | **import_manipulator folder** | `Samples > Rigging > Manipulator > import_manipulator` | Reference URDF files and completed USD files |
-| **UR10e (completed)** | `import_manipulator/ur10e/ur/ur.usd` | UR10e reference asset |
-| **Manual connection (completed)** | `import_manipulator/ur10e/ur/ur_gripper_manual.usd` | Completed GUI manual connection example |
-| **Robot Assembler (completed)** | `import_manipulator/ur10e/ur/ur_gripper.usd` | Completed Robot Assembler connection example |
+| **UR10e (freshly imported)** | `import_manipulator/ur10e/ur/ur.usda` | UR10e reference asset |
+| **UR10e (gains tuned)** | `import_manipulator/ur10e/ur_gains_tuner/ur.usda` | Reference asset with gains set via the Gain Tuner |
+| **Gripper connected (completed)** | `import_manipulator/ur10e/ur_gripper/ur.usda` | Completed Robot Assembler connection example |
+
+!!! note "Asset path changes in Isaac Sim 6.0"
+    The `ur/ur_gripper_manual.usd` (completed GUI manual connection example) and `ur/ur_gripper.usd` provided up to Isaac Sim 5.1 were consolidated into the `ur_gripper/ur.usda` asset above in 6.0.
 
 !!! tip "Using bundled URDF files"
     URDF files are also bundled in the Isaac Sim installation directory. If you want to skip the XACRO conversion steps, you can use these files directly:
@@ -216,16 +221,14 @@ Import the URDF files generated in Step 1 into Isaac Sim.
 1. From the Isaac Sim menu, select **File > Import**.
 2. In the file selection dialog, select the `Universal_Robots_ROS2_Description/urdf/ur10e.urdf` file generated in Step 1.
 3. The **URDF Importer** dialog will appear.
-4. Set the **Output Directory** to your desired save location (e.g., `~/Desktop`).
-5. In the **Joint Configuration** section, configure the following:
-    - Select **Natural Frequency** as the configuration method
-    - Set the **Natural Frequency** to **300** for all joints
+4. Set the **USD Output** to your desired save location (e.g., `~/Desktop`).
+5. Leave the other settings at their defaults.
 
-    !!! note "What is Natural Frequency?"
-        Natural Frequency controls the stiffness of joints. Higher values result in stiffer joints. A value of 300 is appropriate for the UR10e joints.
+    !!! note "Isaac Sim 6.0 no longer sets gains at import"
+        Up to Isaac Sim 5.1, the import dialog's Joint Configuration section allowed setting a per-joint **Natural Frequency**. In **6.0, the URDF Importer does not set joint gains automatically** (stiffness / damping are imported as zero). You set the gains after import with the **Gain Tuner** (see Step 2-3).
 
 6. Click **Import** to execute the import.
-7. Verify that a `ur10e` directory has been generated at the **Output Directory** location, containing `ur10e.usd`.
+7. Verify that a `ur10e` directory has been generated at the **USD Output** location, containing `ur10e.usd`.
 
 ![UR10e import](images/25_import_ur10e.png)
 
@@ -233,15 +236,11 @@ Import the URDF files generated in Step 1 into Isaac Sim.
 
 1. From the Isaac Sim menu, select **File > New** to open a new stage.
 2. Select **File > Import** and choose `ros2_robotiq_gripper/robotiq_description/urdf/robotiq_2f_140.urdf`.
-3. Set the **Output Directory** to your desired save location (e.g., `~/Desktop`).
-4. In the **Joint Configuration** section, verify and configure the following:
-    - Confirm that the **Ignore Mimic** checkbox is **unchecked** (default)
-    - Select **Natural Frequency** as the configuration method
-    - Set the **Natural Frequency** to **300** for **finger_joint**
-    - Set the **Natural Frequency** to **2500** for all other joints
+3. Set the **USD Output** to your desired save location (e.g., `~/Desktop`).
+4. Confirm that the **Ignore Mimic** checkbox is **unchecked** (default).
 
-    !!! warning "Check all joints"
-        Some joints may not be visible in the **Joint Configuration** section, so scroll down and verify that the **Natural Frequency** has been set for all joints including the last one.
+    !!! note "Gripper gains are also set after import"
+        The gripper's joint gains are not set at import either. After import, use the Gain Tuner or similar to set **finger_joint** to a Natural Frequency of **300**, and the mimic joints to a Natural Frequency of **2500** with a Damping Ratio of **0.005** (recommended values from the official tutorial).
 
     !!! note "Automatic Mimic Joint Recognition"
         The Direct URDF Importer automatically reads `<mimic>` tags from the URDF. Mimic joints (joints that follow finger_joint) will have their Target Type automatically set to **"Mimic"**. Reference Joint and gear ratio settings are automatically extracted from the URDF, so no manual configuration is needed.
@@ -265,6 +264,29 @@ The imported gripper has the following joint structure:
 | right_outer_knuckle_joint | revolute | finger_joint × -1 | Right outer knuckle |
 | right_inner_knuckle_joint | revolute | finger_joint × -1 | Right inner knuckle |
 | right_inner_finger_joint | revolute | finger_joint × 1 | Right inner finger |
+
+### 2-3. Set Gains with the Gain Tuner
+
+Because the Isaac Sim 6.0 URDF Importer does not set joint gains, the freshly imported robot has no active drives and collapses under gravity when the simulation is played. Use the **Gain Tuner** to set the gains for the UR10e.
+
+1. With `ur10e.usd` open, go to **Tools > Robotics > Asset Editors > Gain Tuner**.
+2. In the **Robot Selection** dropdown, select the `ur10e` articulation on the stage.
+3. In the **Tune Gains** panel, start by setting the **Natural Frequency** to **300** and the **Damping Ratio** to **1.0**.
+4. Run a test in the **Test Gains Settings** panel and verify each joint tracks its target position.
+
+!!! note "Natural Frequency and Damping Ratio"
+    The Gain Tuner derives stiffness / damping from the natural frequency \(\omega_n\), the damping ratio \(\zeta\), and the joint inertia \(m\) computed from the mass on both sides of the joint. \(\zeta = 1.0\) is critically damped (fastest response without overshoot), \(\zeta < 1.0\) is underdamped, and \(\zeta > 1.0\) is overdamped.
+
+!!! tip "Gain tuning hints"
+    - The higher the natural frequency, the faster (stiffer) the response; the lower the damping ratio, the faster the joint reaches the target.
+    - If the joint undershoots the target position, increase the Natural Frequency slightly.
+    - If it overshoots, decrease the Natural Frequency slightly and increase the Damping Ratio.
+    - Disabling gravity can make the effect of the gains easier to observe.
+    - If tuning the whole robot at once is difficult, tune groups of joints that move together; the test order can be selected with the **Sequence** dropdown.
+
+    See [Tutorial 11: Tuning Joint Drive Gains](11_joint_tuning.md) for details.
+
+A reference asset with tuned gains is available in the Content browser at `import_manipulator/ur10e/ur_gains_tuner/ur.usda`.
 
 ## Step 3: Connect UR10e and Robotiq 2F-140
 
@@ -327,7 +349,8 @@ This method uses the Robot Assembler tool for automated connection. It is more e
 
 1. Open the UR10e USD file (`ur10e.usd`) in Isaac Sim.
 2. Drag and drop `robotiq_2f_140.usd` into the stage from the Content browser or file explorer.
-3. Rename the added `robotiq_2f_140` prim to **ee_link** in the Stage tree.
+!!! note "Procedure change in Isaac Sim 6.0"
+    Up to 5.1, the official procedure renamed the gripper prim to `ee_link` before connecting. In 6.0, the gripper is connected **without renaming** (keeping `robotiq_2f_140`), and the Assembly Namespace is set to `Gripper`. Some of the screenshots on this page are from the old procedure (`ee_link`).
 
 #### 3-2-2. Open Robot Assembler
 
@@ -341,9 +364,9 @@ Set the following in the Robot Assembler panel:
 |---|---|---|
 | **Base Robot > Select Base Robot** | `/ur10e` | The base robot arm |
 | **Base Robot > Attach Point** | `wrist_3_link` | Connection point (wrist link) |
-| **Attach Robot > Select Attach Robot** | `/ur10e/ee_link` | The gripper to connect |
+| **Attach Robot > Select Attach Robot** | `/ur10e/robotiq_2f_140` | The gripper to connect |
 | **Attach Robot > Attach Point** | `robotiq_arg2f_base_link` | Gripper's base link |
-| **Assembly Namespace** | `ee_link` | Namespace specification |
+| **Assembly Namespace** | `Gripper` | Namespace specification |
 
 ![Assembly settings](images/28_assemble_setting.png)
 
@@ -353,8 +376,9 @@ Set the following in the Robot Assembler panel:
 2. Adjust the gripper orientation: click the **Z +90** button to rotate the gripper 90 degrees around the Z axis.
 3. Click **Assemble and Simulate** to test the connection in simulation.
 4. If everything looks correct, click **End Simulation And Finish** to complete the assembly.
+5. Save the asset with **File > Save** (or Ctrl+S).
 
-![Robot Assembler](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_connect_gripper_assembler.png)
+![Robot Assembler](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_connect_gripper_assembler.png)
 
 #### 3-2-5. Verify Variant Functionality
 
@@ -362,10 +386,11 @@ When connected via the Robot Assembler, end effector variant (switching) functio
 
 1. Select the `ur10e` prim in the Stage tree.
 2. Check the **Variants** section in the **Property** tab:
-    - Select **None** next to **ee_link** → the gripper becomes hidden<br>
-      ![ee_link: None](images/29_variant_set_none.png)
-    - Select **robotiq_2f_140** next to **ee_link** → the gripper becomes visible<br>
-      ![ee_link: robotiq](images/30_variant_set_robotiq.png)
+    - Select **None** next to **Gripper** → the gripper becomes hidden<br>
+      ![Gripper: None](images/29_variant_set_none.png)
+    - Select **robotiq_2f_140** next to **Gripper** → the gripper becomes visible<br>
+      ![Gripper: robotiq](images/30_variant_set_robotiq.png)
+3. After verifying, save the asset with **File > Save** (or Ctrl+S).
 
 !!! tip "Using the variant feature"
     The variant feature allows you to easily switch between different end effectors (grippers, suction pads, tools, etc.) for comparative testing.
@@ -391,11 +416,12 @@ This tutorial covered the following topics:
 
 1. **Obtaining XACRO from GitHub ROS packages and converting to URDF**: replacing `$(find ...)` and `package://` paths, conversion using the `xacro` command
 2. **Importing into Isaac Sim using the Direct URDF Importer** (no ROS 2 required)
-3. **Manual GUI connection**: transform settings, articulation root removal, joint connection, schema update
-4. **Automated connection via Robot Assembler**: attach point settings, orientation adjustment, variant management
+3. **Setting gains with the Gain Tuner**: in 6.0, Natural Frequency / Damping Ratio are set after import
+4. **Manual GUI connection**: transform settings, articulation root removal, joint connection, schema update
+5. **Automated connection via Robot Assembler**: attach point settings, orientation adjustment, variant management
 
 !!! tip "Reference assets"
-    Completed assets can be found in the Content browser under `Samples > Rigging > Manipulator > import_manipulator`. The manual connection version is `ur_gripper_manual.usd`, and the Robot Assembler version is `ur_gripper.usd`.
+    Completed assets can be found in the Content browser under `Samples > Rigging > Manipulator > import_manipulator`. The completed version with the gripper connected is `ur10e/ur_gripper/ur.usda`.
 
 ## Next Steps
 

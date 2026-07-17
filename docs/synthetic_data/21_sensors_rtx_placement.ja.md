@@ -8,7 +8,7 @@ title: RTX センサーの配置とキャリブレーション（ISP）
 
 このチュートリアルを修了すると、以下の内容を習得できます：
 
-- `isaacsim.sensors.rtx.placement`（ISP）でカメラ配置を最適化する仕組み
+- `isaacsim.sensors.rtx.placement` / `isaacsim.sensors.rtx.calibration` でカメラ配置を最適化する仕組み
 - Camera Placement ツールで被覆要件に基づき最適なカメラ位置を自動決定する方法
 - Camera Calibration ツールでカメラのキャリブレーションデータ（位置・向き・FOV ポリゴン）を生成する方法
 
@@ -16,7 +16,7 @@ title: RTX センサーの配置とキャリブレーション（ISP）
 
 ### 前提条件
 
-- Isaac Sim 5.1 が起動できること
+- Isaac Sim 6.0.1 が起動できること
 - ステージ単位がメートル、Z 軸が上向きであること
 - 有効な NavMesh がベイクされていること
 
@@ -26,12 +26,13 @@ title: RTX センサーの配置とキャリブレーション（ISP）
 
 ### 概要
 
-倉庫・小売店・病院などの屋内/閉鎖空間では、カメラ配置の最適化が、被覆範囲を確保しつつ配置コストを最小化する重要な技術です。**`isaacsim.sensors.rtx.placement`（ISP）** は、シーンレイアウトと被覆要件に基づいて**最適なカメラ位置を自動決定**します。生成カメラの詳細メタデータや、各カメラの FOV 被覆を可視化したステージレイアウトも提供し、カメラの方向・位置・FOV ポリゴン情報を `.json` に保存できます。
+倉庫・小売店・病院などの屋内/閉鎖空間では、カメラ配置の最適化が、被覆範囲を確保しつつ配置コストを最小化する重要な技術です。Isaac Sim は、この目的のために **2 つの独立した拡張機能**を提供します。
 
-この拡張機能は 2 つの UI ウィンドウに分かれています。
+- **Camera Placement（`isaacsim.sensors.rtx.placement`）** … シーンレイアウトと被覆要件に基づき、**最適なカメラ位置を自動決定**します。生成カメラの詳細メタデータや、各カメラの FOV 被覆を可視化したステージレイアウトも提供します。
+- **Camera Calibration（`isaacsim.sensors.rtx.calibration`）** … 位置・向き・FOV ポリゴンを含むキャリブレーションデータを抽出・管理し、`.json` に保存します。
 
-- **Camera Placement** … 被覆要件とシーン制約に基づき、最適な姿勢でカメラを自動配置します。
-- **Camera Calibration** … 位置・向き・FOV 情報を含むキャリブレーションデータを抽出・管理します。
+!!! note "Isaac Sim 6.0 での分割"
+    5.1 までは両ツールとも `isaacsim.sensors.rtx.placement` の一部でしたが、6.0 では Camera Calibration が独立した拡張機能 **`isaacsim.sensors.rtx.calibration`** になりました。
 
 ## パート 1：Camera Placement ツール
 
@@ -49,9 +50,9 @@ title: RTX センサーの配置とキャリブレーション（ISP）
 | **Patch Size** | 被覆推定のためステージを分割するパッチのサイズ（小さいほど詳細だが計算時間増） |
 | **Ground Height** | ステージの地面の高さ |
 
-**その他の調整パラメータ**：`Border Checking Index`（境界への近さ）、`Camera On Navmesh`（NavMesh 上のみに配置するか）、`Minimum Coverage Increase`（有効とみなす最小追加被覆）、`Limit FOV by Distance`、`Coverage Density`（各パッチを最低何台で被覆するか）、`Target Coverage Ratio`（被覆すべき全体割合）。
+**その他の調整パラメータ**：`Border Checking Index`（境界への近さ）、`Camera On Navmesh`（NavMesh 上のみに配置するか）、`Minimum Coverage Increase`（有効とみなす最小追加被覆）、`Limit FOV by Distance`、`Coverage Density`（各パッチを最低何台で被覆するか）、`Target Coverage Ratio`（被覆すべき全体割合）、`Random Seed`（同じシードなら配置結果が決定的になる）、`Stage Scope`（NavMesh が使えない場合に X/Y の範囲でステージ境界を定義。**有効な NavMesh を構築できないエッジケース専用**で通常は非推奨）。
 
-**ボタン**：`Place Cameras`（自動配置開始）、`Show Selected Camera Coverage`（選択カメラの被覆を色分け表示。Coverage Density が N なら N 色）、`Hide Coverage`。
+**ボタン**：`Place Cameras`（自動配置開始）、`Show Selected Camera Coverage`（選択カメラの被覆を色分け表示。Coverage Density が N なら N 色）、`Show all Camera Coverage`（選択にかかわらず**全生成カメラ**の合成被覆を表示。シーン全体の被覆を素早く確認できる）、`Hide Coverage`。
 
 ### チュートリアル（フルウェアハウス）
 
@@ -64,18 +65,18 @@ title: RTX センサーの配置とキャリブレーション（ISP）
 4. （任意）Camera Range / Stage Processing パラメータを調整します（この例はデフォルト）。
 5. **Fine-tune**：`Coverage Density` を 2（各パッチを 2 台で被覆）、`Target Coverage Ratio` を 0.99（99% 被覆）に設定します。
 
-![配置パラメータの調整](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_ext-isaacsim.sensor.rtx.placement-5.0.0_gui_camera_placement_tuning_setting.png)
+![配置パラメータの調整](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.sensor.rtx.placement-5.0.0_gui_camera_placement_tuning_setting.png)
 
 6. **Place Cameras** で自動配置を開始します（時間がかかります。完了後、各方向のカメラ数がコンソールに warning として出力されます）。
-7. **被覆確認**：トップビューカメラに切り替え、**Show By Type > Navmesh** で NavMesh を表示。`World/Cameras` 以下の全カメラ prim を選択し、**Show Selected Camera Coverage** で被覆を可視化します（この例では 1 回被覆＝赤、2 回被覆＝緑）。
+7. **被覆確認**：トップビューカメラに切り替え、**Show By Type > Navmesh** で NavMesh を表示。Camera Placement Tool パネルの **Show all Camera Coverage** をクリックすると、生成された全カメラの被覆を可視化できます（この例では 1 回被覆＝赤、2 回被覆＝緑）。
 
-![被覆の可視化](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_ext-isaacsim.sensor.rtx.placement-5.0.0_gui_camera_placement_coverage_visualization.png)
+![被覆の可視化](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.sensor.rtx.placement-5.0.0_gui_camera_placement_coverage_visualization.png)
 
 8. （任意）USD を保存して、以降の SDG ワークフローにカメラ配置を残します。
 
 ## パート 2：Camera Calibration ツール
 
-**Tools > Sensors > Camera Calibration** からアクセスします。配置済みカメラのキャリブレーションデータを生成します。
+`isaacsim.sensors.rtx.calibration` 拡張機能を有効化すると UI が画面右側に自動で開きます（**Tools > Sensors > Camera Calibration** からもアクセス可能）。配置済みカメラのキャリブレーションデータを生成します。
 
 ### 主な入力フィールド
 
@@ -97,27 +98,27 @@ title: RTX センサーの配置とキャリブレーション（ISP）
 !!! note "前提"
     ステージ単位はメートル、有効な NavMesh が必要です。カメラは `/World/Cameras` 以下に置き、歩行可能エリアを見られることが理想です。
 
-1. `isaacsim.sensors.rtx.placement` を有効化し、Camera Calibration パネルを開きます。
+1. `isaacsim.sensors.rtx.calibration` を有効化し、Camera Calibration パネルを開きます。
 2. **トップビューカメラの作成**：**Scene Root Prim Path** を `/Root` に設定。倉庫の天井をクリップするため **Ceiling Height** を 6 に設定（床が高さ 0 なので Floor Height は変更不要）。
 
-    ![天井高の設定](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_ext-isaacsim.replicator.agent.camera_calibration-5.0.0_gui_set_ceiling_height.png)
+    ![天井高の設定](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.sensors.rtx.calibration-0.3.1_gui_set_ceiling_height.png)
 
 3. **Create** をクリックし、生成されたトップビューカメラにビューポートを切り替えてフロアプランを覆っているか確認します（カメラアイコン > Cameras > Calibration_Top_Camera）。
 
-    ![ビューポートの切り替え](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_ext-isaacsim.replicator.agent.camera_calibration-5.0.0_viewport_switch_viewport.png)
+    ![ビューポートの切り替え](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.sensors.rtx.calibration-0.3.1_viewport_switch_viewport.png)
 
 4. **属性の設定**：**Place Info**（例：`city=Santa Clara/building=Isaac Sim Warehouse/room=Warehouse`）、Raycast Density など（この例はデフォルト）、必要なら Create Camera View Images / Create FOV Polygon Images / Show FOV Polygon をチェック、**Output Folder Path** を設定します。
 5. **Create Dot Prims** で各カメラのキャリブレーションドットを生成します（`/World/Calibration_Dots/[Camera Name]/` に各カメラ 6 個。射影行列の計算に使用）。
 6. **Generate Calibration File** で `calibration.json` を生成します。対象カメラを選択するとステージで FOV を可視化できます。
 7. **Generate Top View Image** で FOV ポリゴン付きトップビュー画像を出力します（`Create FOV Polygon Images` チェック時は `[Output]/Debug/fieldOfViewPolygon` に各カメラの画像）。
 
-    ![FOV ポリゴン](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_ext-isaacsim.replicator.agent.camera_calibration-5.0.0_viewport_fov_polygon.png)
+    ![FOV ポリゴン](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.sensors.rtx.calibration-0.3.1_viewport_fov_polygon.png)
 
 ## まとめ
 
 このチュートリアルでは、次の内容を学びました。
 
-- ISP がシーンレイアウトと被覆要件からカメラ配置を最適化すること
+- Camera Placement / Camera Calibration の 2 つの拡張機能が、シーンレイアウトと被覆要件からカメラ配置を最適化すること
 - Camera Placement ツールで Coverage Density / Target Coverage Ratio を設定し、被覆を色分け可視化する方法
 - Camera Calibration ツールでトップビューカメラを作成し、`calibration.json` と FOV ポリゴンを生成する方法
 

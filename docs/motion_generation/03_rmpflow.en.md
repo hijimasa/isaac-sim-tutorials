@@ -7,6 +7,9 @@ title: Lula RMPflow
 !!! info "Preliminary version"
     This English page is a preliminary summary. The Japanese page is the primary, fully detailed document — see it for the complete walkthrough.
 
+!!! warning "Deprecated in Isaac Sim 6.0"
+    The official page is marked Deprecated in Isaac Sim 6.0; the Robot Motion (Experimental) API is the recommended successor. Lula RMPflow still works in 6.0. The Motion Generation Examples extension (`isaacsim.robot_motion.motion_generation.examples`) is deprecated too — `isaacsim.robot_motion.cumotion.examples` is the replacement.
+
 ## Overview
 
 **RMPflow** is a reactive local motion policy that generates smooth motions to task-space targets while avoiding dynamic obstacles. The `RmpFlow` class implements the Motion Policy Algorithm interface and pairs with `ArticulationMotionPolicy` to drive a robot.

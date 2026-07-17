@@ -42,7 +42,7 @@ title: ロボットセットアップチュートリアル
 
 基礎知識をベースに、より複雑なロボット構造の扱い方を学びます。URDF からのロボットアームのインポート、グリッパーの接続、物理プロパティの調整、設定ファイルの生成、ピック＆プレースタスクの実装までを一通り体験します。
 
-![マニピュレータのセットアップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
+![マニピュレータのセットアップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_ur10e_pick_place_rmp.webp)
 
 !!! example "[チュートリアル 6: マニピュレータのセットアップ](06_setup_manipulator.md)"
     URDF から UR10e ロボットと Robotiq 2F-140 グリッパーをインポートし、単一のアーティキュレーションとして接続する方法を学びます。
@@ -51,10 +51,10 @@ title: ロボットセットアップチュートリアル
     アーティキュレーションのソルバー設定、物理マテリアル、ジョイント力制限、ドライブゲインの調整方法を学びます。
 
 !!! example "[チュートリアル 8: ロボット設定ファイルの生成](08_generate_robot_config.md)"
-    Lula Robot Description Editor と USD to URDF Exporter を使って、キネマティクスソルバー用の設定ファイルを生成する方法を学びます。
+    Robot Description Editor と USD to URDF Exporter を使って、モーションプランナー用の設定ファイル（URDF / XRDF）を生成する方法を学びます。
 
 !!! example "[チュートリアル 9: ピック＆プレースの例](09_pick_and_place.md)"
-    Lula キネマティクスソルバーによるターゲット追従と RMPFlow によるモーション制御を組み合わせたピック＆プレースタスクを実装します。
+    IK ソルバーによるターゲット追従と RMPFlow によるモーション制御を組み合わせたピック＆プレースタスクを実装します。
 
 ## 上級：アセットの調整と最適化
 
@@ -68,7 +68,7 @@ title: ロボットセットアップチュートリアル
     Robotiq グリッパーの閉ループアーティキュレーション構造の設定、ミミックジョイント、OmniGraph による制御方法を学びます。
 
 !!! example "[チュートリアル 11: ジョイントドライブゲインの調整](11_joint_tuning.md)"
-    Gain Tuner エクステンションを使ったポジションドライブ・ベロシティドライブのゲイン最適化手法を学びます。
+    Gain Tuner エクステンションを使ったポジションドライブ・ベロシティドライブのゲイン最適化手法と、Snap-to-Limits テスト／ストレステストによる検証を学びます。
 
 !!! example "[チュートリアル 12: アセット最適化](12_asset_optimization.md)"
     メッシュ統合やシーングラフインスタンシングによるロボットアセットのパフォーマンス最適化手法を学びます。

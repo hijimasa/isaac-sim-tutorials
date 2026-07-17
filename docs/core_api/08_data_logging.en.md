@@ -4,6 +4,11 @@ title: Data Logging
 
 # Data Logging
 
+!!! warning "Status in Isaac Sim 6.0"
+    This tutorial was removed from the official Isaac Sim 6.0 documentation.
+    This page is this site's own guide based on the 5.1.0 content.
+    (The APIs used here, including `DataLogger` from `isaacsim.core.api` and the `isaacsim.robot_motion.motion_generation` extension that the Follow Target sample depends on, are deprecated in 6.0 but continue to work.)
+
 ## Learning Objectives
 
 After completing this tutorial, you will have learned:

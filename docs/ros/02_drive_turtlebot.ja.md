@@ -66,8 +66,9 @@ ROS 2 ブリッジには、特定のメッセージのサブスクライバ／�
 
 ### ステップ 1：Action Graph を開く
 
-1. **Window > Graph Editors > Action Graph** を開きます。画面下部に Action Graph ウィンドウが表示されます（好きな場所にドッキングできます）。
-2. ウィンドウ中央の **New Action Graph** アイコンをクリックします。
+1. Stage パネルでロボットのメインプリム `/World/tb3_burger_processed` を選択します。こうすると、新しい Action Graph がロボットプリムの直下に作成されます。駆動系のコントローラグラフ（差動、アッカーマン、ホロノミックなど）はロボットのアーティキュレーション全体に作用するため、個別のリンクではなく**ロボットのルート直下**に置くのが適切です。
+2. **Window > Graph Editors > Action Graph** を開きます。画面下部に Action Graph ウィンドウが表示されます（好きな場所にドッキングできます）。
+3. ウィンドウ中央の **New Action Graph** アイコンをクリックし、グラフ名を `ROS_Drive` にします。グラフのパスは `/World/tb3_burger_processed/ROS_Drive` になります。
 
 ### ステップ 2：グラフを構築する
 
@@ -75,9 +76,9 @@ Action Graph ウィンドウの左側パネルにすべての OmniGraph ノー�
 
 次のグラフと一致するように構築してください：
 
-![Turtlebot 駆動グラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_turtlebot_graph.png)
+![Turtlebot 駆動グラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_turtlebot_graph.png)
 
-![Make Array 部分](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_turtlebot_make_array.png)
+![Make Array 部分](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_turtlebot_make_array.png)
 
 ### ステップ 3：各ノードの役割を理解する
 
@@ -105,12 +106,10 @@ Action Graph ウィンドウの左側パネルにすべての OmniGraph ノー�
 
 **Articulation Controller ノード** — 対象のロボットに割り当てられ、動かすジョイントの名前（またはインデックス）と、Position / Velocity / Effort Commands で与えられた指令を受け取ってジョイントを動かします。このノードも **On Playback Tick** で tick されるため、新しい Twist メッセージが届かない間は、直前に受け取った指令を実行し続けます。
 
-!!! warning "Articulation Controller のターゲット指定"
-    Property タブで **Add Target** をクリックし、ポップアップで Turtlebot のプリムを検索して割り当てます。このとき選ぶプリムは、**Articulation Root API が適用されているプリム**である必要があります。ロボットの親プリムのこともありますが、モバイルロボットではシャーシのプリムであることも多いです。
+!!! note "Articulation Controller のターゲット指定"
+    Property タブで **Add Target** をクリックし、ターゲットにロボットのメインプリム `/World/tb3_burger_processed` を指定します。このアセットには **IsaacRobotAPI** と **ArticulationRootAPI** が適用されているため、アーティキュレーションは自動的に解決されます（詳細は[ロボットセットアップ チュートリアル 3](../robot_setup/03_articulate_robot.md)の Articulation の節を参照）。
 
-    前のチュートリアルの手順で URDF をインポートした場合、Articulation Root API は `/World/turtlebot3_burger/base_footprint` にあります。もし `base_footprint` に設定されている場合は、そこから Articulation Root プロパティを削除し、ロボットのメインプリム `/World/turtlebot3_burger` に付け直してください（手順は[ロボットセットアップ チュートリアル 3](../robot_setup/03_articulate_robot.md)の Articulation の節を参照）。
-
-**Constant Token ＋ Make Array ノード** — 車輪ジョイントの名前を配列としてArticulation Controller に渡すために、各 **Constant Token** ノードにジョイント名を入力し、**Make Array** ノードで配列にまとめます。Turtlebot のジョイント名は `wheel_left_joint` と `wheel_right_joint` です。
+**Constant Token ＋ Make Array ノード** — 車輪ジョイントの名前を配列として Articulation Controller に渡すために、各 **Constant Token** ノードにジョイント名を入力し、**Make Array** ノードで配列にまとめます。2 つの Constant Token ノードは、**`wheel_left_joint` を先、`wheel_right_joint` を後**の順で Make Array ノードに接続してください。この順序は Differential Controller の出力の順序と一致している必要があります。
 
 !!! warning "Constant String ではなく Constant Token を使う"
     ジョイント名を **Constant String** ノードに入れてはいけません。OmniGraph には文字列配列（string-array）というデータ型がないため、配列として使う文字列は **token 型**である必要があります。
@@ -167,6 +166,7 @@ Action Graph ウィンドウの左側パネルにすべての OmniGraph ノー�
 
 ### さらに学ぶには
 
-- エクステンションワークフローでのスクリプティング：ROS2 Joint Control（準備中）
-- スタンドアロン Python ワークフロー：ROS 2 Bridge in Standalone Workflow（準備中）
+- エクステンションワークフローでのスクリプティング：[チュートリアル 12: ROS 2 ジョイント制御](12_manipulation.md)
+- スタンドアロン Python ワークフロー：[チュートリアル 17: スタンドアロンワークフローでの ROS 2 ブリッジ](17_standalone_python.md)
 - OmniGraph のスクリプティングとカスタムノードの作成：公式の OmniGraph チュートリアル
+- グラフのプリムパスに基づくトピックのネームスペース自動生成：[チュートリアル 15: 自動 ROS 2 ネームスペース生成](15_auto_namespace.md)

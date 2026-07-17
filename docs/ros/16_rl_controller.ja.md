@@ -18,11 +18,14 @@ title: 強化学習ポリシーの ROS 2 実行
 - **PyTorch** がインストールされていること（[PyTorch 公式のインストール手順](https://pytorch.org/get-started/locally)参照）。ポリシーは別プロセスで動くため、Isaac Sim の PyTorch バージョンと一致している必要はありません
 - ROS 2 ブリッジエクステンション（`isaacsim.ros2.bridge`）が有効であること
 - IsaacSim-ros_workspaces リポジトリの **`h1_fullbody_controller`** パッケージが必要です。[ROS 2 セットアップ](00_setup.md)でワークスペースが正しくビルドされていることを確認してください
-- [ロボットセットアップ チュートリアル 13: 脚ロボットのリギング](../robot_setup/13_rig_legged_robot.md)を完了し、ロコモーションポリシーのパラメータに合わせたジョイント設定ができていること
+- ロコモーションポリシーのパラメータに合わせたジョイント設定を持つ H1 アセットが必要です。自分で作成する場合は[ロボットセットアップ チュートリアル 13: 脚ロボットのリギング](../robot_setup/13_rig_legged_robot.md)を完了してください。リギング手順をスキップしたい場合は、下記の設定済みアセットを使えます
+
+!!! note "設定済みの H1 アセット"
+    設定済みの H1 ロボットは Content ブラウザの **Isaac Sim/Samples/Rigging/H1/h1_rigged.usd** にあります。リギングチュートリアルをスキップしたい場合はこのアセットを使ってください。その場合でも、以降のステップの IMU センサーの追加と ROS 2 グラフの構築は必要です。
 
 !!! tip "インストールでのつまずき"
     - PyTorch のインストールで `error: externally-managed-environment` が出る場合は、Python の仮想環境（venv）内にインストールしてください。
-    - `ModuleNotFoundError: No module named 'yaml'` が出る場合は、pip で PyYaml をインストールしてください。
+    - `ModuleNotFoundError: No module named 'yaml'` が出る場合は、pip で PyYAML をインストールしてください。
 
 ### 所要時間
 
@@ -37,11 +40,10 @@ title: 強化学習ポリシーの ROS 2 実行
 
 ## ステップ 1：ロボットのジョイント設定
 
-[ロボットセットアップ チュートリアル 13](../robot_setup/13_rig_legged_robot.md)の手順に従って、ロコモーションポリシーのパラメータに合わせたジョイント設定を行います。**ジョイント設定の不一致は予期しないロボットの挙動の原因になる**ため、このステップは非常に重要です。
+ロボットアセットを自分で作成する場合は、[ロボットセットアップ チュートリアル 13](../robot_setup/13_rig_legged_robot.md)の手順に従って、ロコモーションポリシーのパラメータに合わせたジョイント設定を行います。`h1_rigged.usd` を使う場合はリギングチュートリアルをスキップして次のステップに進めます。**ジョイント設定の不一致は予期しないロボットの挙動の原因になる**ため、このステップは重要です。
 
-- H1 平地ポリシーの環境定義ファイルは [h1_env.yaml](https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Samples/Policies/H1_Policies/h1_env.yaml) です。
+- H1 平地ポリシーの環境定義ファイルは [h1_env.yaml](https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/Samples/Policies/H1_Policies/h1_env.yaml) です。
 - 環境定義ファイル内の角度は**ラジアン**で指定されていますが、Isaac Sim の USD GUI は**度**を期待します。単位変換に注意してください。
-- リギング済みの H1 ロボットは、Content ブラウザの `Isaac/Samples/Rigging/H1/h1_rigged.usd` にあります。
 
 ## ステップ 2：IMU センサーを追加する
 
@@ -67,13 +69,13 @@ title: 強化学習ポリシーの ROS 2 実行
 
 ### 3-1. On Demand の ActionGraph を作成する
 
-1. [チュートリアル 13](../robot_setup/13_rig_legged_robot.md)でリギングした H1 Unitree のロボットモデルを開きます。
-2. ステージを右クリックして **Create > Scope** でスコープを作成し、「Graph」にリネームします（ActionGraph の置き場所です）。
-3. ステージを右クリックして **Create > Visual Scripting > ActionGraph** を作成します。
-4. ActionGraph を「ROS_Imu」にリネームし、「Graph」スコープにドラッグ＆ドロップします。
+1. [チュートリアル 13](../robot_setup/13_rig_legged_robot.md)でリギングした Unitree H1 のロボットモデル、または設定済みの `h1_rigged.usd` アセットを開きます。
+2. `/h1` を右クリックして **Create > Scope** で `/h1` の下にスコープを作成し、「Graph」にリネームします（ActionGraph の置き場所です）。
+3. `/h1/Graph` スコープを右クリックして **Create > Visual Scripting > ActionGraph** を作成します。
+4. ActionGraph を「ROS_Imu」にリネームします。
 5. ActionGraph ノードを左クリックし、Property エディタで **pipelineStage** を **pipelineStageOnDemand** に設定します。
 
-![On Demand グラフの設定](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rl_ros_controller_1.png)
+![On Demand グラフの設定](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rl_ros_controller_1.png)
 
 !!! note "pipelineStageOnDemand と On Physics Step"
     通常の Action Graph は**レンダリングフレーム**ごとに tick されますが、制御ループはレンダリングではなく**物理ステップ**（このチュートリアルでは 200 Hz）に同期させる必要があります。pipelineStage を **pipelineStageOnDemand** に設定し、トリガーに **On Physics Step** ノードを使うことで、グラフが物理ステップごとに実行されるようになります。
@@ -96,23 +98,24 @@ title: 強化学習ポリシーの ROS 2 実行
 
 3. 下の画像のとおりに接続します。
 4. **Isaac Read IMU Node** の **IMU Prim** 入力を `/h1/pelvis/Imu_Sensor` に設定します。
-5. **Isaac Read IMU Node** の **Read Gravity** 入力の**チェックを外します**。Read Gravity は IMU の加速度出力に重力成分を含めるかどうかの設定です。観測に必要な重力ベクトルは、IMU が出力する姿勢（クォータニオン）からポリシー制御ノード側で算出するため、ここでは加速度への重力の混入を避け、pelvis リンクの並進・角速度と姿勢だけを取得します。
-6. **Read Simulation Time** ノードの **Reset on Stop** に**チェックを入れ**、シミュレーション停止時に時刻をリセットするようにします。
+5. **ROS2 Publish IMU** の **Frame ID** 入力を `pelvis_imu` に設定します。
+6. **Isaac Read IMU Node** の **Read Gravity** 入力の**チェックを外します**。Read Gravity は IMU の加速度出力に重力成分を含めるかどうかの設定です。観測に必要な重力ベクトルは、IMU が出力する姿勢（クォータニオン）からポリシー制御ノード側で算出するため、ここでは加速度への重力の混入を避け、pelvis リンクの並進・角速度と姿勢だけを取得します。
+7. **Read Simulation Time** ノードの **Reset on Stop** に**チェックを入れ**、シミュレーション停止時に時刻をリセットするようにします。
 
-![IMU パブリッシャグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rl_ros_controller_2.png)
+![IMU パブリッシャグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rl_ros_controller_2.png)
 
 ### 3-3. Joint State パブリッシャ／サブスクライバノードを作成する
 
 ジョイント名・位置・速度を配信し、外部ポリシーノードからのジョイント指令を購読します。
 
-1. 新しい ActionGraph を作成して「ROS_Joint_States」にリネームし、**pipelineStage** を **pipelineStageOnDemand** に設定します。
+1. `/h1/Graph` の下に新しい ActionGraph を作成して「ROS_Joint_States」にリネームし、**pipelineStage** を **pipelineStageOnDemand** に設定します。
 2. 次のノードを追加し、画像のとおりに接続します：**On Physics Step**、**ROS2 Context**、**ROS2 QoS Profile**、**ROS2 Subscribe Joint State**（外部ポリシーノードからの指令を購読）、**ROS2 Publish Joint State**（現在のジョイント状態を配信）、**Isaac Read Simulation Time**、**Articulation Controller**（購読した指令を実行）。
 3. **ROS2 Publish Joint State** の **Target Prim** を `/h1`、**Topic Name** を `/joint_states` に設定します。
 4. **ROS2 Subscribe Joint State** の **Topic Name** を `/joint_command` に設定します。
 5. **Articulation Controller** の **Target Prim** を `/h1` に設定します。
 6. **Read Simulation Time** の **Reset on Stop** にチェックを入れます。
 
-![Joint State グラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rl_ros_controller_3.png)
+![Joint State グラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_rl_ros_controller_3.png)
 
 !!! tip "完成済みアセット"
     セットアップ済みのアセットが Content ブラウザの **Isaac Sim/Samples/ROS2/Robots/h1_ROS.usd** にあります。
@@ -125,11 +128,12 @@ title: 強化学習ポリシーの ROS 2 実行
 
 1. 新しいファイルを作成し、Content ブラウザの **Isaac Sim/Environments/Simple_Warehouse** から `warehouse.usd` をステージにドラッグします。
 2. 先ほど作成した `h1_ROS.usd` アセットをステージにドラッグし、Z の Transform を `1.0` にして地面より上に配置します。
-3. ステージを右クリックして **Create > Physics > Physics Scene** で物理シーンを作成します。
-4. Physics Scene を選択し、**Time Steps Per Second** を **200** に設定します（ポリシーの学習時の物理レート 200 Hz に合わせます）。
-5. ロボットは 1 台だけなので、パフォーマンスのため **CPU 物理**を使います：
+3. **Layer** タブで **Root Layer** を選択し、Properties パネルで **Time Codes Per Second** を **200** に設定します（詳細は公式の [Configuring Frame Rate](https://docs.isaacsim.omniverse.nvidia.com/latest/physics/simulation_fundamentals.html#simulation-fundamentals-configuring-frame-rate) を参照）。
+4. ステージを右クリックして **Create > Physics > Physics Scene** で物理シーンを作成します。
+5. PhysX を使う場合、このチュートリアルはロボット 1 台だけなので、パフォーマンスのため **CPU 物理**を使います：
     - **Enable GPU Dynamics** のチェックを外す
     - **Broadphase Type** を **MBP** に設定
+    - **Time Steps Per Second** を **200** に設定（ポリシーの学習時の物理レート 200 Hz に合わせます）
 
 ### 4-2. ROS 2 Clock パブリッシャのセットアップ
 
@@ -137,7 +141,7 @@ title: 強化学習ポリシーの ROS 2 実行
 2. **On Physics Step**、**ROS2 Context**、**ROS2 QoS Profile**、**ROS2 Publish Clock**、**Read Simulation Time** を追加し、画像のとおりに接続します。
 3. **Read Simulation Time** の **Reset on Stop** にチェックを入れます。
 
-![Clock グラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rl_ros_controller_4.png)
+![Clock グラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rl_ros_controller_4.png)
 
 !!! tip "完成済みシナリオ"
     セットアップ済みの環境が Content ブラウザの **Isaac Sim/Samples/ROS2/Scenario/h1_ros_locomotion_policy_tutorial.usd** にあります。
@@ -173,7 +177,7 @@ ROS 2 ワークスペースをビルドして `setup.bash` を source した上�
 | 右旋回 | l |
 | 静止 | k |
 
-![H1 キーボード操縦](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rl_ros_controller_5.webp)
+![H1 キーボード操縦](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rl_ros_controller_5.webp)
 
 !!! warning "ポリシーの制約"
     - このバージョンのポリシーは**後退をサポートしません**。`m`、`,`、`.` キーを押すとロボットは転倒します。

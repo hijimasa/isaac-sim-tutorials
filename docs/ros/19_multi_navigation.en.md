@@ -8,7 +8,7 @@ title: Multiple Robot ROS2 Navigation
     This is a concise English version. See the Japanese page for the full detailed walkthrough.
 
 !!! warning
-    Fully supported on Linux; may produce errors on Windows. Requires [Tutorial 18](18_navigation.md) completed.
+    Fully supported on Linux and on Windows with the Pixi-based installation; may produce errors on Windows (WSL). On multi-GPU Windows systems this scene may currently crash the application (known issue). Requires [Tutorial 18](18_navigation.md) completed.
 
 ## Overview
 
@@ -16,7 +16,7 @@ Multiple robots share one environment via **namespaces**: each `Nova_Carter_ROS_
 
 ## Occupancy Maps
 
-Generate maps for the Hospital and Office environments with the Occupancy Map extension (same procedure as Tutorial 18; Upper Z 0.62), saving as `carter_navigation/maps/carter_hospital_navigation.yaml` / `carter_office_navigation.yaml` plus matching images.
+Generate maps for the Hospital and Office environments with the Occupancy Map extension (same procedure as Tutorial 18; Upper Z 0.62), clicking **Save YAML** to save `carter_navigation/maps/carter_hospital_navigation.yaml` / `carter_office_navigation.yaml` plus matching images.
 
 ## Running
 

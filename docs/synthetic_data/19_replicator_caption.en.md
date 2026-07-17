@@ -13,7 +13,8 @@ title: VLM Scene Captioning (IRC)
 
 ## What you will learn
 
-- **Enable**: Extension Manager → `isaacsim.replicator.caption.core`; UI at `Tools > Action and Event Data Generation > VLM Scene Captioning`. Run via UI, IRA, or IRO.
-- **UI**: Load a stage USD (demo at `.../Samples/Replicator/Captioning/test_caption.usda`), enter LLM API key, pick Brief/Full caption + camera prim path + output path, then **Generate Scene Graph**. Default NVIDIA NIM services are free on a trial basis; local NIM hosting is possible.
-- **Config** (`caption_configs`): `save_full/pruned_scene_graph`, `pruning_ratio` (MST edges kept), `attach_label_to_usd`, `use_ai_label`, `visualize_caption`, `max_object_capacity`, `export_edges`, `export_world`, `global/qa/brief_caption`.
-- **In IRA/IRO**: use `SceneGraphWriter` (IRA) or `CombinedIROSceneGraphWriter`/`IROSceneGraphWriter` (IRO) with `caption_interval`, `scene_graph_interval`, etc. Set `NIM_API_KEY` env var (not needed for scene-graph-only).
+- **Enable**: Extension Manager → `isaacsim.replicator.caption.core`; UI at `Tools > Action and Event Data Generation > VLM Scene Captioning`. Run via UI, Python API, IRA, or IRO.
+- **UI**: Load a stage USD (demo at `.../Samples/Replicator/Captioning/test_caption.usda`), enter LLM API key, pick Brief/Full caption + camera prim path + output path, then **Generate Scene Graph** (also works for a region of interest by aiming a selected camera at it). Default NVIDIA NIM services are free on a trial basis; pick models from the NVIDIA NIM API reference page; local NIM hosting is possible.
+- **Python API**: `CaptionAPI` (`isaacsim.replicator.caption.core.api`) — `set_model_params(url, name, key)` (key from `NVIDIA_API_KEY`), `load_config_file()`, async `get_captions()`.
+- **Config** (`caption_configs`, config `version: 0.6.6`): `save_full/pruned_scene_graph`, `pruning_ratio` (MST edges kept), `attach_label_to_usd`, `use_ai_label`, `visualize_caption`, `max_object_capacity`, `export_edges`, `export_world`, `global/qa/brief_caption`.
+- **In IRA/IRO**: with IRA 1.x, add `SceneGraphWriter` under `replicator.writers` with caption parameters inline (`scene_graph_interval`, `caption_interval`, ...); for IRO use `CombinedIROSceneGraphWriter`/`IROSceneGraphWriter`. Captions are written as `caption/scene_graph_caption_<frame id>.json`. Set the `NVIDIA_API_KEY` env var (not needed for scene-graph-only).

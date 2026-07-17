@@ -11,14 +11,14 @@ title: 複数ロボットの ROS 2 Navigation
 ## はじめに
 
 !!! warning "サポートの制限"
-    複数ロボットの ROS 2 Navigation は **Linux で完全サポート**されています。Windows ではエラーが発生する可能性があります。
+    複数ロボットの ROS 2 Navigation は **Linux と、Pixi ベースでインストールした Windows で完全サポート**されています。Windows（WSL）ではエラーが発生する可能性があります。
 
 ### 前提条件
 
 - [チュートリアル 18: ROS 2 Navigation](18_navigation.md)を完了していること。つまり：
     - ROS 2 と Nav2 がインストール済み
     - ROS 2 ブリッジが有効
-    - `carter_navigation` と `isaac_ros_navigation_goal` を含む ros2_ws が source 済み
+    - `carter_navigation` と `isaac_ros_navigation_goal` を含む ros2_ws がビルド・source 済み
 
 ### 所要時間
 
@@ -41,28 +41,31 @@ Occupancy Map Generator を使って、Hospital と Office それぞれの環境
 3. **Tools > Robotics > Occupancy Map** を開き、**Origin** X: 0.0, Y: 0.0, Z: 0.0、**Lower Bound** Z: 0.1、**Upper Bound** Z: 0.62 に設定します（0.62 m は Carter の Lidar の高さです）。
 4. Stage で `Hospital` プリムを選択して **BOUND SELECTION** をクリックします。
 
-    ![Hospital のマップパラメータ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_sample_ros_multiple_robot_nav_1.png)
+    ![Hospital のマップパラメータ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_sample_ros_multiple_robot_nav_1.png)
 
-    ![Hospital の範囲（Top ビュー）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_ros_tut_viewport_ros_multiple_robot_nav_occupancy_map.png)
+    ![Hospital の範囲（Top ビュー）](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_ros_tut_viewport_ros_multiple_robot_nav_occupancy_map.png)
 
 **Office 環境の場合**も同様に、`office.usd` を原点に配置し、次のパラメータでマップを設定します：
 
-![Office のマップパラメータ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_sample_ros_multiple_robot_nav_3.png)
+![Office のマップパラメータ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_sample_ros_multiple_robot_nav_3.png)
 
 **共通の書き出し手順：**
 
 1. **CALCULATE** → **VISUALIZE IMAGE** をクリックします。
-2. **Rotate Image** で **180 度**、**Coordinate Type** で **ROS Occupancy Map Parameters File (YAML)** を選択し、**RE-GENERATE IMAGE** をクリックします。画像名を好みに変更し、YAML テキストをコピーします。
-3. Hospital 用は `carter_hospital_navigation.yaml`、Office 用は `carter_office_navigation.yaml` という名前で、`carter_navigation/maps/` ディレクトリに YAML ファイルを作成し、コピーしたテキストを貼り付けます。
+2. **Rotate Image** で **180 度**、**Coordinate Type** で **ROS Occupancy Map Parameters File (YAML)** を選択し、**RE-GENERATE IMAGE** をクリックします。画像名を好みに変更します。
+3. **Save YAML** をクリックし、`carter_navigation/maps/` ディレクトリに YAML ファイルを保存します（Hospital 用は `carter_hospital_navigation.yaml`、Office 用は `carter_office_navigation.yaml`）。
 4. **Save Image** で、YAML と同じ名前・同じディレクトリに画像を保存します。
 
 生成されるマップは次のようになります：
 
-![Hospital のマップ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_sample_ros_nav_hospital_map.png)
+![Hospital のマップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_sample_ros_nav_hospital_map.png)
 
-![Office のマップ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_sample_ros_nav_office_map.png)
+![Office のマップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_sample_ros_nav_office_map.png)
 
 ## ステップ 2：複数ロボットナビゲーションを実行する
+
+!!! warning "Windows のマルチ GPU 環境での既知の問題"
+    Windows のマルチ GPU システムでは、このシーンの読み込み・再生時にアプリケーションが致命的にクラッシュすることがあります。これは既知の問題で、将来のリリースで修正される予定です。
 
 1. シナリオを読み込みます：
     - Hospital：**Window > Examples > Robotics Examples > ROS2 > Navigation > Multiple Robots > Hospital Scene**

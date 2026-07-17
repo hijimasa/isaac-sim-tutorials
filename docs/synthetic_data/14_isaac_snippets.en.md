@@ -16,6 +16,7 @@ Replicator data-access and capture-control snippets (standalone paths under `sta
 - **subscribers_and_events.py** — stage/physics/render event subscriptions at custom update rates.
 - **custom_fps_writer_annotator.py** — trigger writers / read annotators at a custom FPS with rendering disabled when idle. Note: set timeline (stage) FPS **before** creating the Replicator graph — changing it afterwards resets the graph.
 - **cosmos_writer_simple.py** — minimal CosmosWriter example (falling box); see [Tutorial 9](09_cosmos.md).
+- **sdg_deformables.py** — SDG with deformable physics: deformable assets dropped into a crate, capturing RGB + semantic segmentation when each asset's lowest vertex crosses a trigger height (`VolumeDeformableMaterial`, `DeformablePrim`, deformable tensor API such as `get_nodal_positions`).
 
 ## Next Steps
 

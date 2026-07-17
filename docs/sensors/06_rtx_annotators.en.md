@@ -9,21 +9,20 @@ title: RTX Sensor Annotators
 
 ## Overview
 
-The `isaacsim.sensors.rtx` extension uses Omniverse Replicator to provide **Annotators** for RTX Lidar/Radar data collection. Attach them to render products (on `OmniLidar`/`OmniRadar` prims) either via the Replicator API (`rep.AnnotatorRegistry.get_annotator(...).attach([render_product.path])`) or via the `LidarRtx` class (`sensor.attach_annotator(...)` + `sensor.get_current_frame()`).
+The `isaacsim.sensors.experimental.rtx` and `isaacsim.sensors.rtx.nodes` extensions use Omniverse Replicator to provide **Annotators** for RTX Lidar/Radar data collection. The recommended approach is the `LidarSensor` / `RadarSensor` runtime classes, which manage annotators and render products automatically: `sensor = LidarSensor(lidar, annotators=["generic-model-output"])`, then `data, info = sensor.get_data("generic-model-output")` and `parse_generic_model_output_data(data)`.
 
 !!! warning
-    Annotators rely on the simulation timeline — no data is collected while paused/stopped. Step with `omni.kit.app.get_app().update()`, not `orchestrator.step()`. The `GenericModelOutput` AOV must be on-device (`--/app/sensors/nv/lidar|radar/outputBufferOnGPU`).
+    Annotators rely on the simulation timeline — no data is collected while paused/stopped. With multi-tick rendering enabled (the default), GMO timestamps respect timeline Play/Pause/Stop, and stepping via `omni.kit.app.get_app().update()` or `orchestrator.step()` both work (the latter is preferred when Writers are attached). With multi-tick disabled, timestamps advance monotonically from "App Ready" independent of the timeline; step with `omni.kit.app.get_app().update()` in that case.
 
-## Key annotators
+## Active annotator
 
-- **`IsaacCreateRTXLidarScanBuffer`**: accumulates frames into a single scan. Outputs a 3D Cartesian point cloud (`data`), plus optional `azimuth`, `elevation`, `distance`, `intensity`, `timestamp`, `emitterId`, `materialId`, `objectId`, `normal`, `velocity` (enabled via `initialize(...)` flags; some require specific `omni:sensor:Core:auxOutputType` levels).
-- **`IsaacComputeRTXLidarFlatScan`**: extracts depth/azimuth from a 2D scan (no Radar, no 3D Lidar support).
-- **`IsaacExtractRTXSensorPointCloudNoAccumulator`**: per-frame Cartesian point cloud extraction (no accumulation).
+- **`IsaacExtractRTXSensorPointCloud`** (from `isaacsim.sensors.rtx.nodes`): extracts the GMO buffer's point cloud into a Cartesian (x, y, z) buffer every frame; works with both `OmniLidar` and `OmniRadar` prims and outputs a sensor-to-world transform. Visualize via the `RtxSensorDebugDrawPointCloud` writer, or pass `writers=["draw-point-cloud"]` to `LidarSensor` / `RadarSensor` / `AcousticSensor` (requires `isaacsim.sensors.rtx.nodes` enabled).
+- Auxiliary fields (intensity, emitter/material IDs, ...) come through the GMO buffer, gated by `aux_output_level` (`_replicator:rendervar:GenericModelOutput:channels`).
 
 ## GenericModelOutput & Object IDs
 
-Read the buffer via the `isaacsim.sensors.rtx.generic_model_output` module (example: `inspect_lidar_metadata.py`). With `--/rtx-transient/stableIds/enabled=true`, `objectId` gives stable 128-bit IDs mapping to prim paths for semantic segmentation. Resolve via `LidarRtx.decode_stable_id_mapping` and `LidarRtx.get_object_ids` (example: `resolve_object_ids_from_gmo.py`).
+Read the buffer via `parse_generic_model_output_data` from `isaacsim.sensors.experimental.rtx` (examples: `inspect_lidar_gmo.py --aux-data-level FULL`, `inspect_radar_gmo.py`). With `--/rtx-transient/stableIds/enabled=true`, `objId` gives stable 128-bit IDs mapping to prim paths for semantic segmentation. Resolve via `parse_stable_id_map_data` (example: `resolve_lidar_object_ids.py`). Not every ID has a map entry (procedural geometry, unexpanded submeshes) — use `map.get(id, "<unknown>")` instead of direct lookups.
 
 ## Deprecated annotators
 
-As of Isaac Sim 5.0, several 4.5 annotators (`RtxSensorCpu/Gpu...PointCloud`, `IsaacComputeRTXLidarFlatScanSimulation/SystemTime`, `IsaacReadRTXLidarData`) were removed in favor of `IsaacExtractRTXSensorPointCloudNoAccumulator`, `IsaacComputeRTXLidarFlatScan`, and the `read_gmo_data` utility.
+As of Isaac Sim 6.0, `IsaacCreateRTXLidarScanBuffer` (accumulated scans; Lidar only; optional outputs `azimuth`, `elevation`, `distance`, `intensity`, `timestamp`, `emitterId`, `channelId`, `materialId`, `tickId`, `hitNormal`, `velocity`, `objectId`, `echoId`, `tickState` gated by `aux_output_level`), `IsaacComputeRTXLidarFlatScan` (2D Lidar depth/azimuth), and `IsaacExtractRTXSensorPointCloudNoAccumulator` ship with the deprecated `isaacsim.sensors.rtx` extension and will be removed; use `IsaacExtractRTXSensorPointCloud` (usually indirectly via `LidarSensor` / `RadarSensor`).

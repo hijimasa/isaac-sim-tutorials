@@ -29,6 +29,26 @@ title: PhysX SDK Lidar
 
 PhysX SDK Lidar センサーは、PhysX SDK のレイキャストを使って LiDAR を模擬します。水平・垂直のビーム解像度、回転レート、その他の LiDAR パラメータを設定でき、各ビームの深度情報を報告します。
 
+!!! warning "Isaac Sim 6.0 での非推奨化"
+    PhysX SDK Lidar センサー（`isaacsim.sensors.physx`）は Isaac Sim 6.0 で非推奨（deprecated）となりました。
+    後継は **Physics Raycast センサー**（`isaacsim.sensors.experimental.physics.RaycastSensor`）です。
+    回転式レイキャスト LiDAR の移行の対応関係は次のとおりです。
+
+    | PhysX SDK Lidar | Physics Raycast センサー |
+    |---|---|
+    | `rotationRate` | `rayTimeOffsets`。レイを方位角の列ごとに分配し、各列にスイープ周期（`1.0 / rotation_rate`）内の時間オフセットを割り当てる。現在の物理ステップにオフセットが入るレイのみ発射される |
+    | 水平・垂直解像度 | `rayDirections`。各ビームの方位角・仰角からデカルト方向ベクトルを計算する |
+    | `minRange` / `maxRange` | `minRange` / `maxRange`。意味は同じ |
+    | `drawLines` | **Isaac Read Physics Raycast Sensor** ノードの出力に **Debug Draw RayCast** OmniGraph ノードを接続する |
+    | `_range_sensor` インターフェース（`get_linear_depth_data` / `get_point_cloud_data`） | `RaycastSensor.get_sensor_reading()` が深度・ヒット位置・ヒット法線・（オプションで）ヒットした prim のパスを返す |
+    | `enable_semantics` / `get_prim_data` | `reportHitPrimPaths` 属性。有効にすると読み値に各ヒット面の USD prim パスが含まれる |
+    | `rotationRate` を `0.0` に設定（毎ステップ全レイ発射） | `rayTimeOffsets` を省略する。時間オフセットなしでは全レイが毎物理ステップ発射される |
+
+    詳細は[公式移行ガイド](https://docs.isaacsim.omniverse.nvidia.com/latest/migration_guides/isaac_sim_6_0/sensors_physx_lidar_to_physics_raycast.html)と
+    [Physics Raycast センサーの公式ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/isaacsim_sensors_physics_raycast.html)を参照してください。
+    時間オフセット付きで 360 度スイープを行う回転式センサー構成のサンプルは
+    **Robotics Examples > Sensors > Physics Raycast Sensor** から **Load Scene** で試せます。
+
 !!! note "RTX LiDAR との違い"
     PhysX SDK Lidar は**非可視マテリアルと相互作用しません**。常に ground truth 情報を報告します。たとえば、実際にはビームが透明なオブジェクトを透過する場合でも、PhysX SDK Lidar はその透明オブジェクトまでの深度を測定します。物理ベースの反射・透過をモデル化したい場合は [RTX LiDAR センサー](04_rtx_lidar.md) を使ってください。
 
@@ -40,7 +60,7 @@ PhysX SDK Lidar センサーは、PhysX SDK のレイキャストを使って Li
 4. **Open Source Code** でソースコードを確認できます。
 5. **PLAY** で開始します。
 
-![回転式センサーの例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_rotating_sensor.webp)
+![回転式センサーの例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_viewport_rotating_sensor.webp)
 
 ## ステップ 2：GUI で LiDAR を作成する
 
@@ -59,7 +79,7 @@ PhysX SDK Lidar センサーは、PhysX SDK のレイキャストを使って Li
 !!! tip "全方向へ一斉にレイを飛ばす"
     `rotationRate` を `0.0` にすると、FOV と解像度に基づいて全方向へ一斉にレイを飛ばします。Lidar のパラメータはステージ実行中にリアルタイムで更新できます。
 
-![回転式 LiDAR の設定](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rotating_sensor_2.webp)
+![回転式 LiDAR の設定](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rotating_sensor_2.webp)
 
 ### 衝突検出のセットアップ
 
@@ -68,7 +88,7 @@ LiDAR は **Collision が有効なオブジェクトのみ**を検出できま�
 1. **Create > Mesh > Cube** で立方体を作成し、`(2, 0, 0)` に移動します。
 2. 立方体を選択し、Property パネルの **+ Add > Physics > Collider** で物理コライダーを追加します。
 
-![衝突検出のセットアップ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_rotating_sensor_3.webp)
+![衝突検出のセットアップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_viewport_rotating_sensor_3.webp)
 
 マウスで立方体を動かすと、LiDAR のレイがジオメトリと相互作用する様子を確認できます。
 
@@ -83,7 +103,7 @@ LiDAR は **Collision が有効なオブジェクトのみ**を検出できま�
 3. LiDAR を選択して `(0.5, 0.5, 0)` に移動し、シリンダーに対する相対位置を設定します。シリンダーを動かすと、この相対変換が維持されます。
 4. 確認後、LiDAR の Translate をデフォルトの `(0, 0, 0)` にリセットします。
 
-![親ジオメトリに取り付け](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_rotating_sensor_4.webp)
+![親ジオメトリに取り付け](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_viewport_rotating_sensor_4.webp)
 
 ### 動くロボットに取り付ける
 
@@ -97,7 +117,7 @@ LiDAR は **Collision が有効なオブジェクトのみ**を検出できま�
 6. PhysX Lidar の translation を `-0.06, 0.0, 0.38` に設定して正しい位置に移動します。
 7. デバッグしやすいよう draw lines を有効にし、rotation rate を 0 にします。
 
-![ロボットに取り付け](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_rotating_sensor_3.gif)
+![ロボットに取り付け](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_viewport_rotating_sensor_3.gif)
 
 ## ステップ 4：Python API でデータを取得する
 
@@ -106,13 +126,16 @@ LiDAR の Python API を使うと、スクリプトや拡張機能からセン�
 ### インポートとセットアップ
 
 ```python
-import omni                                                     # コアの Omniverse API
 import asyncio                                                  # レンダリングスレッドをブロックしないよう非同期実行に使用
+
+import omni                                                     # コアの Omniverse API
 from isaacsim.sensors.physx import _range_sensor                # Lidar センサーと対話する Python バインディング
-from pxr import UsdGeom, Gf, UsdPhysics                         # 立方体の作成に使う pxr usd インポート
+from pxr import Gf, UsdGeom, UsdPhysics                         # 立方体の作成に使う pxr usd インポート
 ```
 
 ```python
+import omni
+
 stage = omni.usd.get_context().get_stage()                      # ジオメトリへのアクセス
 timeline = omni.timeline.get_timeline_interface()               # シミュレーションとの対話
 lidarInterface = _range_sensor.acquire_lidar_sensor_interface() # LIDAR との対話
@@ -142,6 +165,10 @@ result, prim = omni.kit.commands.execute(
 ### 障害物を作成する
 
 ```python
+from isaacsim.core.experimental.utils.stage import get_current_stage
+from pxr import Gf, UsdGeom, UsdPhysics
+
+stage = get_current_stage()
 CubePath = "/World/CubeName"                                    # 立方体を作成
 cubeGeom = UsdGeom.Cube.Define(stage, CubePath)
 cubePrim = stage.GetPrimAtPath(CubePath)
@@ -155,6 +182,11 @@ collisionAPI = UsdPhysics.CollisionAPI.Apply(cubePrim)          # 物理コラ�
 LiDAR は最初のフレームのデータを得るためにシミュレーションを 1 フレーム進める必要があります。`timeline.play()` で開始し、1 フレーム待ってから `timeline.pause()` で深度バッファを埋めます。スクリプトと非同期に実行されるため、`asyncio` と `ensure_future` を使います。
 
 ```python
+import asyncio
+
+import omni.timeline
+
+
 async def get_lidar_param():                                    # LIDAR からデータを取得する関数
     await omni.kit.app.get_app().next_update_async()            # データのため 1 フレーム待つ
     timeline.pause()                                            # 深度バッファを埋めるため一時停止
@@ -165,11 +197,13 @@ async def get_lidar_param():                                    # LIDAR から�
     print("zenith", zenith)
     print("azimuth", azimuth)
 
+
+timeline = omni.timeline.get_timeline_interface()
 timeline.play()                                                 # シミュレーション開始
 asyncio.ensure_future(get_lidar_param())                        # スイープ完了後にのみデータを要求
 ```
 
-![Python での LiDAR データ取得](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_range_sensor_lidar_python.png)
+![Python での LiDAR データ取得](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_range_sensor_lidar_python.png)
 
 ## ステップ 5：点群をセグメンテーションする
 
@@ -180,10 +214,11 @@ asyncio.ensure_future(get_lidar_param())                        # スイープ�
 - `get_point_cloud_data` と `get_prim_data` で点群とセマンティック ID を取得する
 
 ```python
-import omni
 import asyncio
+
+import omni
 from isaacsim.sensors.physx import _range_sensor
-from pxr import UsdGeom, Gf, UsdPhysics, Semantics
+from pxr import Gf, Semantics, UsdGeom, UsdPhysics
 
 stage = omni.usd.get_context().get_stage()
 timeline = omni.timeline.get_timeline_interface()
@@ -208,7 +243,7 @@ result, prim = omni.kit.commands.execute(
     yaw_offset=0.0,
     enable_semantics=True
 )
-UsdGeom.XformCommonAPI(prim).SetTranslate((2.0, 0.0, 0.0))
+UsdGeom.XformCommonAPI(stage.GetPrimAtPath("/World" + lidarPath)).SetTranslate((2.0, 0.0, 0.0))
 
 # Cube と Sphere を作成し、コライダーと異なるセマンティックラベルを追加
 primType = ["Cube", "Sphere"]
@@ -238,7 +273,7 @@ timeline.play()
 asyncio.ensure_future(get_lidar_param())
 ```
 
-![セグメンテーションされた点群](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_full_tut_viewport_range_sensor_lidar_segmented_point_cloud.png)
+![セグメンテーションされた点群](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.1_full_tut_viewport_range_sensor_lidar_segmented_point_cloud.png)
 
 ## まとめ
 
@@ -248,6 +283,7 @@ asyncio.ensure_future(get_lidar_param())
 - GUI で回転式 LiDAR を作成し、可視化・衝突検出・親子付けを設定する方法
 - `_range_sensor` インターフェースと `RangeSensorCreateLidar` コマンドでデータを取得する方法
 - `enable_semantics=True` と `get_point_cloud_data` / `get_prim_data` で点群をセグメンテーションする方法
+- Isaac Sim 6.0 での後継が `isaacsim.sensors.experimental.physics.RaycastSensor` であること
 
 ## 次のステップ
 

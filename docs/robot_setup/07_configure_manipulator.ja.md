@@ -48,33 +48,35 @@ title: マニピュレータの設定
 
 | アセット | パス | 用途 |
 |---|---|---|
-| **UR10e + グリッパー（接続済み）** | `Samples > Rigging > Manipulator > import_manipulator > ur10e > ur > ur_gripper.usd` | チュートリアル 6 の完成アセット |
-| **設定済み完成版** | `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur > ur_gripper.usd` | このチュートリアルの完成アセット（参考用） |
+| **UR10e + グリッパー（接続済み）** | `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur_gripper > ur.usda` | チュートリアル 6 の完成アセット（このチュートリアルの開始点） |
+| **設定済み完成版** | `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur_set_physx > ur.usda` | このチュートリアルの完成アセット（参考用） |
+
+!!! tip "プリビルトアセットの利用"
+    プリビルトアセットを使う場合は、アクセスしやすいようにローカルマシンにダウンロードしてから開くことが公式に推奨されています。
 
 ## ステップ 1：アーティキュレーションの調整
 
 マニピュレーションタスクでは、多数のジョイントと Mimic ジョイントが連動して動くため、デフォルトのソルバー設定では精度が不足することがあります。このステップでは、ソルバーの反復回数やスリープ条件を調整して、シミュレーションの精度と安定性を向上させます。
 
-### 1-1. UR10e の Physics Layer を開く
+### 1-1. PhysX レイヤーをサブレイヤーとして挿入する
 
-チュートリアル 6 で URDF からインポートした場合、UR10e のアセットフォルダ内に `_physics` サフィックスが付いた **Physics Layer** ファイル（例：`ur10e_physics.usd`）が生成されています。このファイルを Isaac Sim で開いてください。
+Isaac Sim 6.0 のアセットは、[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html)に従い、**インターフェースファイル**（`ur.usda`）と**ペイロードレイヤー**（`payloads/Physics/physx.usda` など）に分かれています。PhysX 固有の設定は `physx.usda` レイヤーに保存します。
 
-!!! warning "なぜ Physics Layer を直接開く必要があるのか"
-    USD はレイヤー構造を持つファイル形式です。URDF インポート時にロボットのアセットは**メインレイヤー**（ビジュアルや階層構造）と **Physics Layer**（物理プロパティやジョイントドライブ）に分けて生成されます。
+1. インターフェースファイル `ur.usda` を開き、画面右上の **Layer** タブを選択します。
+2. Layer パネル下部の **Insert Sublayer** アイコン（レイヤーが重なったオレンジ矢印のアイコン）をクリックします。
+3. ファイルダイアログで `<アセットの場所>/Manipulator/configure_manipulator/ur10e/ur_gripper/payloads/Physics/` に移動し、`physx.usda` を選択して **Open** をクリックしてサブレイヤーとして挿入します。
+4. `physx.usda` レイヤーを左クリックした後、右クリックして **Set Authoring Layer** を選択します。これ以降の変更はすべて `physx.usda` レイヤーに保存されます。
 
-    Isaac Sim の GUI（Property パネル）でパラメータを変更すると、その変更は**現在開いているレイヤー**に書き込まれます。トップレベルの USD ファイル（`ur_gripper.usd` など）を開いた状態で物理パラメータを変更すると、変更がトップレベルのレイヤーに書き込まれてしまい、Physics Layer には反映されません。
+!!! warning "なぜ Authoring Layer を切り替えるのか"
+    USD はレイヤー構造を持つファイル形式です。Isaac Sim の GUI（Property パネル）でパラメータを変更すると、その変更は**現在の Authoring Layer** に書き込まれます。切り替えずに変更すると、PhysX 設定がルートレイヤー側に書き込まれてしまい、物理設定レイヤーに反映されません。
 
-    物理設定を正しい場所に保存するため、**変更対象の Physics Layer ファイルを直接開いて**作業する必要があります。
+### 1-2. アーティキュレーションの作成と設定
 
-### 1-2. アーティキュレーションの有効化と設定
+1. **Stage** パネルで `ur/Geometry/World` プリムを選択します。
 
-1. **Stage** パネルで `ur10e/root_joint` プリムを選択します。
+2. **Property** パネルの **Physics > Articulation** セクションを確認します。**Articulation(PhysX)** がない場合は、**+ Add > Physics > Articulation(PhysX)** で新規作成します。
 
-2. **Property** パネルの **Physics > Articulation Root** セクションを確認します。
-
-3. **Articulation Enabled** チェックボックスがオンになっていることを確認します（デフォルトでオンです）。
-
-4. 以下のパラメータを設定します：
+3. 以下のパラメータを設定します：
 
     | パラメータ | デフォルト値 | 設定値 | 説明 |
     |---|---|---|---|
@@ -85,7 +87,24 @@ title: マニピュレータの設定
 
     ![アーティキュレーションプロパティ](images/32_setting_articulation_property.png)
 
-5. **Ctrl + S** で変更を保存します。
+4. Layer パネルの `physx.usda`（Authoring Layer）ラベルの横にある**青いファイルアイコン**をクリックして、変更を `physx.usda` レイヤーに保存します。
+
+5. `physx.usda` レイヤーに Articulation(PhysX) プリムが作成され、プロパティが正しく設定されていることを確認します：
+
+    ```usda
+    over "Geometry"
+    {
+        over "world" (
+            prepend apiSchemas = ["PhysxArticulationAPI"]
+        )
+        {
+            float physxArticulation:sleepThreshold = 0.00005
+            int physxArticulation:solverPositionIterationCount = 64
+            int physxArticulation:solverVelocityIterationCount = 4
+            float physxArticulation:stabilizationThreshold = 0.00001
+        }
+    }
+    ```
 
 !!! note "パラメータの補足"
     - **Solver Position/Velocity Iterations Count**: 反復回数を増やすとシミュレーションの精度が向上しますが、計算コストも増加します。UR10e + グリッパーのような多自由度ロボットや Mimic ジョイントを持つロボットでは、高い反復回数が必要です。
@@ -98,7 +117,7 @@ title: マニピュレータの設定
 
 ### 2-1. Robotiq 2F-140 の Physics Layer を開く
 
-ステップ 1 で開いた UR10e の Physics Layer を閉じ、Robotiq 2F-140 グリッパーの Physics Layer を開きます。グリッパーのアセットフォルダ内の `_physics` サフィックスが付いたファイル（例：`robotiq_2f_140_physics.usd`）を開いてください。
+ステップ 1 で開いた UR10e のステージを閉じ、Robotiq 2F-140 グリッパーの Physics Layer を開きます。グリッパーのアセットフォルダ内の `_physics` サフィックスが付いたファイル（例：`robotiq_2f_140_physics.usd`）を開いてください。
 
 Isaac Sim 同梱アセットを使用する場合は `Samples > Rigging > Manipulator > import_manipulator > robotiq_2f_140 > configuration > robotiq_2f_140_physics.usd` です。
 
@@ -108,10 +127,10 @@ Isaac Sim 同梱アセットを使用する場合は `Samples > Rigging > Manipu
 
 2. **Create > Physics > Physics Material > Rigid Body Material** を選択します。
 
-3. 作成された `PhysicsMaterial` プリムを、**Looks** フォルダに移動します：
-    - `PhysicsMaterial` を `robotiq_arg2f_140_model/Looks` フォルダにドラッグ＆ドロップします。
+3. マテリアル名を **finger** にリネームします（右クリック > Rename）。
 
-4. マテリアル名を **finger** にリネームします（右クリック > Rename）。
+    !!! note "Isaac Sim 6.0 での手順変更"
+        5.1 までの公式手順にあった「PhysicsMaterial を `Looks` フォルダに移動する」ステップは 6.0 で削除されました。作成した場所のままで問題ありません。
 
 ### 2-3. 摩擦係数の設定
 
@@ -135,7 +154,7 @@ Isaac Sim 同梱アセットを使用する場合は `Samples > Rigging > Manipu
 
 2. **Property** パネルの **Physics > Physics materials on selected models** セクションを見つけます。
 
-3. マテリアルとして、先ほど作成した `/World/robotiq_arg2f_140_model/Looks/finger` を選択します。
+3. マテリアルとして、先ほど作成した `finger` マテリアルを選択します。
 
 4. 同様に、`colliders/right_inner_finger/mesh_1/box` にも同じマテリアルを適用します。
 
@@ -172,9 +191,9 @@ Isaac Sim 同梱アセットを使用する場合は `Samples > Rigging > Manipu
 
 ### 4-1. アセットを開く
 
-チュートリアル 6 で作成したトップレベルの UR10e アセット（`ur_gripper.usd` など）を開きます。このファイルはステップ 1〜3 で変更した Physics Layer を参照しているため、変更が自動的に反映されています。
+チュートリアル 6 で作成したトップレベルの UR10e アセット（`ur.usda` など）を開きます。このファイルはステップ 1〜3 で変更した物理レイヤーを参照しているため、変更が自動的に反映されています。
 
-Isaac Sim 同梱のアセットを使用する場合は、`Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur > ur_gripper.usd` を開いてください。
+Isaac Sim 同梱のアセットを使用する場合は、`Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur_set_physx > ur.usda` を開いてください。
 
 ### 4-2. Physics Inspector の起動
 
@@ -202,6 +221,9 @@ Isaac Sim 同梱のアセットを使用する場合は、`Samples > Rigging > M
 ## ステップ 5：Gain Tuner によるゲイン調整
 
 最後に、各ジョイントのゲイン（制御パラメータ）を調整します。ゲインはジョイントが目標位置にどれだけ速く・正確に到達するかを決定する重要なパラメータです。
+
+!!! note "公式チュートリアルでの位置づけ"
+    Isaac Sim 6.0 の公式ドキュメントでは、Gain Tuner によるゲイン設定は[チュートリアル 6](06_setup_manipulator.md)（インポート直後）に移動しました。本ページでは復習を兼ねて手順を残しています。より体系的なチューニング手法は[チュートリアル 11](11_joint_tuning.md)で扱います。
 
 !!! note "ゲインとは"
     ゲインとは、ジョイントの**PD 制御**（比例-微分制御）のパラメータです。
@@ -272,7 +294,7 @@ Isaac Sim 同梱のアセットを使用する場合は、`Samples > Rigging > M
 5. **Gain Tuner によるジョイントゲイン調整**：Natural Frequency と Damping Ratio を使った PD ゲインの最適化
 
 !!! tip "参考アセット"
-    設定済みの完成アセットは、Content ブラウザの `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur > ur_gripper.usd` で確認できます。
+    設定済みの完成アセットは、Content ブラウザの `Samples > Rigging > Manipulator > configure_manipulator > ur10e > ur_set_physx > ur.usda` で確認できます。
 
 ## 次のステップ
 

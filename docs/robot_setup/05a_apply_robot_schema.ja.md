@@ -212,19 +212,23 @@ GUI からの適用でも Python と同様に、物理アーティキュレー�
 |---|---|---|
 | **Description** | `Custom forklift mobile robot rig` | ロボットの説明文 |
 | **Namespace** | `forklift` | ROS / OmniGraph の名前空間 |
-| **Robot Type** | `mobile_robot` | ロボット種別（任意の Token） |
-| **Robot Links**（リレーション） | 各リンクのプリムパス | ロボットを構成するリンクの順序付きリスト |
-| **Robot Joints**（リレーション） | 各ジョイントのプリムパス | DOF を持つジョイントの順序付きリスト |
+| **Robot Type** | `Mobile Base` | ロボット種別（ドロップダウン。`(Other)` を選ぶと任意の Token を入力可能） |
+| **License / Source / Version / Changelog** | `Apache-2.0` など | アセットのライセンス・出典・バージョン・変更履歴（Isaac Sim 6.0 で追加されたメタデータ） |
+| **Robot Links**（リレーション） | 各リンクのプリムパス | ロボットを構成するリンクの順序付きリスト（ドラッグで並べ替え可能） |
+| **Robot Joints**（リレーション） | 各ジョイントのプリムパス | DOF を持つジョイントの順序付きリスト（ドラッグで並べ替え可能） |
 
 !!! note "Robot Links / Robot Joints の意味"
     これらのリレーションは「ステート報告に含めたいリンク／ジョイントの順序」を指定するものです。リレーションに登録されていないリンクやジョイントもアーティキュレーションには含まれますが、ROS のジョイントステートメッセージなどには出力されません。
 
+!!! tip "Isaac Sim 6.0 の Robot Schema ウィジェット"
+    Isaac Sim 6.0 では、`IsaacRobotAPI` 付きプリムを選択したときの Properties パネルに専用の **Robot Schema ウィジェット**が表示されます。メタデータ編集、**Add Joint / Add Link** ボタンによるエントリ追加（適合するプリムだけがフィルタ表示されます）、行のドラッグによる並べ替え、**Re-Calculate Robot Tree**（アーティキュレーションの再スキャン）、**Save to Robot Layer**（`IsaacRobotAPI` をオーサリングしているレイヤーへの保存）がここから行えます。
+
 ### 4-3. LinkAPI / JointAPI の個別適用
 
-- リンクに対して：剛体プリムを選択 → **+ Add > Edit API Schema > IsaacLinkAPI**
-- ジョイントに対して：ジョイントプリムを選択 → **+ Add > Edit API Schema > IsaacJointAPI**
+- リンクに対して：剛体プリムを選択 → **+ Add > Isaac > Robot Schema > Robot Link**
+- ジョイントに対して：ジョイントプリムを選択 → **+ Add > Isaac > Robot Schema > Robot Joint**
 
-ステップ 3 のスクリプトを実行済みであれば、すべてのリンクとジョイントに自動で適用されているため、この手順は通常不要です。
+ステップ 3 のスクリプト（または 4-1 の Robot API 適用）を実行済みであれば、すべてのリンクとジョイントに自動で適用されているため、この手順は通常不要です。
 
 ## ステップ 5：適用結果の確認
 
@@ -270,19 +274,15 @@ for rel_name in [rs.Relations.ROBOT_LINKS.name, rs.Relations.ROBOT_JOINTS.name]:
 
 `Has RobotAPI: True` と表示され、リンク・ジョイントが想定通りの数で登録されていれば成功です。
 
-## ステップ 6（オプション）：Reference Point の追加
+## ステップ 6（オプション）：Site（参照点）の追加
 
-ロボットアームのエンドエフェクタや、フォークリフトのフォーク先端など、**ロボット上の意味のある参照点**には `IsaacReferencePointAPI` を適用しておくと、後続のツール（Pick & Place チュートリアル、Grasp Editor など）から参照しやすくなります。
+ロボットアームのエンドエフェクタや、フォークリフトのフォーク先端など、**ロボット上の意味のある参照点**には `IsaacSiteAPI` を適用しておくと、後続のツール（Pick & Place チュートリアル、Grasp Editor など）から参照しやすくなります。
+
+!!! note "IsaacReferencePointAPI からのリネーム"
+    Isaac Sim 6.0 で、参照点を表すスキーマは `IsaacReferencePointAPI` から **`IsaacSiteAPI`** に置き換えられました。旧スキーマが適用されたアセットも動作しますが非推奨警告が出ます。`UpdateDeprecatedSchemas(robot_prim)` で一括移行できます。また、Site は `robotLinks` リレーションに（親リンクの直後、または末尾に）登録できます。
 
 !!! warning "参照点プリムは事前に作成しておく必要があります"
-    `IsaacReferencePointAPI` は**既存のプリムに API を追加する仕組み**であり、プリムを新規生成してくれるわけではありません。対象パスにプリムが存在しないまま API を適用すると、以下のような実行時エラーになります：
-
-    ```
-    RuntimeError: Accessed invalid null prim
-      ... in ApplyReferencePointAPI
-    ```
-
-    そのため、まず**参照点となる Xform プリムを作成**し、適切な位置に配置してから API を適用します。
+    `IsaacSiteAPI` は**既存のプリムに API を追加する仕組み**であり、プリムを新規生成してくれるわけではありません。対象パスにプリムが存在しないまま API を適用すると、`RuntimeError: Accessed invalid null prim` のような実行時エラーになります。そのため、まず**参照点となる Xform プリムを作成**し、適切な位置に配置してから API を適用します。
 
 ### 6-1. GUI で適用する例
 
@@ -290,7 +290,7 @@ for rel_name in [rs.Relations.ROBOT_LINKS.name, rs.Relations.ROBOT_JOINTS.name]:
 2. **Create > Xform** を選択し、新しい Xform を作成
 3. 作成された Xform を `fork_tip` にリネーム
 4. Properties パネルの **Transform** で、参照点として配置したい位置・姿勢を設定（例：フォーク先端の座標）
-5. `fork_tip` を選択した状態で **+ Add > Edit API Schema > IsaacReferencePointAPI** を選択
+5. `fork_tip` を選択した状態で **+ Add > Isaac > Robot Schema > Robot Site** を選択
 6. **Description** に `Fork tip for object insertion` などの説明を入力
 7. **Forward Axis** に基準軸（`X`、`Y`、`Z` のいずれか）を設定
 
@@ -301,33 +301,32 @@ for rel_name in [rs.Relations.ROBOT_LINKS.name, rs.Relations.ROBOT_JOINTS.name]:
 ```python
 from pxr import Usd, UsdGeom, Gf
 import omni.usd
-import usd.schema.isaac.robot_schema as rs
 
 stage = omni.usd.get_context().get_stage()
 
-# Create the reference point prim if it does not exist
-ref_path = "/SMV_Forklift_B01_01/lift/fork_tip"
-ref_prim = stage.GetPrimAtPath(ref_path)
-if not ref_prim.IsValid():
-    ref_xform = UsdGeom.Xform.Define(stage, ref_path)
+# Create the site prim if it does not exist
+site_path = "/SMV_Forklift_B01_01/lift/fork_tip"
+site_prim = stage.GetPrimAtPath(site_path)
+if not site_prim.IsValid():
+    site_xform = UsdGeom.Xform.Define(stage, site_path)
     # Set the local transform (adjust to the actual fork tip position in your asset)
-    ref_xform.AddTranslateOp().Set(Gf.Vec3d(0.0, 0.0, 0.5))
-    ref_prim = ref_xform.GetPrim()
+    site_xform.AddTranslateOp().Set(Gf.Vec3d(0.0, 0.0, 0.5))
+    site_prim = site_xform.GetPrim()
 
-# Apply ReferencePointAPI
-rs.ApplyReferencePointAPI(ref_prim)
+# Apply IsaacSiteAPI (by schema identifier)
+site_prim.ApplyAPI("IsaacSiteAPI")
 
 # Set attributes
-ref_prim.GetAttribute("isaac:Description").Set("Fork tip for object insertion")
-ref_prim.GetAttribute("isaac:forwardAxis").Set("Z")
+site_prim.GetAttribute("isaac:Description").Set("Fork tip for object insertion")
+site_prim.GetAttribute("isaac:forwardAxis").Set("Z")
 
-print(f"ReferencePointAPI applied to {ref_path}")
+print(f"IsaacSiteAPI applied to {site_path}")
 ```
 
-!!! tip "既存プリムをそのまま参照点にする場合"
-    すでに目的の場所に Xform やリンクがある場合は、新規作成せずにそのプリムに直接 `ApplyReferencePointAPI` を適用するだけで構いません。その場合は、上記スクリプトの `if not ref_prim.IsValid():` ブロック全体を削除してください。
+!!! tip "既存プリムをそのまま参照点にする場合／自動検出"
+    すでに目的の場所に Xform やリンクがある場合は、新規作成せずにそのプリムに直接 `IsaacSiteAPI` を適用するだけで構いません。その場合は、上記スクリプトの `if not site_prim.IsValid():` ブロック全体を削除してください。
 
-    リンク（剛体）に Reference Point API を追加することも可能で、その場合は LinkAPI と ReferencePointAPI の両方が同じプリムに適用された状態になります。
+    また、`usd.schema.isaac.robot_schema.utils` の **`DetectAndApplySites(stage, robot_prim)`** を使うと、各リンク配下の「子を持たない末端の Xform」を Site 候補として自動検出し、`IsaacSiteAPI` を一括適用できます。
 
 ## トラブルシューティング
 
@@ -337,26 +336,27 @@ print(f"ReferencePointAPI applied to {ref_path}")
 | `usd.schema.isaac.robot_schema` の import エラー | `isaacsim.robot.schema` 拡張が無効 | **Window > Extensions** で `isaacsim.robot.schema` を検索して有効化 |
 | `default_prim` が `None` | デフォルトプリム未設定 | ルート Xform を右クリックし **Set as Default Prim** |
 | `robotLinks` / `robotJoints` が空 | スクリプト実行時に Default Prim 配下に剛体／ジョイントがない | プリム階層を確認、または `default_prim` を正しいルートに変更 |
-| 再実行時にリレーションが重複 | `AddTarget` の重複登録 | `configuration/*_robot_schema.usda` を削除してから再実行 |
+| リレーションの内容が古い／無効なターゲットが残る | ロボット構造の変更後にリストが未更新 | Properties パネルの **Re-Calculate Robot Tree** を実行（または `RecalculateRobotSchema`）。並び順ごと作り直す場合は **Force Update** をチェックしてから実行 |
 | Properties パネルに Robot セクションが出ない | 拡張機能の読み込み失敗 / プリム選択ミス | Isaac Sim を再起動、ステージを再読み込み、ルートプリムを再選択 |
-| `RuntimeError: Accessed invalid null prim` が `ApplyReferencePointAPI` などで発生 | 対象パスにプリムが存在しない | `stage.GetPrimAtPath(...)` の戻り値で `prim.IsValid()` を確認。存在しない場合は `UsdGeom.Xform.Define` などで先にプリムを作成してから API を適用（ステップ 6-2 参照） |
+| `RuntimeError: Accessed invalid null prim` が API 適用時に発生 | 対象パスにプリムが存在しない | `stage.GetPrimAtPath(...)` の戻り値で `prim.IsValid()` を確認。存在しない場合は `UsdGeom.Xform.Define` などで先にプリムを作成してから API を適用（ステップ 6-2 参照） |
+| 旧アセットで非推奨警告（ReferencePointAPI / 軸別 DoFOffset） | Isaac Sim 6.0 でスキーマが変更された | `UpdateDeprecatedSchemas(robot_prim)` で IsaacSiteAPI / `DofOffsetOpOrder` に一括移行 |
 
 ## まとめ
 
 このチュートリアルでは以下のトピックを扱いました：
 
 1. **Robot Schema の概念** — Physics Schema を補完してロボットの意味づけを行う拡張スキーマ
-2. **4 つの主要 API**（RobotAPI / LinkAPI / JointAPI / ReferencePointAPI）の役割と属性
+2. **4 つの主要 API**（RobotAPI / LinkAPI / JointAPI / SiteAPI）の役割と属性
 3. **専用レイヤー（`configuration/<robot>_robot_schema.usda`）への分離**による非破壊的な適用
-4. **Python による一括適用** — 全リンク・ジョイントへの自動適用
+4. **Python による一括適用** — `ApplyRobotAPI` によるリンク・ジョイントの自動検出・自動登録
 5. **GUI による補足適用** — 個別プリムへの追加と属性編集
 6. **適用結果の確認** — Properties パネルと Gain Tuner ドロップダウンでの動作確認
-7. **Reference Point の追加** — エンドエフェクタなど意味のある参照点の登録
+7. **Site（参照点）の追加** — エンドエフェクタなど意味のある参照点の登録
 
 これにより、手動リギングしたロボットも URDF インポート経由のロボットと同等に、Gain Tuner や Grasp Editor などの Asset Editor 系ツールから扱えるようになります。
 
 !!! tip "公式ドキュメント"
-    Robot Schema のより詳細な仕様（Surface Gripper、AttachmentPointAPI、ロボットの組み合わせ表現など）は、Isaac Sim 公式ドキュメントの [Robot Schema](https://docs.isaacsim.omniverse.nvidia.com/latest/omniverse_usd/robot_schema.html) を参照してください。
+    Robot Schema のより詳細な仕様（Surface Gripper、AttachmentPointAPI、Named Pose、ロボットの組み合わせ表現、ユーティリティ関数群、IK ソルバーなど）は、Isaac Sim 公式ドキュメントの [Robot Schema](https://docs.isaacsim.omniverse.nvidia.com/latest/omniverse_usd/robot_schema.html) を参照してください。Robot Schema を対話的に確認・編集するツールとしては、Isaac Sim 6.0 で追加された **Robot Inspector**（旧 Robot Hierarchy）や **Robot Poser** もあります。
 
 ## 次のステップ
 

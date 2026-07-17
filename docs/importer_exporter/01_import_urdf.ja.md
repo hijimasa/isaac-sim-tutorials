@@ -9,18 +9,17 @@ title: URDF インポート
 このチュートリアルを修了すると、以下の内容を習得できます：
 
 - URDF ファイルを Isaac Sim にインポートして USD に変換する方法
-- インポート設定（ベースタイプ、密度、ジョイントドライブ、コリジョン）の構成
+- インポート設定（Robot Type / Base Type、メッシュ結合、コリジョン）の構成
 - コリジョンメッシュの可視化と確認方法
 - 組み込みサンプル（Robotics Examples）を使ったインポートの流れ
-- Python スクリプトによるプログラム的なインポート
-- ROS 2 ノードからの URDF（XACRO）インポート
+- Python API（`URDFImporter`）によるプログラム的なインポート
+- スタンドアロンスクリプトによる一括変換
 
 ## はじめに
 
 ### 前提条件
 
 - Isaac Sim のクイックチュートリアル（基本操作）を完了していること
-- Python スクリプトの節では [Core API チュートリアル 1: Hello World](../core_api/01_hello_world.md) の Hello World サンプルを使用します
 
 ### 所要時間
 
@@ -32,61 +31,66 @@ title: URDF インポート
 
 1. **GUI での直接インポート** — メニュー操作だけで URDF を読み込む基本の方法
 2. **組み込みサンプルからのインポート** — Robotics Examples に用意された例で流れを体験する
-3. **Python スクリプトによるインポート** — パイプラインへの組み込みに適したプログラム的な方法
-4. **ROS 2 ノードからのインポート** — 既存の ROS 2 ワークフローと連携する方法（Linux のみ）
+3. **Python API によるインポート** — Script Editor から `URDFImporter` クラスで実行するプログラム的な方法
+4. **スタンドアロンスクリプトによるインポート** — ターミナルから一括変換する方法
+
+ROS 2 ノードから URDF（XACRO）を直接インポートする方法は、ROS 2 のインストールが前提となるため[チュートリアル 1a: ROS 2 ノードからの URDF インポート](01a_import_urdf_from_ros2.md)として独立させています。
 
 !!! note "URDF とは / なぜ変換が必要か"
     URDF（Unified Robot Description Format）は、ROS で標準的に使われるロボット記述形式です。XML でロボットのリンク（剛体）とジョイント（関節）の構成、質量、コリジョン形状などを記述します。
 
     一方、Isaac Sim はシーンやロボットを **USD（Universal Scene Description）** 形式で扱います。そのため URDF のロボットを Isaac Sim で使うには、URDF → USD の**変換（インポート）**が必要です。インポートは一方向の変換であり、元の URDF ファイルが書き換えられることはありません。
 
-    逆方向（USD → URDF）の変換は[次のチュートリアル](02_export_urdf.md)で扱います。
+    逆方向（USD → URDF）の変換は[チュートリアル 2](02_export_urdf.md)で扱います。
+
+!!! note "Isaac Sim 6.0 での URDF インポーターの変更点"
+    Isaac Sim 6.0 の URDF インポーターはメジャーアップデートされ、インポートされたアセットには [Isaac Sim Robot Schema](https://docs.isaacsim.omniverse.nvidia.com/latest/omniverse_usd/robot_schema.html) と Newton 物理エンジン互換のスキーマが適用されるようになりました。あわせてインポートオプションも再編され、**Robot Type / Base Type** の選択が追加された一方、旧バージョンにあったジョイントドライブ（Natural Frequency など）のインポート時設定は廃止され、ゲイン調整はインポート後に行う方式になっています。
 
 ## ステップ 1：GUI での直接インポート
 
-ここでは、URDF インポーターエクステンションに同梱されている Franka Panda の URDF（`panda_arm_hand.urdf`）をインポートします。
+ここでは、URDF インポーターエクステンションに同梱されている UR10 の URDF（`ur10.urdf`）をインポートします。
 
 ### 1-1. エクステンションの有効化
 
 URDF インポーター（`isaacsim.asset.importer.urdf`）は通常、Isaac Sim の起動時に自動的にロードされます。もし読み込まれていない場合は、**Window > Extensions** を開いて `isaacsim.asset.importer.urdf` を検索し、有効化してください。
 
-![エクステンション有効化](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_import_urdf_enable_extension.png)
-
 ### 1-2. サンプル URDF の場所を確認する
 
-今回使う `panda_arm_hand.urdf` は、URDF インポーターエクステンション自体に同梱されています。ファイルの場所は次の手順で確認できます：
+今回使う `ur10.urdf` は、URDF インポーターエクステンション自体に同梱されています。ファイルの場所は次の手順で確認できます：
 
 1. **Window > Extensions** で `isaacsim.asset.importer.urdf` を検索します。
 2. **AUTOLOAD** の横にあるフォルダアイコンをクリックすると、エクステンションのインストール先フォルダが開きます。
-3. その中の `/data/urdf/robots/franka_description/robots` に `panda_arm_hand.urdf` があります。このパスをコピーしておきます。
+3. その中の `/data/urdf/robots/ur10/urdf` に `ur10.urdf` があります。このパスをコピーしておきます。
 
 ### 1-3. ファイルを選択する
 
-**File > Import** を開き、ファイル選択ダイアログのナビゲーションバーに先ほどコピーしたパスを貼り付けて、`panda_arm_hand.urdf` を選択します。
+**File > Import** を開き、ファイル選択ダイアログのナビゲーションバーに先ほどコピーしたパスを貼り付けて、`ur10.urdf` を選択します。
 
-![ロボット選択](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_import_urdf_select_robot.png)
+![ロボット選択](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.asset.importer.urdf-3.0.0_gui_0.png)
 
 ### 1-4. インポート設定を構成する
 
-URDF ファイルを選択すると、ファイル選択ダイアログの右側に **Options** ペイン（インポート設定）が表示されます。設定は Model / Links / Joints & Drives / Colliders のセクションに分かれています。Franka（固定ベースのマニピュレータ）の場合は以下のように設定します：
+URDF ファイルを選択すると、ファイル選択ダイアログの右側に **Options** ペイン（インポート設定）が表示されます。UR10 の場合は以下のように設定します：
 
-| セクション | 設定項目 | 今回の設定 | 説明 |
-|---|---|---|---|
-| Model | **USD Output** | 既定のまま | 変換後の USD ファイルの保存先。既定（`Same as Imported Model(Default)`）では URDF と同じディレクトリになる |
-| Links | **Moveable Base / Static Base** | Static Base | ベースを固定するか（マニピュレータ＝固定、モバイルロボット＝移動）。Franka では既定で Static Base が選択されている |
-| Links | **Default Density** | 既定（`0.0`）のまま | 質量が未定義のリンクに適用する密度。`0.0` なら既定値を使用 |
-| Joints & Drives | **Natural Frequency** | 既定より大きめに | ジョイントドライブの応答特性。**Joint Configuration** で Stiffness / Natural Frequency のどちらで指定するかを選び、ジョイントごとの表で値を設定する。大きくすると動作中の振動が減る |
-| Colliders | **Allow Self-Collision** | オン | ロボット自身のリンク同士の衝突判定を有効にするか |
+| 設定項目 | 今回の設定 | 説明 |
+|---|---|---|
+| **USD Output** | 既定のまま | 変換後の USD ファイルの保存先。既定では URDF と同じディレクトリになる。フォルダアイコンから変更可能 |
+| **Robot Type** | 既定（`Default`）のまま | ロボットスキーマの `isaac:robotType` 属性を設定する。Default / End Effector / Manipulator / Humanoid / Wheeled / Holonomic / Quadruped / Mobile Manipulators / Aerial から選択 |
+| **Base Type** | 既定（`Source`）のまま | ルートリンクの固定方法。**Source**（URDF の記述に従う・既定）／ **Fixed**（ワールドへの固定ジョイントを追加＝固定ベース）／ **Mobile**（固定ジョイントを除去＝移動ベース）の 3 択 |
+| **Merge Mesh** | オン | 剛体ごとにメッシュを 1 つに結合する。USD のプリム数が減り、パフォーマンスが向上する |
+| **Allow Self-Collision** | オン | ロボット自身のリンク同士の衝突判定を有効にするか |
 
-上記以外の項目は既定のままで構いません。
+上記以外の項目（Collision From Visuals、Collision Type、ROS Package List、Debug Mode など）は既定のままで構いません。各オプションの詳細は公式の [URDF Importer Extension](https://docs.isaacsim.omniverse.nvidia.com/latest/importer_exporter/ext_isaacsim_asset_importer_urdf.html) ドキュメントを参照してください。
+
+![インポートオプション](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.asset.importer.urdf-3.0.0_gui_1.png)
 
 !!! warning "出力先ディレクトリの書き込み権限"
     インポート時の出力先ディレクトリには**書き込み権限が必要**です。既定の出力先は URDF ファイルと同じディレクトリになるため、エクステンション同梱のサンプルのように読み取り専用の場所にある URDF をインポートする場合は、**USD Output** を書き込み可能な場所に変更してください。
 
-!!! note "Natural Frequency（固有振動数）とは"
-    Isaac Sim のジョイントドライブは PD 制御（Stiffness / Damping）で駆動されますが、URDF インポーターではこれらを直接指定する代わりに、**Natural Frequency（固有振動数）**という抽象化されたパラメータで応答の速さを指定できます。値を大きくするほどジョイントは目標値に素早く追従し、動作中の振動（オシレーション）が抑えられます。一方、値を上げすぎるとシミュレーションが**数値的に不安定**になり、ジョイントや剛体が意図せず飛散・振動発散する場合があります。その場合は Physics Scene のシミュレーションタイムステップを小さくするか、値を下げて調整してください。
+!!! note "ジョイントドライブの設定は「インポート後」に行う"
+    Isaac Sim 5.x までの URDF インポーターには、インポート時にジョイントドライブを設定する **Joints & Drives** セクション（Stiffness / Natural Frequency の指定）がありましたが、**6.0 で廃止されました**。6.0 では URDF の記述から各ジョイントのドライブが自動構成され、ゲインの調整はインポート後に Property パネルや **Gain Tuner** エクステンションで行います。
 
-    Stiffness / Damping と Natural Frequency の関係や、インポート後の再調整については[ロボットセットアップ チュートリアル 11: ジョイントドライブゲインの調整](../robot_setup/11_joint_tuning.md)で詳しく解説しています。
+    Isaac Sim のジョイントドライブは PD 制御（Stiffness / Damping）で駆動されます。値を大きくするほどジョイントは目標値に素早く追従し、動作中の振動（オシレーション）が抑えられます。一方、値を上げすぎるとシミュレーションが**数値的に不安定**になり、ジョイントや剛体が意図せず飛散・振動発散する場合があります。その場合は Physics Scene のシミュレーションタイムステップを小さくするか、値を下げて調整してください。詳しくは[ロボットセットアップ チュートリアル 11: ジョイントドライブゲインの調整](../robot_setup/11_joint_tuning.md)で解説しています。
 
 ### 1-5. インポートを実行する
 
@@ -101,21 +105,21 @@ URDF ファイルを選択すると、ファイル選択ダイアログの右側
 !!! warning "確認ダイアログが他のウィンドウの背後に隠れることがある"
     環境によっては、この確認ダイアログが**ファイル選択ウィンドウや Extensions ウィンドウの背後に隠れて表示される**ことがあります。その間はメインウィンドウ全体がクリックに反応しなくなるため、フリーズしたように見えます。Import ボタンを押した後に操作できなくなった場合は、手前のウィンドウをドラッグで移動（または閉じる）して、隠れているダイアログの **Yes / No** に応答してください。
 
-![インポート結果](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_import_urdf_franka.png)
+![インポート結果](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.asset.importer.urdf-3.0.0_gui_2.png)
 
 !!! note "モバイルロボット（車輪型）をインポートする場合"
-    車輪で移動するロボットをインポートする場合は、次の設定に変更します：
+    車輪で移動するロボットの場合は、次の点を確認・調整します：
 
-    - **Moveable Base** を選択する
-    - 速度制御するジョイント（車輪）のドライブタイプを **Velocity**、位置制御するジョイント（ステアリング）を **Position** に設定する
-    - **Joint Drive Strength** を必要なレベルに設定する。この値はジョイントの **Damping** としてインポートされます（Velocity ドライブでは Stiffness は常に 0 になります）
+    - **Base Type** を **Mobile**（または URDF 側でベースが固定されていなければ **Source**）にする
+    - インポート後、速度制御するジョイント（車輪）のドライブを **Velocity**、位置制御するジョイント（ステアリング）を **Position** に設定する
+    - ドライブの強さはジョイントの **Damping** で調整する（Velocity ドライブでは Stiffness は常に 0 にします）
 
 !!! note "トルク制御ロボット（四足歩行ロボットなど）をインポートする場合"
-    脚をトルクで直接制御するロボットの場合は、次のように設定します：
+    脚をトルクで直接制御するロボットの場合は、次のようにします：
 
-    - **Moveable Base** を選択する
-    - トルク制御するジョイント（脚）のドライブタイプを **None**、それ以外のジョイントを **Position** または **Velocity** に設定する
-    - **None** ドライブのジョイントでは Stiffness / Damping は効果を持たず、0 としてインポートされます
+    - **Base Type** を **Mobile**（または **Source**）にする
+    - インポート後、トルク制御するジョイント（脚）のドライブタイプを **None**、それ以外のジョイントを **Position** または **Velocity** に設定する
+    - **None** ドライブのジョイントでは Stiffness / Damping は効果を持たないため、0 に設定します
 
 ## ステップ 2：コリジョンメッシュの可視化
 
@@ -134,9 +138,12 @@ URDF ファイルを選択すると、ファイル選択ダイアログの右側
 !!! note "ワイヤーフレームが表示されない場合"
     環境やアセットによっては、**All** を選択してもワイヤーフレームがすぐに反映されないことがあります。その場合は、ビューポートのカメラを動かす、対象のプリムに近づく、あるいは一度シミュレーションを再生するなどして表示が更新されるか確認してください。
 
-![コリジョンメッシュ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_import_urdf_visualize_franka_colliders.png)
+![コリジョンメッシュ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_ext-isaacsim.asset.importer.urdf-3.0.0_gui_3.png)
 
 ## ステップ 3：組み込みサンプルからのインポート
+
+!!! warning "本サイト補足：この節は 5.1.0 時点の内容に基づきます"
+    この「組み込みサンプル」の節は Isaac Sim 6.0 の公式チュートリアルからは削除されました。本節は 5.1.0 時点の内容と検証をもとにした本サイト独自の解説です。お使いのバージョンによっては、例の構成や表記が異なる場合があります。
 
 Isaac Sim には、インポートから駆動設定・シミュレーションまでの一連の流れを体験できるサンプルが組み込まれています。
 
@@ -161,220 +168,84 @@ Isaac Sim には、インポートから駆動設定・シミュレーション�
 5. 左側ツールバーの **PLAY** ボタン — シミュレーションを開始します。
 6. **Move to Pose** 行にある **MOVE** ボタン — ロボットをホーム（休止）姿勢へ動かします。
 
-![UI 統合例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_ext-isaacsim.asset.importer.urdf-2.3.0_gui_example_import_franka.png)
+## ステップ 4：Python API によるインポート
 
-## ステップ 4：Python スクリプトによるインポート
+Import ウィンドウで行っていた操作は、Python スクリプトでも実行できます。Isaac Sim 6.0 では、`URDFImporter` / `URDFImporterConfig` クラスを使う新しい API が導入されました。
 
-Import ウィンドウで行っていた操作は、Python スクリプトでも実行できます。ここでは URDF をプログラム的にインポートし、さらにインポートしたロボットを `isaacsim.robot.manipulators.examples.franka` エクステンションの **FollowTarget** タスク（ターゲットを追従するタスク）に組み込んで動かします。
-
-### 4-1. Hello World サンプルを開く
-
-1. メニューバーから **Window > Examples > Robotics Examples** をクリックします。
-2. 画面下部の **Robotics Examples** タブで **GENERAL > Hello World** を選択します。
-3. Hello World のパネル（Information / World Controls）が表示されることを確認します。
-4. パネル右上の**鉛筆アイコン（Open Source Code）**をクリックして、Visual Studio Code でソースコードを開きます。
-
-### 4-2. コードを編集する
-
-`hello_world.py` を以下のように書き換えます：
+1. **Window > Script Editor** で Script Editor を開きます。
+2. 以下のコードを Script Editor にコピーします：
 
 ```python
-from isaacsim.examples.interactive.base_sample import BaseSample
-from isaacsim.core.utils.extensions import get_extension_path_from_name
-from isaacsim.asset.importer.urdf import _urdf
-from isaacsim.robot.manipulators.examples.franka.controllers.rmpflow_controller import RMPFlowController
-from isaacsim.robot.manipulators.examples.franka.tasks import FollowTarget
-import omni.kit.commands
-import omni.usd
+import os
 
-class HelloWorld(BaseSample):
-    def __init__(self) -> None:
-        super().__init__()
-        return
+import isaacsim.core.experimental.utils.stage as stage_utils
+import omni
+from isaacsim.asset.importer.urdf import URDFImporter, URDFImporterConfig
 
-    def setup_scene(self):
-        # ワールドオブジェクトを取得してシミュレーション環境をセットアップ
-        world = self.get_world()
+# エクステンションのインストール先パスを取得
+ext_manager = omni.kit.app.get_app().get_extension_manager()
+ext_id = ext_manager.get_enabled_extension_id("isaacsim.asset.importer.urdf")
+extension_path = ext_manager.get_extension_path(ext_id)
 
-        # ロボットが接地するデフォルトの地面を追加
-        world.scene.add_default_ground_plane()
+# URDF をインポート
+importer = URDFImporter(
+    URDFImporterConfig(
+        urdf_path=os.path.normpath(os.path.join(extension_path, "data", "urdf", "robots", "ur10", "urdf", "ur10.urdf")),
+        usd_path=os.path.normpath(os.path.join(extension_path, "data", "urdf", "robots", "ur10", "urdf", "ur10.usd")),
+        merge_mesh=True,             # メッシュを結合（GUI の Merge Mesh に相当）
+        allow_self_collision=True,   # 自己衝突を許可（GUI の Allow Self-Collision に相当）
+    )
+)
+output_path = importer.import_urdf()
 
-        # URDF の解析・インポートを行うエクステンションのインターフェースを取得
-        urdf_interface = _urdf.acquire_urdf_interface()
-
-        # URDF インポートの設定
-        import_config = _urdf.ImportConfig()
-        import_config.convex_decomp = False      # コリジョンの凸分解を無効化（シンプルにするため）
-        import_config.fix_base = True            # ベースを地面に固定
-        import_config.make_default_prim = True   # ロボットをデフォルトプリムに設定
-        import_config.self_collision = False     # 自己衝突を無効化（パフォーマンスのため）
-        import_config.distance_scale = 1         # 距離スケール
-        import_config.density = 0.0              # 密度（0 なら既定値を使用）
-
-        # エクステンションに同梱された URDF ファイルのパスを取得
-        extension_path = get_extension_path_from_name("isaacsim.asset.importer.urdf")
-        root_path = extension_path + "/data/urdf/robots/franka_description/robots"
-        file_name = "panda_arm_hand.urdf"
-
-        # URDF ファイルを解析してロボットモデルを生成
-        result, robot_model = omni.kit.commands.execute(
-            "URDFParseFile",
-            urdf_path="{}/{}".format(root_path, file_name),
-            import_config=import_config
-        )
-
-        # 各ジョイントのドライブパラメータ（Stiffness / Damping）を設定
-        for joint in robot_model.joints:
-            robot_model.joints[joint].drive.strength = 1047.19751
-            robot_model.joints[joint].drive.damping = 52.35988
-
-        # ロボットモデルを現在のステージにインポートし、プリムパスを取得
-        result, prim_path = omni.kit.commands.execute(
-            "URDFImportRobot",
-            urdf_robot=robot_model,
-            import_config=import_config,
-        )
-
-        # （オプション）別ステージにインポートして現在のステージから参照する方法
-        # テクスチャ付きのアセットでテクスチャを正しく読み込ませたい場合に有効
-        # dest_path = "/path/to/dest.usd"
-        # result, prim_path = omni.kit.commands.execute(
-        #     "URDFParseAndImportFile",
-        #     urdf_path="{}/{}".format(root_path, file_name),
-        #     import_config=import_config,
-        #     dest_path=dest_path
-        # )
-        # prim_path = omni.usd.get_stage_next_free_path(
-        #     self.world.scene.stage, str(current_stage.GetDefaultPrim().GetPath()) + prim_path, False
-        # )
-        # robot_prim = self.world.scene.stage.OverridePrim(prim_path)
-        # robot_prim.GetReferences().AddReference(dest_path)
-
-        # インポートしたロボットを使ってタスク（ターゲット追従）を作成
-        my_task = FollowTarget(
-            name="follow_target_task",
-            franka_prim_path=prim_path,          # シーン内のロボットのプリムパス
-            franka_robot_name="fancy_franka",    # ロボットインスタンスの名前
-            target_name="target"                 # 追従するターゲットの名前
-        )
-
-        # タスクをシミュレーションワールドに追加
-        world.add_task(my_task)
-        return
-
-    async def setup_post_load(self):
-        # ロード後のセットアップ（コントローラの初期化など）
-        self._world = self.get_world()
-        self._franka = self._world.scene.get_object("fancy_franka")
-
-        # RMPFlow コントローラを初期化
-        self._controller = RMPFlowController(
-            name="target_follower_controller",
-            robot_articulation=self._franka
-        )
-
-        # 物理シミュレーションの各ステップで呼ばれるコールバックを登録
-        self._world.add_physics_callback("sim_step", callback_fn=self.physics_step)
-        await self._world.play_async()
-        return
-
-    async def setup_post_reset(self):
-        # リセット時にコントローラを初期状態に戻す
-        self._controller.reset()
-        await self._world.play_async()
-        return
-
-    def physics_step(self, step_size):
-        # 毎ステップ、ターゲットの位置・姿勢に追従するアクションを計算して適用
-        world = self.get_world()
-        observations = world.get_observations()
-
-        actions = self._controller.forward(
-            target_end_effector_position=observations["target"]["position"],
-            target_end_effector_orientation=observations["target"]["orientation"]
-        )
-
-        self._franka.apply_action(actions)
-        return
+# 変換された USD を開く
+print(output_path)
+result, stage = stage_utils.open_stage(output_path)
 ```
 
-### 4-3. 実行する
+3. **Run**（Ctrl + Enter）をクリックすると、UR10 が変換されてステージに読み込まれます。
 
-1. **Ctrl+S** でコードを保存すると、Isaac Sim がホットリロードされます（VS Code 以外のエディタで保存しても同様にリロードされます）。
-2. **File > New From Stage Template > Empty** で新しいステージを作成します。保存を促すダイアログが出た場合は **Don't Save** をクリックします。
-3. メニューからもう一度 Hello World のサンプルを開きます。
-4. **World Controls** の **LOAD** ボタンをクリックすると、地面・Franka・ターゲットが読み込まれてシミュレーションが開始します。ステージ上のターゲットプリム（キューブ）を動かすと、ロボットのエンドエフェクタがターゲットを追従します。
+### コードのポイント
 
-![Python インポート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_sim_import_urdf.gif)
-
-### 4-4. コードのポイント
-
-**ImportConfig の主な設定項目**
-
-| 項目 | 型 | 説明 |
-|---|---|---|
-| `convex_decomp` | bool | コリジョンメッシュを凸分解するか。単純な凸包で十分なら `False` |
-| `fix_base` | bool | ベースリンクを地面（ワールド）に固定するか。GUI の Static Base に相当 |
-| `make_default_prim` | bool | インポートしたロボットをステージのデフォルトプリムにするか |
-| `self_collision` | bool | 自己衝突を有効にするか |
-| `distance_scale` | float | 距離のスケール係数（通常は 1） |
-| `density` | float | 質量未定義のリンクに適用する密度。0 なら既定値 |
-
-**インポートに使うコマンド**
-
-| コマンド | 役割 |
+| クラス／メソッド | 説明 |
 |---|---|
-| `URDFParseFile` | URDF を解析してロボットモデル（`robot_model`）を生成する。インポート前にジョイントドライブなどを調整できる |
-| `URDFImportRobot` | ロボットモデルを現在のステージにインポートする |
-| `URDFParseAndImportFile` | 解析とインポートを一括で行う。`dest_path` を指定すると別の USD ファイルとして出力し、現在のステージから参照できる（テクスチャ付きアセット向け） |
+| `URDFImporterConfig` | インポート設定。`urdf_path`（入力）と `usd_path`（出力）のほか、`merge_mesh`、`allow_self_collision`、`fix_base`（`None` = Source / `True` = Fixed / `False` = Mobile）、`robot_type` などを指定できる |
+| `URDFImporter` | 設定を受け取ってインポートを実行するクラス |
+| `importer.import_urdf()` | 変換を実行し、生成された USD ファイルのパスを返す |
+| `stage_utils.open_stage()` | 生成された USD を現在のステージとして開く（`isaacsim.core.experimental.utils.stage`） |
 
-!!! note "ドライブ値 1047.19751 / 52.35988 の意味"
-    一見中途半端に見えるこれらの値は、**度単位の値をラジアン単位に換算したもの**です。Stiffness 1047.19751 は 60000 [deg 単位]、Damping 52.35988 は 3000 [deg 単位] に相当します（60000 × π/180 ≈ 1047.19751）。回転ジョイントのドライブパラメータはラジアン単位で指定する必要がある点に注意してください。
+!!! warning "サンプルの出力先は書き込み可能な場所に"
+    上のコードはエクステンション同梱フォルダに `ur10.usd` を出力します。インストール環境によってはこのフォルダが読み取り専用のことがあるため、その場合は `usd_path` を自分の作業ディレクトリなど書き込み可能な場所に変更してください。
 
-## ステップ 5：ROS 2 ノードからのインポート
+!!! note "旧 API（URDFParseFile / URDFImportRobot コマンド）からの移行"
+    Isaac Sim 5.x までのチュートリアルで使われていた `omni.kit.commands.execute("URDFParseFile", ...)` / `URDFImportRobot` / `URDFParseAndImportFile` の Kit コマンドベースの方法に代わって、6.0 では上記の `URDFImporter` クラスが標準の方法になりました。
 
-ROS 2 ノード経由で URDF をインポートすると、既存の ROS 2 ワークフローと Isaac Sim を直接連携できます。`robot_state_publisher` が配信するロボット記述を読み込むため、**XACRO ファイル**（マクロやパラメータを使って URDF を生成する ROS の記述形式）**も明示的に URDF へ変換することなく間接的にインポートできる**のが大きな利点です。
+## ステップ 5：スタンドアロンスクリプトによるインポート
 
-!!! warning "対応プラットフォーム"
-    この機能は **Linux 上の Isaac Sim のみ**でサポートされています（他の Omniverse アプリケーションでも動作する可能性はありますが、想定どおり動作しない場合があります）。
-
-### 前提条件
-
-- ROS 2（例：Humble）がインストールされていること
-- ロボット記述パッケージを含む ROS 2 ワークスペースがあること（例：[Universal Robots ROS 2 Description](https://github.com/UniversalRobots/Universal_Robots_ROS2_Description)）
-
-### 手順
-
-**ターミナル 1** — ロボット記述を配信するノードを起動します：
+Isaac Sim の GUI を開かずに、ターミナルから URDF を USD に一括変換することもできます。Isaac Sim のインストールルートで次を実行します：
 
 ```bash
-source /opt/ros/humble/setup.bash
-# ワークスペースの setup.bash も source しておく
-ros2 launch ur_description view_ur.launch.py ur_type:=ur10e
+./python.sh standalone_examples/api/isaacsim.asset.importer.urdf/urdf_import.py --urdf /path/to/ur10.urdf --usd-path /path/to/output --merge-mesh
 ```
 
-**ターミナル 2** — 起動したノードの名前を確認します：
+主な引数は次のとおりです（すべての引数はスクリプトの `--help` で確認できます）：
 
-```bash
-source /opt/ros/humble/setup.bash
-ros2 node list
-# 例：/robot_state_publisher が表示される
-```
-
-**ターミナル 3** — Isaac Sim を起動してインポートします：
-
-1. ROS 2 環境を source してから Isaac Sim を起動します。
-2. エクステンション `isaacsim.ros2.urdf` を有効化します。
-3. **File > Import from ROS 2 URDF Node** メニューを開きます。
-4. テキストボックスにノード名（例：`robot_state_publisher`）を入力します。
-5. 出力ディレクトリを指定します。
-6. **Import** をクリックします。
-
-### 応用：別のロボットに切り替えて再インポート
-
-1. ターミナル 1 のパブリッシャーを停止し、別のロボットで再起動します（例：`ros2 launch ur_description view_ur.launch.py ur_type:=ur3`）。
-2. Isaac Sim 側で **Refresh** ボタンをクリックします。
-3. 出力ディレクトリを変更して **Import** をクリックします。
+| 引数 | 説明 |
+|---|---|
+| `--urdf` | URDF ファイル（`.urdf`）またはディレクトリのパス。ディレクトリを渡すと中の URDF をまとめて変換する |
+| `--usd-path` | 変換した USD の出力先ディレクトリ |
+| `--robot-type` | ロボットスキーマの Robot Type（Default / End Effector / Manipulator / Humanoid / Wheeled / Holonomic / Quadruped / Mobile Manipulators / Aerial。既定は Default） |
+| `--merge-mesh` | メッシュを結合して最適化する |
+| `--merge-fixed-joints` | 可能な範囲で固定ジョイントをマージしてモデルを最適化する |
+| `--collision-from-visuals` | ビジュアルメッシュからコリジョン形状を生成する |
+| `--collision-type` | コリジョン形状の種類（`"Convex Hull"`、`"Convex Decomposition"`、`"Bounding Sphere"`、`"Bounding Cube"`） |
+| `--allow-self-collision` | 自己衝突を許可する |
+| `--fix-base` / `--no-fix-base` | ベース固定の 3 択指定。`--fix-base` でワールドへの固定ジョイントを追加、`--no-fix-base` で既存の固定ジョイントを除去、省略時は URDF の記述のまま（GUI の Base Type に対応） |
+| `--link-density` | 質量未定義のリンクに適用する密度（kg/m³） |
+| `--joint-drive-type` / `--joint-target-type` | 全ジョイントに適用するドライブ種別（force / acceleration）とターゲット種別（none / position / velocity） |
+| `--override-joint-stiffness` / `--override-joint-damping` | 全ジョイントに適用する Stiffness / Damping の上書き値 |
+| `--ros-package` | `package://` URL を解決するための `名前:パス` のマッピング（複数指定可） |
+| `--test` | 同梱の `carter.urdf` を一時ディレクトリに変換して動作確認する |
 
 ## インポート後の調整
 
@@ -390,16 +261,17 @@ ros2 node list
 
 このチュートリアルでは以下のトピックを扱いました：
 
-1. GUI による **URDF ファイルの直接インポート**と設定項目の意味
+1. GUI による **URDF ファイルの直接インポート**と設定項目（Robot Type / Base Type / Merge Mesh など）の意味
 2. **コリジョンメッシュ**の可視化と確認
 3. **組み込みサンプル**（Robotics Examples）によるインポートの流れ
-4. **Python スクリプト**によるインポートとタスクへの組み込み
-5. **ROS 2 ノード**からのインポート（XACRO 対応）
+4. **Python API**（`URDFImporter` / `URDFImporterConfig`）によるインポート
+5. **スタンドアロンスクリプト**（`urdf_import.py`）による一括変換
 
 ### さらに学ぶには
 
-インポート設定の全項目については、公式の [URDF Importer Extension](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/ext_isaacsim_asset_importer_urdf.html) ドキュメントを参照してください。
+インポート設定の全項目については、公式の [URDF Importer Extension](https://docs.isaacsim.omniverse.nvidia.com/latest/importer_exporter/ext_isaacsim_asset_importer_urdf.html) ドキュメントを参照してください。
 
 ## 次のステップ
 
+- [チュートリアル 1a: ROS 2 ノードからの URDF インポート](01a_import_urdf_from_ros2.md) - ROS 2 の `robot_state_publisher` から URDF（XACRO）を直接インポートする方法を学びます。
 - [チュートリアル 2: URDF エクスポート](02_export_urdf.md) - 逆方向、つまり USD から URDF への変換方法を学びます。

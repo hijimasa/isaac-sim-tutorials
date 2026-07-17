@@ -41,7 +41,9 @@ Isaac Sim には URDF をインポートする方法が2つあります：
 このチュートリアルでは、**ROS 2 が不要な Direct URDF Importer** を使用します。
 
 !!! note "ROS 2 URDF Importer を使いたい場合"
-    ROS 2 環境がインストール済みの場合は、**File > Import from ROS 2 URDF Node** から ROS 2 ノード経由でインポートすることもできます。この場合、`ros2 launch ur_description view_ur.launch.py ur_type:=ur10e` で URDF をパブリッシュし、Isaac Sim 側でノード名 `robot_state_publisher` を指定して取得します。詳細は [公式ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_import_assemble_manipulator.html) を参照してください。
+    ROS 2 環境がインストール済みの場合は、**File > Import from ROS 2 URDF Node** から ROS 2 ノード経由でインポートすることもできます。この場合、`ros2 launch ur_description view_ur.launch.py ur_type:=ur10e` で URDF をパブリッシュし、Isaac Sim 側で **ROS2 Node** フィールドにノード名 `robot_state_publisher` を入力して **Find Node** をクリックし、**Robot Type** に `Manipulator`、**Base Type** に `Fixed` を指定して取得します。
+
+    Isaac Sim 6.0 は **Python 3.12** を使用するため、ROS 2 側も Python 3.12 環境である必要があります。Ubuntu 24.04 + ROS 2 Jazzy はそのまま使えますが、Ubuntu 22.04（Python 3.10）では Isaac Sim ROS Workspace の `build_ros.sh` による再ビルドが必要です。Windows は Pixi ベースの ROS 2 Jazzy のみサポートされ、WSL2 はこのワークフローに対応していません。詳細は [公式ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_import_assemble_manipulator.html) を参照してください。
 
 ### 使用するアセット
 
@@ -50,9 +52,12 @@ Isaac Sim に同梱されているサンプルアセットを参考として使�
 | アセット | パス | 用途 |
 |---|---|---|
 | **import_manipulator フォルダ** | `Samples > Rigging > Manipulator > import_manipulator` | URDF ファイルや完成済み USD の参考用 |
-| **UR10e（完成済み）** | `import_manipulator/ur10e/ur/ur.usd` | UR10e の参考アセット |
-| **手動接続版（完成済み）** | `import_manipulator/ur10e/ur/ur_gripper_manual.usd` | GUI 手動接続の完成例 |
-| **Robot Assembler 版（完成済み）** | `import_manipulator/ur10e/ur/ur_gripper.usd` | Robot Assembler 接続の完成例 |
+| **UR10e（インポート直後）** | `import_manipulator/ur10e/ur/ur.usda` | UR10e の参考アセット |
+| **UR10e（ゲイン調整済み）** | `import_manipulator/ur10e/ur_gains_tuner/ur.usda` | Gain Tuner でゲインを設定した状態の参考アセット |
+| **グリッパー接続版（完成済み）** | `import_manipulator/ur10e/ur_gripper/ur.usda` | Robot Assembler 接続の完成例 |
+
+!!! note "Isaac Sim 6.0 でのアセットパス変更"
+    Isaac Sim 5.1 まで提供されていた `ur/ur_gripper_manual.usd`（GUI 手動接続の完成例）と `ur/ur_gripper.usd` は、6.0 では上記の `ur_gripper/ur.usda` に整理されました。
 
 !!! tip "Isaac Sim 同梱の URDF を使いたい場合"
     Isaac Sim のインストールディレクトリにも URDF ファイルが同梱されています。XACRO 変換の手順をスキップしたい場合は、以下のファイルを直接使用できます：
@@ -216,16 +221,14 @@ xacro urdf/robotiq_2f_140_gripper.urdf.xacro include_ros2_control:=false > urdf/
 1. Isaac Sim のメニューから **File > Import** を選択します。
 2. ファイル選択ダイアログで、ステップ 1 で生成した `Universal_Robots_ROS2_Description/urdf/ur10e.urdf` を選択します。
 3. **URDF Importer** のインポートダイアログが表示されます。
-4. **Output Directory（出力先）** で USD ファイルの保存先を選択します（例：`~/Desktop`）。
-5. **Joint Configuration** セクションで以下を設定します：
-    - 設定方式として **Natural Frequency** を選択
-    - すべてのジョイントの **Natural Frequency** を **300** に設定
+4. **USD Output（出力先）** で USD ファイルの保存先を選択します（例：`~/Desktop`）。
+5. その他の設定はデフォルトのままにします。
 
-    !!! note "Natural Frequency とは"
-        Natural Frequency（固有振動数）はジョイントの剛性を制御するパラメータです。値が高いほどジョイントが硬くなります。300 は UR10e の各ジョイントに適した値です。
+    !!! note "Isaac Sim 6.0 ではインポート時にゲインを設定しない"
+        Isaac Sim 5.1 までは、インポートダイアログの Joint Configuration セクションでジョイントごとに **Natural Frequency** を設定できましたが、**6.0 の URDF Importer はジョイントゲインを自動設定しません**（stiffness / damping はゼロのままインポートされます）。ゲインはインポート後に **Gain Tuner** で設定します（ステップ 2-3 参照）。
 
 6. **Import** をクリックしてインポートを実行します。
-7. **Output Directory（出力先）**で指定した場所にur10eディレクトリが生成され、中にur10e.usdが生成されていることを確認してください。
+7. **USD Output（出力先）**で指定した場所にur10eディレクトリが生成され、中にur10e.usdが生成されていることを確認してください。
 
 ![UR10e インポート](images/25_import_ur10e.png)
 
@@ -233,15 +236,11 @@ xacro urdf/robotiq_2f_140_gripper.urdf.xacro include_ros2_control:=false > urdf/
 
 1. Isaac Sim のメニューから **File > New** で新しいステージを開きます。
 2. **File > Import** を選択し、`ros2_robotiq_gripper/robotiq_description/urdf/robotiq_2f_140.urdf` を選択します。
-3. **Output Directory（出力先）** で USD ファイルの保存先を選択します（例：`~/Desktop`）。
-4. **Joint Configuration** セクションで以下を確認・設定します：
-    - **Ignore Mimic** チェックボックスが**オフ**（デフォルト）になっていることを確認します
-    - 設定方式として **Natural Frequency** を選択
-    - **finger_joint** の **Natural Frequency** を **300** に設定
-    - **finger_joint** 以外のジョイントの **Natural Frequency** を **2500** に設定
+3. **USD Output（出力先）** で USD ファイルの保存先を選択します（例：`~/Desktop`）。
+4. **Ignore Mimic** チェックボックスが**オフ**（デフォルト）になっていることを確認します。
 
-    !!! warning "設定の見落とし注意"
-        **Joint Configuration** セクションで一部のジョイントしか見えないことがあるので、スクロールして最後のジョイントまで **Natural Frequency** が設定されていることを確認してください。
+    !!! note "グリッパーのゲインもインポート後に設定"
+        グリッパーのジョイントゲインもインポート時には設定されません。インポート後に Gain Tuner などで、**finger_joint** は Natural Frequency **300**、Mimic ジョイントは Natural Frequency **2500**・Damping Ratio **0.005** を目安に設定してください（公式チュートリアルの推奨値）。
 
     !!! note "Mimic ジョイントの自動認識"
         Direct URDF Importer は、URDF 内の `<mimic>` タグを自動的に読み取ります。Mimic ジョイント（finger_joint に連動するジョイント）は Target Type が自動的に **"Mimic"** に設定されます。Reference Joint やギア比などの設定は URDF から自動的に取得されるため、手動で設定する必要はありません。
@@ -265,6 +264,29 @@ xacro urdf/robotiq_2f_140_gripper.urdf.xacro include_ros2_control:=false > urdf/
 | right_outer_knuckle_joint | revolute | finger_joint × -1 | 右外側ナックル |
 | right_inner_knuckle_joint | revolute | finger_joint × -1 | 右内側ナックル |
 | right_inner_finger_joint | revolute | finger_joint × 1 | 右内側指 |
+
+### 2-3. Gain Tuner によるゲイン設定
+
+Isaac Sim 6.0 の URDF Importer はジョイントゲインを設定しないため、インポート直後のロボットはドライブが効かず、シミュレーションを再生すると重力で崩れ落ちます。**Gain Tuner** を使って UR10e のゲインを設定します。
+
+1. `ur10e.usd` を開いた状態で、メニューから **Tools > Robotics > Asset Editors > Gain Tuner** を開きます。
+2. **Robot Selection** ドロップダウンでステージ上の `ur10e` アーティキュレーションを選択します。
+3. **Tune Gains** パネルで、まず **Natural Frequency（固有振動数）** を **300**、**Damping Ratio（減衰比）** を **1.0** に設定します。
+4. **Test Gains Settings** パネルでテストを実行し、各ジョイントが目標位置に追従することを確認します。
+
+!!! note "Natural Frequency と Damping Ratio"
+    Gain Tuner は、固有振動数 \(\omega_n\) と減衰比 \(\zeta\)、ジョイント両側の質量から計算されるジョイント慣性 \(m\) を使って stiffness / damping を決定します。\(\zeta = 1.0\) が臨界減衰（オーバーシュートしない最速応答）、\(\zeta < 1.0\) は不足減衰、\(\zeta > 1.0\) は過減衰です。
+
+!!! tip "ゲイン調整のヒント"
+    - Natural Frequency を上げるほど応答が速く（硬く）なり、Damping Ratio を下げるほど目標到達が速くなります。
+    - 目標位置に届かない（アンダーシュート）場合は Natural Frequency を少し上げます。
+    - 行き過ぎる（オーバーシュート）場合は Natural Frequency を少し下げ、Damping Ratio を上げます。
+    - 重力を無効化（Disable Gravity）するとゲインの効果を確認しやすくなります。
+    - ロボット全体の調整が難しい場合は、同時に動くジョイントのグループごとに調整してください。テスト順序は **Sequence** ドロップダウンで選べます。
+
+    詳細は [チュートリアル 11: ジョイントドライブゲインの調整](11_joint_tuning.md) を参照してください。
+
+ゲイン設定済みの参考アセットは Content ブラウザの `import_manipulator/ur10e/ur_gains_tuner/ur.usda` にあります。
 
 ## ステップ 3：UR10e と Robotiq 2F-140 の接続
 
@@ -327,7 +349,9 @@ Robot Assembler ツールを使って自動的に接続する方法です。よ�
 
 1. Isaac Sim で UR10e の USD ファイル（`ur10e.usd`）を開きます。
 2. Content ブラウザまたはエクスプローラーから `robotiq_2f_140.usd` をステージにドラッグ＆ドロップします。
-3. ステージツリーで追加された `robotiq_2f_140` プリムを **ee_link** にリネームします。
+
+!!! note "Isaac Sim 6.0 での手順変更"
+    5.1 までの公式手順ではグリッパープリムを `ee_link` にリネームしてから接続していましたが、6.0 では**リネームせず** `robotiq_2f_140` のまま接続し、名前空間（Assembly Namespace）に `Gripper` を指定する手順に変わりました。本ページのスクリーンショットの一部は旧手順（`ee_link`）のものです。
 
 #### 3-2-2. Robot Assembler の起動
 
@@ -341,9 +365,9 @@ Robot Assembler パネルで以下を設定します：
 |---|---|---|
 | **Base Robot > Select Base Robot** | `/ur10e` | ベースとなるロボットアーム |
 | **Base Robot > Attach Point** | `wrist_3_link` | 接続先（手首リンク） |
-| **Attach Robot > Select Attach Robot** | `/ur10e/ee_link` | 接続するグリッパー |
+| **Attach Robot > Select Attach Robot** | `/ur10e/robotiq_2f_140` | 接続するグリッパー |
 | **Attach Robot > Attach Point** | `robotiq_arg2f_base_link` | グリッパーのベースリンク |
-| **Assembly Namespace** | `ee_link` | 名前空間の指定 |
+| **Assembly Namespace** | `Gripper` | 名前空間の指定 |
 
 ![アセンブリの設定](images/28_assemble_setting.png)
 
@@ -353,8 +377,9 @@ Robot Assembler パネルで以下を設定します：
 2. グリッパーの向きを調整します：**Z +90** ボタンをクリックして、グリッパーを Z 軸周りに 90 度回転させます。
 3. **Assemble and Simulate** をクリックして、接続結果をシミュレーションでテストします。
 4. 問題がなければ **End Simulation And Finish** をクリックしてアセンブリを完了します。
+5. **File > Save**（または Ctrl+S）でアセットを保存します。
 
-![Robot Assembler](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_connect_gripper_assembler.png)
+![Robot Assembler](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_connect_gripper_assembler.png)
 
 #### 3-2-5. バリアント機能の確認
 
@@ -362,10 +387,11 @@ Robot Assembler で接続すると、エンドエフェクタのバリアント�
 
 1. ステージツリーで `ur10e` プリムを選択します。
 2. **Property** タブの **Variants** セクションを確認します：
-    - **ee_link** の横の **None** を選択 → グリッパーが非表示になります<br>
-      ![ee_link: None](images/29_variant_set_none.png)
-    - **ee_link** の横の **robotiq_2f_140** を選択 → グリッパーが表示されます<br>
-      ![ee_link: robotiq](images/30_variant_set_robotiq.png)
+    - **Gripper** の横の **None** を選択 → グリッパーが非表示になります<br>
+      ![Gripper: None](images/29_variant_set_none.png)
+    - **Gripper** の横の **robotiq_2f_140** を選択 → グリッパーが表示されます<br>
+      ![Gripper: robotiq](images/30_variant_set_robotiq.png)
+3. 確認後、**File > Save**（または Ctrl+S）でアセットを保存します。
 
 !!! tip "バリアント機能の活用"
     バリアント機能を使えば、異なるエンドエフェクタ（グリッパー、吸着パッド、工具など）を簡単に切り替えて比較テストすることができます。
@@ -391,11 +417,12 @@ Robot Assembler で接続すると、エンドエフェクタのバリアント�
 
 1. **GitHub の ROS パッケージからの XACRO 取得と URDF 変換**：`$(find ...)` や `package://` パスの書き換え、`xacro` コマンドによる変換
 2. **Direct URDF Importer** を使った Isaac Sim へのインポート（ROS 2 不要）
-3. **GUI による手動接続**：トランスフォーム設定、アーティキュレーションルート削除、ジョイント接続、スキーマ更新
-4. **Robot Assembler による自動接続**：アタッチポイント設定、向き調整、バリアント管理
+3. **Gain Tuner によるゲイン設定**：6.0 ではインポート後に Natural Frequency / Damping Ratio を設定
+4. **GUI による手動接続**：トランスフォーム設定、アーティキュレーションルート削除、ジョイント接続、スキーマ更新
+5. **Robot Assembler による自動接続**：アタッチポイント設定、向き調整、バリアント管理
 
 !!! tip "参考アセット"
-    完成したアセットは、Content ブラウザの `Samples > Rigging > Manipulator > import_manipulator` フォルダ内で確認できます。手動接続版は `ur_gripper_manual.usd`、Robot Assembler 版は `ur_gripper.usd` です。
+    完成したアセットは、Content ブラウザの `Samples > Rigging > Manipulator > import_manipulator` フォルダ内で確認できます。グリッパー接続済みの完成版は `ur10e/ur_gripper/ur.usda` です。
 
 ## 次のステップ
 

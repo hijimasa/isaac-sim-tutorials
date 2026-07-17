@@ -75,7 +75,7 @@ Isaac Sim では、CAD や他の 3D ソフトからインポートしたロボ�
 
 1. **Edit > Preferences** を開きます
 2. 左側のリストから **Stage > Authoring** を選択
-3. **Inherit Parent Transform** のチェックを入れます
+3. **Keep Prim World Transform When Reparenting** の設定で **Inherit Parent Transform** を選択します
 
    ![Inherit Parent Transform を有効化](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_2.png)
 
@@ -169,11 +169,17 @@ CAD インポート直後の Jetbot は、1 つのリンクが**数十個のメ�
 !!! note "Mesh Merge Tool でできること"
     Mesh Merge Tool は、複数のメッシュを 1 つの統合メッシュに結合し、同時に**マテリアルも 1 つの統合マテリアル**にまとめてくれるツールです。元のメッシュは別の場所に保管されたままなので、必要なら再利用できます。
 
+!!! warning "Mesh Merge Tool は非推奨（deprecated）になりました"
+    Isaac Sim 6.0 で Mesh Merge Tool（`isaacsim.util.merge_mesh`）は**非推奨**となり、将来のリリースで削除される予定です。今後は **Scene Optimizer** エクステンション（`omni.scene.optimizer`）の利用が推奨されています。本チュートリアルでは公式手順に従い、引き続き Mesh Merge Tool を使用します。
+
 ### 2-1. Mesh Merge Tool を開く
 
-メニューから次の順にクリックします：
+Isaac Sim 6.0 では Mesh Merge Tool は非推奨エクステンションのため、まず有効化が必要です：
 
-**Tools > Robotics > Asset Editors > Mesh Merge Tool**
+1. **Window > Extensions** を開き、`Isaac Sim Mesh Merge` または `isaacsim.util.merge_mesh` を deprecated エクステンションの中から検索して有効化します
+2. メニューから次の順にクリックします：
+
+    **Tools > Robotics > Asset Editors > Mesh Merge Tool**
 
 ツールウィンドウが開きます。
 

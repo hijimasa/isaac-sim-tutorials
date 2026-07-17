@@ -4,6 +4,9 @@ title: Lula Kinematics Solver
 
 # Lula Kinematics Solver
 
+!!! warning "Isaac Sim 6.0 で非推奨（Deprecated）"
+    公式ドキュメントでは、このページは Isaac Sim 6.0 で **Deprecated** とマークされました。新規開発には後継の **Robot Motion (Experimental)** API の利用が推奨されています。Lula Kinematics Solver は 6.0 でも引き続き動作します。
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます：
@@ -40,7 +43,7 @@ import carb
 from isaacsim.core.utils.extensions import get_extension_path_from_name
 from isaacsim.core.utils.stage import add_reference_to_stage
 from isaacsim.core.prims import Articulation
-from isaacsim.core.utils.nucleus import get_assets_root_path
+from isaacsim.storage.native import get_assets_root_path
 from isaacsim.core.prims import XFormPrim
 from isaacsim.core.utils.numpy.rotations import euler_angles_to_quats
 

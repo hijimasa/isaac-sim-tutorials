@@ -40,7 +40,7 @@ Isaac Sim の深度センサーは、**ステレオ深度カメラ**を単一の
 
 1. **単一ビュー後処理パイプライン**で視差マップと深度画像を生成する
 2. **深度カメラアセットラッパー**で公式の深度センサーを読み込む
-3. **既存アセットの更新**と**新規深度センサーモデルの構築**手順を確認する
+3. **深度センサー入りアセットの作成**と**新規深度センサーモデルの構築**手順を確認する
 
 ## ステップ 1：単一ビュー後処理パイプライン
 
@@ -52,7 +52,7 @@ Isaac Sim の深度センサーは、**ステレオ深度カメラ**を単一の
 
 実行すると、Black Grid 環境に色付きの基本形状が配置されたビューポートが表示されます。
 
-![ステレオ深度の例のビューポート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.2_viewport_camera_stereoscopic_depth.png)
+![ステレオ深度の例のビューポート](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.2_viewport_camera_stereoscopic_depth.png)
 
 続いて、深度センサーが生成する**視差マップ**を確認します。
 
@@ -61,11 +61,11 @@ Isaac Sim の深度センサーは、**ステレオ深度カメラ**を単一の
 3. **Depth Sensor** のチェックボックスをオンにします。
 4. **RGB Depth Output Mode** ドロップダウンから **Disparity** を選択します。
 
-![Depth Sensor の後処理設定](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.2_viewport_depth_sensor_settings.png)
+![Depth Sensor の後処理設定](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.2_viewport_depth_sensor_settings.png)
 
 ビューポートに視差マップが表示されることを確認します。
 
-![視差マップ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.2_viewport_depth_sensor_disparity.png)
+![視差マップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.2_viewport_depth_sensor_disparity.png)
 
 !!! note "後処理設定の適用範囲"
     **Render Settings > Post Processing > Depth Sensor** 以下の設定は、シーン内のすべてのレンダープロダクト（ビューポートを含む）に適用されます。個々のレンダープロダクトを深度センサーとして構成したい場合は、`SingleViewDepthCameraSensor` クラスを使います。
@@ -81,9 +81,9 @@ Isaac Sim の UI を閉じ、`--test` を付けてヘッドレスで再実行し
 !!! note "アノテーターと AOV"
     **アノテーター（annotator）**は、レンダープロダクトから特定の種類のデータ（RGB・深度・セグメンテーションなど）を取り出す Replicator の構成部品です。また、以降のページで登場する **AOV（Arbitrary Output Variable）** は、レンダラーが通常のカラー画像以外に書き出せる任意の出力チャネル（バッファ）のことで、アノテーターの多くはこの AOV からデータを取得しています。
 
-![DepthSensorDistance の出力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_full_ext-isaacsim.sensors.camera-1.3.6_viewport_depth_sensor_distance.png)
+![DepthSensorDistance の出力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.1_full_ext-isaacsim.sensors.camera-1.3.6_viewport_depth_sensor_distance.png)
 
-![DistanceToImagePlane の出力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_full_ext-isaacsim.sensors.camera-1.3.6_viewport_distance_to_image_plane.png)
+![DistanceToImagePlane の出力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.1_full_ext-isaacsim.sensors.camera-1.3.6_viewport_distance_to_image_plane.png)
 
 ## ステップ 2：深度カメラアセットラッパー
 
@@ -122,11 +122,11 @@ sensor.set_enabled_post_processing(True)
 
 **Stage** ウィンドウに RealSense D455 深度カメラアセットが読み込まれたことが表示されます。
 
-![深度センサーアセットの Stage ウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.3.0_gui_depth_sensor_asset_stage.png)
+![深度センサーアセットの Stage ウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.3.0_gui_depth_sensor_asset_stage.png)
 
 **Layer** ウィンドウには、`HydraTexture` と `DepthSensorDistance` の RenderVar（レンダープロダクトが保持する出力変数。AOV に対応します）がアタッチされた `RenderProduct` prim が作成されたことが表示されます。
 
-![深度センサーアセットの Layer ウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.3.0_gui_depth_sensor_asset_layer.png)
+![深度センサーアセットの Layer ウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.3.0_gui_depth_sensor_asset_layer.png)
 
 ## ステップ 3：深度センサーモデルを構築する
 
@@ -140,7 +140,7 @@ sensor.set_enabled_post_processing(True)
 
 実行すると、作業ディレクトリの `_example_output_isaacsim.sensors.experimental.rtx/create_camera_depth_sensor/` 以下に `example_camera_with_depth_sensor.usd` アセットが作成されます。Isaac Sim で開くと、Stage ウィンドウで Camera prim に関連付けられた新しいレンダープロダクト prim が作成され、`omni:rtx:post:depthSensor:baselineMM` 属性にカスタム値が設定されていることを確認できます。
 
-![更新後アセットの Stage ウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.3.0_gui_new_depth_sensor_asset_stage.png)
+![更新後アセットの Stage ウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.3.0_gui_new_depth_sensor_asset_stage.png)
 
 新しいステージを開き、Script Editor で次のスニペットを実行すると、このアセットを `RtxCamera.create` で参照として読み込めます。`SingleViewDepthCameraSensor` は、埋め込まれたテンプレートレンダープロダクトを自動的に検出し、その深度センサー属性を動的に作成されるレンダープロダクトへコピーします。
 
@@ -180,9 +180,9 @@ Layer ウィンドウで、`camera_sensor_[乱数]` という名前の新しい�
 
 このチュートリアルでは、次の内容を学びました。
 
-- Isaac Sim はステレオ深度カメラを**単一ビュー**の後処理パイプラインでモデル化すること（`SingleViewDepthSensor`）
+- Isaac Sim はステレオ深度カメラを**単一ビュー**の後処理パイプラインでモデル化すること（`SingleViewDepthCameraSensor`）
 - ビューポートで視差マップを確認し、`DepthSensorDistance` / `DistanceToImagePlane` アノテーターで深度画像を出力する方法
-- `SingleViewDepthSensorAsset` で公式アセットを読み込み、既存アセットを深度センサー対応に更新する方法
+- `RtxCamera.create()` + `SingleViewDepthCameraSensor` で公式アセットを読み込み、深度センサー入りのカメラアセットを作成する方法
 - 新しいステレオ深度センサーモデルを構築するワークフロー
 
 ## 次のステップ

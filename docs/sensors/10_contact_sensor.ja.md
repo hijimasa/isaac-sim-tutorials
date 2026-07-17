@@ -62,7 +62,7 @@ Contact センサー API は、PhysX が計算時間節約のため接触のス�
 4. **Open Source Code** でソースコードを確認できます（Ant を読み込み、Python API でセンサーを追加する例）。
 5. **PLAY** で開始し、**SHIFT + 左クリック**で Ant をドラッグすると読み値が変化します。
 
-![Contact センサーの作成](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_create_contact_sensor.webp)
+![Contact センサーの作成](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_create_contact_sensor.webp)
 
 ## ステップ 2：OmniGraph で読み取り・可視化する
 
@@ -73,7 +73,7 @@ Contact センサー API は、PhysX が計算時間節約のため接触のス�
 3. **Create > Physics > GroundPlane** を追加します。
 4. 立方体を選択し **Create > Sensors > Contact Sensor** で接触センサーを追加します。
 
-![OmniGraph シーンのセットアップ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_create_contact_sensor_1.webp)
+![OmniGraph シーンのセットアップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_create_contact_sensor_1.webp)
 
 ### OmniGraph のセットアップ
 
@@ -91,7 +91,7 @@ Contact センサー API は、PhysX が計算時間節約のため接触のス�
 !!! note "球状領域は境界のみを決める"
     球状領域は「考慮する接触の境界」を決めるだけです。すべての接触は、その球状領域で区切られたオブジェクトの表面でのみ発生します。
 
-![接触の可視化](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_visualize_contact.png)
+![接触の可視化](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_visualize_contact.png)
 
 ## ステップ 3：Standalone Python でセンサーを作成する
 

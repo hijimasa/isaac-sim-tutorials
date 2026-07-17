@@ -79,7 +79,7 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
     **結果:** ルービックキューブは落下しますが、**地面をすり抜けてしまいます**。Rigid Body を追加したことで重力の影響を受けるようになりましたが、衝突判定がないため地面との接触を検出できません。
 
-    ![コリジョンなしのルービックキューブ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_1.webp)
+    ![コリジョンなしのルービックキューブ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_1.webp)
 
 3. **STOP** ボタンを押します。
 
@@ -91,7 +91,7 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
     **結果:** ルービックキューブが地面の上に着地するようになりました。コリジョン属性が追加されたことで、衝突判定が有効になりました。
 
-    ![コリジョンありのルービックキューブ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_2.webp)
+    ![コリジョンありのルービックキューブ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_2.webp)
 
 3. **STOP** ボタンを押します。
 
@@ -116,7 +116,7 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
     - 地面（静的オブジェクト）のコリジョンは **ピンク色** で表示されます
     - ルービックキューブ（動的オブジェクト）のコリジョンは **緑色** で表示されます
 
-    ![コリジョン形状の可視化](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_3.png)
+    ![コリジョン形状の可視化](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_3.png)
 
 !!! tip "コリジョンの近似タイプ"
     コリジョン形状の近似方法は変更できます。`World/rubiks_cube/RubikCube` メッシュを選択し、**Physics/Collider** セクションの **Approximation** タブで異なる近似タイプを選択できます。
@@ -144,7 +144,7 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
     **結果:** ルービックキューブが坂を転がっていきます。スフィアコリジョンにより、直方体ではなく球体として物理シミュレーションが行われています。
 
-    ![スフィアコリジョンで転がるルービックキューブ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_4.webp)
+    ![スフィアコリジョンで転がるルービックキューブ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_4.webp)
 
 8. **STOP** ボタンを押します。
 
@@ -154,7 +154,7 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
 1. ステージ上でXformのルービックキューブを左クリックし、Properties パネルで **Translate** を `(0, 0, 1)` に変更します（高い位置から落とすため）。
 
-2. ステージ上でXformのルービックキューブを右クリックし、**Create > Physics > Physics Material** を選択します。ポップアップではRigid Body Materialにチェックを入れてOKを選択します。作成されたマテリアルを `World/rubiks_cube/Looks` フォルダにドラッグ＆ドロップします。
+2. ステージ上でXformのルービックキューブを右クリックし、**Create > Physics > Physics Material** を選択します。ポップアップではRigid Body Materialにチェックを入れてOKを選択します。作成されたマテリアルを `World/rubiks_cube/Looks` スコープにドラッグ＆ドロップします。
    ![物理マテリアルの作成](images/16_create_physics_material.png)
 
 3. Properties パネルで **Physics Material** セクションまでスクロールし、**Restitution** を `1` に設定します（完全弾性衝突）。
@@ -165,7 +165,7 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 
     **結果:** ルービックキューブが地面に落下し、バウンドします。Restitution（反発係数）を 1 に設定したため、ほぼエネルギーを失わずに跳ね返ります。
 
-    ![物理マテリアルが適用されたルービックキューブ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_6.webp)
+    ![物理マテリアルが適用されたルービックキューブ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_6.webp)
 
 6. **STOP** ボタンを押します。
 
@@ -175,11 +175,15 @@ Isaac Sim で物理シミュレーションに参加するオブジェクトに�
 !!! tip "完成版アセット"
     このチュートリアルの完成版アセットは、Content Browser の **Isaac Sim > Samples > Rigging > RubiksCube > rubiks_cube.usd** で確認できます。
 
+!!! tip "属性を付与するプリムの使い分け"
+    - オブジェクトの Rigid Body API は、オブジェクトの**デフォルトプリム**（ルートの Xform）に適用します。
+    - コリジョン API はオブジェクトの **Mesh プリム**に適用します（PhysX スキーマとして適用されます）。
+
 ## 発展：複雑なコリジョン形状の構築
 
 実際のロボティクスアプリケーションでは、複雑な形状のオブジェクトに対して正確なコリジョンが必要になることがあります。このような場合、複数の基本形状（球、シリンダー、ボックスなど）を組み合わせて近似するアプローチが一般的です。
 
-![ベアリングのコリジョン近似](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_core_add_prop_5.png)
+![ベアリングのコリジョン近似](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_core_add_prop_5.png)
 
 上の図はベアリングのコリジョン形状の例です。シリンダーと矩形を組み合わせて、複雑な形状を近似しています。
 

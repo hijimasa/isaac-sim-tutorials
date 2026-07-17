@@ -8,18 +8,18 @@ title: RTX センサーアノテーター
 
 このチュートリアルを修了すると、以下の内容を習得できます：
 
-- `isaacsim.sensors.rtx` が Omniverse Replicator を使ってアノテーターを提供する仕組み
-- アノテーターをレンダープロダクトにアタッチしてデータを収集する 2 つの方法（Replicator API / `LidarRtx` クラス）
-- 主要なアノテーター（`IsaacCreateRTXLidarScanBuffer` / `IsaacComputeRTXLidarFlatScan` / `IsaacExtractRTXSensorPointCloudNoAccumulator`）の役割と出力
+- `isaacsim.sensors.experimental.rtx` と `isaacsim.sensors.rtx.nodes` が Omniverse Replicator を使ってアノテーターを提供する仕組み
+- 推奨手段である `LidarSensor` / `RadarSensor` クラスでデータを収集する方法
+- 現行アノテーター `IsaacExtractRTXSensorPointCloud` と `draw-point-cloud` ライターの使い方
 - `GenericModelOutput` バッファからのデータ読み取りと、Object ID を使ったセマンティックセグメンテーション
-- Isaac Sim 5.0 で非推奨になったアノテーターと置き換え先
+- Isaac Sim 6.0 で非推奨になったアノテーターと置き換え先
 
 ## はじめに
 
 ### 前提条件
 
 - [RTX LiDAR センサー](04_rtx_lidar.md) / [RTX Radar センサー](05_rtx_radar.md) の作成方法を理解していること
-- Isaac Sim 5.1 が起動できること
+- Isaac Sim 6.0 が起動できること
 
 ### 所要時間
 
@@ -27,46 +27,20 @@ title: RTX センサーアノテーター
 
 ### 概要
 
-`isaacsim.sensors.rtx` 拡張機能は、Omniverse Replicator を使って RTX LiDAR / Radar のデータ収集用**アノテーター**（レンダープロダクトから特定の種類のデータを抽出する Replicator の構成部品。[深度センサーのページ](02_depth_sensors.md)の note も参照）を提供します。アノテーターは、`OmniLidar` や `OmniRadar` などの OmniSensor prim にアタッチされたレンダープロダクトに取り付けます。
+`isaacsim.sensors.experimental.rtx` と `isaacsim.sensors.rtx.nodes` 拡張機能は、Omniverse Replicator を使って RTX LiDAR / Radar のデータ収集用**アノテーター**（レンダープロダクトから特定の種類のデータを抽出する Replicator の構成部品。[深度センサーのページ](02_depth_sensors.md)の note も参照）を提供します。
+
+!!! note "6.0 でのアノテーター再編"
+    Isaac Sim 6.0 では、旧 `isaacsim.sensors.rtx` 拡張機能に同梱されていたアノテーター（`IsaacCreateRTXLidarScanBuffer` など）は**非推奨**となり、引き続き有効な `isaacsim.sensors.rtx.nodes` 拡張機能の `IsaacExtractRTXSensorPointCloud` に置き換えられました。ほとんどのユーザーは、これを内部で利用する `LidarSensor` / `RadarSensor` クラス経由で間接的に使うことになります。
 
 このチュートリアルは、次の流れで進みます。
 
-1. **アノテーターをアタッチ**してデータを収集する（Replicator API / `LidarRtx` クラス）
-2. **主要なアノテーター**の出力を理解する
+1. **`LidarSensor` / `RadarSensor`** でデータを収集する（推奨）
+2. **現行アノテーター**（`IsaacExtractRTXSensorPointCloud`）とデバッグ描画ライターを使う
 3. **`GenericModelOutput` バッファ**からデータを読み取り、Object ID を活用する
 
-## ステップ 1：アノテーターをアタッチしてデータを収集する
+## ステップ 1：LidarSensor / RadarSensor でデータを収集する
 
-### Replicator API を使う方法
-
-Script Editor で実行できる例です。`/lidar` に `OmniLidar` prim を作成し、レンダープロダクトを作成して、`IsaacExtractRTXSensorPointCloudNoAccumulator` アノテーターをアタッチします。
-
-```python
-import omni
-import omni.replicator.core as rep
-from pxr import Gf
-
-# prim パス /lidar に OmniLidar prim を作成
-_, sensor = omni.kit.commands.execute(
-    "IsaacSensorCreateRtxLidar",
-    translation=Gf.Vec3d(0.0, 0.0, 0.0),
-    orientation=Gf.Quatd(1.0, 0.0, 0.0, 0.0),
-    path="/lidar",
-)
-
-# センサー用のレンダープロダクトを作成
-render_product = rep.create.render_product(sensor.GetPath(), resolution=(1024, 1024))
-
-# アノテーターを作成
-annotator = rep.AnnotatorRegistry.get_annotator("IsaacExtractRTXSensorPointCloudNoAccumulator")
-
-# アノテーターの初期化後、レンダープロダクトにアタッチ
-annotator.attach([render_product.path])
-```
-
-### LidarRtx クラスを使う方法
-
-`LidarRtx` クラスは、任意のアノテーターを `OmniLidar` prim にアタッチしてデータを収集する単一の API を提供します。次の例は Standalone Python ワークフロー用で、Script Editor では動作しません。
+推奨されるのは、アノテーターとレンダープロダクトを自動的に管理する **`LidarSensor`** / **`RadarSensor`** クラスを使う方法です。次の例は Standalone Python ワークフロー用で、Script Editor では動作しません。
 
 ```python
 from isaacsim import SimulationApp
@@ -75,31 +49,30 @@ kit = SimulationApp()
 
 import numpy as np
 import omni
-from isaacsim.sensors.rtx import LidarRtx
+from isaacsim.sensors.experimental.rtx import Lidar, LidarSensor, parse_generic_model_output_data
 
-# 指定した属性で RTX LiDAR を作成
-sensor = LidarRtx(
-    prim_path="/lidar",
-    translation=np.array([0.0, 0.0, 1.0]),
-    orientation=np.array([1.0, 0.0, 0.0, 0.0]),
-    config_file_name="Example_Rotary",
+# RTX LiDAR を作成
+lidar = Lidar.create(
+    path="/World/lidar",
+    config="Example_Rotary",
+    translations=np.array([0.0, 0.0, 1.0]),
+    orientations=np.array([1.0, 0.0, 0.0, 0.0]),
 )
 
-# LidarRtx を初期化（センサー用のレンダープロダクトを作成）
-sensor.initialize()
+# アノテーターのアタッチとデータ取得を担う LidarSensor を作成
+sensor = LidarSensor(lidar, annotators=["generic-model-output"])
 
-# アノテーターをアタッチ
-sensor.attach_annotator("IsaacExtractRTXSensorPointCloudNoAccumulator")
-
-# タイムラインを再生してアノテーターと OmniGraph を初期化し、データ収集を開始
+# タイムラインを再生してデータ収集を開始
 timeline = omni.timeline.get_timeline_interface()
 timeline.play()
 
-# シミュレーションフレームごとにアノテーターからデータを収集
-while kit.is_running():
+# シミュレーションフレームごとにセンサーからデータを収集
+for _ in range(100):
     kit.update()
-    # センサーにアタッチした各アノテーターが収集したデータを Python dict として出力
-    print(sensor.get_current_frame())
+    data, info = sensor.get_data("generic-model-output")
+    if data is not None:
+        gmo = parse_generic_model_output_data(data)
+        print(f"Points: {gmo.numElements}")
 
 timeline.stop()
 kit.close()
@@ -107,21 +80,131 @@ kit.close()
 
 !!! warning "タイムラインとタイムスタンプに関する注意"
     - RTX センサーアノテーターは、データ収集にシミュレーションのタイムラインを使います。**タイムラインが再生されていない**（一時停止・停止中）と、アノテーターはデータを収集しません。
-    - RTX センサーが生成する `GenericModelOutput` AOV には内部タイムスタンプが含まれ、ログに `App Ready` が表示された時点から**単調増加**します。これはアニメーションタイムライン（`omni.timeline`）とは独立しているため、タイムラインを一時停止・再開するとポイントクラウド内のタイムスタンプが不連続になることがあります。
-    - このため、これらのアノテーターでデータを収集するときは、`omni.replicator.core.orchestrator.step()` ではなく `omni.kit.app.get_app().update()` / `next_update_async()` を使ってシミュレーションをステップする必要があります（Isaac Sim の API は前者を使用します）。
+    - **マルチティックレンダリングが有効（デフォルト）** の場合、`GenericModelOutput` AOV の内部タイムスタンプはセンサーがティックするたびに進み、`omni.timeline` の Play / Pause / Stop に従います。`omni.kit.app.get_app().update()` / `next_update_async()`、`omni.replicator.core.orchestrator.step()` / `step_async()` のいずれでシミュレーションを進めても、期待どおりのタイムスタンプが得られます。
+    - **マルチティックレンダリングが無効**の場合、タイムスタンプはログに `App Ready` が表示された時点から単調増加し、タイムラインとは独立します。一時停止・再開でポイントクラウド内のタイムスタンプが不連続になることがあり、この場合は `orchestrator.step()` ではなく `omni.kit.app.get_app().update()` / `next_update_async()` でステップする必要があります。
+    - OmniSensor prim にアタッチしたライターを確実にトリガーするには、`omni.replicator.core.orchestrator.step()` / `step_async()` の使用が推奨されます。
 
-## ステップ 2：主要なアノテーター
+## ステップ 2：現行アノテーターとデバッグ描画
 
-各アノテーターは特定の OmniGraph ノードに対応しており、入出力はそのノードと同じです。
+### IsaacExtractRTXSensorPointCloud
 
-!!! note "5.0 でのアノテーター整理"
-    Isaac Sim 5.0 では、新しい `OmniLidar` / `OmniRadar` prim と非推奨の Camera prim ベースワークフローの両方を扱えるよう、いくつかの既存アノテーターがよりシンプルなものに置き換えられました。詳細は後述の「非推奨アノテーター」を参照してください。
+`IsaacExtractRTXSensorPointCloud` アノテーターは、`GenericModelOutput` バッファのポイントクラウドデータを毎フレーム直交座標（x, y, z）バッファに抽出します。`isaacsim.sensors.rtx.nodes` 拡張機能が提供し、**`OmniLidar`（RTX LiDAR）と `OmniRadar`（RTX Radar）の両方**で動作します。GMO バッファが球面座標を含む場合は直交座標への変換を行い、センサー→ワールドの変換行列も出力します。
 
-    アノテーターは `OmniLidar` prim の `GenericModelOutput` AOV がデバイス上で提供されることに依存します。`--/app/sensors/nv/lidar/outputBufferOnGPU` や `--/app/sensors/nv/radar/outputBufferOnGPU` を `false` に設定すると、正しく動作しません。
+ビューポートでの可視化には、同じく `isaacsim.sensors.rtx.nodes` の **`RtxSensorDebugDrawPointCloud`** Replicator ライターが使えます。
 
-### IsaacCreateRTXLidarScanBuffer
+### draw-point-cloud ライター
 
-`OmniLidar` prim からのフレームを 1 つのスキャンに**累積**し、累積スキャンデータを出力します。デフォルトでは 3D 直交座標のポイントクラウドを出力し、初期化時に対応する入力フラグを `True` にすると追加データも出力できます。
+`isaacsim.sensors.rtx.nodes` が有効な場合、`LidarSensor` / `RadarSensor` / `AcousticSensor` で `"draw-point-cloud"` という名前のライターが利用できます。`writers=["draw-point-cloud"]` を渡すとデバッグ描画ライターがアタッチされます。次のスニペットは Script Editor（**Window > Script Editor**）で実行できます。
+
+```python
+import omni.kit.app
+from isaacsim.sensors.experimental.rtx import Lidar, LidarSensor
+
+# "draw-point-cloud" ライターは isaacsim.sensors.rtx.nodes が登録する。
+# センサーを作る前に拡張機能を有効化しておくこと。
+omni.kit.app.get_app().get_extension_manager().set_extension_enabled_immediate(
+    "isaacsim.sensors.rtx.nodes", True
+)
+
+# センサーがラップする OmniLidar prim を作成
+Lidar.create("/World/lidar", config="Example_Rotary")
+sensor = LidarSensor("/World/lidar", annotators=[], writers=["draw-point-cloud"])
+```
+
+### RTX Radar で使う
+
+アノテーターは `OmniRadar` prim でも同様に動作します。RTX Radar には Motion BVH の有効化が必要な点に注意してください。
+
+```python
+import carb
+import numpy as np
+import omni.kit.app
+import omni.replicator.core as rep
+from isaacsim.sensors.experimental.rtx import Radar
+
+# RTX Radar には Motion BVH の有効化が必要
+settings = carb.settings.get_settings()
+settings.set("/renderer/raytracingMotion/enabled", True)
+settings.set("/renderer/raytracingMotion/enableHydraEngineMasking", True)
+settings.set("/renderer/raytracingMotion/enabledForHydraEngines", "0,1,2,3,4")
+
+# デバッグ描画ライターは isaacsim.sensors.rtx.nodes が登録する
+omni.kit.app.get_app().get_extension_manager().set_extension_enabled_immediate(
+    "isaacsim.sensors.rtx.nodes", True
+)
+
+radar = Radar(path="/Radar", tick_rate=20, translations=np.array([0, 0, 1.0]))
+
+render_product = rep.create.render_product(radar.paths[0], resolution=(1, 1))
+writer = rep.writers.get("RtxSensorDebugDrawPointCloud")
+writer.initialize(size=0.2, color=[1.0, 0.3, 0.1, 1.0])  # オレンジ色・大きめの点
+writer.attach([render_product.path])
+```
+
+### 補助データ
+
+`LidarSensor` / `RadarSensor` クラスを使う場合、補助データ（強度・エミッター ID・マテリアル ID など）は `parse_generic_model_output_data` を介して `GenericModelOutput` バッファから直接取得できます。どの補助フィールドに値が入るかは、センサー prim の `_replicator:rendervar:GenericModelOutput:channels` 属性（コンストラクタの `aux_output_level`）で制御します。
+
+```python
+import numpy as np
+from isaacsim.sensors.experimental.rtx import Lidar, LidarSensor
+
+# emitterId などの補助フィールドを有効にするには aux_output_level を BASIC 以上にする
+lidar = Lidar.create(
+    path="/World/lidar",
+    config="Example_Rotary",
+    aux_output_level="BASIC",
+    translations=np.array([0.0, 0.0, 1.0]),
+    orientations=np.array([1.0, 0.0, 0.0, 0.0]),
+)
+
+# generic-model-output アノテーター付きの LidarSensor を作成。
+# 補助フィールドは aux_output_level に応じて GMO バッファに含まれる。
+sensor = LidarSensor(lidar, annotators=["generic-model-output"])
+```
+
+## ステップ 3：GenericModelOutput バッファからのデータ読み取り
+
+`isaacsim.sensors.experimental.rtx.generic_model_output` Python モジュールは、`GenericModelOutput` アノテーターが生成したバッファを検査する API を提供します。`isaacsim.sensors.experimental.rtx` の **`parse_generic_model_output_data`** ユーティリティ関数を使うと、アノテーター出力を簡単にパースできます。
+
+!!! note "旧 API からの移行"
+    Isaac Sim 4.5 の `OgnIsaacReadRTXLidarData` ノードは 5.0 で削除され、`parse_generic_model_output_data` / `parse_object_ids` / `parse_stable_id_map_data` ユーティリティ（`isaacsim.sensors.experimental.rtx` から再エクスポート）に置き換えられました。旧 `isaacsim.sensors.rtx.get_gmo_data` に相当する処理も `parse_generic_model_output_data` で行います。
+
+読み取りの例は次の Standalone 例を参照してください。
+
+```bash
+# LiDAR の GMO を調べる
+./python.sh standalone_examples/api/isaacsim.sensors.experimental.rtx/inspect_lidar_gmo.py --aux-data-level FULL
+
+# Radar の GMO を調べる
+./python.sh standalone_examples/api/isaacsim.sensors.experimental.rtx/inspect_radar_gmo.py
+```
+
+### Object ID を使ったセマンティックセグメンテーション
+
+`GenericModelOutput` 構造体には、戻り値ごとのオブジェクト識別子を格納する `objId` フィールドがあります。データは `np.uint8` の numpy 配列として提供され、`--/rtx-transient/stableIds/enabled=true` を設定した場合にのみ値が入ります。
+
+このデータは 128 ビット符号なし整数の列（実質ストライド 16）として解釈され、シーン内の一意な prim パスに対応する**安定した一意の ID** です。i 番目の整数が、i 番目の戻り値を生成した prim に対応します。これを使えば、Object ID を prim パスにマッピングし、prim からセマンティックラベルを取得することでシーンをセマンティックセグメンテーションできます。
+
+`isaacsim.sensors.experimental.rtx` には、Object ID を prim パスとして解決する 2 つのユーティリティ関数があります。
+
+- `parse_stable_id_map_data` … `StableIdMap` AOV（`OmniLidar` / `OmniRadar` prim から生成可能）の出力を「安定 ID → prim パス」の Python dict として解決します。
+- `parse_generic_model_output_data` … `GenericModelOutput` バッファの `objId` フィールド（128 ビットのオブジェクト ID）へのアクセスを提供します。
+
+使用例は `standalone_examples/api/isaacsim.sensors.experimental.rtx/resolve_lidar_object_ids.py` を参照してください。
+
+!!! note "マップに載らない Object ID がある"
+    すべての Object ID にマップエントリがあるわけではありません。レンダラーは、インスタンスごとのベース安定 ID に上位 32 ビットのインデックス（メッシュならサブメッシュインデックス、プロシージャルジオメトリなら三角形ごとのプリミティブインデックス）を組み合わせて 128 ビット ID を構成します。`StableIdMap` にはインスタンス単位（USD prim パスを持つもののみ）と、複数サブセットを持つ場合の GeomSubset 単位のエントリしか登録されません。そのため、プロシージャルジオメトリへのヒットなどではマップエントリのない ID が返り、`map[id]` の直接参照は `KeyError` になります。同梱の例のように `map.get(id, "<unknown>")` を使って安全に処理してください。
+
+## 非推奨アノテーター
+
+Isaac Sim 6.0 では、次のアノテーターが非推奨の `isaacsim.sensors.rtx` 拡張機能に同梱されており、将来のリリースで削除されます：**`IsaacCreateRTXLidarScanBuffer`**、**`IsaacComputeRTXLidarFlatScan`**、**`IsaacExtractRTXSensorPointCloudNoAccumulator`**。
+
+代わりに、有効な `isaacsim.sensors.rtx.nodes` 拡張機能の `IsaacExtractRTXSensorPointCloud` を使ってください。ほとんどのユーザーは `LidarSensor` / `RadarSensor` 経由で間接的に利用します。
+
+### IsaacCreateRTXLidarScanBuffer（非推奨）
+
+`OmniLidar` prim からのフレームを 1 つのスキャンに**累積**し、累積スキャンデータを出力します（`OmniRadar` には非対応）。デフォルトでは 3D 直交座標のポイントクラウドを出力し、初期化時に対応する入力フラグを `True` にすると追加データも出力できます。
 
 ```python
 import omni.replicator.core as rep
@@ -130,13 +213,7 @@ annotator = rep.AnnotatorRegistry.get_annotator("IsaacCreateRTXLidarScanBuffer")
 annotator.initialize(outputTimestamp=True, outputMaterialId=True)
 ```
 
-`LidarRtx` クラス経由の場合は、フラグをキーワード引数で渡します。
-
-```python
-sensor.attach_annotator("IsaacCreateRTXLidarScanBuffer", outputTimestamp=True, outputMaterialId=True)
-```
-
-出力はバッファへのポインタとして提供されます。各バッファのデータ型は次のとおりです。
+出力はバッファへのポインタとして提供されます。各バッファのデータ型と提供条件は次のとおりです。必要な属性や carb 設定が不足していると、アノテーターは警告を表示してそのデータを出力しません。
 
 | 出力 | 型 | 説明 | 提供条件 |
 |---|---|---|---|
@@ -146,66 +223,39 @@ sensor.attach_annotator("IsaacCreateRTXLidarScanBuffer", outputTimestamp=True, o
 | `distance` | float | 各戻り値の距離（ワールド単位、既定はメートル） | `outputDistance=true` |
 | `intensity` | float | 各戻り値の強度（正規化済み） | `outputIntensity=true` |
 | `timestamp` | uint64 | 各戻り値のタイムスタンプ（シミュレーション開始からのナノ秒） | `outputTimestamp=true` |
-| `emitterId` | uint32 | 戻り値を発したエミッターの ID | `outputEmitterId=true` かつ `auxOutputType` が `BASIC` 以上 |
-| `materialId` | uint32 | 戻り値を生成したオブジェクトのマテリアル ID | `outputMaterialId=true` かつ `auxOutputType` が `EXTRA` 以上 |
-| `objectId` | uint8 | 戻り値を生成したオブジェクトの ID（安定した 128 ビット整数） | `outputObjectId=true`、`auxOutputType` が `EXTRA` 以上、かつ `--/rtx-transient/stableIds/enabled=true` |
-| `normal` | float3 | 戻り値を生成した面の法線 | `outputNormal=true`、`auxOutputType` が `FULL`、かつ `--/app/sensors/nv/lidar/publishNormals=true` |
-| `velocity` | float3 | 戻り値を生成したオブジェクトの速度 | `outputVelocity=true` かつ `auxOutputType` が `FULL` |
+| `emitterId` | uint32 | 戻り値を発したエミッターの ID | `outputEmitterId=true` かつ `aux_output_level` が `BASIC` 以上 |
+| `channelId` | uint32 | 戻り値が生成されたチャネルの ID | `outputChannelId=true` かつ `aux_output_level` が `BASIC` 以上 |
+| `materialId` | uint32 | 戻り値を生成したオブジェクトのマテリアル ID | `outputMaterialId=true` かつ `aux_output_level` が `EXTRA` 以上 |
+| `tickId` | uint32 | 戻り値が生成されたティックの ID | `outputTickId=true` かつ `aux_output_level` が `BASIC` 以上 |
+| `hitNormal` | float3 | 戻り値を生成した面の法線 | `outputHitNormal=true`、`aux_output_level` が `FULL`、かつ `--/app/sensors/nv/lidar/publishNormals=true` |
+| `velocity` | float3 | 戻り値を生成したオブジェクトの速度 | `outputVelocity=true` かつ `aux_output_level` が `FULL` |
+| `objectId` | uint8 | 戻り値を生成したオブジェクトの ID（安定した 128 ビット整数） | `outputObjectId=true`、`aux_output_level` が `EXTRA` 以上、かつ `--/rtx-transient/stableIds/enabled=true` |
+| `echoId` | uint8 | マルチエコー LiDAR 設定でどのエコーかを示す | `outputEchoId=true` かつ `aux_output_level` が `BASIC` 以上 |
+| `tickState` | uint8 | 戻り値が生成されたティックの状態 | `outputTickState=true` かつ `aux_output_level` が `BASIC` 以上 |
+
+!!! note
+    `aux_output_level` は `isaacsim.sensors.experimental.rtx.Lidar` のコンストラクタパラメータで、prim の `_replicator:rendervar:GenericModelOutput:channels` 属性を設定します。属性の流れと UI からの設定方法は [RTX センサー](03_rtx_sensors.md) を参照してください。
 
 !!! warning "法線出力とパフォーマンス"
     `--/app/sensors/nv/lidar/publishNormals=true` で法線出力を有効にすると VRAM 使用量が増え、パフォーマンスに悪影響を与えることがあります。
 
-### IsaacComputeRTXLidarFlatScan
+### IsaacComputeRTXLidarFlatScan（非推奨）
 
-累積された **2D** RTX LiDAR スキャンから深度と方位角のデータを抽出します。RTX Radar には対応していません。3D LiDAR（仰角が 0 でないエミッターを持つもの）にアタッチした場合、データを返しません。
+累積された **2D** RTX LiDAR スキャンから深度と方位角のデータを抽出します。仰角 0 のエミッターのみを持つ 2D LiDAR 専用で、`OmniRadar`（RTX Radar）や 3D LiDAR には対応していません。
 
-### IsaacExtractRTXSensorPointCloudNoAccumulator
+### IsaacExtractRTXSensorPointCloudNoAccumulator（非推奨）
 
-`GenericModelOutput` バッファのポイントクラウドデータを、毎フレーム直交座標ベクトルのバッファに抽出します（`IsaacCreateRTXLidarScanBuffer` ノードに `enablePerFrameOutput=true` を設定したもの）。累積を行わないため、フレームごとの生データが必要な場合に使います。
-
-## ステップ 3：GenericModelOutput バッファからのデータ読み取り
-
-`isaacsim.sensors.rtx.generic_model_output` Python モジュールは、`GenericModelOutput` アノテーターが生成したバッファを検査する API を提供します。読み取りの例は次の Standalone 例を参照してください。
-
-```bash
-./python.sh standalone_examples/api/isaacsim.sensors.rtx/inspect_lidar_metadata.py
-```
-
-### Object ID を使ったセマンティックセグメンテーション
-
-`GenericModelOutput` 構造体には `objId` フィールドがあり、`IsaacCreateRTXLidarScanBuffer` ノードもオプションで `objectId` を出力します。いずれも `--/rtx-transient/stableIds/enabled=true` を設定した場合にのみ値が入ります。
-
-このデータは 128 ビット符号なし整数の列（実質ストライド 16）として解釈され、シーン内の一意な prim パスに対応する**安定した一意の ID** です。i 番目の整数が、i 番目の戻り値を生成した prim に対応します。これを使えば、Object ID を prim パスにマッピングし、prim からセマンティックラベルを取得することでシーンをセマンティックセグメンテーションできます。
-
-`LidarRtx` クラスには、Object ID を prim パスとして解決する 2 つのユーティリティがあります。
-
-- `LidarRtx.decode_stable_id_mapping` … `StableIdMap` AOV の出力を「128 ビット整数 → prim パス」の Python dict として解決します。
-- `LidarRtx.get_object_ids` … `GenericModelOutput` / `IsaacCreateRTXLidarScanBuffer` の Object ID 配列を 128 ビット整数として解決します。
-
-使用例は `standalone_examples/api/isaacsim.sensors.rtx/resolve_object_ids_from_gmo.py` を参照してください。
-
-## 非推奨アノテーター
-
-Isaac Sim 5.0 で、いくつかのアノテーターが削除・置き換えられました。新しいアノテーターの出力は、非推奨アノテーターと必ずしも同一ではありません。
-
-| 非推奨（4.5）アノテーター | 置き換え先 | 備考 |
-|---|---|---|
-| `IsaacComputeRTXLidarFlatScanSimulationTime` | `IsaacComputeRTXLidarFlatScan` | 同一データ。タイムスタンプは `IsaacReadSimulationTime` を併用 |
-| `IsaacComputeRTXLidarFlatScanSystemTime` | `IsaacComputeRTXLidarFlatScan` | 同一データ。タイムスタンプは `IsaacReadSystemTime` を併用 |
-| `RtxSensorCpuIsaacComputeRTXLidarPointCloud` | `IsaacExtractRTXSensorPointCloudNoAccumulator` | azimuth/elevation/range を除き同一（直交座標から計算可能）。GPU/CPU 出力は設定で自動選択 |
-| `RtxSensorGpuIsaacComputeRTXLidarPointCloud` | `IsaacExtractRTXSensorPointCloudNoAccumulator` | 同上 |
-| `RtxSensorCpuIsaacComputeRTXRadarPointCloud` | `IsaacExtractRTXSensorPointCloudNoAccumulator` | 同上 |
-| `RtxSensorGpuIsaacComputeRTXRadarPointCloud` | `IsaacExtractRTXSensorPointCloudNoAccumulator` | 同上 |
-| `IsaacReadRTXLidarData` | `isaacsim.sensors.rtx.read_gmo_data` ユーティリティ | 「GenericModelOutput バッファからのデータ読み取り」を参照 |
+`GenericModelOutput` バッファから毎フレームポイントクラウドを抽出します（`OmniLidar` / `OmniRadar` 対応）。`isaacsim.sensors.rtx.nodes` の `IsaacExtractRTXSensorPointCloud` に置き換えられました。
 
 ## まとめ
 
 このチュートリアルでは、次の内容を学びました。
 
-- アノテーターを Replicator API または `LidarRtx` クラスでアタッチしてデータを収集する方法
-- `IsaacCreateRTXLidarScanBuffer`（累積）と `IsaacExtractRTXSensorPointCloudNoAccumulator`（毎フレーム）の違いと出力
-- タイムラインとタイムスタンプに関する注意点、`GenericModelOutput` バッファの読み取り
-- Object ID を使ったセマンティックセグメンテーションの考え方
+- `LidarSensor` / `RadarSensor` クラスでアノテーターとレンダープロダクトを自動管理してデータを収集する方法
+- 現行アノテーター `IsaacExtractRTXSensorPointCloud` と `draw-point-cloud` ライター（`isaacsim.sensors.rtx.nodes`）の使い方
+- マルチティックレンダリングの有無によるタイムスタンプ挙動の違い
+- `parse_generic_model_output_data` / `parse_stable_id_map_data` による GMO バッファの読み取りと Object ID の解決
+- 6.0 で非推奨になったアノテーター（`IsaacCreateRTXLidarScanBuffer` など）と置き換え先
 
 ## 次のステップ
 

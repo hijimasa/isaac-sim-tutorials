@@ -14,3 +14,6 @@ Isaac Sim's PhysX SDK sensors use **PhysX SDK raycasts** to measure range betwee
 - [PhysX SDK Generic Sensor](15_physx_generic.md)
 - [PhysX SDK Lidar](16_physx_lidar.md)
 - [PhysX SDK Lightbeam Sensor](17_physx_lightbeam.md)
+- [Proximity Sensor](13_proximity_sensor.md)
+
+Deprecated since Isaac Sim 6.0: the `isaacsim.sensors.physx` extension is deprecated. Use `isaacsim.sensors.experimental.physics` instead, which provides the `RaycastSensor` as the replacement for PhysX-based range sensors.

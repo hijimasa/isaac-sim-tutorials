@@ -17,13 +17,16 @@ title: ランダム化スニペット集
 
 ### 概要
 
-各スニペットは Replicator のサンプルスニペットと同じ構成・関数名になるよう設計されており、`write_data=True` を設定するとデータをディスクに書き出すこともできます。**完全なコードは[公式ページ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/replicator_tutorials/tutorial_replicator_isaac_randomizers.html)からコピーして Script Editor で実行**してください。このページでは各スニペットが「何をするものか・どんなときに使うか」を整理します。
+各スニペットは Replicator のサンプルスニペットと同じ構成・関数名になるよう設計されており、`write_data=True` を設定するとデータをディスクに書き出すこともできます。**完全なコードは[公式ページ](https://docs.isaacsim.omniverse.nvidia.com/latest/replicator_tutorials/tutorial_replicator_isaac_randomizers.html)からコピーして Script Editor で実行**してください。このページでは各スニペットが「何をするものか・どんなときに使うか」を整理します。
+
+!!! note "Isaac Sim 6.0 でのコード刷新"
+    6.0 の公式スニペットは新 API に書き換えられています。セマンティックラベル付与は `isaacsim.core.utils.semantics` から **`isaacsim.core.experimental.utils.semantics`** に移行し（`add_labels(..., taxonomy="class")` 形式）、データ書き出しは **`rep.backends.get("DiskBackend")`** でバックエンドを初期化して `writer.initialize(backend=backend, ...)` に渡す方式になりました。アセットルートの取得も非同期版 `get_assets_root_path_async()` を使います。
 
 ## スニペット 1：光源のランダム化
 
 キューブと球のある環境をセットアップし、指定した数のライトをスポーンして、選択した属性（色・強度・位置など）を指定フレーム数にわたってランダム化します。
 
-![光源のランダム化](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_randomization_lights.gif)
+![光源のランダム化](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_randomization_lights.gif)
 
 **使いどころ**：Replicator の組み込みライトランダマイザより細かく、USD 属性レベルでライトを制御したい場合。
 
@@ -31,7 +34,7 @@ title: ランダム化スニペット集
 
 環境にキューブと球をスポーンし、テクスチャを指定フレーム数ランダム化した後、**元のマテリアルを再割り当て**します。新しいマテリアルの作成とプリムへの割り当て方法も含まれています。
 
-![テクスチャのランダム化](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_randomization_textures.gif)
+![テクスチャのランダム化](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_randomization_textures.gif)
 
 **使いどころ**：ランダム化後に元の見た目へ戻す必要がある場合（[チュートリアル 8](08_ur10_palletizing.md) のマテリアルキャッシュと同じ発想）。
 
@@ -44,7 +47,7 @@ title: ランダム化スニペット集
 3. **ビンをパレットの上に完全に載るように**移動（パレットの位置に依存）
 4. カメラを球面上のほぼ等間隔な点を巡るカスタムサンプラーで移動し、**ビンを注視**させる
 
-![連鎖ランダム化](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_randomization_chained_persp.gif)
+![連鎖ランダム化](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_randomization_chained_persp.gif)
 
 **使いどころ**：「A の位置が決まってから B を A の上に置く」のような**依存関係のあるランダム化**。グラフベースの Replicator ランダマイザでは表現しにくい部分です。
 
@@ -57,7 +60,7 @@ title: ランダム化スニペット集
 - 滑らかに安定位置へ移動できるよう、シミュレーション中は箱の**摩擦を一時的に低減**
 - 最後にコリジョンエリアを除去（以降は箱が床に落ちることも可能に）
 
-![体積充填](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_randomization_volume_fill.gif)
+![体積充填](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_randomization_volume_fill.gif)
 
 **使いどころ**：倉庫シーンなどで「自然に積まれた荷物」を大量生成したい場合。
 
@@ -72,7 +75,7 @@ title: ランダム化スニペット集
 !!! warning "実行の前提"
     この例は**非同期モードでのみ**動作し、検索リクエストを処理するために **SimReady Explorer ウィンドウが有効**になっている必要があります。
 
-![SimReady アセットの SDG](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_tut_viewport_randomization_simready_assets.jpg)
+![SimReady アセットの SDG](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_tut_viewport_randomization_simready_assets.jpg)
 
 ## まとめ
 

@@ -4,6 +4,14 @@ title: Block World Generator を使った ROS 2 Navigation
 
 # Block World Generator を使った ROS 2 Navigation
 
+!!! warning "Isaac Sim 6.0 での位置づけ"
+    このチュートリアルは Isaac Sim 6.0 の公式ドキュメントからは削除されました。
+    本ページは 5.1.0 時点の内容をもとにした本サイト独自の解説です。
+    なお、Isaac Sim 6.0 の公式ドキュメントには、代替として 2.5D の高さマップ（heightmap）から
+    ナビゲーション環境を構築する新しいチュートリアル
+    [ROS 2 Navigation with Heightmap](https://docs.isaacsim.omniverse.nvidia.com/latest/ros2_tutorials/tutorial_ros2_navigation_heightmap.html)
+    が追加されています。
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます：

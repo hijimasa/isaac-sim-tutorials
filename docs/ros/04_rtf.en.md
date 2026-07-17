@@ -25,7 +25,7 @@ RTF = simulated elapsed time / real elapsed time, computed per frame. RTF > 1 me
 
 For an unloaded system, RTF should be close to 1.0.
 
-![RTF graph](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_rtf_graph.png)
+![RTF graph](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_rtf_graph.png)
 
 ## Next Steps
 

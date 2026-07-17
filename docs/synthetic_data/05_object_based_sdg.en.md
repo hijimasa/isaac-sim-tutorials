@@ -15,12 +15,13 @@ Object-centric SDG for pose estimation / detection training: labeled assets and 
 
 ```bash
 ./python.sh standalone_examples/replicator/object_based_sdg/object_based_sdg.py
-# DOPE / CenterPose config examples in object_based_sdg/config/*
+# BasicWriter / DOPE / CenterPose config examples in object_based_sdg/config/*
 ```
 
 ## Key Points
 
-- Config covers working_area_size, num_frames/num_cameras, disable_render_products_between_captures, simulation_duration_between_captures, camera properties, writer type/kwargs, labeled assets, shape/mesh distractors.
+- Config covers working_area_size, num_frames/num_cameras, disable_render_products_between_captures, simulation_duration_between_captures, camera properties (snake_case keys: `focal_length`, `focus_distance`, `f_stop`, `clipping_range`), writer type/kwargs, labeled assets, shape/mesh distractors. Defaults now use the `RealTimePathTracing` renderer.
+- The script uses the `rep.functional` API directly: `rep.functional.modify.pose` for transforms, `rep.functional.create.reference`/`create.camera` for assets, `rep.functional.physics.apply_rigid_body`/`apply_collider` for physics; semantics helpers come from `isaacsim.core.experimental.utils.semantics`.
 - Custom randomizers: overlap-triggered bounce velocities, camera poses looking at random labeled assets (with optional camera colliders), velocities pulling objects toward the center; Replicator randomizers for sphere lights and shape distractor colors via custom events.
 - Motion blur combines path-traced subframes over a chosen movement duration; render products (optionally including the viewport) can be disabled between captures for headless performance.
 - PoseWriter parameters: output_dir, format (dope/centerpose), use_subfolders, write_debug_images, skip_empty_frames.

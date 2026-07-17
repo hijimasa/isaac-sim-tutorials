@@ -22,8 +22,8 @@ title: ROS 2 カメラ
 - カメラの追加方法（[ロボットセットアップ チュートリアル 4: カメラとセンサーの追加](../robot_setup/04_camera_sensors.md)）を完了していること
 - [チュートリアル 1: URDF インポート: Turtlebot](01_urdf_import_turtlebot.md) を完了し、ステージに Turtlebot がある状態にしておくこと
 
-!!! warning "Windows での RViz2"
-    Windows 10 / 11 では、マシンの構成によって RViz2 が正しく開かないことがあります（WSL2 の WSLg 経由での起動を推奨します）。
+!!! note "frameSkipCount は 6.0 で非推奨になりました"
+    Isaac Sim 6.0 では、**ROS2 Camera Helper** と **ROS2 Camera Info Helper** の `frameSkipCount` 入力は非推奨（deprecated）です。配信レートの制御には、カメラプリム（**OmniSensorAPI** が適用されている必要があります）の **`omni:sensor:tickRate`** 属性を代わりに使用してください。詳細は公式の [Multi-Tick Rendering](https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/isaacsim_sensors_multitick_rendering.html) ページを参照してください。
 
 ### 所要時間
 
@@ -37,22 +37,23 @@ title: ROS 2 カメラ
 
 ビューポートに表示されている既定のカメラは **Perspective** カメラです。ビューポート左上の **Camera** ボタンをクリックすると、Top / Front / Right などのプリセット視点も選べます。
 
-このチュートリアルでは、部屋を異なる視点から見る 2 つの固定カメラを追加し、`Camera_1`、`Camera_2` と名前を付けます。カメラの追加手順は[ロボットセットアップ チュートリアル 4](../robot_setup/04_camera_sensors.md)を参照してください。
+このチュートリアルでは、部屋を異なる視点から見る 2 つの固定カメラを `/World/Camera_1`、`/World/Camera_2` に追加します。後のチュートリアル（例：ROS 2 パブリッシュレートの設定）で使う OmniGraph ノードやスクリプトとプリムパスを一致させるため、**必ず `/World` 直下にこの名前で**作成してください。カメラの追加手順は[ロボットセットアップ チュートリアル 4](../robot_setup/04_camera_sensors.md)を参照してください。
 
 複数のカメラ映像を同時に確認するには、ビューポートを追加します：
 
 1. **Window > Viewports > Viewport 2** で 2 つ目のビューポートを開きます。
 2. ビューポート左上の **Cameras** ボタンから表示したいカメラを選択します。
 
-![ビューポートの追加](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_camera_add_viewport.webp)
+![ビューポートの追加](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_camera_add_viewport.webp)
 
 ## ステップ 2：RGB パブリッシャのグラフを構築する
 
-1. **Window > Graph Editors > Action Graph** を開きます。
-2. **New Action Graph** アイコンをクリックします（既存のグラフに追加したい場合は **Edit Action Graph**）。
-3. 次の画像のノードと接続でグラフを構築し、下の表のパラメータを設定します：
+1. Stage パネルで `/World/Camera_1` を選択します。こうすると、新しい Action Graph が配信対象のカメラプリムの隣に作成されます。グラフを直接影響を与えるセンサーの下に置いておくと、`Camera_1` を別のシーンに参照（Reference）したときにパブリッシャグラフも一緒に付いてくるため、アセットの再利用性（コンポーザビリティ）が保たれます。
+2. **Window > Graph Editors > Action Graph** を開きます。
+3. **New Action Graph** アイコンをクリックします（既存のグラフに追加したい場合は **Edit Action Graph**）。グラフ名を `Camera_1_Graph` にすると、グラフのパスは `/World/Camera_1/Camera_1_Graph` になります。
+4. 次の画像のノードと接続でグラフを構築し、下の表のパラメータを設定します：
 
-    ![カメラパブリッシャグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_ros2_camera_graph.png)
+    ![カメラパブリッシャグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_ros2_camera_graph.png)
 
 | ノード | 入力フィールド | 値 |
 |---|---|---|
@@ -136,7 +137,7 @@ $$
 2. ポップアップで **Graph Path**、**Camera Prim**、**frameId**、（あれば）**Node Namespace** を指定し、配信したいデータの種類にチェックを入れます。
 3. 既存のグラフにノードを追加したい場合は **Add to an existing graph?** にチェックを入れます。既存の tick ノード・コンテキストノード・シミュレーション時刻ノードがあればそれらを再利用してくれます。
 
-![カメラグラフショートカット](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_ros2_camera_og_shortcut.png)
+![カメラグラフショートカット](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_ros2_camera_og_shortcut.png)
 
 ## ステップ 5：ROS 接続を確認する
 
@@ -159,14 +160,14 @@ RViz2 での確認：
 1. ROS 2 を source したターミナルで `rviz2` を起動します。
 2. **Image** ディスプレイを追加し、トピックを `rgb` に設定します。
 
-![RViz でのカメラ画像](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_ros2_rviz_camera.png)
+![RViz でのカメラ画像](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_ros2_rviz_camera.png)
 
 !!! tip "トラブルシューティング：深度画像が白黒にしか見えない"
     深度画像が白と黒の領域だけになる場合は、視野内に「無限遠」の深度が含まれていてコントラストが偏っている可能性が高いです。画像内の深度の範囲が限られるように視野を調整してください。
 
 ## その他の配信オプション
 
-オンデマンド配信や指定レートでの定期配信を行うには Python スクリプティングが必要です。次のチュートリアルで扱います。
+オンデマンド配信などのより細かな制御には Python スクリプティングが必要です（[チュートリアル 7](07_camera_publishing.md) で扱います）。センサーごとの配信レートは、6.0 ではカメラプリムの `omni:sensor:tickRate` で設定します（[チュートリアル 10: ROS 2 パブリッシュレートの設定](10_publish_rate.md)参照）。
 
 ## まとめ
 
@@ -185,3 +186,4 @@ RViz2 での確認：
 ### さらに学ぶには
 
 - 合成データ生成の詳細は公式の Replicator チュートリアルシリーズを参照してください。
+- カメラプリムのパスに基づくトピックのネームスペース自動生成：[チュートリアル 15: 自動 ROS 2 ネームスペース生成](15_auto_namespace.md)
