@@ -41,7 +41,7 @@ title: カメラとセンサーの追加
 ![カメラの作成](images/13_create_camera.png)
 
 !!! note "カメラアイコンの表示"
-    デフォルトではカメラアイコンは非表示です。表示するには、ビューポート上部の ![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_eyecon.png) をクリックし、**Show By Type > Cameras** を選択してください。
+    デフォルトではカメラアイコンは非表示です。表示するには、ビューポート上部の ![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_eyecon.png) をクリックし、**Show By Type > Cameras** を選択してください。
 
 !!! tip "現在のビューからカメラを作成"
     ビューポートのカメラを好きな位置・角度に合わせた状態で、ビューポート左上の **Camera** ボタンのドロップダウンから **Camera > Create from View** を選択すると、現在のビューの視点からカメラを作成できます。手動でトランスフォームを設定するよりも直感的にカメラを配置できます。<br>

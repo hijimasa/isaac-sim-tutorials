@@ -55,7 +55,7 @@ The flow is as follows:
     Every prim and mesh in the USD scenegraph adds **its own draw-call and physics-evaluation overhead**. Even if there are only 10 links, splitting them into 200 meshes results in roughly 200 draw calls. **Mesh merging** consolidates these into a single draw call, while **instancing** reduces memory by sharing identical data.
 
 !!! note "Recommended asset structure"
-    The official [Isaac Sim asset structure guidelines](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html) recommend organizing a robot asset into the following three stages:
+    The official [Isaac Sim asset structure guidelines](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html) recommend organizing a robot asset into the following three stages:
 
     | Stage | Contents |
     |---|---|
@@ -77,7 +77,7 @@ When you reparent meshes via drag-and-drop, **changing the parent can shift the 
 2. From the list on the left, select **Stage > Authoring**
 3. Check **Inherit Parent Transform**
 
-   ![Enable Inherit Parent Transform](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_2.png)
+   ![Enable Inherit Parent Transform](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_2.png)
 
 !!! tip "Why this setting matters"
     A USD prim's final world coordinate is computed as parent transform × local transform. With `Inherit Parent Transform` disabled, **the parent transform is not inherited** when the parent changes, so the world position can shift even if the local transform is unchanged. Since this optimization workflow moves many meshes between parents, enabling this once up front saves time.
@@ -102,7 +102,7 @@ In the working folder, create a new USD file to hold the optimization results, a
 4. With the **Root Layer** (`Jetbot_optimized.usd`) selected, click the **Insert Sublayer** button
 5. In the file dialog, select the `Jetbot_base.usd` you copied to the working folder
 
-   ![Insert sublayer](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_3.png)
+   ![Insert sublayer](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_3.png)
 
 The Jetbot meshes and materials now appear in the viewport. **Because `Jetbot_optimized.usd` is the Root Layer, all subsequent edits are recorded in this file, and `Jetbot_base.usd` itself is not modified.**
 
@@ -121,7 +121,7 @@ Create the Xform that holds the optimized asset:
 
 1. Right-click the **Stage** panel and choose **Show Root** to display the `/` (root) level
 
-   ![Enable Show Root](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_4.png)
+   ![Enable Show Root](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_4.png)
 
 2. Right-click the root and choose **Create > Xform**, then rename the new Xform to `Jetbot_Sim`
 3. Right-click `Jetbot_Sim` and choose **Set as Default Prim** (this becomes the asset's "front door")
@@ -146,15 +146,15 @@ Move the children of the original `Jetbot` prim under `Jetbot_Sim`:
 1. In the Stage panel, Shift-click to select all children of `Jetbot`
 2. Drag-and-drop them onto `Jetbot_Sim`
 
-   ![Move prims](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_5.png)
+   ![Move prims](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_5.png)
 
 3. If the moved prims appear **grayed out (inactive)**, select them, right-click, and choose **Activate** to re-enable them
 
-   ![Activate prims](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_6.png)
+   ![Activate prims](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_6.png)
 
 4. **Delete the meshes and materials that were copied** under each `Jetbot_Sim/<link>` (for example `Jetbot_Sim/left_wheel`), but **keep the link Xform itself**. The link Xform serves as a container that will receive the merged mesh produced by the Mesh Merge Tool in the next step, so we leave the container in place and empty its contents.
 
-   ![Delete leftover contents under Jetbot_Sim](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_6a.png)
+   ![Delete leftover contents under Jetbot_Sim](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_6a.png)
 
 !!! note "Why empty the contents under Jetbot_Sim"
     The reparent operation also moves the children (meshes, materials, and so on) from `Jetbot/<link>` to `Jetbot_Sim/<link>`. These are still the unmerged originals; the next step uses the Mesh Merge Tool to **produce a new merged mesh that replaces them**, so we tidy them up here. The original mesh data remains in the `Jetbot_base.usd` sublayer (and under `Jetbot/<original-link>`), so the Mesh Merge Tool can still reference it as input.
@@ -186,12 +186,12 @@ Use `left_wheel` as the example to walk through the full merge flow:
 3. Set **Material Save Location** (the input field next to the **Combine Materials** checkbox) to `/Jetbot_Sim/Looks` (the destination where merged materials will be collected)
 4. Click the **Merge** button
 
-   ![Mesh Merge Tool settings](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_7.png)
+   ![Mesh Merge Tool settings](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_7.png)
 
 5. The merged result is created temporarily at `/Merged/left_wheel`
 6. Select the new mesh and, in the **Properties** panel's **Transform** section, **clear position, rotation, and scale to 0 (or identity values)**
 
-   ![Clear Transform](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_8.png)
+   ![Clear Transform](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_8.png)
 
 !!! tip "Why clear the Transform"
     The Mesh Merge Tool bakes the merged geometry relative to the selected prim's world coordinates. As a result, the new `/Merged/left_wheel` ends up with **a Transform equal to its world position**. If you then place this mesh under `Visuals` and reference it from elsewhere, leaving the Transform in place causes it to be **applied twice** (once at the source and once at the reference site).
@@ -204,30 +204,30 @@ Place the merged mesh under `Visuals` and have the simulation-side `Jetbot_Sim/l
 2. Drag-and-drop `/Merged/left_wheel` into `/Visuals/left_wheel`
 3. Delete the now-empty `/Merged` prim
 
-   ![Place under Visuals](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_9.png)
+   ![Place under Visuals](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_9.png)
 
 Next, add an Xform under the simulation-side link `Jetbot_Sim/left_wheel` that references `Visuals/left_wheel`:
 
 4. Under `Jetbot_Sim/left_wheel`, create a new Xform and rename it to `Visuals`
 5. Right-click the new Xform and choose **Add > Reference**
 
-   ![Add Reference](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_10.png)
+   ![Add Reference](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_10.png)
 
 6. In the file dialog, select the `Jetbot_base.usd` you copied to your working folder (the next step clears the Asset Path to convert this into an internal reference, so this file selection is just a temporary "stepping stone" to dismiss the dialog)
 
-   ![Select file](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_11.png)
+   ![Select file](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_11.png)
 
 7. In Prim Path, enter `/Visuals/left_wheel`
 
-   ![Enter Prim Path](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_12.png)
+   ![Enter Prim Path](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_12.png)
 
 8. In the **Properties** panel, expand the **References** section and clear the **Asset Path** value (this turns the reference into an "internal reference" that points within the same stage)
 
-   ![Clear Asset Path](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_12a.png)
+   ![Clear Asset Path](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_12a.png)
 
 9. Confirm that the left wheel renders correctly in the viewport and that the merged mesh appears under `Jetbot_Sim/left_wheel/Visuals` in the Stage panel
 
-   ![Final reference structure](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_13.png)
+   ![Final reference structure](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_13.png)
 
 !!! note "Why use an internal reference"
     Storing the merged meshes under `Visuals` inside `Jetbot_optimized.usd` and referencing them from within the same file keeps the asset self-contained and free of external dependencies. The instancing step that follows is also applied to these internal references.
@@ -276,7 +276,7 @@ Mark the referenced Visuals prims as instancing targets:
 2. In the **Properties** panel, check **Instanceable**
 3. Verify that a **blue "I" badge** appears on the reference icons in the Stage
 
-   ![Instanceable indicator](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_16.png)
+   ![Instanceable indicator](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_16.png)
 
 !!! warning "Instanceable and per-prim collider/material edits"
     Once **Instanceable** is enabled, you cannot change materials or collider approximations on a per-mesh basis under that prim. As covered in Steps 2-5 and 6-2 of [Tutorial 10](10_closed_loop_structures.md), if you need to swap materials per-link later, **temporarily disable** Instanceable on the target prim, make the change, and then re-enable it.
@@ -376,7 +376,7 @@ This tutorial covered the following topics:
 Combined, these changes take the Jetbot sample from **40 FPS to 64 FPS (about 1.6×)**. Mesh merging and instancing in particular tend to pay off well on real robot USD assets too, so they are a good first stop whenever simulation feels slow.
 
 !!! tip "Also see the asset structure guidelines"
-    The "base / optimized / features (physics, sensors)" separation introduced here follows the official [Isaac Sim asset structure guidelines](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html). Splitting layers by feature — physics, sensors, ROS, and so on — further improves reusability and maintainability.
+    The "base / optimized / features (physics, sensors)" separation introduced here follows the official [Isaac Sim asset structure guidelines](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html). Splitting layers by feature — physics, sensors, ROS, and so on — further improves reusability and maintainability.
 
 ## Next Steps
 

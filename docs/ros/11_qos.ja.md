@@ -58,7 +58,7 @@ JSON として有効であるためには、`depth` は正の整数、`deadline`
 
 4. Action Graph ウィンドウで **ROS2 QoS Profile** ノードを追加し、次のように接続します。**createProfile** 入力には複数の[プリセット QoS プロファイル](https://docs.ros.org/en/humble/Concepts/Intermediate/About-Quality-of-Service-Settings.html#qos-profiles)が用意されており、その他の入力は個別に設定してカスタムプロファイルを作るための QoS ポリシーです。
 
-    ![QoS Profile ノードの接続](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_ros2_qos_connect.png)
+    ![QoS Profile ノードの接続](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_ros2_qos_connect.png)
 
 5. **createProfile** を **Sensor Data** に設定し、**Play** でシミュレーションを開始します。
 
@@ -74,7 +74,7 @@ JSON として有効であるためには、`depth` は正の整数、`deadline`
     出力の QoS Profile が Isaac Sim で設定した内容と一致するはずです。
 
 !!! note "depth が UNKNOWN と表示される場合"
-    Fast DDS（旧 Fast RTPS）は既定で depth を保存しないため、depth ポリシーが UNKNOWN と表示されることがあります。depth の情報を取得したい場合は、Isaac Sim と ROS 2 ノードを Cyclone DDS で動かしてみてください（[セットアップページ](00_setup.md)参照。**Cyclone DDS は Linux のみ対応**です）。Cyclone DDS でも UNKNOWN のままの場合は、ハードウェア構成に起因する可能性があります。
+    Fast DDS（旧 Fast RTPS）は既定で depth を保存しないため、depth ポリシーが UNKNOWN と表示されることがあります。depth の情報を取得したい場合は、Isaac Sim と ROS 2 ノードを Cyclone DDS または Zenoh で動かしてみてください（[セットアップページ](00_setup.md)参照）。`rmw_cyclonedds_cpp` と `rmw_zenoh_cpp` はどちらも、設定した depth 値を `ros2 topic info -v` で報告します。ミドルウェアを切り替えても UNKNOWN のままの場合は、ハードウェア構成に起因する可能性があります。
 
 ## ステップ 2：スタティックパブリッシャを作成する
 
@@ -82,7 +82,7 @@ JSON として有効であるためには、`depth` は正の整数、`deadline`
 
 1. 先ほどの Action Graph に **On Stage Event** と **Countdown** ノードを追加し、次のように接続します：
 
-    ![スタティックパブリッシャの接続](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_ros2_qos_static_connect.png)
+    ![スタティックパブリッシャの接続](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_ros2_qos_static_connect.png)
 
 2. **On Stage Event** の **eventName** を `Simulation Start Play` に設定します。
 3. **Countdown** ノードの **duration** を `3`、**period** を `1` に設定します。これでシミュレーション再生後に ROS2 Publisher ノードが 3 回 tick されます。ROS2 Publisher ノードは最初の 2 フレームをセットアップに使い、**3 フレーム目でメッセージを配信**します。

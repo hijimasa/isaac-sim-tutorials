@@ -157,7 +157,7 @@ class FrankaRrtExample():
 - 再計画の流れ：`set_end_effector_target`（新ターゲットを通知）→ `update_world`（監視中の障害物位置を問い合わせ）→ `compute_plan_as_articulation_actions`（ArticulationAction のリストを生成）。
 - `max_cspace_dist=.01` は、指令する 2 つのロボット位置間の L2 ノルムが最大 0.01 になるようスパース出力を補間します。毎フレーム、プランから 1 アクションを取り出してロボットに送ります。
 
-![Lula RRT](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rrt.webp)
+![Lula RRT](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rrt.webp)
 
 ## 現在の制限：プランを正確に追従するには
 

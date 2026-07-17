@@ -116,7 +116,7 @@ class FrankaKinematicsExample():
 - IK は成功/失敗のフラグを返します。**収束した場合のみ**アクションを適用し、失敗時は警告を出して何もしません。
 - `LulaKinematicsSolver` は、指定しない限りロボットベースが原点にあると仮定します。毎フレーム `set_robot_base_pose()` でベース位置を渡すと、ワールド座標で FK / IK を計算できます。
 
-![Lula Kinematics Solver](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_lula_kinematics.webp)
+![Lula Kinematics Solver](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_lula_kinematics.webp)
 
 !!! note "IK ソルバー単体の限界"
     `LulaKinematicsSolver` は Articulation がステージ上になくても、任意の位置で FK を、任意のウォームスタートで IK を計算できます。ただし、IK 解をそのままロボットに送るのはデモ以上には役立ちません。現実のシナリオでは終端位置だけでなく**そこへ至る経路**も決める必要があり、IK 単体では最適とは言えない粗い軌道しか作れません。

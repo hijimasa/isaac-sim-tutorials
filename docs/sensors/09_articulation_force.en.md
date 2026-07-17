@@ -9,10 +9,9 @@ title: Articulation Joint Sensors
 
 ## Overview
 
-Articulation sensors read the active and passive components of joint forces via `Articulation` / `ArticulationView` APIs:
+Articulation sensors read the active and passive components of joint forces via the `Articulation` class from the `isaacsim.core.experimental.prims` extension (Isaac Sim 6.0):
 
-- `get_applied_joint_efforts` — efforts set by the user through `set_joint_efforts`.
-- `get_measured_joint_forces` — 6-dimensional spatial forces per joint (total joint forces); read from a fixed joint to mimic a force-torque sensor.
-- `get_measured_joint_efforts` — active component (projection of joint forces on the motion direction).
+- `get_link_incoming_joint_force()` — 6D force and torque (shape `(N, L, 3)` each) for each link's incoming joint; read from a fixed joint to mimic a force-torque sensor.
+- `get_dof_projected_joint_forces()` — active component of the joint forces projected onto the motion direction for each DOF.
 
 The reported forces correspond to the joint connecting a child link to its parent (incoming joint forces). See the Japanese page for a full Script Editor example loading the Ant robot and mapping joint names to link indices.

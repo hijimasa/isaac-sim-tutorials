@@ -18,35 +18,38 @@ NVIDIA Omniverse™ Kit は、アプリケーション構築に必要な GUI、�
 
 本チュートリアルでは、コアAPIの概念とその使用方法を紹介します。まず空のステージに立方体を追加することから始め、それを基に複数のロボットが同時に複数のタスクを実行するシーンを構築します（下図参照）。
 
-![チュートリアル目標](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/core_api_tutorials_6_2.webp)
+![チュートリアル目標](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/core_api_tutorials_6_2.webp)
+
+!!! note "Isaac Sim 6.0 での Core API について"
+    Isaac Sim 6.0 では、従来の `isaacsim.core.api`（World / Scene / Task ベースの API）は**非推奨（deprecated）**となり、公式の Core API チュートリアルは `isaacsim.core.experimental.*` と `isaacsim.core.simulation_manager` を使う内容に刷新されました。本セクションもこの刷新後の内容に対応しています。従来 API からの移行については[公式移行ガイド](https://docs.isaacsim.omniverse.nvidia.com/latest/migration_guides/isaac_sim_6_0/index.html)を参照してください。
 
 ## チュートリアル
 
 <!-- 以下にチュートリアル記事を追加してください -->
 
 !!! example "[チュートリアル 1: Hello World](01_hello_world.md)"
-    Core API で定義される World と Scene の作成方法、Stage への剛体追加とシミュレーション方法を学びます。
+    Core API（experimental）で USD ステージを操作する方法、Stage への剛体追加とシミュレーション方法を学びます。
 
 !!! example "[チュートリアル 2: Hello Robot](02_hello_robot.md)"
-    Nucleus サーバーからロボットアセットを読み込み、Robot クラスや WheeledRobot クラスを使ってロボットを制御する方法を学びます。
+    Nucleus サーバーからロボットアセットを読み込み、Articulation クラスを使ってロボットのジョイントを制御する方法を学びます。
 
 !!! example "[チュートリアル 3: コントローラの追加](03_adding_a_controller.md)"
-    カスタムコントローラの作成方法と、Isaac Sim に用意されている既存コントローラの利用方法を学びます。
+    カスタムコントローラの作成方法と、Isaac Sim に用意されている既存コントローラの利用方法を学びます。（Isaac Sim 6.0 の公式ドキュメントからは削除されたページで、本サイト独自の解説として保持しています）
 
 !!! example "[チュートリアル 4: マニピュレータロボットの追加](04_adding_a_manipulator_robot.md)"
-    Franka Panda マニピュレータのシーンへの追加、ピック＆プレースコントローラ、タスクのモジュール化を学びます。
+    Franka Panda マニピュレータのシーンへの追加と、FrankaPickPlace クラスによるピック＆プレース動作の実行を学びます。
 
 !!! example "[チュートリアル 5: 複数ロボットの追加](05_adding_multiple_robots.md)"
-    Jetbot と Franka の2台のロボットを連携させ、サブタスクやタスクイベントを使ったマルチロボットシミュレーションを構築します。
+    Jetbot と Franka の2台のロボットを連携させ、ステートマシンロジックを使ったマルチロボットシミュレーションを構築します。
 
-!!! example "[チュートリアル 6: 複数タスクの実行](06_multiple_tasks.md)"
-    offset パラメータによるタスクの空間配置と、同じタスクの複数インスタンスを並列実行する方法を学びます。
+!!! example "[チュートリアル 6: 複数ロボットシナリオ](06_multiple_tasks.md)"
+    ロボットシナリオを Python クラスとして整理し、offset パラメータで複数インスタンスを並列実行する方法を学びます。
 
 !!! example "[チュートリアル 7: 属性の追加](07_adding_props.md)"
     GUI 操作でオブジェクトに剛体・コリジョン・質量・物理マテリアルを設定し、物理シミュレーションの属性を学びます。
 
 !!! example "[チュートリアル 8: データロギング](08_data_logging.md)"
-    DataLogger クラスを使ったシミュレーションデータの記録・保存・再生の方法を学びます。
+    DataLogger クラスを使ったシミュレーションデータの記録・保存・再生の方法を学びます。（Isaac Sim 6.0 の公式ドキュメントからは削除されたページで、本サイト独自の解説として保持しています）
 
 !!! example "[チュートリアル 9: 変形可能物体（Deformable Body）](09_deformable_body.md)"
     Deformable Body（Beta）機能を使って変形可能物体を作成し、物理マテリアルを設定する方法を学びます。

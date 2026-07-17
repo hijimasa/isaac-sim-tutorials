@@ -90,7 +90,7 @@ From the menu, click in the following order to open the Gain Tuner window:
 
 **Tools > Robotics > Asset Editors > Gain Tuner**
 
-![Gain Tuner UI](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_gains_tuner_ui.png)
+![Gain Tuner UI](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_gains_tuner_ui.png)
 
 Use the **Select Robot** dropdown at the top of the window to pick the robot to tune. Assets with the Robot Schema applied are listed automatically.
 
@@ -271,7 +271,7 @@ Save the tuned gains to a USD file so they persist across sessions.
 
 Click the **Save Gains to Physics Layer** button in the Gain Tuner window.
 
-Following the recommended robot asset structure ([Asset Structure Guidelines](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html)), this button automatically locates the **layer that holds the physics configuration** and writes the new gains there.
+Following the recommended robot asset structure ([Asset Structure Guidelines](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html)), this button automatically locates the **layer that holds the physics configuration** and writes the new gains there.
 
 !!! note "Why Save to a Dedicated Layer"
     Isaac Sim robot assets are recommended to **separate USD layers by role** — meshes, physics, sensors, and so on (see the layer editing workflow in [Tutorial 10](10_closed_loop_structures.md)). Centralizing physics parameters in the physics layer means tuning is preserved across mesh updates.
@@ -302,7 +302,7 @@ If you do not have write permission, or you do not want to alter the original ro
 
 After running a test, the Gain Tuner plot area shows the following:
 
-![Gain Tuner plots](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_gains_tuner_plots.png)
+![Gain Tuner plots](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_gains_tuner_plots.png)
 
 | Element | Meaning |
 |---|---|
@@ -357,7 +357,7 @@ This tutorial covered the following topics:
 With these adjustments in place, the robot will move stably and responsively, providing a solid foundation for higher-level control algorithms to behave as expected.
 
 !!! tip "Going Deeper"
-    For the mathematical background of the Gain Tuner and PD control theory, refer to the Isaac Sim official documentation: [Gain Tuner Extension](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html). To implement a custom controller that writes torque commands directly, the official "Adding a Controller" tutorial is a useful reference.
+    For the mathematical background of the Gain Tuner and PD control theory, refer to the Isaac Sim official documentation: [Gain Tuner Extension](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html). To implement a custom controller that writes torque commands directly, the official "Adding a Controller" tutorial is a useful reference.
 
 ## Next Steps
 

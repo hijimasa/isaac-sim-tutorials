@@ -26,7 +26,7 @@ Script-based Replicator SDG workflows, runnable asynchronously in the Script Edi
 3. **Custom randomizations** (`_03.py`) — dome-light color via a custom-event Replicator graph (triggered every other step), cube location via plain USD API; capture with `step(rt_subframes=32)`.
 4. **Event-triggered capture in simulation** (`_04.py`) — cube and sphere fall with rigid-body physics; capture whenever the cube drops 0.5, pausing the timeline and using `step(delta_time=0.0)` to capture the same simulation state multiple times (once with the cube hidden).
 
-![BasicWriter output](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_external_getting_started_01.jpg)
+![BasicWriter output](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_external_getting_started_01.jpg)
 
 ## Next Steps
 

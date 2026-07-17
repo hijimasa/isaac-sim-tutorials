@@ -4,6 +4,9 @@ title: Lula RRT（コンセプト）
 
 # Lula RRT（コンセプト）
 
+!!! warning "Deprecated（非推奨）"
+    Isaac Sim 6.0 では、Lula 実装を含む Motion Generation 拡張機能は非推奨（deprecated）になりました。引き続き動作しますが、新規開発では、Lula に比べて改良されたインターフェースと追加機能を提供する [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API の利用を検討してください。
+
 ## 概要
 
 [Path Planner](path_planner.md) インターフェースを満たす、古典的な **RRT（Rapidly-exploring Random Tree）** アルゴリズムの Lula 実装です。

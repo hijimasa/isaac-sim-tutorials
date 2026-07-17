@@ -40,7 +40,7 @@ UR10 ロボットがコンベアからビン（箱）を取り、パレットに
 !!! note "このチュートリアルの重要な設計方針"
     SDG パイプラインが**実行中のシミュレーションの結果を変えない**こと、キャプチャ後に**加えた変更をクリーンアップする**ことが徹底されています。たとえばマテニアルのランダム化前に元のマテリアルをキャッシュして復元し、作成したグラフとレンダープロダクトはシナリオごとに破棄します。「シミュレーションの副作用なしに SDG を差し込む」パターンとして参考になります。
 
-![パレタイジングの収集データ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_palletizing_data.png)
+![パレタイジングの収集データ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_palletizing_data.png)
 
 ## ステップ 1：実行してみる
 

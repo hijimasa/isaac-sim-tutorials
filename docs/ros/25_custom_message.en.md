@@ -8,11 +8,11 @@ title: ROS 2 Python Custom Messages
     This is a concise English version. See the Japanese page for the full detailed walkthrough.
 
 !!! warning
-    Fully supported on Linux only; not supported on Windows (WSL).
+    Fully supported on Linux; not supported on Windows (WSL). Supported on Windows with a Pixi-based installation.
 
 ## Learning Objectives
 
-Use custom messages with rclpy inside Isaac Sim. Packages must be built with **Python 3.11** (place your package under `humble_ws/src` or `jazzy_ws/src`, run `./build_ros.sh`, and source before launching Isaac Sim).
+Use custom messages with rclpy inside Isaac Sim. Packages must be built with **Python 3.12** (place your package under `humble_ws/src` or `jazzy_ws/src`, run `./build_ros.sh` — or follow the Setup ROS 2 Workspaces instructions on Ubuntu 24.04 / Jazzy — and source before launching Isaac Sim).
 
 The demo uses the `custom_message` package from IsaacSim-ros_workspaces (`custom_message/msg/SampleMsg.msg`):
 

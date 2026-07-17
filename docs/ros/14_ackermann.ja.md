@@ -66,7 +66,7 @@ title: ROS 2 Ackermann コントローラ
         - `Wheel__Knuckle__Front_Left`
         - `Wheel__Knuckle__Front_Right`
 
-![Ackermann グラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_ackermann_omnigraph.png)
+![Ackermann グラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_ackermann_omnigraph.png)
 
 ## ステップ 2：ノードのパラメータを設定する
 
@@ -93,7 +93,7 @@ title: ROS 2 Ackermann コントローラ
 
 5. Leatherback が次のように走り出すことを確認します：
 
-    ![Ackermann 走行](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_ackermann_publisher.webp)
+    ![Ackermann 走行](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_viewport_ackermann_publisher.webp)
 
 !!! tip "設定済みアセット"
     - Action Graph 設定済みの Leatherback アセット：Content ブラウザの **Isaac Sim > Sample > ROS2 > Robots > Leatherback_ROS**
@@ -138,7 +138,7 @@ teleop_twist_keyboard などの既存ツールは Twist メッセージを配信
 | 後退右折 | . |
 | 停止 | k |
 
-![キーボード操縦](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_viewport_ackermann_publisher_2.webp)
+![キーボード操縦](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_viewport_ackermann_publisher_2.webp)
 
 ## まとめ
 

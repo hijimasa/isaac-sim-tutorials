@@ -7,6 +7,9 @@ title: Motion Policy Algorithm
 !!! info "Preliminary version"
     This English page is a preliminary summary. The Japanese page is the primary, fully detailed document — see it for the complete walkthrough.
 
+!!! warning "Deprecated"
+    As of Isaac Sim 6.0, the Motion Generation extension containing this API is deprecated. For new development, consider the [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API.
+
 ## Overview
 
 A Motion Policy is a collision-aware algorithm outputting per-frame actions to navigate one robot to one task-space target. The `MotionPolicy` interface pairs with `ArticulationMotionPolicy` to move a robot in a few lines. The provided implementation is [RMPflow](rmpflow.md) (Lula).

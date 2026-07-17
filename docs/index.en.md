@@ -11,6 +11,10 @@ Learn to develop and test AI-driven robots in physically-based virtual environme
 
 </div>
 
+!!! info "Supported version"
+    The tutorials on this site target **Isaac Sim 6.0.1** (the "latest" official documentation).
+    If you are using Isaac Sim 5.1.0, select **5.1.0** from the version selector in the header.
+
 ## Tutorial Series
 
 <div class="grid-container" markdown>

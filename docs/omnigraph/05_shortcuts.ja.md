@@ -25,7 +25,7 @@ title: よく使う OmniGraph ショートカット
 
 ### 概要
 
-Isaac Sim には、よく使う OmniGraph を生成する**ショートカット**が用意されています。**Tools > Robotics > Omnigraph Controllers** から、作成したいグラフを選択すると、最小限のパラメータの入力を求められ、グラフが自動生成されます。
+Isaac Sim には、よく使う OmniGraph を生成する**ショートカット**が用意されています。**Tools > Robotics > OmniGraph Controllers** から、作成したいグラフを選択すると、最小限のパラメータの入力を求められ、グラフが自動生成されます。
 
 用意されているコントローラグラフは次のとおりです。
 
@@ -69,21 +69,21 @@ Differential Controller は、線速度・角速度を受け取り、各車輪�
 | **Graph Path** | 生成グラフのパス（既定 `/Graph/{type}_controller`） |
 | **Wheel Radius** | 車輪半径（メートル） |
 | **Distance between wheels** | 2 輪間の距離（メートル） |
-| **Right/Left Joint Names**（省略可） | 右・左車輪を制御する関節名 |
-| **Right/Left Joint Index**（省略可） | Articulation チェーン内の右・左車輪関節のインデックス |
+| **Left/Right Joint Names**（省略可） | 左・右車輪を制御する関節名 |
+| **Left/Right Joint Index**（省略可） | Articulation チェーン内の左・右車輪関節のインデックス |
 | **Use Keyboard Control**（省略可） | 有効にすると WASD キー入力で前後進・左右旋回するグラフも生成 |
 | **Add to Existing Graph**（省略可） | 既定 False。既存グラフへの追加 |
 
 ### 使い方
 
-- 制御可能な関節が 2 つだけのロボットでは、関節名・インデックスの指定は不要です。Articulation チェーンに複数の駆動関節があるロボットでは、右・左車輪を制御する関節の名前かインデックスを指定する必要があります。
+- 制御可能な関節が 2 つだけのロボットでは、関節名・インデックスの指定は不要です。Articulation チェーンに複数の駆動関節があるロボットでは、左・右車輪を制御する関節の名前かインデックスを指定する必要があります。Differential Controller の出力順と一致するよう、左車輪を先に、右車輪を後に列挙してください。
 - WASD キーボード制御を含めなかった場合は、生成された **DifferentialController** ノードの **Desired Angular Velocity** / **Desired Linear Velocity** を手動で変更してテストできます。
 
-![差動コントローラの手動入力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_differential_controller_manual_inputs.png)
+![差動コントローラの手動入力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_differential_controller_manual_inputs.png)
 
 - WASD キーボード制御を使う場合、キーボードのバイナリ入力を車両サイズに見合った線速度・角速度にスケールする 2 つの値が **ScaleLinear** / **ScaleAngular** ノード内にあります。旋回コマンドが前後進コマンドと同程度の車輪速度変化になるよう調整するとよいでしょう。
 
-![スケール値の調整](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_differential_controller_scale.png)
+![スケール値の調整](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_differential_controller_scale.png)
 
 !!! tip
     Isaac Sim アセットを使う場合、車輪半径と車輪間距離の既定値は Robot Assets の Wheeled Robots のページ下部で確認できます。
@@ -103,7 +103,7 @@ Gripper Controller は、指ごとに 1 自由度のみを持つエンドエフ�
 | **Use Keyboard Control**（省略可） | 有効にすると「O」「C」「N」キーで開く・閉じる・停止するグラフを生成 |
 | **Add to Existing Graph**（省略可） | 既定 False。既存グラフへの追加 |
 
-![Gripper コントローラ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_omnigraph_gripper_controller.png)
+![Gripper コントローラ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_omnigraph_gripper_controller.png)
 
 ### 使い方
 
@@ -118,7 +118,7 @@ Gripper Controller は、指ごとに 1 自由度のみを持つエンドエフ�
 
 このチュートリアルでは、次の内容を学びました。
 
-- **Tools > Robotics > Omnigraph Controllers** から各種コントローラグラフを数クリックで生成できること
+- **Tools > Robotics > OmniGraph Controllers** から各種コントローラグラフを数クリックで生成できること
 - Articulation（位置・速度）/ Differential / Gripper コントローラの設定項目と使い方
 - WASD / キーボード制御やスケール値のチューニングのポイント
 

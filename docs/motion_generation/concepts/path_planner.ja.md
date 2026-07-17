@@ -4,6 +4,9 @@ title: Path Planner アルゴリズム
 
 # Path Planner アルゴリズム
 
+!!! warning "Deprecated（非推奨）"
+    Isaac Sim 6.0 では、この API を含む Motion Generation 拡張機能は非推奨（deprecated）になりました。引き続き動作しますが、新規開発では公式の [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API の利用を検討してください。
+
 ## 概要
 
 **Path Planner** は、C 空間（構成空間）のウェイポイント列を出力するアルゴリズムです。これを線形補間すると、開始 C 空間姿勢から C 空間またはタスク空間のターゲット姿勢への**衝突回避パス**になります。`PathPlanner` クラスは、Isaac Sim と連携できるパスプランニングアルゴリズムを定義するためのインターフェースです。実装として NVIDIA の Lula ライブラリの [Lula RRT](lula_rrt.md) が提供されています。

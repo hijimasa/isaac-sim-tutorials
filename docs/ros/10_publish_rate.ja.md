@@ -8,8 +8,8 @@ title: ROS 2 パブリッシュレートの設定
 
 このチュートリアルを修了すると、以下の内容を習得できます：
 
-- Isaac Sim の**シミュレーションフレームレート**の設定方法（2 通り）
-- 複数の ROS 2 パブリッシャに**それぞれ異なる配信レート**を同時に設定する方法
+- Isaac Sim の**シミュレーションレート**の設定方法
+- センサーの種類（IMU・RTX Lidar・カメラ）ごとに**異なる ROS 2 配信レート**を同時に設定する方法
 
 ## はじめに
 
@@ -24,86 +24,68 @@ title: ROS 2 パブリッシュレートの設定
 
 ### 概要
 
-Action Graph は**シミュレーションの毎フレーム tick される**ため、OmniGraph ノードの実行レートはシミュレーションレートの**約数（整数分の 1）**に縛られます。実機では IMU は 200 Hz、カメラは 30 Hz、Lidar は 10 Hz…というように、センサーごとに配信レートが異なるのが普通です。このチュートリアルでは、この「センサーごとのレート設定」をシミュレーションレートの分周として構成する方法を学びます。
+Action Graph は**シミュレーションの毎フレーム tick される**ため、OmniGraph ノードの実行レートはシミュレーションレートに縛られます。実機では IMU は 200 Hz、カメラは 30 Hz、Lidar は 10 Hz…というように、センサーごとに配信レートが異なるのが普通です。このチュートリアルでは、センサーごとに配信レートを設定する 2 つの方法を学びます：
 
-## ステップ 1：Isaac Simulation Gate ノードでレートを制御する
+- **非 RTX センサー（IMU など）**：**Isaac Simulation Gate** ノードでフレームを分周する
+- **RTX センサー（カメラ・RTX Lidar）**：センサープリムの **`omni:sensor:tickRate`** 属性でレートを直接指定する（[マルチティックレンダリング](https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/isaacsim_sensors_multitick_rendering.html)の仕組みによりシミュレーションレートから独立してスケジュールされます）
 
-**Isaac Simulation Gate** ノードは、指定したフレーム数ごとに 1 回だけ下流のノードを tick させるノードです。ここでは IMU パブリッシャをこのノードと組み合わせてセットアップします。
+## ステップ 1：非 RTX センサー — Isaac Simulation Gate ノード
+
+RTX レンダリングに依存しないセンサー（IMU など）は、**Isaac Simulation Gate** ノードでシミュレーションレートと異なるレートを設定できます。このノードは、指定したフレーム数ごとに 1 回だけ下流のノードを tick させます。ここでは IMU パブリッシャをこのノードと組み合わせてセットアップします。
 
 1. Content ブラウザから **Isaac Sim > Samples > ROS2 > Scenario > turtlebot_tutorial.usd** を開きます。
-2. `/World/turtlebot3_burger/base_link/imu_link` プリムを選択した状態で、**Create > Sensors > Imu Sensor** で IMU センサーを作成します。IMU センサーが `imu_link` プリムの下に作成されたことを確認します。
-3. `/World/turtlebot3_burger/base_link/imu_link` プリムの下に新しい Action Graph を作成し、`ROS_IMU` と名付けます（グラフの配置場所は後のチュートリアルの「自動ネームスペース生成」に関係します）。プリムを選択した状態で **Window > Graph Editors > Action Graph** から作成してください。
+2. `imu_link` プリムの下に IMU センサーを作成します。IMU センサーの追加方法は 2 通りあり、作成される場所が異なります：
+    - **右クリックメニュー（推奨）**：Stage パネルで `/World/turtlebot3_burger_processed/Geometry/base_footprint/base_link/imu_link` プリムを右クリックし、コンテキストメニューから **Create > Isaac > Sensors > Imu Sensor** を選択します。選択中の `imu_link` プリムの直下にセンサーが作成されます。
+    - **メニューバー**：画面上部の **Create > Sensors > Imu Sensor** から作成すると、センサーは**ステージのルート**に作成されます。この方法を使った場合は、Stage パネルで作成されたセンサープリムを `imu_link` の下にドラッグして、以降の手順と階層を一致させてください。
+
+    いずれの方法でも、先に進む前に IMU センサーが `imu_link` プリムの下にあることを確認します。
+
+3. `/World/turtlebot3_burger_processed/Geometry/base_footprint/base_link/imu_link` プリムの下に新しい Action Graph を作成し、`ROS_IMU` と名付けます（グラフの配置場所は後のチュートリアルの「自動ネームスペース生成」に関係します）。プリムを選択した状態で **Window > Graph Editors > Action Graph** から作成してください。
 4. Simulation Gate ノードを含む次のグラフを構築します：
 
-    ![IMU パブリッシュレートグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_ros2_publish_rate_imu_graph.png)
+    ![IMU パブリッシュレートグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_ros2_publish_rate_imu_graph.png)
 
 5. 各ノードの属性を設定します：
 
 | ノード | 設定 |
 |---|---|
 | **Isaac Simulation Gate** | **step** を `2` に設定。step が 2 なら下流のノードは **2 フレームに 1 回** tick される |
-| **Isaac Read IMU Node** | **imuPrim** に IMU センサープリム `/World/turtlebot3_burger/base_link/imu_link/Imu_Sensor` を追加 |
+| **Isaac Read IMU Node** | **imuPrim** に IMU センサープリム `/World/turtlebot3_burger_processed/Geometry/base_footprint/base_link/imu_link/Imu_Sensor` を追加 |
 | **ROS2 Publish Imu** | **frameId** を `imu_link` に設定。[チュートリアル 9](09_tf.md) でセットアップした TF ツリーの `imu_link` フレームと一致させる |
 
-## ステップ 2：SDG パイプライン内のノードのレートを設定する
+## ステップ 2：RTX センサー — omni:sensor:tickRate 属性
 
-前のステップでは自分のグラフに Simulation Gate を追加しましたが、カメラや RTX Lidar のセンサーでは、Simulation Gate は **SDG パイプライン内に自動的に構成**されています。個々のパブリッシャの配信レートは、各 **ROS2 Helper ノードの `frameSkipCount` パラメータ**で変更します。
+カメラと RTX Lidar は、センサープリムの **`omni:sensor:tickRate`** 属性でシミュレーションレートと異なる配信レートを設定できます（詳細は公式の [Configuring Per-Sensor Tick Rates](https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/isaacsim_sensors_multitick_rendering.html#isaac-sim-sensors-multitick-configuring-per-sensor-tick-rates) を参照）。
 
-!!! note "frameSkipCount と step の関係"
-    `frameSkipCount` は「配信の間に**スキップする**フレーム数」です。`frameSkipCount = 11` なら 11 フレームスキップ → **12 フレームに 1 回**配信され、SDG パイプライン内の Simulation Gate の step には自動的に対応する値が設定されます。
+!!! warning "frameSkipCount は非推奨（deprecated）になりました"
+    以前の Isaac Sim では ROS2 Helper ノードの `frameSkipCount` パラメータでセンサーの配信レートを制御していましたが、この方法は**非推奨**になりました。`frameSkipCount` に 0 以外の値が設定され、かつ対応するセンサープリムの `omni:sensor:tickRate` にも 0 以外の値が設定されていると、両者の周期が一致せず配信頻度が想定外になることがあります。移行の詳細は公式の [Configuring Per-Sensor Tick Rates](https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/isaacsim_sensors_multitick_rendering.html#isaac-sim-sensors-multitick-configuring-per-sensor-tick-rates) と [Multi-Tick Rendering](https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/isaacsim_sensors_multitick_rendering.html) を参照してください。
 
 `turtlebot_tutorial.usd` のシーンで次のように設定してみましょう：
 
-1. Lidar の Action Graph `/World/turtlebot3_burger/base_scan/ROS_LidarRTX` を開き、LaserScan 用の **Ros2RTXLidarHelper** ノード（`.../LaserScanPublish`）を選択して、**frameSkipCount** を `11` に設定します（＝12 フレームに 1 回配信）。
-2. このチュートリアルではポイントクラウドは不要なので、ポイントクラウド用の Ros2RTXLidarHelper ノード（`.../PointCloudPublish`）の **enabled** のチェックを外して無効化します。
-3. カメラの Action Graph `/World/ActionGraph_camera` を開き、2 台目のカメラのレンダープロダクト（`.../isaac_create_render_product_01`）の **enabled** を外して無効化します。
-4. RGB 画像用の Camera Helper ノード（`.../ros2_camera_helper`）の **frameSkipCount** を `3` に設定します（＝4 フレームに 1 回配信。SDG パイプラインの Simulation Gate の step は 4 になります）。
-5. 深度画像は不要なので、深度用 Camera Helper（`.../ros2_camera_helper_02`）の **enabled** を外します。
-6. Camera Info 用の Camera Info Helper ノード（`.../ros2_camera_info_helper`）の **frameSkipCount** を `5` に設定します（＝6 フレームに 1 回配信）。
+1. 2D Lidar プリム `/World/turtlebot3_burger_processed/Geometry/base_footprint/base_link/base_scan/Example_Rotary_2D` を選択します（`.../base_scan/ROS_LidarRTX/LaserScanPublish` に接続された Isaac Create Render Product ノードの **cameraPrim** に指定されている OmniLidar です）。Property タブで **omni:sensor:tickRate** を `5` に設定します。LaserScan は 1 tick につき 1 回配信されるため、配信レートは **R_lidar = 5 Hz** になります（シミュレーションレートが 5 Hz 以上である限り、シミュレーションレートから独立します）。
+2. あわせて **omni:sensor:Core:scanRateBaseHz** も `5` に設定します。この 2 つの値が等しくないと、Lidar は 1 tick で 1 周分のスキャンを蓄積できず、フレームごとの部分スキャンにフォールバックします（公式の [OmniLidar Tick Rate Must Equal scanRateBaseHz](https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/isaacsim_sensors_multitick_rendering.html#isaac-sim-sensors-multitick-lidar-tickrate-must-match-scanrate) を参照）。同梱の Example_Rotary_2D アセットの既定値は `10` なので、下げる必要があります。
+3. このチュートリアルではポイントクラウドは不要なので、ポイントクラウド用の Ros2RTXLidarHelper ノード（`.../base_scan/ROS_LidarRTX/PointCloudPublish`）の **enabled** のチェックを外して無効化します。
+4. カメラの Action Graph `/World/ActionGraph_camera` を開き、2 台目のカメラのレンダープロダクト（`.../isaac_create_render_product_01`）の **enabled** を外して無効化します。
+5. カメラプリム `/World/Camera_1` を選択します（`/World/ActionGraph_camera/ros2_camera_helper` と `.../ros2_camera_info_helper` の両方に接続された Isaac Create Render Product ノードの **cameraPrim** に指定されている Camera です）。**OmniSensorAPI** スキーマを適用して **omni:sensor:tickRate** を `15` に設定すると、`/camera_1/rgb/image_raw` と `/camera_1/rgb/camera_info` の両方が **R_cam = 15 Hz** で配信されます（シミュレーションレートが 15 Hz 以上である限り独立）。Script Editor（**Window > Script Editor**）から次のスクリプトを実行して、各カメラにスキーマを適用しレートを設定します：
 
-## ステップ 3：シミュレーションフレームレートを設定する
+    ```python
+    import isaacsim.core.experimental.utils.prim as prim_utils
 
-ここまでで各ノードの分周比を設定しましたが、すべての Action Graph はシミュレーションレートを上限として動作するため、大元の**シミュレーションフレームレート**も制御できると便利です。**Window > Script Editor** から Python で設定します。方法は 2 つあります：
+    # Create > Camera メニューで作成したカメラには OmniSensorAPI スキーマがなく、
+    # スキーマを適用するまで omni:sensor:tickRate 属性は使えない。既存の各カメラに
+    # スキーマを適用してから、配信レート（Hz）を設定する。
+    for path in ("/World/Camera_1", "/World/Camera_2"):
+        camera_prim = prim_utils.get_prim_at_path(path)
+        camera_prim.ApplyAPI("OmniSensorAPI")
+        camera_prim.GetAttribute("omni:sensor:tickRate").Set(15)
+    ```
 
-**方法 1：carb 設定を変更する** — carb は Omniverse アプリの基盤フレームワークで、`/app/...` のようなキーでアプリ全体の設定を読み書きできます。ここではシミュレーションのタイムラインの実行レートを設定します。**On Playback Tick** ノード由来の時間に影響します。シーンを再生した後に実行してください：
+    !!! note "Create > Camera で作ったカメラには omni:sensor:tickRate がない"
+        メニューバーの **Create > Camera** で作成したカメラ（[チュートリアル 5](05_camera.md) の手順など）には OmniSensorAPI スキーマがないため、既定では `omni:sensor:tickRate` 属性を持ちません。同梱の `turtlebot_tutorial.usd` では `/World/Camera_1` と `/World/Camera_2` に適用済みです。スキーマの適用後は、Property タブから `omni:sensor:tickRate` を直接編集することもできます。
 
-```python
-# carb 設定の変更。停止して再度再生すると設定は保持されない
-import carb
-physics_rate = 60  # fps
-carb_settings = carb.settings.get_settings()
-carb.settings.get_settings().set_bool("/app/runLoops/main/rateLimitEnabled", True)
-carb.settings.get_settings().set_int("/app/runLoops/main/rateLimitFrequency", int(physics_rate))
-carb.settings.get_settings().set_int("/persistent/simulation/minFrameRate", int(physics_rate))
-```
+6. 深度画像は不要なので、深度用 Camera Helper（`.../ros2_camera_helper_02`）の **enabled** を外します。
 
-**方法 2：SetTimeCodesPerSecond と set_target_framerate を変更する** — 物理の実行レートを設定します。**IsaacReadSimulationTime** ノード由来の時間に影響します：
-
-```python
-# ステージ読み込み後に実行すること。SetTimeCodesPerSecond と set_target_framerate の
-# 設定時はタイムラインを停止しておくこと。停止→再生をまたいで設定が保持される
-import omni
-physics_rate = 60  # fps
-
-timeline = omni.timeline.get_timeline_interface()
-stage = omni.usd.get_context().get_stage()
-timeline.stop()
-
-stage.SetTimeCodesPerSecond(physics_rate)
-timeline.set_target_framerate(physics_rate)
-
-timeline.play()
-```
-
-!!! note "Time Codes Per Second はシーン再生前に 1 回だけ設定可能"
-    Time Codes Per Second は、シーンを再生する前に 1 回しか設定できません。値を変更したい場合は、先にシーンをリロードしてください。
-
-スクリプトを実行してシミュレーションレートへの影響を確認します。FPS の表示は、ビューポートの表示メニュー（目のアイコン）> **Heads Up Display > FPS** で有効化できます。`physics_rate` を別の値に変えて FPS の読みを確認してみてください。
-
-!!! warning "設定できるのは「目標」フレームレート"
-    どちらの方法も設定するのはシミュレーションの**目標**フレームレートです。実際のフレームレートはマシンの性能に依存します。
-
-## ステップ 4：ROS 2 の配信レートを確認する
+## ステップ 3：ROS 2 の配信レートを確認する
 
 1. **Play** を押してシミュレーションを開始します。
 2. 各 ROS トピックの配信レートをコマンドで確認します：
@@ -112,22 +94,110 @@ timeline.play()
     ros2 topic hz /topic_name
     ```
 
-ここまでの設定どおりなら、各トピックのレートは最大シミュレーション FPS（既定 60 Hz）の分周になっているはずです：
+トピックは、目標レート（`target_hz`、既定 60 Hz）に対するスケールの仕方が異なる 2 つのグループに分かれます：
 
-| トピック | 期待レート |
-|---|---|
-| `/clock` | シミュレーション FPS と同じ（約 60 Hz） |
-| `/imu` | FPS / 2（約 30 Hz） |
-| `/scan` | FPS / 12（約 5 Hz） |
-| `/camera_1/rgb/image_raw` | FPS / 4（約 15 Hz） |
-| `/camera_1/rgb/camera_info` | FPS / 6（約 10 Hz） |
+| グループ | トピック | 期待レート |
+|---|---|---|
+| OnPlaybackTick 駆動（アプリ更新にゲート） | `/clock` | `target_hz`（約 60 Hz。アプリ更新 1 回につき 1 メッセージ） |
+| 〃 | `/imu` | `target_hz / 2`（約 30 Hz。分母はステップ 1 で設定した Simulation Gate の step） |
+| マルチティックスケジュールの RTX センサー | `/scan` | `min(R_lidar, target_hz)` = **5 Hz**（`target_hz` ≥ 5 なら一定） |
+| 〃 | `/camera_1/rgb/image_raw` | `min(R_cam, target_hz)` = **15 Hz**（`target_hz` ≥ 15 なら一定） |
+| 〃 | `/camera_1/rgb/camera_info` | RGB と同じ（両ヘルパーが同じ Camera プリムの tick レートを共有するため） |
 
-配信レートは推定値です。高性能なマシンほど、最大 FPS は設定した `physics_rate` に近づきます。
+配信レートは推定値です。高性能なマシンほど、最大 FPS は設定した `target_hz`（既定 60 Hz）に近づきます。
 
-このチュートリアルのすべての設定を済ませたシーンは、Content ブラウザの **Isaac Sim > Samples > ROS2 > Scenario > turtlebot_tutorial_multi_sensor_publish_rates.usd** にあります（開いた後、ステップ 3 の手順で目標シミュレーションレートを設定してください）。
+このチュートリアルのすべての設定を済ませたシーンは、Content ブラウザの **Isaac Sim > Samples > ROS2 > Scenario > turtlebot_tutorial_multi_sensor_publish_rates.usd** にあります（開いた後、ステップ 4 の手順で目標シミュレーションレートを設定してください）。
 
 !!! tip "画像トピックだけ想定より遅い場合"
     `/camera_1/rgb/image_raw` の配信が想定より遅い場合、画像メッセージのサイズが大きく、ネットワークや DDS のキュー管理がボトルネックになっている可能性があります。画像パブリッシャに接続されているレンダープロダクトノード（`/World/ActionGraph_camera/isaac_create_render_product`）の解像度を下げてから再生し直すと改善することがあります。
+
+## ステップ 4：シミュレーションレートを設定する（応用）
+
+Isaac Sim にはレートに関わるクロックが 3 つあります：**物理シーンのステップレート**（`UsdPhysicsScene.timeStepsPerSecond`）、**タイムラインの 1 tick あたりの dt**（`stage.timeCodesPerSecond` とタイムラインの `targetFramerate` の組み合わせ）、**アプリのランループの tick レート**（`/app/runLoops/main/rateLimitFrequency`）です。リアルタイム再生のためには、この 3 つを同じ値に揃える必要があります。`isaacsim.core.simulation_manager.SimulationManager.setup_simulation()` が物理シーンのステップレートを、`isaacsim.core.rendering_manager.RenderingManager.set_dt()` がタイムラインとランループをまとめて設定するので、**この 2 つをペアで使います**。
+
+!!! warning "Isaac Sim 6.0 の既知の不具合"
+    Isaac Sim 6.0 では、物理シーンのステップレートとタイムラインの dt を既定値の 60.0 から変更した後にシミュレーションを再生すると、フル UI アプリが致命的にクラッシュする既知の問題があります。将来のリリースで修正予定です。
+
+次のスニペットを、Isaac Sim ディレクトリ内のスタンドアロン Python スクリプト（例：`test_ros2_publish_rates.py`）として保存します：
+
+```python
+from isaacsim import SimulationApp
+
+app = SimulationApp({"headless": False})
+
+import carb
+import isaacsim.core.experimental.utils.app as app_utils
+import isaacsim.core.experimental.utils.stage as stage_utils
+from isaacsim.core.rendering_manager import RenderingManager
+from isaacsim.core.simulation_manager import SimulationManager
+from isaacsim.storage.native import get_assets_root_path
+
+app_utils.enable_extension("isaacsim.ros2.bridge")
+app.update()
+
+assets_root_path = get_assets_root_path()
+stage_utils.open_stage(
+    assets_root_path + "/Isaac/Samples/ROS2/Scenario/turtlebot_tutorial_multi_sensor_publish_rates.usd"
+)
+
+# Play の前に、物理・タイムライン・ランループのレートを揃えて設定する。
+# `/app/runLoops/main/rateLimitEnabled` が true であることが前提（フル UI 版
+# Isaac Sim では既定で true。`isaacsim.exp.base.kit` / スタンドアロン Python では
+# false）。false の場合は先に True に設定しないとループが無制限に tick される。
+# 効果の一覧は `RenderingManager.set_dt` の docstring を参照。
+target_hz = 60
+SimulationManager.setup_simulation(dt=1.0 / target_hz)
+RenderingManager.set_dt(1.0 / target_hz)
+
+app_utils.play()
+
+while app.is_running():
+    app.update()
+
+app_utils.stop()
+app.close()
+```
+
+次のコマンドで実行します：
+
+```bash
+./python.sh test_ros2_publish_rates.py \
+--/app/runLoops/main/rateLimitEnabled=true \
+--/app/runLoops/main/rateLimitFrequency=60 \
+--/app/runLoops/main/manualModeEnabled=true
+```
+
+これでシミュレーションは実時間 1 秒あたり 60 フレーム（FPS）で動作します。ROS 2 をセットアップした別のターミナルで `ros2 topic hz /topic_name` を実行して配信レートを確認してください。
+
+スクリプト内の `target_hz` を変更して再実行すると、トピックのゲート機構の違いによってスケールの仕方が変わります：
+
+- **OnPlaybackTick 駆動のヘルパー**（`/clock` パブリッシャと、Simulation Gate を介した IMU グラフ）はアプリ更新ごとに 1 回発火するため、実時間レートは `target_hz` に比例します（IMU は gate の step で割った値）。
+- **マルチティックスケジュールの RTX センサー**（`/scan`、`/camera_1/rgb/image_raw`、`/camera_1/rgb/camera_info`）は、レンダラーのシミュレーション時間が `1 / omni:sensor:tickRate` 進むごとに発火するため、`target_hz` に依存せず設定した Hz を維持します。ただし `target_hz` が設定 tick レートを下回ると、アプリ更新 1 回につき 1 tick に頭打ちになります。
+
+このチュートリアルの設定（Lidar の `omni:sensor:tickRate` = R_lidar = 5、カメラの `omni:sensor:tickRate` = R_cam = 15、IMU の gate step = 2）での実時間配信レートは次のとおりです：
+
+| target_hz (Hz) | `/clock` | `/imu` | `/scan` | `/camera_1/rgb/image_raw`, `.../camera_info` |
+|---|---|---|---|---|
+| 30 | 30 | 15 | 5 | 15 |
+| 60 | 60 | 30 | 5 | 15 |
+| 120 | 120 | 60 | 5 | 15 |
+| 240 | 240 | 120 | 5 | 15 |
+| 10 | 10 | 5 | 5 | 10（target_hz で頭打ち） |
+
+一般式は次のとおりです：
+
+```text
+clock_hz   = target_hz
+imu_hz     = target_hz / k_imu                 # k_imu = Isaac Simulation Gate の step（ここでは 2）
+scan_hz    = min(R_lidar, target_hz)
+camera_hz  = min(R_cam, target_hz)
+```
+
+!!! warning "設定できるのは「目標」フレームレート"
+    実際のフレームレートはマシンの性能に依存します。レンダラーが `target_hz` を維持できない場合、センサーの配信レートも比例して低下します。3 つのクロックの関係と、同期が崩れたときの挙動（スローモーション・早送り）については公式の [Architecture: Timeline, Physics, and the Renderer](https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/isaacsim_sensors_multitick_rendering.html#isaac-sim-sensors-multitick-clock-relationships) を参照してください。
+
+!!! note "Lidar の tickRate を変えるときは scanRateBaseHz も揃える"
+    Lidar プリムの `omni:sensor:tickRate` を変更する場合は、`omni:sensor:Core:scanRateBaseHz` も同じ値に変更する必要があります。2 つの値が等しくないと、Lidar は 1 tick で 1 周分のスキャンを蓄積せず、毎フレーム部分スキャンを出力してしまいます。
 
 ### トラブルシューティング
 
@@ -151,9 +221,9 @@ timeline.play()
 
 このチュートリアルでは以下のトピックを扱いました：
 
-1. **Isaac Simulation Gate** ノードと **frameSkipCount** による、パブリッシャごとの配信レート設定
-2. Python による**シミュレーションフレームレート**の設定（carb 設定／TimeCodesPerSecond の 2 通り）
-3. `ros2 topic hz` による配信レートの確認
+1. **Isaac Simulation Gate** ノードによる非 RTX センサー（IMU）の配信レート設定
+2. センサープリムの **`omni:sensor:tickRate`** 属性による RTX センサー（Lidar・カメラ）の配信レート設定
+3. `SimulationManager.setup_simulation` と `RenderingManager.set_dt` による一貫したシミュレーションレートの設定と、`ros2 topic hz` による確認
 
 ## 次のステップ
 

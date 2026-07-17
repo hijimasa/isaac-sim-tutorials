@@ -7,6 +7,9 @@ title: MoveIt 2
 !!! info "Preliminary version"
     This is a concise English version. See the Japanese page for the full detailed walkthrough.
 
+!!! warning "Known issues"
+    This tutorial may fail intermittently on ROS 2 Humble due to performance limitations — consider switching to ROS 2 Jazzy. It is not supported when using Pixi on Windows; use a Linux ROS 2 environment.
+
 ## Learning Objectives
 
 Run a manipulation scene in Isaac Sim with MoveIt 2. Requires the `isaac_moveit` package from the Isaac Sim ROS workspaces and completion of [Tutorial 12: ROS2 Joint Control](12_manipulation.md) — MoveIt 2 connects through the same `/joint_states` + `/joint_command` interface.

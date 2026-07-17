@@ -27,7 +27,7 @@ ros2 service call /get_prim_attribute isaac_ros2_messages/srv/GetPrimAttribute "
 ros2 service call /set_prim_attribute isaac_ros2_messages/srv/SetPrimAttribute "{path: /World/Cube, attribute: xformOp:translate, value: [1, 2, 3]}"
 ```
 
-![Prim service graph](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_prim_service.png)
+![Prim service graph](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_prim_service.png)
 
 ## Next Steps
 

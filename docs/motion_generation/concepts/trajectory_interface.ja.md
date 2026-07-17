@@ -4,6 +4,9 @@ title: 軌道生成（Trajectory Interface）
 
 # 軌道生成（Trajectory Interface）
 
+!!! warning "Deprecated（非推奨）"
+    Isaac Sim 6.0 では、この API を含む Motion Generation 拡張機能は非推奨（deprecated）になりました。引き続き動作しますが、新規開発では公式の [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API の利用を検討してください。
+
 ## 概要
 
 Motion Generation 拡張機能は、C 空間・タスク空間の軌道を定義するワークフローを提供します。次の要素で構成されます。

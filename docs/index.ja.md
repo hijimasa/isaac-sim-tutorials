@@ -11,6 +11,10 @@ NVIDIA Isaac Sim を使ったロボットシミュレーションのチュート
 
 </div>
 
+!!! info "対応バージョン"
+    本サイトのチュートリアルは **Isaac Sim 6.0.1**（公式ドキュメントの latest）に対応しています。
+    Isaac Sim 5.1.0 をお使いの場合は、ヘッダーのバージョンセレクタから **5.1.0** を選択してください。
+
 ## チュートリアルシリーズ
 
 <div class="grid-container" markdown>

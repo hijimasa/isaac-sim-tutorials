@@ -19,7 +19,7 @@ Get an overview of the Isaac Sim Replicator tooling for synthetic data generatio
 - **Replicator YAML** (Tools > Replicator > Replicator YAML) — config-file-based SDG pipelines converted into OmniGraph workflows.
 - **Getting Started Scripts** — script-based starting points covering annotators, writers, and randomizers; see [Tutorial 3](03_getting_started_scripts.md).
 
-![Semantics Schema Editor](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_semantics_editor_window.jpg)
+![Semantics Schema Editor](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_semantics_editor_window.jpg)
 
 ## Next Steps
 

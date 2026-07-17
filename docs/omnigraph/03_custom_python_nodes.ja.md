@@ -26,7 +26,7 @@ title: カスタム Python ノード
 
 ### 概要
 
-Isaac Sim には多数のデフォルトノードが用意されています（Omnigraph Node Library や API ドキュメントで確認できます）。それでは不十分な場合、独自のノードを作成して Isaac Sim に統合できます。
+Isaac Sim には多数のデフォルトノードが用意されています（OmniGraph Node Library や API ドキュメントで確認できます）。それでは不十分な場合、独自のノードを作成して Isaac Sim に統合できます。
 
 ノードは 2 つのファイルで定義されます。
 

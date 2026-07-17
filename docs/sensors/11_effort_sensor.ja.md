@@ -9,8 +9,8 @@ title: Effort センサー
 このチュートリアルを修了すると、以下の内容を習得できます：
 
 - Effort センサーが関節に加わるトルク・力を追跡する仕組み
-- `EffortSensor` ラッパークラスでセンサーを作成・変更する方法
-- カスタム補間関数を含む Python での読み取り方法
+- `EffortSensor` クラスでセンサーを作成・変更する方法
+- `get_sensor_reading()` / `get_data()` による Python での読み取り方法
 - OmniGraph で Effort センサーを扱う方法
 
 ## はじめに
@@ -27,6 +27,11 @@ title: Effort センサー
 ### 概要
 
 Isaac Sim の Effort センサーは、個々の関節に加わる**トルクまたは力**を追跡します。回転関節（revolute）では**トルク**、直動関節（linear）では**力の大きさ**が測定されます。
+
+!!! note "Isaac Sim 6.0 での API 変更"
+    Isaac Sim 6.0 では、従来の `isaacsim.sensors.physics` 拡張機能の Effort センサーは非推奨（deprecated）となり、
+    `isaacsim.sensors.experimental.physics.EffortSensor` に置き換えられました。本ページのコードは新 API に対応しています。
+    詳細は[公式移行ガイド](https://docs.isaacsim.omniverse.nvidia.com/latest/migration_guides/isaac_sim_6_0/sensors_physics_to_experimental_physics.html)を参照してください。
 
 ## ステップ 1：シーンをセットアップする
 

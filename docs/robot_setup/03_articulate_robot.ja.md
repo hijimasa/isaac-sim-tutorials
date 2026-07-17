@@ -127,7 +127,7 @@ title: 基本ロボットのアーティキュレーション
 
 ### Velocity Controller の追加
 
-1. メニューバーの **Tools > Robotics > Omnigraph Controllers > Joint Velocity** を選択します。
+1. メニューバーの **Tools > Robotics > OmniGraph Controllers > Joint Velocity** を選択します。
 2. ダイアログが表示されたら、以下を設定します：
     - **Robot Prim**: **+ Add** をクリックし、Articulation Root API を持つ Prim（**World** （`mock_robot_no_joints` アセットでは**mock_robot**））を選択します。
     - **Graph Path**: `/World/Graphs/Velocity_Controller` （`mock_robot_no_joints` アセットでは`mock_robot/Graphs/Velocity_Controller`）と入力します。
@@ -143,6 +143,9 @@ title: 基本ロボットのアーティキュレーション
 
 !!! warning "単位に注意"
     コントローラは **ラジアン（rad/s）** を使用しますが、USD のドライブプロパティでは角度が **度（degrees）** で表示されます。速度やポジションの値を設定する際はこの違いに注意してください。
+
+!!! tip "Differential Controller でも制御可能"
+    この二輪ロボットは、**Tools > Robotics > OmniGraph Controllers > Differential Controller** で追加できる差動コントローラでも制御できます。Differential Controller は車輪速度を **左車輪、右車輪の順** で出力するため、Articulation Controller の joint names（または indices）配列では `wheel_joint_left` を `wheel_joint_right` より先に並べてください。
 
 ![コントローラ](images/12_test_controller.webp)
 

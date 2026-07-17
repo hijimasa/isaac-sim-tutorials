@@ -233,7 +233,7 @@ To improve the gripper's grasping performance, set up a high-friction material f
 
 If you start the simulation in the current state, the following warning appears:
 
-![Loop error](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_robotiq_loop_error.png)
+![Loop error](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_robotiq_loop_error.png)
 
 This is because the articulation (joint chain) forms a loop. Articulations in Isaac Sim must be a **kinematic tree** (tree structure), and closed loops cannot be handled as-is.
 
@@ -254,7 +254,7 @@ Criteria for selecting the optimal joint:
 
 For this Robotiq 2F-85 gripper, the `inner_knuckle_joint` connecting the inner shaft to the body is the optimal candidate.
 
-![Breaking the loop](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_robotiq_loop.png)
+![Breaking the loop](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_robotiq_loop.png)
 
 1. Select `left_inner_knuckle_joint` in the Stage panel
 2. In the **Physics** section of the Properties panel, check **Exclude From Articulation**

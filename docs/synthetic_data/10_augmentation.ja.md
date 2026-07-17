@@ -32,7 +32,7 @@ title: データオーグメンテーション
 
 例のシナリオでは、赤いキューブを上から見るカメラを置き、毎フレームキューブをランダム回転させる Replicator グラフを作ります。適用するオーグメンテーションは、RGB の赤/青チャネル入れ替え（説明用）、HSV 変換＋ガウシアンノイズ＋RGB 逆変換の合成、深度への異なる σ のガウシアンノイズです。
 
-![オーグメンテーションの例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_augmentation.png)
+![オーグメンテーションの例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_augmentation.png)
 
 ## ステップ 1：アノテータのオーグメンテーション
 

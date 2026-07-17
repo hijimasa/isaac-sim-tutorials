@@ -15,7 +15,7 @@ Drive the Leatherback car with AckermannDriveStamped messages, and control it wi
 
 On a Flat Grid environment with **Isaac Sim > ROBOTS > NVIDIA > Leatherback** at the origin, build a graph: On Playback Tick, ROS2 Context, **ROS2 Subscribe AckermannDrive** (topic `ackermann_cmd`) with a **ROS2 QoS Profile**, an **Ackermann Controller**, and two Articulation Controllers — one for steering joints (`Knuckle__Upright__Front_Left/Right`), one for wheels (`Wheel__Upright__Rear_Left/Right`, `Wheel__Knuckle__Front_Left/Right`), both targeting `/Leatherback`.
 
-![Ackermann graph](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_ackermann_omnigraph.png)
+![Ackermann graph](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_ackermann_omnigraph.png)
 
 Ackermann Controller parameters: backWheelRadius / frontWheelRadius 0.052, maxWheelRotation 0.7854, maxWheelVelocity 20.0, trackWidth 0.24, wheelBase 0.32, maxAcceleration 1.0, maxSteeringAngleVelocity 1.0.
 

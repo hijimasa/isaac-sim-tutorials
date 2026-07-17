@@ -52,7 +52,7 @@ title: Getting Started スクリプト
 Replicator では、`orchestrator.step()` が SDG プロセス全体（ランダム化の実行とデータキャプチャ）をトリガーします。Isaac Sim のワークフローでは、この関数は**データキャプチャのトリガー専用**として使い、ランダム化はカスタムイベントに割り当てて手動でトリガーするのが定石です。
 
 ```python
-rep.orchestrator.step(rt_subframes: int = -1, pause_timeline: bool = True, delta_time: float = None)
+rep.orchestrator.step(rt_subframes: int = -1, pause_timeline: bool = True, delta_time: float = None, wait_for_render: bool = True)
 ```
 
 | 引数 | 意味 |
@@ -60,6 +60,7 @@ rep.orchestrator.step(rt_subframes: int = -1, pause_timeline: bool = True, delta
 | `rt_subframes` | レンダリングするサブフレーム数。0 より大きい値でサブフレーム生成が有効になり、レンダリングアーティファクトの低減やマテリアルの完全な読み込みに役立つ |
 | `pause_timeline` | True なら、ステップ後にタイムライン（再生中の場合）を一時停止する |
 | `delta_time` | ステップ中にタイムラインを進める時間。None ならタイムラインのレートを使用 |
+| `wait_for_render` | True なら、レンダラーが現在のフレームを描画し終えるまでブロックする。既定は True |
 
 ### Capture on Play の無効化
 
@@ -95,6 +96,34 @@ import carb.settings
 # DLSS を Quality モード（2）に設定。選択肢：0（Performance）、1（Balanced）、2（Quality）、3（Auto）
 carb.settings.get_settings().set("/rtx/post/dlss/execMode", 2)
 ```
+
+### wait_for_render パラメータ
+
+既定では、`step()` はレンダラーが現在のフレームを生成し終えるまでブロックしてから戻ります。`wait_for_render=False` を指定すると、キャプチャ要求をレンダリングパイプラインから切り離し、前のフレームのレンダリング中に次のランダム化を開始できます。`step()` の戻り時点のシミュレーション状態とキャプチャデータが厳密に一致する必要がないワークフローでは、スループットを大きく向上できます：
+
+```python
+# 既定の動作：フレームのレンダリング完了までブロック
+rep.orchestrator.step(wait_for_render=True)
+
+# ノンブロッキング：即座に戻り、次のランダム化を開始できる
+rep.orchestrator.step(wait_for_render=False)
+```
+
+!!! warning
+    `wait_for_render=False` では、アノテーションやライターのデータが、直近の `step()` 呼び出しでトリガーしたフレームではなく**前のフレームに対応する**場合があります。フレームとデータの厳密な対応が不要な場合にのみ使用してください。
+
+### Write to Fabric モード
+
+Fabric は、レンダラーが直接読み取るランタイムのデータレイヤーです。既定では、Replicator は属性の変更（位置・回転・色など）を USD ステージに書き込み、それがレンダリング前に Fabric へ同期されます。write-to-fabric モードを有効にすると、USD ステージを介さずに Fabric へ直接書き込むため、USD→Fabric の同期オーバーヘッドが減り、ランダム化のパフォーマンスが向上します：
+
+```python
+import carb.settings
+# write-to-fabric モードを有効化
+carb.settings.get_settings().set("/exts/omni.replicator.core/enableWriteToFabric", True)
+```
+
+!!! note
+    変更は USD ステージをバイパスして Fabric に直接書き込まれるため、USD ステージには反映されず、シーンを保存しても永続化されません。このモードは、データ生成中の一時的なランダム化を想定したもので、恒久的なシーン変更には向きません。
 
 ### カスタムイベントによるランダム化
 
@@ -132,8 +161,6 @@ import os
 import carb.settings
 import omni.replicator.core as rep
 import omni.usd
-from isaacsim.core.utils.semantics import add_labels
-from pxr import Sdf
 
 
 async def run_example_async():
@@ -142,23 +169,25 @@ async def run_example_async():
     rep.orchestrator.set_capture_on_play(False)
 
     # DLSS を Quality モード（2）に設定
-    carb.settings.get_settings().set("/rtx/post/dlss/execMode", 2)
+    carb.settings.get_settings().set("rtx/post/dlss/execMode", 2)
 
-    # ドームライトとキューブでステージをセットアップ
-    stage = omni.usd.get_context().get_stage()
-    dome_light = stage.DefinePrim("/World/DomeLight", "DomeLight")
-    dome_light.CreateAttribute("inputs:intensity", Sdf.ValueTypeNames.Float).Set(500.0)
-    cube = stage.DefinePrim("/World/Cube", "Cube")
-    add_labels(cube, labels=["MyCube"], instance_name="class")
+    # ドームライトとキューブでステージをセットアップ（functional API）
+    rep.functional.create.xform(name="World")
+    rep.functional.create.dome_light(intensity=500, parent="/World", name="DomeLight")
+    cube = rep.functional.create.cube(parent="/World", name="Cube")
+    rep.functional.modify.semantics(cube, {"class": "my_cube"}, mode="add")
 
-    # ビューポートの Perspective カメラでレンダープロダクトを作成
-    rp = rep.create.render_product("/OmniverseKit_Persp", (512, 512))
+    # カメラを作成してレンダープロダクトを作成
+    cam = rep.functional.create.camera(position=(5, 5, 5), look_at=(0, 0, 0), parent="/World", name="Camera")
+    rp = rep.create.render_product(cam, (512, 512), name="MyRenderProduct")
 
-    # BasicWriter で RGB と 2D バウンディングボックス（tight）を書き込む
-    writer = rep.writers.get("BasicWriter")
+    # DiskBackend + BasicWriter で RGB と 2D バウンディングボックス（tight）を書き込む
+    backend = rep.backends.get("DiskBackend")
     out_dir = os.path.join(os.getcwd(), "_out_basic_writer")
+    backend.initialize(output_dir=out_dir)
     print(f"Output directory: {out_dir}")
-    writer.initialize(output_dir=out_dir, rgb=True, bounding_box_2d_tight=True)
+    writer = rep.writers.get("BasicWriter")
+    writer.initialize(backend=backend, rgb=True, bounding_box_2d_tight=True)
     writer.attach(rp)
 
     # データキャプチャをリクエスト（データはライターがディスクに書き込む）
@@ -166,12 +195,10 @@ async def run_example_async():
         print(f"Step {i}")
         await rep.orchestrator.step_async()
 
-    # ライターからデタッチしてからレンダープロダクトを破棄し、リソースを解放
+    # データの書き込み完了を待ってからリソースを解放
+    await rep.orchestrator.wait_until_complete_async()
     writer.detach()
     rp.destroy()
-
-    # データの書き込み完了を待つ
-    await rep.orchestrator.wait_until_complete_async()
 
 
 # 実行
@@ -180,11 +207,11 @@ asyncio.ensure_future(run_example_async())
 
 出力ディレクトリには、RGB 画像と、`.npy` / `.json` 形式のバウンディングボックスアノテーションが保存されます：
 
-![例 1 の出力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_external_getting_started_01.jpg)
+![例 1 の出力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_external_getting_started_01.jpg)
 
 ## 例 2：カスタムライターとアノテータ・複数カメラ
 
-カスタムライターでカメラパラメータや 3D バウンディングボックスなどのアノテータデータにアクセスし、2 台のカメラ（カスタムカメラとビューポート Perspective）から **PoseWriter** でデータを書き出す例です。**アノテータから直接データを取得する**方法（`get_data()`）も登場します。
+カスタムライターでカメラパラメータや 3D バウンディングボックスなどのアノテータデータにアクセスし、2 台のカメラ（トップビューカメラと俯瞰の Perspective カメラ）から **PoseWriter** でデータを書き出す例です。**アノテータから直接データを取得する**方法（`get_data()`）も登場します。
 
 ```bash
 ./python.sh standalone_examples/api/isaacsim.replicator.examples/sdg_getting_started_02.py
@@ -199,9 +226,7 @@ import os
 import carb.settings
 import omni.replicator.core as rep
 import omni.usd
-from isaacsim.core.utils.semantics import add_labels
 from omni.replicator.core import Writer
-from pxr import Sdf, UsdGeom
 
 
 # アノテータデータにアクセスするカスタムライターを作成
@@ -216,8 +241,10 @@ class MyWriter(Writer):
             self.annotators.append(rep.annotators.get("bounding_box_3d"))
         self._frame_id = 0
 
-    def write(self, data):
-        print(f"[MyWriter][{self._frame_id}] data:{data}")
+    def write(self, data: dict):
+        print(f"[MyWriter][{self._frame_id}] data:")
+        for key, value in data.items():
+            print(f"  {key}: {value}")
         self._frame_id += 1
 
 
@@ -231,40 +258,39 @@ async def run_example_async():
     rep.orchestrator.set_capture_on_play(False)
 
     # DLSS を Quality モード（2）に設定
-    carb.settings.get_settings().set("/rtx/post/dlss/execMode", 2)
+    carb.settings.get_settings().set("rtx/post/dlss/execMode", 2)
 
-    # ステージのセットアップ
-    stage = omni.usd.get_context().get_stage()
-    dome_light = stage.DefinePrim("/World/DomeLight", "DomeLight")
-    dome_light.CreateAttribute("inputs:intensity", Sdf.ValueTypeNames.Float).Set(500.0)
-    cube = stage.DefinePrim("/World/Cube", "Cube")
-    add_labels(cube, labels=["MyCube"], instance_name="class")
+    # ステージのセットアップ（functional API）
+    rep.functional.create.xform(name="World")
+    rep.functional.create.dome_light(intensity=500, parent="/World", name="DomeLight")
+    cube = rep.functional.create.cube(parent="/World", name="Cube")
+    rep.functional.modify.semantics(cube, {"class": "my_cube"}, mode="add")
 
-    # カスタムカメラとビューポート Perspective の 2 視点からキャプチャ
-    camera = stage.DefinePrim("/World/Camera", "Camera")
-    UsdGeom.Xformable(camera).AddTranslateOp().Set((0, 0, 20))
+    # トップビューカメラと俯瞰カメラの 2 視点からキャプチャ
+    top_cam = rep.functional.create.camera(position=(0, 0, 5), look_at=(0, 0, 0), parent="/World", name="TopCamera")
+    persp_cam = rep.functional.create.camera(position=(5, 5, 5), look_at=(0, 0, 0), parent="/World", name="PerspCamera")
 
     # レンダープロダクトを作成
-    rp_cam = rep.create.render_product(camera.GetPath(), (400, 400), name="camera_view")
-    rp_persp = rep.create.render_product("/OmniverseKit_Persp", (512, 512), name="perspective_view")
+    rp_top = rep.create.render_product(top_cam.GetPath(), (400, 400), name="top_view")
+    rp_persp = rep.create.render_product(persp_cam.GetPath(), (512, 512), name="persp_view")
 
     # アノテータで直接データにアクセスする（アノテータはレンダープロダクトにアタッチする）
-    rgb_annotator_cam = rep.annotators.get("rgb")
-    rgb_annotator_cam.attach(rp_cam)
+    rgb_annotator_top = rep.annotators.get("rgb")
+    rgb_annotator_top.attach(rp_top)
     rgb_annotator_persp = rep.annotators.get("rgb")
     rgb_annotator_persp.attach(rp_persp)
 
     # カスタムライターでアノテータデータにアクセス
     custom_writer = rep.writers.get("MyWriter")
     custom_writer.initialize(camera_params=True, bounding_box_3d=True)
-    custom_writer.attach([rp_cam, rp_persp])
+    custom_writer.attach([rp_top, rp_persp])
 
     # PoseWriter でデータをディスクに書き込む
     pose_writer = rep.WriterRegistry.get("PoseWriter")
     out_dir = os.path.join(os.getcwd(), "_out_pose_writer")
     print(f"Output directory: {out_dir}")
     pose_writer.initialize(output_dir=out_dir, write_debug_images=True)
-    pose_writer.attach([rp_cam, rp_persp])
+    pose_writer.attach([rp_top, rp_persp])
 
     # データキャプチャをリクエスト
     for i in range(3):
@@ -272,29 +298,28 @@ async def run_example_async():
         await rep.orchestrator.step_async()
 
         # アノテータからデータを取得
-        rgb_data_cam = rgb_annotator_cam.get_data()
+        rgb_data_cam = rgb_annotator_top.get_data()
         rgb_data_persp = rgb_annotator_persp.get_data()
         print(f"[Annotator][Cam][{i}] rgb_data_cam shape: {rgb_data_cam.shape}")
         print(f"[Annotator][Persp][{i}] rgb_data_persp shape: {rgb_data_persp.shape}")
 
-    # アノテータ・ライターからレンダープロダクトをデタッチして破棄し、リソースを解放
+    # データの書き込み完了を待ってからリソースを解放
+    await rep.orchestrator.wait_until_complete_async()
     pose_writer.detach()
     custom_writer.detach()
-    rgb_annotator_cam.detach()
+    rgb_annotator_top.detach()
     rgb_annotator_persp.detach()
-    rp_cam.destroy()
+    rp_top.destroy()
     rp_persp.destroy()
 
-    # データの書き込み完了を待つ
-    await rep.orchestrator.wait_until_complete_async()
 
-
+# 実行
 asyncio.ensure_future(run_example_async())
 ```
 
 出力ディレクトリには、3D バウンディングボックスがオーバーレイされた RGB 画像と、フレームデータの `.json` ファイルが保存されます。アノテータとカスタムライターのデータはターミナルに出力されます：
 
-![例 2 の出力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_external_getting_started_02.jpg)
+![例 2 の出力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_external_getting_started_02.jpg)
 
 ## 例 3：カスタムランダム化（Replicator グラフ＋USD API）
 
@@ -389,7 +414,7 @@ asyncio.ensure_future(run_example_async())
 
 キューブの位置は毎キャプチャ、ドームライトの色は 1 回おきにランダム化されます：
 
-![例 3 の出力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_external_getting_started_03.jpg)
+![例 3 の出力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_external_getting_started_03.jpg)
 
 ## 例 4：イベントトリガーのデータキャプチャ（物理シミュレーション）
 
@@ -518,7 +543,7 @@ asyncio.ensure_future(run_example_async())
 
 出力には、キューブの落下高さの間隔ごとのキャプチャと、キューブを非表示にした 2 回目のキャプチャが含まれます。`delta_time=0.0` によってキャプチャ中はタイムラインが進まないため、**同一のシミュレーション状態を複数回キャプチャ**できます：
 
-![例 4 の出力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_external_getting_started_04.jpg)
+![例 4 の出力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_external_getting_started_04.jpg)
 
 ## トラブルシューティング
 

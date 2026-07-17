@@ -18,7 +18,7 @@ Create a custom OmniGraph Python node (via the Isaac Sim VS Code Edition extensi
 3. Implement `OgnCustomPythonRos2NodePy.py`: an internal-state class (inheriting `BaseResetNode`) creates the rclpy node/subscription, `spin_once()` pulls messages, and `custom_reset()` destroys them on timeline stop; the node class computes Fibonacci in `compute(db)` and triggers `execOut` when a value arrives.
 4. Enable the extension (**Window > Extensions**, search `custom.python.ros2_node`), then build a graph: On Playback Tick → Custom Python ROS 2 Node → To String → Print Text (check *To Screen*).
 
-![Custom node graph](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_custom_omnigraph_node_python_node_graph.png)
+![Custom node graph](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_custom_omnigraph_node_python_node_graph.png)
 
 Play, then:
 

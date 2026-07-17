@@ -90,7 +90,7 @@ Now the Stage panel shows only joints (such as `PhysicsRevoluteJoint`).
 3. With the selection active, right-click > **Add > Physics > Joint State Angular**
 4. Then right-click > **Add > Physics > Angular Drive**
 
-   ![Adding the Joint State / Drive APIs](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_1.png)
+   ![Adding the Joint State / Drive APIs](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_1.png)
 
 This applies the following two APIs to every joint:
 
@@ -159,7 +159,7 @@ If you press Play as-is, H1 will **collapse to the ground under gravity** (it is
 2. Select **Create > Physics > Joint > Fixed Joint**
 3. Press **Play** in the viewport
 
-   ![Pose-verification simulation](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_2.webp)
+   ![Pose-verification simulation](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_2.webp)
 
 You should see the robot stay upright while each joint converges to its target position (the slightly-bent-knee stance).
 
@@ -237,7 +237,7 @@ For each joint, set the following in the Properties panel:
 3. **Joint** section:
     - **Maximum Joint Velocity** = `ω_rad × 180/π` (e.g., 5729.578)
 
-   ![Entering joint settings](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_3.png)
+   ![Entering joint settings](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_3.png)
 
 ### 2-4. Armature and Friction (Raw USD Properties)
 
@@ -281,7 +281,7 @@ print(prim.dof_properties)
 4. Run the script with the **Run** button in Script Editor (or Ctrl + Enter)
 5. Two outputs appear in the console at the bottom:
 
-   ![Verification output](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_4.png)
+   ![Verification output](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_4.png)
 
 - **`dof_names`**: list of joint names corresponding to the degrees of freedom (DOFs)
 - **`dof_properties`**: an array of properties per DOF. Each row corresponds to one joint and the columns roughly mean:

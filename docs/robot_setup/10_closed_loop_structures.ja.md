@@ -233,7 +233,7 @@ CAD からインポートされたジョイントでは、回転軸の向きが 
 
 この状態でシミュレーションを開始すると、以下のような警告が表示されます：
 
-![ループエラー](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_robotiq_loop_error.png)
+![ループエラー](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_robotiq_loop_error.png)
 
 これは、アーティキュレーション（関節連鎖）がループを形成しているためです。Isaac Sim のアーティキュレーションは**キネマティックツリー**（木構造）である必要があり、閉ループをそのまま扱うことはできません。
 
@@ -254,7 +254,7 @@ CAD からインポートされたジョイントでは、回転軸の向きが 
 
 この Robotiq 2F-85 グリッパーでは、インナーシャフトとボディを接続する `inner_knuckle_joint` が最適な候補です。
 
-![ループの分断](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_robotiq_loop.png)
+![ループの分断](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_robotiq_loop.png)
 
 1. Stage パネルで `left_inner_knuckle_joint` を選択
 2. Properties パネルの **Physics** セクションで **Exclude From Articulation** にチェックを入れる

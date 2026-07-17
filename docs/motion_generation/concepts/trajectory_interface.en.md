@@ -7,6 +7,9 @@ title: Trajectory Generation
 !!! info "Preliminary version"
     This English page is a preliminary summary. The Japanese page is the primary, fully detailed document — see it for the complete walkthrough.
 
+!!! warning "Deprecated"
+    As of Isaac Sim 6.0, the Motion Generation extension containing this API is deprecated. For new development, consider the [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API.
+
 ## Overview
 
 The extension defines c-space and task-space trajectories via three pieces:

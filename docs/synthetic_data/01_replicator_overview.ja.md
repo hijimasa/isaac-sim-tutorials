@@ -43,7 +43,7 @@ Isaac Sim Replicator は、合成データ生成（SDG: Synthetic Data Generatio
 
 セマンティックセグメンテーションやバウンディングボックスのようなアノテータが合成データにセマンティック情報を含めるには、プリムへのセマンティックラベル付けが**必須**です。エディタは **Tools > Replicator > Semantics Schema Editor** から開けます。
 
-![Semantics Schema Editor](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_semantics_editor_window.jpg)
+![Semantics Schema Editor](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_semantics_editor_window.jpg)
 
 プログラムからラベルを付ける場合は、[チュートリアル 3](03_getting_started_scripts.md) で登場する `add_labels()` のようなスニペットを使います。
 
@@ -51,7 +51,7 @@ Isaac Sim Replicator は、合成データ生成（SDG: Synthetic Data Generatio
 
 [Synthetic Data Visualizer](https://docs.omniverse.nvidia.com/extensions/latest/ext_replicator/visualization.html) は、センサー出力（セグメンテーション、深度、バウンディングボックスなど）を**ビューポートウィンドウ内で直接可視化**できるツールです。ビューポートのアイコンから、表示したい出力形式を選択します。
 
-![Synthetic Data Visualizer](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_data_visualizer_sensors.jpg)
+![Synthetic Data Visualizer](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_data_visualizer_sensors.jpg)
 
 !!! note
     Cross Correspondence の可視化には、公式のアノテータ詳細ページの Cross Correspondence 節で説明されている 2 カメラの特殊なセットアップが必要です。
@@ -60,7 +60,7 @@ Isaac Sim Replicator は、合成データ生成（SDG: Synthetic Data Generatio
 
 **Synthetic Data Recorder** は、エディタから直接合成データを記録できる GUI ツールです。omni.replicator の上に構築されており、既定のライターとして **BasicWriter** を使用します。テスト目的で合成データの記録を素早く反復するのに便利です。**Tools > Replicator > Synthetic Data Recorder** から開けます。
 
-![Synthetic Data Recorder](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_editor.jpg)
+![Synthetic Data Recorder](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_editor.jpg)
 
 詳しい使い方は[チュートリアル 2: Synthetic Data Recorder](02_recorder.md) で解説します。
 

@@ -9,46 +9,43 @@ title: ROS2 Setting Publish Rates
 
 ## Learning Objectives
 
-Set the simulation frame rate and give different ROS 2 publishers different publish rates. Action Graphs tick every simulation frame, so publisher rates are integer divisions of the simulation rate.
+Set the simulation rate and give different sensor types (IMU, RTX Lidar, Camera) different ROS 2 publish rates. Non-RTX sensors are gated per frame with the Isaac Simulation Gate node; RTX sensors are scheduled via the `omni:sensor:tickRate` attribute on the sensor prim (multi-tick rendering).
 
-## Isaac Simulation Gate
+## Non-RTX Sensors: Isaac Simulation Gate
 
-In `turtlebot_tutorial.usd`, create an IMU sensor under `/World/turtlebot3_burger/base_link/imu_link`, build an IMU graph with an **Isaac Simulation Gate** (step = 2 → publish every other frame), **Isaac Read IMU Node** (imuPrim = the sensor), and **ROS2 Publish Imu** (frameId `imu_link`).
+In `turtlebot_tutorial.usd`, create an IMU sensor under `/World/turtlebot3_burger_processed/Geometry/base_footprint/base_link/imu_link` (right-click the prim > Create > Isaac > Sensors > Imu Sensor), build an IMU graph with an **Isaac Simulation Gate** (step = 2 → publish every other frame), **Isaac Read IMU Node** (imuPrim = the sensor), and **ROS2 Publish Imu** (frameId `imu_link`).
 
-## Rates Within the SDG Pipeline
+## RTX Sensors: omni:sensor:tickRate
 
-For Camera/RTX Lidar helpers, set the **frameSkipCount** on each helper node — skipping N frames publishes every N+1 frames (the internal Simulation Gate step is set automatically). Example: LaserScan helper frameSkipCount 11 (≈5 Hz at 60 FPS), RGB camera helper 3 (≈15 Hz), camera info helper 5 (≈10 Hz); disable unneeded helpers/render products via their `enabled` attribute.
-
-## Setting Simulation Frame Rates
-
-Two Script Editor approaches (both set the *target* rate; actual FPS depends on the machine):
+The former **frameSkipCount** parameter on ROS2 helper nodes is now deprecated. Instead, set **`omni:sensor:tickRate`** on the sensor prim: on the 2D Lidar prim `Example_Rotary_2D` set it to 5 (and set `omni:sensor:Core:scanRateBaseHz` to 5 to match — the two must be equal), and on `/World/Camera_1` apply the `OmniSensorAPI` schema and set the tick rate to 15, e.g. from the Script Editor:
 
 ```python
-# carb settings (affects OnPlaybackTick; not persistent across stop/play)
-import carb
-physics_rate = 60
-carb.settings.get_settings().set_bool("/app/runLoops/main/rateLimitEnabled", True)
-carb.settings.get_settings().set_int("/app/runLoops/main/rateLimitFrequency", int(physics_rate))
-carb.settings.get_settings().set_int("/persistent/simulation/minFrameRate", int(physics_rate))
+import isaacsim.core.experimental.utils.prim as prim_utils
+
+for path in ("/World/Camera_1", "/World/Camera_2"):
+    camera_prim = prim_utils.get_prim_at_path(path)
+    camera_prim.ApplyAPI("OmniSensorAPI")
+    camera_prim.GetAttribute("omni:sensor:tickRate").Set(15)
 ```
 
-```python
-# TimeCodesPerSecond + target framerate (affects IsaacReadSimulationTime; persistent)
-import omni
-physics_rate = 60
-timeline = omni.timeline.get_timeline_interface()
-stage = omni.usd.get_context().get_stage()
-timeline.stop()
-stage.SetTimeCodesPerSecond(physics_rate)
-timeline.set_target_framerate(physics_rate)
-timeline.play()
+Disable unneeded helpers/render products via their `enabled` attribute.
+
+## Setting the Simulation Rate (Advanced)
+
+Set the physics, timeline, and run-loop rates coherently with `SimulationManager.setup_simulation(dt=1.0 / target_hz)` plus `RenderingManager.set_dt(1.0 / target_hz)` in a standalone Python script (both set the *target* rate; actual FPS depends on the machine), then run it with:
+
+```bash
+./python.sh test_ros2_publish_rates.py \
+--/app/runLoops/main/rateLimitEnabled=true \
+--/app/runLoops/main/rateLimitFrequency=60 \
+--/app/runLoops/main/manualModeEnabled=true
 ```
 
-TimeCodesPerSecond can only be set once before a scene is played — reload the scene to change it.
+Note: Isaac Sim 6.0 has a known fatal crash in the full UI app when playing after changing these rates from their default of 60.0.
 
 ## Checking Rates
 
-`ros2 topic hz /topic_name` — expected: `/clock` ~60 Hz, `/imu` ~30, `/scan` ~5, `/camera_1/rgb/image_raw` ~15, `.../camera_info` ~10. If images publish slowly, reduce the render product resolution. For troubleshooting, try `./isaac-sim.sh --reset-user` or the experimental `./isaac-sim.fabric.sh --reset-user`.
+`ros2 topic hz /topic_name` — expected: `/clock` = target_hz (~60 Hz), `/imu` = target_hz/2 (~30), `/scan` = min(R_lidar, target_hz) = 5 Hz, `/camera_1/rgb/image_raw` and `.../camera_info` = min(R_cam, target_hz) = 15 Hz. OnPlaybackTick-driven topics scale with target_hz; multi-tick RTX sensors hold their configured Hz. If images publish slowly, reduce the render product resolution. For troubleshooting, try `./isaac-sim.sh --reset-user` or the experimental `./isaac-sim.fabric.sh --reset-user`.
 
 ## Next Steps
 

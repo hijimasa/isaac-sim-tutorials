@@ -53,7 +53,7 @@ Joint State や TF のパブリッシャは、ROS のリンク名・ジョイン
 
 1. **Isaac Joint Name Resolver** ノードをグラフにドラッグし、次のようにパイプラインに接続します：
 
-    ![NameOverride 属性とサブスクライバ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_isaac_nameoverride_attr.png)
+    ![NameOverride 属性とサブスクライバ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_isaac_nameoverride_attr.png)
 
 2. **Isaac Joint Name Resolver** ノードの **Target Prim**（または **Robot Path**）を `/panda` に設定します。
 

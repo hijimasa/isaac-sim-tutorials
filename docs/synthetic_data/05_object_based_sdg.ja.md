@@ -32,7 +32,7 @@ title: オブジェクトベースの合成データセット生成
 
 スクリプトは、**見えないコリジョンウォールで閉じたエリア**にラベル付きアセットとディストラクタ（学習対象ではない妨害オブジェクト）をスポーンし、複数のカメラ視点からシーンをキャプチャします。カメラ姿勢のランダム化、オブジェクトへのランダム速度の適用、カスタムイベントによるシーンのランダム化を組み合わせ、ランダマイザは Replicator ベースとカスタム Isaac Sim / USD API ベースの両方を特定のタイミングでトリガーします。
 
-![オブジェクトベース SDG](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_object_based_sdg.jpg)
+![オブジェクトベース SDG](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_object_based_sdg.jpg)
 
 ## ステップ 1：実行してみる
 
@@ -88,7 +88,7 @@ title: オブジェクトベースの合成データセット生成
 
 **モーションブラー**のキャプチャでは、レンダーモードを **PathTracing** に設定し、動きの継続時間と合成するサブフレーム数（パストレースサンプル数）を選んでキャプチャします：
 
-![モーションブラー](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_object_based_sdg_motion_blur.jpg)
+![モーションブラー](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_object_based_sdg_motion_blur.jpg)
 
 !!! note "パフォーマンス最適化"
     キャプチャ間に多くのシミュレーションフレームを回す場合は、`disable_render_products_between_captures: True` で**キャプチャ時以外のレンダリングと処理を止める**のが効果的です。`set_render_products_updates` の `include_viewport=True` はビューポート（UI）のレンダリングも無効化します。ライブ表示は失われますが、ヘッドレスサーバーでの実行では特に有効です。
@@ -113,7 +113,7 @@ title: オブジェクトベースの合成データセット生成
 - 3D アセットが手元にない実物体は、iPad/iPhone の **AR Code** アプリ（LiDAR＋多視点画像）で USD 形式のアセットとして取り込んで利用できます。
 - モデルは [NGC カタログ](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/isaac/models/synthetica_detr)で公開されており、ROS で動かす場合は Isaac ROS RT-DETR チュートリアルを参照してください。
 
-![SyntheticaDETR のデータ生成](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_object_based_sdg_drop_table.jpg)
+![SyntheticaDETR のデータ生成](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_object_based_sdg_drop_table.jpg)
 
 ## まとめ
 

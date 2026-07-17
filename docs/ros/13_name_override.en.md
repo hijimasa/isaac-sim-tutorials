@@ -20,7 +20,7 @@ With the joint-state scene from [Tutorial 12](12_manipulation.md):
 
 **Publishers** (ROS2 Publish Transform Tree / Joint State) automatically use the override. **Subscribers** need the **Isaac Joint Name Resolver** node (Target Prim / Robot Path = `/panda`) inserted in the pipeline so custom names in incoming commands resolve to actual prim paths for the Articulation Controller.
 
-![NameOverride subscriber pipeline](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_isaac_nameoverride_attr.png)
+![NameOverride subscriber pipeline](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_isaac_nameoverride_attr.png)
 
 ## Next Steps
 

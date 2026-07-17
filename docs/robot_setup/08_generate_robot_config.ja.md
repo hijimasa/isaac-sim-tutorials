@@ -176,7 +176,7 @@ Lula Robot Description Editor はシミュレーション実行中に使用す�
 |---|---|---|
 | （グリッパーの全ジョイント） | **Fixed Joint** | ソルバーの制御対象外 |
 
-![Lula Robot Description Editor](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_lula_robot_description_editor.png)
+![Lula Robot Description Editor](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_lula_robot_description_editor.png)
 
 !!! note "なぜグリッパーのジョイントを Fixed にするのか"
     グリッパーとアームは通常、別々に制御されます。キネマティクスソルバーの制御空間（cspace）にはアームのジョイントのみを含めれば十分で、グリッパーのジョイントを含めると不要な計算が発生し、コリジョンチェック時にグリッパーが動いてしまう可能性があります。
@@ -248,7 +248,7 @@ Lula Robot Description Editor はシミュレーション実行中に使用す�
 
 4. **Save** をクリックしてエクスポートを実行します。
 
-    ![Lula ロボット記述ファイルのエクスポート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_lula_export_robot_description_file.png)
+    ![Lula ロボット記述ファイルのエクスポート](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_lula_export_robot_description_file.png)
 
 !!! note "エクスポートされるファイルの内容"
     Lula ロボット記述ファイル（YAML）には、ジョイントの構成、制御空間の定義、コリジョンスフィアの位置とサイズなどが記述されます。このファイルは RMPFlow や Lula キネマティクスソルバーで使用されます。
@@ -263,7 +263,7 @@ cuMotion を使用する場合は、XRDF ファイルもエクスポートしま
 
 3. **Save** をクリックしてエクスポートを実行します。
 
-    ![cuMotion XRDF ファイルのエクスポート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_lula_export_cucore_xrdf_file.png)
+    ![cuMotion XRDF ファイルのエクスポート](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_lula_export_cucore_xrdf_file.png)
 
 !!! note "XRDF とは"
     XRDF（Extended Robot Description Format）は、cuMotion（CUDA アクセラレーションされたモーションプランニング）で使用されるロボット記述フォーマットです。GPU を活用した高速なモーションプランニングを行う際に必要になります。

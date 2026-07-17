@@ -16,11 +16,11 @@ Record synthetic data from the GUI (Tools > Replicator > Synthetic Data Recorder
 - **Writer frame** — *Render Products* (camera path + resolution entries; defaults to the active viewport camera or stage-selected cameras), *Parameters* (BasicWriter annotator checkboxes, or a custom writer with a JSON parameters file), *Output* (working directory, incremented folder names, optional S3), *Config* (save/load the GUI state as JSON).
 - **Control frame** — Start/Stop, Pause/Resume, Number of Frames (0 = until stopped), **RTSubframes** (extra subframes per frame — raise it for teleported objects, unloaded materials, or low light), Control Timeline, Verbose.
 
-![Recorder window](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_window.jpg)
+![Recorder window](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_window.jpg)
 
 ## Custom Writers
 
-Register a custom writer (e.g. `MyCustomWriter` writing rgb/normals) in the Script Editor via `WriterRegistry.register(...)`, then select it in Parameters with a JSON file. The **DataVisualizationWriter** (`from isaacsim.replicator.writers import DataVisualizationWriter`) overlays bbox 2D tight/loose and 3D annotations on rgb or normals backgrounds.
+Register a custom writer (e.g. `MyCustomWriter` writing rgb/normals) in the Script Editor via `rep.writers.register_writer(...)`, then select it in Parameters with a JSON file. The recorder calls `writer.initialize(backend=..., **parameters)`, so custom writers must accept a `backend` argument (the configured `DiskBackend`/`S3Backend`) or `**kwargs`, and write through that backend (e.g. `self.backend.schedule(F.write_image, path=..., data=...)`). The **DataVisualizationWriter** (`from isaacsim.replicator.writers import DataVisualizationWriter`) overlays bbox 2D tight/loose and 3D annotations on rgb or normals backgrounds.
 
 ## Replicator Randomized Cameras
 

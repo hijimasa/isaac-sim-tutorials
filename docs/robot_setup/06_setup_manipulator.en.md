@@ -41,7 +41,7 @@ Isaac Sim provides two ways to import URDF files:
 This tutorial uses the **Direct URDF Importer**, which does not require ROS 2.
 
 !!! note "If you want to use the ROS 2 URDF Importer"
-    If you have ROS 2 installed, you can also import via **File > Import from ROS 2 URDF Node**. In that case, publish the URDF with `ros2 launch ur_description view_ur.launch.py ur_type:=ur10e` and specify the node name `robot_state_publisher` in Isaac Sim. See the [official documentation](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup_tutorials/tutorial_import_assemble_manipulator.html) for details.
+    If you have ROS 2 installed, you can also import via **File > Import from ROS 2 URDF Node**. In that case, publish the URDF with `ros2 launch ur_description view_ur.launch.py ur_type:=ur10e` and specify the node name `robot_state_publisher` in Isaac Sim. See the [official documentation](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_import_assemble_manipulator.html) for details.
 
 ### Reference Assets
 
@@ -354,7 +354,7 @@ Set the following in the Robot Assembler panel:
 3. Click **Assemble and Simulate** to test the connection in simulation.
 4. If everything looks correct, click **End Simulation And Finish** to complete the assembly.
 
-![Robot Assembler](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_connect_gripper_assembler.png)
+![Robot Assembler](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_connect_gripper_assembler.png)
 
 #### 3-2-5. Verify Variant Functionality
 

@@ -78,7 +78,7 @@ In this tutorial, you will use GUI operations to build the basic structure of a 
 
 ### Examining Collision Meshes
 
-1. Click the ![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_eyecon.png) at the top of the viewport.
+1. Click the ![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_eyecon.png) at the top of the viewport.
 2. Select **Show By Type > Physics > Colliders > All**.
 3. Purple outlines appear around static objects with the Collision API applied (in this case, the ground plane). Green outlines appear around dynamic objects (in this case, the cube and two cylinders).
 
@@ -93,7 +93,7 @@ In this tutorial, you will use GUI operations to build the basic structure of a 
 5. Find **physics materials on selected models** in the **Property > Physics** tab.
 6. Select the desired material from the dropdown menu to assign it.
 
-    ![Materials](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_materials.png)
+    ![Materials](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_materials.png)
 
 ## Setting Material Properties
 

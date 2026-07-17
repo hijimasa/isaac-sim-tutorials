@@ -4,6 +4,9 @@ title: RMPflow（理論）
 
 # RMPflow（理論）
 
+!!! warning "Deprecated（非推奨）"
+    Isaac Sim 6.0 では、Lula 実装を含む Motion Generation 拡張機能は非推奨（deprecated）になりました。引き続き動作しますが、新規開発では、Lula に比べて改良されたインターフェースと追加機能を提供する [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API の利用を検討してください。
+
 ## 概要
 
 **Riemannian Motion Policy（RMP）** は、Isaac Sim のマニピュレータ制御の多くを支えるモーション生成ツール群です。知的な衝突回避を伴う滑らかな軌道を生成します。

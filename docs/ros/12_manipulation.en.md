@@ -11,11 +11,14 @@ title: "ROS2 Joint Control: Extension Python Scripting"
 
 Add a ROS 2 Joint State publisher/subscriber for the Franka Panda — via UI, menu shortcut, and the OmniGraph Python API — and mix position/velocity control modes.
 
+!!! note "Isaac Sim 6.0"
+    Direct prim inputs (targetPrim) on ROS2 Publish Joint State are deprecated in Isaac Sim 6.0; the recommended setup feeds it from an **Isaac Read Joint State** node (`isaacsim.sensors.physics.nodes`). The official tutorial still uses targetPrim as of 6.0.1, so this page follows it. See the [ROS 2 OmniGraph Nodes migration guide](https://docs.isaacsim.omniverse.nvidia.com/latest/migration_guides/isaac_sim_6_0/ros2_omnigraph_migration.html).
+
 ## Add Joint States in UI
 
 Open **Isaac Sim > Robots > FrankaRobotics > FrankaPanda > franka.usd** and build an Action Graph with On Playback Tick, Isaac Read Simulation Time, **ROS2 Publish Joint State** (targetPrim `/panda`, topic `/joint_states`), **ROS2 Subscribe Joint State** (`/joint_command`), and **Articulation Controller** (targetPrim or robotPath `/panda`); wire the subscriber's jointNames/position/velocity/effort outputs into the controller.
 
-![Joint state graph](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_manipulation_1.png)
+![Joint state graph](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_manipulation_1.png)
 
 Test with:
 

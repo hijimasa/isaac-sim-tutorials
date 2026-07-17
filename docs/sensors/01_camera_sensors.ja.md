@@ -9,7 +9,8 @@ title: カメラセンサー
 このチュートリアルを修了すると、以下の内容を習得できます：
 
 - GUI からカメラ prim を作成し、ビューポートに映像を表示する方法
-- `isaacsim.sensors.camera` の `Camera` クラスを使って Standalone Python から画像データを取得する方法
+- `isaacsim.sensors.experimental.rtx` の `RtxCamera`（オーサリング）と `CameraSensor`（ランタイム）を使って画像データを取得する方法
+- `tick_rate` によるカメラのレンダリング頻度の制御
 - OpenCV の内部パラメータ（intrinsics）・歪み係数を Isaac Sim のカメラに設定する方法（Pinhole / Fisheye）
 - キャリブレーションツールキットの外部パラメータ（extrinsics）を Isaac Sim の座標系へ変換する方法
 - 複数センサーをまとめた「カメラリグ」の考え方
@@ -19,7 +20,7 @@ title: カメラセンサー
 
 ### 前提条件
 
-- Isaac Sim 5.1 がインストール済みで起動できること
+- Isaac Sim 6.0 がインストール済みで起動できること
 - USD ステージやビューポートの基本操作を理解していること
 - Standalone Python の例を試す場合は、Isaac Sim のインストールディレクトリで `./python.sh`（Windows は `python.bat`）が実行できること
 
@@ -37,10 +38,13 @@ Isaac Sim のカメラは、USD の **Camera** prim 型としてモデル化さ�
 !!! note "Omniverse カメラがベース"
     Isaac Sim のカメラ機能は、Omniverse のカメラをベースにしています。したがって、Omniverse / USD のカメラに関する知識はそのまま応用できます。
 
+!!! warning "`isaacsim.sensors.camera` は 6.0 で非推奨"
+    Isaac Sim 6.0 では、従来の `isaacsim.sensors.camera` 拡張機能（`Camera` / `CameraView` / `SingleViewDepthSensor` クラス）は **非推奨（deprecated）** となり、`isaacsim.sensors.experimental.rtx` に置き換えられました。新しい拡張機能は、prim を作成・設定する **オーサリングクラス**（`RtxCamera`）と、アノテーターを取り付けてデータを読み出す **ランタイムクラス**（`CameraSensor` / `TiledCameraSensor` / `SingleViewDepthCameraSensor` / `StructuredLightCamera`）に分かれています。移行方法の詳細は公式の [Camera Sensors 移行ガイド](https://docs.isaacsim.omniverse.nvidia.com/latest/migration_guides/isaac_sim_6_0/sensors_camera_to_experimental_rtx.html) を参照してください。
+
 このチュートリアルは、次の流れで進みます。
 
 1. **GUI でカメラを作成**して、ビューポートに映像を表示する
-2. **Standalone Python の `Camera` クラス**で画像データを取得する
+2. **`RtxCamera` と `CameraSensor`** で画像データを取得する
 3. **レンズ歪みモデル（OpenCV Pinhole / Fisheye）** をキャリブレーション値から設定する
 4. **外部パラメータ（extrinsics）** を Isaac Sim の座標系へ変換する
 5. **カメラリグ**と **Camera Inspector 拡張機能**を使う
@@ -53,291 +57,174 @@ Isaac Sim のカメラは、USD の **Camera** prim 型としてモデル化さ�
 2. **Create > Camera** でカメラ prim を作成します。**Stage** ウィンドウでカメラを選択すると、ビューポートに視野（Field of View）を示すワイヤーフレームが表示されます。
 3. 作成したカメラの映像をレンダリングするには、デフォルトのビューポート（これ自体が 1 つのレンダープロダクトです）を、作成したカメラ prim に切り替えます。ビューポート上部の **ビデオアイコン** をクリックし、**Cameras** メニューから作成したカメラ prim を選択してください。
 
-![カメラ prim をビューポートに割り当てる](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_ext-isaacsim.sensors.camera-0.2.5_gui_4.png)
+![カメラ prim をビューポートに割り当てる](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_ext-isaacsim.sensors.camera-0.2.5_gui_3.png)
 
 !!! tip "カメラアイコンが表示されない場合"
     デフォルトではカメラアイコンは非表示です。表示するには、ビューポート上部の目（Eye）アイコンから **Show By Type > Cameras** を有効にしてください。
 
-## ステップ 2：Standalone Python で画像データを取得する
+## ステップ 2：RtxCamera と CameraSensor で画像データを取得する
 
-カメラ prim に取り付けたレンダープロダクトからデータを取得する方法は複数あります。その 1 つが、`isaacsim.sensors.camera` 拡張機能の **`Camera`** クラスです。
+カメラ prim からデータを収集する推奨方法は、`isaacsim.sensors.experimental.rtx` 拡張機能の 2 つのクラスを組み合わせることです。
 
-`Camera` クラスを使った例は、次のコマンドで実行できます。
+- **`RtxCamera`（オーサリング）** … USD の Camera prim を作成（または既存 prim をラップ）し、`OmniSensorAPI` スキーマを適用します。焦点距離・アパーチャ・クリッピング範囲などの光学パラメータは `.camera` プロパティ経由で操作できます。位置・姿勢は `positions` / `translations` / `orientations` のような **複数形の配列引数**（形状 `(N, 3)` / `(N, 4)`、カメラ 1 台につき `N=1`）で指定します。
+- **`CameraSensor`（ランタイム）** … `RtxCamera` オブジェクトをラップし、指定解像度の Replicator レンダープロダクトを作成して、アノテーター（`rgb`、`distance_to_camera`、`semantic_segmentation` など）を取り付けます。`get_data("アノテーター名")` でレンダリング結果を `(データ配列, 情報辞書)` のタプルとして取得します。
 
-```bash
-./python.sh standalone_examples/api/isaacsim.sensors.camera/camera.py
-```
-
-この例のコードを以下に示します（参考用）。ポイントは、`Camera` を生成したあと `my_world.reset()` に続けて `camera.initialize()` を呼び出し、シミュレーションループの中で `camera.get_rgba()` や `camera.get_current_frame()` からデータを取り出している点です。
+最小限のコードは次のとおりです。
 
 ```python
-from isaacsim import SimulationApp
+from isaacsim.sensors.experimental.rtx import CameraSensor, RtxCamera
 
-simulation_app = SimulationApp({"headless": False})
-
-from isaacsim.core.api.objects import DynamicCuboid
-from isaacsim.sensors.camera import Camera
-from isaacsim.core.api import World
-import isaacsim.core.utils.numpy.rotations as rot_utils
-import numpy as np
-import matplotlib.pyplot as plt
-
-
-my_world = World(stage_units_in_meters=1.0)
-
-cube_2 = my_world.scene.add(
-    DynamicCuboid(
-        prim_path="/new_cube_2",
-        name="cube_1",
-        position=np.array([5.0, 3, 1.0]),
-        scale=np.array([0.6, 0.5, 0.2]),
-        size=1.0,
-        color=np.array([255, 0, 0]),
-    )
+sensor = CameraSensor(
+    RtxCamera(
+        "/World/Camera",
+        tick_rate=30.0,               # レンダリング頻度（Hz）
+        translations=[[0.0, 0.0, 1.0]],  # 複数形・配列で指定する点に注意
+    ),
+    resolution=(640, 480),
+    annotators=["rgb"],
 )
 
-cube_3 = my_world.scene.add(
-    DynamicCuboid(
-        prim_path="/new_cube_3",
-        name="cube_2",
-        position=np.array([-5, 1, 3.0]),
-        scale=np.array([0.1, 0.1, 0.1]),
-        size=1.0,
-        color=np.array([0, 0, 255]),
-        linear_velocity=np.array([0, 0, 0.4]),
-    )
-)
-
-camera = Camera(
-    prim_path="/World/camera",
-    position=np.array([0.0, 0.0, 25.0]),
-    frequency=20,
-    resolution=(256, 256),
-    orientation=rot_utils.euler_angles_to_quats(np.array([0, 90, 0]), degrees=True),
-)
-
-my_world.scene.add_default_ground_plane()
-my_world.reset()
-camera.initialize()
-
-i = 0
-camera.add_motion_vectors_to_frame()
-
-while simulation_app.is_running():
-    my_world.step(render=True)
-    print(camera.get_current_frame())
-    if i == 100:
-        points_2d = camera.get_image_coords_from_world_points(
-            np.array([cube_3.get_world_pose()[0], cube_2.get_world_pose()[0]])
-        )
-        points_3d = camera.get_world_points_from_image_coords(points_2d, np.array([24.94, 24.9]))
-        print(points_2d)
-        print(points_3d)
-        imgplot = plt.imshow(camera.get_rgba()[:, :, :3])
-        plt.show()
-        print(camera.get_current_frame()["motion_vectors"])
-    if my_world.is_playing():
-        if my_world.current_time_step_index == 0:
-            my_world.reset()
-    i += 1
-
-
-simulation_app.close()
+data, info = sensor.get_data("rgb")
 ```
 
-!!! note "`Camera` クラスの主な API"
-    - `get_rgba()` … RGBA 画像を `numpy` 配列で取得します。
-    - `get_current_frame()` … RGB やモーションベクターなど、フレームに追加したデータをまとめて取得します。
-    - `get_image_coords_from_world_points()` … ワールド座標の点を画像上のピクセル座標へ投影します。
-    - `get_world_points_from_image_coords()` … 画像座標＋深度からワールド座標を復元します。
-    - `add_motion_vectors_to_frame()` … フレームにモーションベクターを追加します。
+作成からデータ取得までの一連のワークフローは、次の Standalone 例で確認できます。倉庫環境を読み込み、`/World/camera` に `RtxCamera` を作成して、`rgb` と `distance_to_image_plane` アノテーターを `CameraSensor` で取り付け、100 ティックごとに RGB フレームを保存します。
+
+```bash
+./python.sh standalone_examples/api/isaacsim.sensors.experimental.rtx/create_camera_basic.py
+```
+
+![create_camera_basic.py が保存する RGB フレーム（tick 100）](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_base_tut_external_create_camera_basic_rgb.png)
+
+!!! note "旧 `Camera` クラスからの主な対応関係"
+    - `Camera(frequency=..., dt=...)` → `RtxCamera(tick_rate=...)`（Hz）
+    - `camera.add_rgb_to_frame()` + `camera.get_current_frame()` → `CameraSensor(annotators=["rgb"])` + `sensor.get_data("rgb")`（フレーム辞書ではなくアノテーターごとの取得に変更）
+    - `position= / orientation=`（単数形） → `positions= / orientations=`（複数形・配列）
+    - `annotator_device=` → `CameraSensor` が CPU / CUDA を選択（`camera_annotator_devices.py` 例を参照）
+    - `name=` 引数は削除（未使用だったため）
+
+### 2-1. tick_rate によるレンダリング頻度の制御
+
+`RtxCamera` の `tick_rate` パラメータ（Hz）は、カメラがレンダリングする頻度を制御します。デフォルトの `0` は **autotrigger モード**で、シミュレーションフレームごとにレンダリングします。0 以外の値を設定すると、シミュレーションのステップレートとは独立に指定周波数でレンダリングされます。この値は prim の `omni:sensor:tickRate` 属性に対応し、`OmniSensorAPI` スキーマが必要です（`RtxCamera` が自動で適用します）。
+
+```python
+from isaacsim.sensors.experimental.rtx import RtxCamera
+
+# シミュレーションのフレームレートとは独立に 30 Hz でレンダリングする
+camera = RtxCamera(path="/World/Camera", tick_rate=30.0)
+```
+
+!!! note "frameSkipCount の置き換え"
+    `tick_rate` は、ROS2 Camera Helper / ROS2 Camera Info Helper / UCX Camera Helper ノードで非推奨となった `frameSkipCount` 入力の推奨代替手段です。詳細は公式の Multi-Tick Rendering ページを参照してください。
+
+### 2-2. 複数カメラをまとめて扱う（TiledCameraSensor）
+
+**`TiledCameraSensor`** は、多数のカメラを 1 つのタイル状レンダープロダクトにまとめてレンダリングします。カメラごとにレンダープロダクトを作るより大幅に効率が良く、強化学習やマルチ環境ワークフローに向いています。カメラ prim パスの明示的なリスト（または `isaacsim.core.experimental.objects.Camera` インスタンス）とタイルごとの解像度を渡します。
+
+```python
+from isaacsim.sensors.experimental.rtx import RtxCamera, TiledCameraSensor
+
+RtxCamera("/World/env_0/Camera", positions=[[0.0, 0.0, 5.0]])
+RtxCamera("/World/env_1/Camera", positions=[[2.0, 0.0, 5.0]])
+
+tiled = TiledCameraSensor(
+    paths=["/World/env_0/Camera", "/World/env_1/Camera"],
+    resolution=(256, 256),
+    annotators=["rgb"],
+)
+data, info = tiled.get_data("rgb", tiled=True)
+```
+
+エンドツーエンドの例は `./python.sh standalone_examples/api/isaacsim.sensors.experimental.rtx/camera_tiled.py` で実行できます。
+
+!!! note "特化型カメラ"
+    `RtxCamera` / `CameraSensor` をベースに、ステレオ深度シミュレーション用の **`SingleViewDepthCameraSensor`**（[深度センサー](02_depth_sensors.md) で扱います）と、パターン投影による深度復元用の **`StructuredLightCamera`**（6.0 の新機能。例：`camera_structured_light.py`）が用意されています。
 
 ## ステップ 3：レンズ歪みモデルを設定する
 
-Omniverse のカメラは、さまざまなレンズ歪みモデルに対応しています。`isaacsim.sensors.camera.Camera` クラスには、各歪みモデルのパラメータを設定する API が用意されています。
+Omniverse のカメラは、さまざまなレンズ歪みモデルに対応しています。`RtxCamera` クラスは、`schemas` パラメータでレンズ歪みスキーマ（`OmniLensDistortionOpenCvFisheyeAPI`、`OmniLensDistortionOpenCvPinholeAPI` など）を適用し、`attributes` パラメータで歪み係数を設定できます。
 
 OpenCV などのキャリブレーションツールキットは、通常キャリブレーション結果を **内部行列（intrinsic matrix）** と **歪み係数（distortion coefficients）** の形で提供します。Omniverse は **OpenCV pinhole** と **OpenCV fisheye** の歪みモデルをレンダラーがネイティブにサポートしています。
 
-以下の 2 つの Standalone 例が、`Camera` クラスと OpenCV 歪みモデルの使い方を示しています。
+以下の 2 つの Standalone 例が、`RtxCamera` と OpenCV 歪みモデルの使い方を示しています。
 
-- `standalone_examples/api/isaacsim.sensors.camera/camera_opencv_pinhole.py`
-- `standalone_examples/api/isaacsim.sensors.camera/camera_opencv_fisheye.py`
-
-これらの一部は **Window > Script Editor** から開ける Script Editor でも実行できます。
+- `standalone_examples/api/isaacsim.sensors.experimental.rtx/camera_opencv_pinhole.py`
+- `standalone_examples/api/isaacsim.sensors.experimental.rtx/camera_opencv_fisheye.py`
 
 !!! warning "非推奨になった API に注意"
     - 以前の `Camera` クラスには、`fisheyePolynomial` 歪みモデルの係数を設定して OpenCV pinhole / fisheye を近似する API がありました。OpenCV 歪みモデルがネイティブサポートされた現在、これらの API は **非推奨** です。
     - Omniverse RTX の **Camera Projection Attributes** は Isaac Sim 5.0 以降 **非推奨** となり、`OmniLensDistortion` スキーマに置き換えられました。Camera prim を選択したときの **Fisheye Lens** パネルには旧属性がまだ表示されますが、`OmniLensDistortion` スキーマを設定している場合は無視されます。
 
+!!! warning "Isaac Sim 6.0 の既知の問題：OmniLensDistortionLutAPI"
+    Isaac Sim 6.0 では、`OmniLensDistortionLutAPI` スキーマを Camera prim に適用して一般化投影モデルによる任意の歪みモデルを有効化する機能が正しく動作せず、設定した場合レンダラーはデフォルトのピンホールモデルにフォールバックします。任意の歪みモデルを指定するには、当面は上記の非推奨の Camera Projection Attributes を使用してください（将来のリリースで修正予定です）。
+
+!!! warning "Camera prim の単位に注意"
+    他の USD prim 型と異なり、Camera prim の一部の属性（焦点距離、アパーチャなど）は**ステージ単位の 1/10** で定義されます。異なるステージ単位で定義された Camera をステージに追加すると、これらの属性が誤ってスケーリングされます。`omni.usd.metrics.assembler.usdgeom` 拡張機能を有効にすると、Camera prim 追加時に属性が正しい単位へ自動調整されます（Isaac Sim フルアプリではデフォルトで有効です）。
+
 ### OpenCV Fisheye
 
-内部行列と歪み係数から焦点距離・アパーチャを計算し、`set_opencv_fisheye_properties()` で歪み係数を設定します。被写界深度（DOF）を無効にしたい場合は `f_stop` を `0.0` に設定します。
+`OmniLensDistortionOpenCvFisheyeAPI` スキーマを適用した `RtxCamera` を作成する Standalone 例を実行します。
 
-```python
-import isaacsim.core.utils.numpy.rotations as rot_utils
-import numpy as np
-from isaacsim.core.api import World
-from isaacsim.core.api.objects import DynamicCuboid
-from isaacsim.core.utils.stage import add_reference_to_stage
-from isaacsim.sensors.camera import Camera
-from isaacsim.storage.native import get_assets_root_path
-from PIL import Image, ImageDraw
-
-# 目標とする画像解像度、カメラ内部行列、歪み係数
-width, height = 1920, 1200
-camera_matrix = [[455.8, 0.0, 943.8], [0.0, 454.7, 602.3], [0.0, 0.0, 1.0]]
-distortion_coefficients = [0.05, 0.01, -0.003, -0.0005]
-
-# カメラのセンサーサイズと光学系パラメータ。これらは OpenCV カメラモデルの一部では
-# ないが、被写界深度（DOF）効果をシミュレートするために必要。
-#
-# 注意: DOF 効果を無効にするには f_stop を 0.0 にする。デバッグ時に便利。
-pixel_size = 3          # ピクセルサイズ（マイクロメートル）
-f_stop = 1.8            # F値（焦点距離 / 入射瞳径、無次元）
-focus_distance = 1.5    # フォーカス距離（メートル）。カメラから立方体までの距離に合わせた
-
-# 地面を追加
-usd_path = get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd"
-add_reference_to_stage(usd_path=usd_path, prim_path="/ground_plane")
-
-# 立方体とカメラを追加
-cube_1 = DynamicCuboid(prim_path="/new_cube_1", name="cube_1", position=np.array([0, 0, 0.5]),
-                       scale=np.array([1.0, 1.0, 1.0]), size=1.0, color=np.array([255, 0, 0]))
-cube_2 = DynamicCuboid(prim_path="/new_cube_2", name="cube_2", position=np.array([2, 0, 0.5]),
-                       scale=np.array([1.0, 1.0, 1.0]), size=1.0, color=np.array([0, 255, 0]))
-cube_3 = DynamicCuboid(prim_path="/new_cube_3", name="cube_3", position=np.array([0, 4, 1]),
-                       scale=np.array([2.0, 2.0, 2.0]), size=1.0, color=np.array([0, 0, 255]))
-
-camera = Camera(
-    prim_path="/World/camera",
-    position=np.array([0.0, 0.0, 2.0]),  # 立方体の側面から 1 メートル離した位置
-    frequency=30,
-    resolution=(width, height),
-    orientation=rot_utils.euler_angles_to_quats(np.array([0, 90, 0]), degrees=True),
-)
-camera.initialize()
-
-# カメラ内部行列から焦点距離とアパーチャサイズを計算
-((fx, _, cx), (_, fy, cy), (_, _, _)) = camera_matrix  # fx, fy, cx, cy はピクセル単位
-horizontal_aperture = pixel_size * width * 1e-6   # メートルに変換
-vertical_aperture = pixel_size * height * 1e-6    # メートルに変換
-focal_length_x = pixel_size * fx * 1e-6
-focal_length_y = pixel_size * fy * 1e-6
-focal_length = (focal_length_x + focal_length_y) / 2
-
-# カメラパラメータを設定（Isaac Sim センサーと Kit の単位変換に注意）
-camera.set_focal_length(focal_length)
-camera.set_focus_distance(focus_distance)
-camera.set_lens_aperture(f_stop)
-camera.set_horizontal_aperture(horizontal_aperture)
-camera.set_vertical_aperture(vertical_aperture)
-camera.set_clipping_range(0.05, 1.0e5)
-
-# 歪み係数を設定
-camera.set_opencv_fisheye_properties(cx=cx, cy=cy, fx=fx, fy=fy, fisheye=distortion_coefficients)
+```bash
+./python.sh standalone_examples/api/isaacsim.sensors.experimental.rtx/camera_opencv_fisheye.py
 ```
 
-上記のスニペットを実行し、ビューポートを新しく作成したカメラに切り替えると、次のような画像が表示されるはずです。
+歪みスキーマの適用は、`RtxCamera` のコンストラクタでスキーマ名と属性値を渡す形になります。
 
-![OpenCV Fisheye の出力例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.0_viewport_camera-opencv-fisheye-test.png)
+```python
+from isaacsim.sensors.experimental.rtx import RtxCamera
+
+camera = RtxCamera(
+    "/World/camera",
+    schemas=["OmniLensDistortionOpenCvFisheyeAPI"],
+    attributes={...},  # 内部行列・歪み係数に対応する属性値
+)
+```
+
+例を実行し、ビューポートを新しく作成したカメラに切り替えると、次のような画像が表示されるはずです。
+
+![OpenCV Fisheye の出力例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.0_viewport_camera-opencv-fisheye-test.png)
 
 ### OpenCV Pinhole
 
-手順は Fisheye とほぼ同じで、最後に `set_opencv_pinhole_properties()` を呼び出す点だけが異なります。
+手順は Fisheye とほぼ同じで、適用するスキーマが `OmniLensDistortionOpenCvPinholeAPI` になる点だけが異なります。
 
-```python
-import isaacsim.core.utils.numpy.rotations as rot_utils
-import numpy as np
-from isaacsim.core.api import World
-from isaacsim.core.api.objects import DynamicCuboid
-from isaacsim.core.utils.stage import add_reference_to_stage
-from isaacsim.sensors.camera import Camera
-from isaacsim.storage.native import get_assets_root_path
-from PIL import Image, ImageDraw
-
-# 目標とする画像解像度、カメラ内部行列、歪み係数
-width, height = 1920, 1200
-camera_matrix = [[958.8, 0.0, 957.8], [0.0, 956.7, 589.5], [0.0, 0.0, 1.0]]
-distortion_coefficients = [0.14, -0.03, -0.0002, -0.00003, 0.009, 0.5, -0.07, 0.017]
-
-pixel_size = 3
-f_stop = 1.8
-focus_distance = 1.5
-
-usd_path = get_assets_root_path() + "/Isaac/Environments/Grid/default_environment.usd"
-add_reference_to_stage(usd_path=usd_path, prim_path="/ground_plane")
-
-cube_1 = DynamicCuboid(prim_path="/new_cube_1", name="cube_1", position=np.array([0, 0, 0.5]),
-                       scale=np.array([1.0, 1.0, 1.0]), size=1.0, color=np.array([255, 0, 0]))
-cube_2 = DynamicCuboid(prim_path="/new_cube_2", name="cube_2", position=np.array([2, 0, 0.5]),
-                       scale=np.array([1.0, 1.0, 1.0]), size=1.0, color=np.array([0, 255, 0]))
-cube_3 = DynamicCuboid(prim_path="/new_cube_3", name="cube_3", position=np.array([0, 4, 1]),
-                       scale=np.array([2.0, 2.0, 2.0]), size=1.0, color=np.array([0, 0, 255]))
-
-camera = Camera(
-    prim_path="/World/camera",
-    position=np.array([0.0, 0.0, 2.0]),
-    frequency=30,
-    resolution=(width, height),
-    orientation=rot_utils.euler_angles_to_quats(np.array([0, 90, 0]), degrees=True),
-)
-camera.initialize()
-
-((fx, _, cx), (_, fy, cy), (_, _, _)) = camera_matrix
-horizontal_aperture = pixel_size * width * 1e-6
-vertical_aperture = pixel_size * height * 1e-6
-focal_length_x = pixel_size * fx * 1e-6
-focal_length_y = pixel_size * fy * 1e-6
-focal_length = (focal_length_x + focal_length_y) / 2
-
-camera.set_focal_length(focal_length)
-camera.set_focus_distance(focus_distance)
-camera.set_lens_aperture(f_stop)
-camera.set_horizontal_aperture(horizontal_aperture)
-camera.set_vertical_aperture(vertical_aperture)
-camera.set_clipping_range(0.05, 1.0e5)
-
-# 歪み係数を設定
-camera.set_opencv_pinhole_properties(cx=cx, cy=cy, fx=fx, fy=fy, pinhole=distortion_coefficients)
+```bash
+./python.sh standalone_examples/api/isaacsim.sensors.experimental.rtx/camera_opencv_pinhole.py
 ```
 
-![OpenCV Pinhole の出力例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.0_viewport_camera-opencv-pinhole-test.png)
+![OpenCV Pinhole の出力例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ext-isaacsim.sensors.camera-1.1.0_viewport_camera-opencv-pinhole-test.png)
 
 ## ステップ 4：外部パラメータ（Extrinsic Calibration）を設定する
 
 外部パラメータは、キャリブレーションツールキットから通常 **変換行列** の形で提供されます。軸の取り方と回転順序の規約はツールキットごとに異なるため、Isaac Sim の座標系へ変換する必要があります。
 
-個々のカメラセンサーに外部パラメータを設定するには、次の例を参考に変換行列を Isaac Sim の単位系へ変換します。
+個々のカメラセンサーに外部パラメータを設定するには、次の例（疑似コード）を参考に変換行列を Isaac Sim の単位系へ変換します。軸の入れ替えとクォータニオンの並べ替えは、使用するツールキットに合わせて調整してください。
 
 ```python
+# 疑似コード — 軸の入れ替え・クォータニオンの順序はツールキットに合わせて調整する
 import numpy as np
-import isaacsim.core.utils.numpy.rotations as rot_utils   # クォータニオン操作の便利関数
+from isaacsim.sensors.experimental.rtx import RtxCamera
 
-dX, dY, dZ = ...      # キャリブレーションツールキットからの並進ベクトル
-rW, rX, rY, rZ = ...  # 回転パラメータの順序に注意（ツールキット依存）
+dX, dY, dZ = _, _, _        # キャリブレーションツールキットからの並進ベクトル
+rW, rX, rY, rZ = _, _, _, _  # 回転パラメータの順序に注意（ツールキット依存）
 
-Camera(
-    prim_path="/rig/camera_color",
-    position=np.array([-dZ, dX, dY]),       # prim のローカル座標系での並進に注意
-    orientation=np.array([rW, -rZ, rX, rY]), # ワールド/ローカル座標系でのクォータニオン
+RtxCamera(
+    "/rig/camera_color",
+    positions=np.array([-dZ, dX, dY]),        # prim のローカル座標系での並進に注意
+    orientations=np.array([rW, -rZ, rX, rY]),  # クォータニオン（wxyz）
 )
 ```
 
 別の方法として、カメラセンサーを prim に取り付けることもできます。その場合、カメラセンサーは取り付け先 prim の位置・姿勢を継承します。
 
 ```python
-import isaacsim.core.utils.prims as prim_utils
+from isaacsim.sensors.experimental.rtx import RtxCamera
 
-camera_prim = prim_utils.create_prim(
-    name,
-    "Xform",
-    translation=...,
-    orientation=...,
-)
-
-camera = Camera(
-    prim_path=f"{name}/camera",
-    ...
+# OmniSensorAPI スキーマ付きのカメラ prim を作成する
+cam = RtxCamera(
+    "/World/camera",
+    # translations = ...
+    # orientations = ...
 )
 ```
 
@@ -347,7 +234,7 @@ camera = Camera(
 
 **カメラセンサーリグ** とは、1 つの prim に複数のカメラセンサーを取り付けたものです。手動で作成した、あるいはキャリブレーション値から導出した個々のセンサーを組み合わせて構築します。
 
-公式ドキュメントでは、Intel® RealSense™ Depth Camera D455 のデジタルツインを例に説明しています。この USD は Content フォルダの `/Isaac/Sensors/Intel/RealSense/rsd455.usd` にあります。RealSense には 3 つの視覚センサーと 1 つの IMU センサーがあり、カメラ原点に対する配置は Intel の TechSpec のレイアウト図から取得されています。
+公式ドキュメントでは、RealSense™ Depth Camera D455 のデジタルツインを例に説明しています。この USD は Content フォルダの `/Isaac/Sensors/RealSense/D455/rsd455.usd` にあります。RealSense には 3 つの視覚センサーと 1 つの IMU センサーがあり、カメラ原点に対する配置は Intel の TechSpec のレイアウト図から取得されています。
 
 !!! note "実機からリグを作るときのポイント"
     - `fStop` は TechSpec の F Number の分母、`focalLength` は Focal Length、`fthetaMaxFov` は対角視野（Diagonal FOV）に対応します。
@@ -355,15 +242,18 @@ camera = Camera(
     - `horizontalAperture` / `verticalAperture` はセンサーのイメージエリア（例：OV9782 は 3896 × 2453 µm）から導出できます。
     - Pseudo Depth カメラは、ファームウェアがステレオから生成する深度画像の代替です。ステレオアルゴリズムを再現するわけではなく、左右カメラの中間位置から見たシーン深度を返す便宜的なカメラです。
 
-### Pre-ISP カメラパイプラインの出力
+### ISP カメラパイプラインの出力
 
-`omni.sensors.nv.camera` 拡張機能は、カメラセンサーと ISP（Image Signal Processor）パイプラインをシミュレートします。Isaac Sim 5.1 には、色補正・CFA エンコード・カンパンディングなど、**ISP 前**の各ステップの出力をレンダリングして保存する Standalone 例が含まれています。自作の ISP を Omniverse のレンダリング画像でテストしたい場合や、Omniverse のシミュレート ISP と比較したい場合に便利です。
+`omni.sensors.nv.camera` 拡張機能は、カメラセンサーと ISP（Image Signal Processor）パイプラインをシミュレートします。Isaac Sim には、`OmniSensorGenericCameraCoreAPI` USD スキーマで ISP パイプラインを設定し、各パイプラインステージの出力を画像として保存する Standalone 例が含まれています。自作の ISP を RTX のレンダリング画像でテストしたい場合や、Omniverse のシミュレート ISP と比較したい場合に便利です。
 
 ```bash
-./python.sh standalone_examples/api/isaacsim.sensors.camera/camera_pre_isp_pipeline.py --draw-output
+./python.sh standalone_examples/api/isaacsim.sensors.experimental.rtx/camera_isp_pipeline.py
 ```
 
-この例は、既定で `pre_isp_camera_pipeline_outputs` ディレクトリに 3 つの ISP 前ステップ（HDR バッファ、生センサー出力、ISP 出力）の画像を保存します。
+この例は 20 フレームをレンダリングし、各 ISP ステージの出力を `camera_isp_pipeline_outputs` ディレクトリに保存します。ステージは順に、**HDR テクスチャ読み出し → 色補正 → CFA エンコード（Bayer 化）→ ノイズシミュレーション → カンパンディング → ISP 出力 → YUV 変換** です。
+
+!!! warning "サンプル ISP プログラムは Linux x86_64 のみ"
+    `omni.sensors.nv.camera` に同梱されているサンプル ISP プログラムは Linux x86_64 でのみ利用できます。他のプラットフォームで例を実行するとメッセージを表示して早期終了します。自前の ISP プログラムがある場合は、スクリプト内の `_isp_program_path` 変数を書き換え、プラットフォームチェックをコメントアウトしてください。
 
 ### Camera Inspector 拡張機能
 
@@ -382,7 +272,7 @@ camera = Camera(
 
 **Camera State テキストボックス**
 
-![Camera State テキストボックス](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_camera_status_textbox.png)
+![Camera State テキストボックス](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_camera_status_textbox.png)
 
 拡張機能上部の Camera State テキストボックスには、カメラの位置と姿勢が表示されます。右側のコピーアイコンをクリックすると、そのままコードに貼り付けられる形式でクリップボードにコピーできます。
 
@@ -399,9 +289,12 @@ camera = Camera(
 
 - Isaac Sim のカメラは USD の **Camera** prim であり、データは **レンダープロダクト** を介して取得すること
 - GUI でカメラを作成してビューポートに割り当てる方法
-- `Camera` クラスで画像データを取得し、2D/3D 座標を相互変換する方法
-- OpenCV Pinhole / Fisheye の歪みモデルと外部パラメータを Isaac Sim に設定する方法
-- カメラリグと Camera Inspector 拡張機能の役割
+- `RtxCamera`（オーサリング）＋ `CameraSensor`（ランタイム）で画像データを取得し、`tick_rate` でレンダリング頻度を制御する方法
+- OpenCV Pinhole / Fisheye の歪みスキーマと外部パラメータを Isaac Sim に設定する方法
+- カメラリグ・ISP パイプライン・Camera Inspector 拡張機能の役割
+
+!!! tip "その他の Standalone サンプル"
+    `standalone_examples/api/isaacsim.sensors.experimental.rtx/` には、このほかにも `camera_annotator_devices.py`（CPU / CUDA バッファの選択）、`camera_structured_light.py`（構造化光カメラ）、`camera_ros.py`（ROS 2 へのフレーム配信）などの例があります。
 
 ## 次のステップ
 

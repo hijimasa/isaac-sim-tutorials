@@ -37,7 +37,7 @@ Create a Generic Publisher (**Tools > Robotics > ROS 2 OmniGraphs > Generic Publ
 ros2 topic info /topic -v
 ```
 
-Fast DDS may report depth as UNKNOWN; Cyclone DDS (Linux only) can retrieve it.
+Fast DDS may report depth as UNKNOWN; both `rmw_cyclonedds_cpp` and `rmw_zenoh_cpp` report the configured depth value.
 
 ## Static Publishers
 

@@ -56,7 +56,7 @@ This forklift has **7 degrees of freedom (DOF)**:
 | Rear wheel | Revolute Joint | Yes | Wheel rotation for driving |
 | Rear wheel swivel | Revolute Joint | Yes | Pivot rotation for steering |
 
-![Forklift appearance](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_1.png)
+![Forklift appearance](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_1.png)
 
 ## Step 2: Organizing the USD Hierarchy
 
@@ -163,7 +163,7 @@ Drag and drop each corresponding mesh into its respective Xform.
 
 ![Applying Rigid Body](images/21_add_rigid_body.png)
 
-![Forklift after hierarchy organization](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_2.png)
+![Forklift after hierarchy organization](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_2.png)
 
 ## Step 3: Assigning Collision Meshes
 
@@ -208,7 +208,7 @@ Use **cylinder approximation** for wheels. Instead of attaching colliders direct
     - **Translate**: Set all to **0**
 3. Add a **Collider** to the cylinder.
 
-![Cylinder collision approximation](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_5.png)
+![Cylinder collision approximation](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_5.png)
 
 ## Step 4: Adding Joints and Drives
 
@@ -232,7 +232,7 @@ Add a Prismatic Joint to enable vertical movement of the fork.
     - **Stiffness**: **100000**
 5. Rename the joint to **lift_joint** and place it inside an organizing Scope.
 
-![Prismatic Joint](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_6.png)
+![Prismatic Joint](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_6.png)
 
 ### Revolute Joints for Front Rollers
 
@@ -269,7 +269,7 @@ The rear wheel requires two joints: one for driving rotation and one for steerin
     - **Stiffness**: **100000**
 5. Organize the created joints inside a **back_wheel_joints** Scope.
 
-![Revolute Joint](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_7.png)
+![Revolute Joint](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_7.png)
 
 ## Step 5: Adding Articulation
 

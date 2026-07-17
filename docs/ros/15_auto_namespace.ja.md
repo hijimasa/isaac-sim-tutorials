@@ -27,7 +27,7 @@ OmniGraph で ROS のパブリッシャ／サブスクライバ／サービス�
 
 1. 各ノードの **nodeNamespace** フィールドに手動で設定する
 
-    ![nodeNamespace フィールド](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_nodeNamespace.png)
+    ![nodeNamespace フィールド](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_nodeNamespace.png)
 
 2. **（推奨）**アセットに `isaac:namespace` 属性を設定し、すべての ROS OmniGraph ノードのネームスペースを**自動生成**する
 
@@ -77,7 +77,7 @@ else:
 ```
 
 2. **Create > Sensors > RTX Lidar > NVIDIA > Example Rotary 2D** で 2D RTX Lidar を追加し、`/mock_robot/base_link/lidar_link` の下にドラッグします。
-3. **Create > Sensors > Camera and Depth Sensors > LeopardImaging > Hawk** で Hawk ステレオカメラを追加し、`/mock_robot/base_link/camera_link` の下にドラッグします。
+3. **Create > Sensors > Camera and Depth Sensors > LeopardImaging > Hawk** で Hawk ステレオカメラを追加し、`/mock_robot/base_link/camera_link` の下にドラッグします。作成されたプリムは `hawk_v1_1_nominal` という名前になっているので、以降の手順のプリムパスと一致するように `Hawk` にリネームします（Stage パネルでプリムを右クリック > **Rename**）。
 4. グラフショートカットで各パブリッシャを作成します：
 
 | パブリッシャ | メニュー | 設定 |

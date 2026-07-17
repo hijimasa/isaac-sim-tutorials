@@ -23,7 +23,7 @@ The namespace is built by concatenating every `isaac:namespace` value along the 
 
 ## Hands-on
 
-Build a mock robot (`/mock_robot/base_link` with lidar_link, camera_link, wheel_left/right — see the Japanese page for the script), add an Example Rotary 2D lidar and a Hawk stereo camera, then create Generic/TF/Camera×2/RTX-Lidar publishers via the menu shortcuts, placing each graph under the corresponding link.
+Build a mock robot (`/mock_robot/base_link` with lidar_link, camera_link, wheel_left/right — see the Japanese page for the script), add an Example Rotary 2D lidar and a Hawk stereo camera (the new prim is named `hawk_v1_1_nominal`; rename it to `Hawk`), then create Generic/TF/Camera×2/RTX-Lidar publishers via the menu shortcuts, placing each graph under the corresponding link.
 
 Add `isaac:namespace` (Property window **Add > Isaac > Namespace**) to lidar_link, camera_link, Hawk, Hawk/left, Hawk/right, wheel_left with values equal to the prim names. After Play, `ros2 topic list` shows e.g. `/camera_link/Hawk/left/rgb`, `/lidar_link/laser_scan`, `/wheel_left/tf`, `/wheel_left/topic`.
 

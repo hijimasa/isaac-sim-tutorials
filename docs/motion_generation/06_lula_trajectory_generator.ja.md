@@ -29,7 +29,7 @@ title: Lula Trajectory Generator
 
 **Lula Trajectory Generator** は、シミュレートロボットの Articulation に簡単に適用できる、タスク空間・C 空間の軌道を生成します。この例では UR10 を使います。
 
-![Lula Trajectory Generator](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_lula_trajectory_gen.webp)
+![Lula Trajectory Generator](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_lula_trajectory_gen.webp)
 
 ## ステップ 1：C 空間の軌道を生成する
 

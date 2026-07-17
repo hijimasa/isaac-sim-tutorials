@@ -4,6 +4,9 @@ title: ROS 2 汎用パブリッシャとサブスクライバ
 
 # ROS 2 汎用パブリッシャとサブスクライバ
 
+!!! warning "既知の問題：入力値が消える"
+    ROS2 Publisher / Subscriber ノードの Property パネルで `messagePackage` や `messageName` を入力した際、パネルの外をクリックすると値が消えることがあります。その場合は値を入力し直してください。再入力後は値が保持され、自動生成される属性が表示されます。
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます：
@@ -43,7 +46,7 @@ title: ROS 2 汎用パブリッシャとサブスクライバ
 1. **Window > Graph Editors > Action Graph** で Action Graph を作成します。
 2. **On Playback Tick**、**ROS2 Context**、**ROS2 Publisher**（任意の型のメッセージをトピックに配信するノード）を追加・接続します。
 
-    ![汎用パブリッシャ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_publisher.png)
+    ![汎用パブリッシャ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_ros_tut_gui_publisher.png)
 
 3. ノードの Property パネルで、メッセージ型を `messagePackage` / `messageSubfolder` / `messageName` のパターンで指定します。有効な（存在する）メッセージ型を指定すると、**ノードの入力属性がそのメッセージの構造に合わせて自動的に再構成**されます。
 4. 他のノードの出力を接続するか Property パネルで値を設定して、配信するデータを埋めます。
@@ -55,13 +58,13 @@ title: ROS 2 汎用パブリッシャとサブスクライバ
 
     なお、メッセージ型を変えたときの属性の再構成に、シミュレーションを再生する必要はありません。
 
-![メッセージ型ごとの属性再構成の例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_publisher_message_types.png)
+![メッセージ型ごとの属性再構成の例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_ros_tut_gui_publisher_message_types.png)
 
 ### 例 1：Joint State を汎用ノードで配信する
 
 専用の Publish Joint State ノードの代わりに、汎用 ROS2 Publisher ノードで `sensor_msgs/msg/JointState` を `/joint_states` に配信してみます。
 
-1. 新しいステージで、**Window > Examples > Robotics Examples > Import Robots > Franka URDF** を開き、**LOAD** と **CONFIGURE** をクリックして環境を読み込み、ロボットのドライブを設定します。
+1. 新しいステージで、Content ブラウザから **Isaac Sim > Robots > FrankaRobotics > FrankaPanda > franka.usd** を開いて Franka ロボットを読み込みます。
 2. Action Graph を作成し、次のノードを追加・接続・設定します：
 
 | ノード | 役割 |
@@ -73,7 +76,7 @@ title: ROS 2 汎用パブリッシャとサブスクライバ
 | **ROS2 Context** | コンテキストの作成 |
 | **ROS2 Publisher** | 汎用パブリッシャ |
 
-![Joint State 配信の例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_publisher_example_joint_states.png)
+![Joint State 配信の例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_ros_tut_gui_publisher_example_joint_states.png)
 
 | ノード | 入力フィールド | 値 |
 |---|---|---|
@@ -82,7 +85,7 @@ title: ROS 2 汎用パブリッシャとサブスクライバ
 | ROS2 Publisher | topicName | joint_states |
 | Articulation State | targetPrim | /panda |
 
-3. **Play** して、Import Franka ウィンドウの **MOVE** でロボットを動かします。
+3. **Play** すると配信が始まります。
 4. 配信を確認します：
 
     ```bash
@@ -94,17 +97,16 @@ title: ROS 2 汎用パブリッシャとサブスクライバ
 `geometry_msgs/msg/Pose` でオブジェクトの姿勢を `/object_pose` に配信します。
 
 1. 新しいステージで **Create > Shape > Cube** でキューブを作成し、`/World/Cube` を選択して右クリック **Add > Physics > Rigid Body with Colliders Preset** で自由落下できるようにします。
-2. Action Graph を作成し、**On Playback Tick**、**Read Prim Attribute** ×2（プリムの属性値を取得）、**Break 3-Vector**（3 成分ベクトルの分解）、**ROS2 Context**、**ROS2 Publisher** を追加・接続します：
+2. Action Graph を作成し、**On Playback Tick**、**Read Prim Local Transform**（プリムのローカル変換行列を取得）、**Get Translation**（変換行列から並進成分を取得）、**Get Rotation Quaternion**（変換行列から回転成分をクォータニオンで取得）、**Break 3-Vector**（3 成分ベクトルの分解）、**Break 4-Vector**（4 成分ベクトルの分解）、**ROS2 Context**、**ROS2 Publisher** を追加・接続します：
 
-    ![オブジェクト姿勢配信の例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_publisher_example_object_pose.png)
+    ![オブジェクト姿勢配信の例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_ros_tut_gui_publisher_example_object_pose.png)
 
 | ノード | 入力フィールド | 値 |
 |---|---|---|
 | ROS2 Publisher | messagePackage | geometry_msgs |
 | ROS2 Publisher | messageName | Pose |
 | ROS2 Publisher | topicName | object_pose |
-| Read Prim Attribute（上） | Prim / Attribute Name | /World/Cube / xformOp:translate |
-| Read Prim Attribute（下） | Prim / Attribute Name | /World/Cube / xformOp:orient |
+| Read Prim Local Transform | prim | /World/Cube |
 
 3. **Play** して配信を確認します：
 
@@ -118,11 +120,11 @@ title: ROS 2 汎用パブリッシャとサブスクライバ
 
 1. Action Graph に **On Playback Tick**、**ROS2 Context**、**ROS2 Subscriber**（任意の型のトピックを購読するノード）を追加・接続します。
 
-    ![汎用サブスクライバ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_subscriber.png)
+    ![汎用サブスクライバ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_ros_tut_gui_subscriber.png)
 
 2. Property パネルでメッセージ型を `messagePackage` / `messageSubfolder` / `messageName` のパターンで指定します。有効な型を指定すると、今度は**出力属性**が再構成されます（再構成ルールはパブリッシャと同じです）。
 
-    ![メッセージ型ごとの出力属性再構成の例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_subscriber_message_types.png)
+    ![メッセージ型ごとの出力属性再構成の例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_ros_tut_gui_subscriber_message_types.png)
 
 3. ノードの出力を他のノードの入力に接続して、受信したデータを利用します。
 4. **Play** すると、ROS 2 環境にメッセージが流れたときに受信されます。
@@ -132,17 +134,17 @@ title: ROS 2 汎用パブリッシャとサブスクライバ
 `/object_pose` トピック（`geometry_msgs/msg/Pose`）を購読し、受信した姿勢にキューブをテレポートさせます。
 
 1. 新しいステージで **Create > Shape > Cube** でキューブを作成します。
-2. Action Graph を作成し、**On Playback Tick**、**Write Prim Attribute** ×2（プリムの属性値を設定）、**Make 3-Vector**（3 成分からベクトルを作成）、**ROS2 Context**、**ROS2 Subscriber** を追加・接続します：
+2. Action Graph を作成し、**On Playback Tick**、**Read Prim Local Transform**（プリムのローカル変換行列を取得）、**Write Prim Local Transform**（プリムのローカル変換行列を設定）、**Set Translation**（変換行列の並進成分を設定）、**Set Rotation**（変換行列の回転成分を設定）、**Make 3-Vector**（3 成分からベクトルを作成）、**Make 4-Vector**（4 成分からベクトルを作成）、**ROS2 Context**、**ROS2 Subscriber** を追加・接続します：
 
-    ![姿勢購読の例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_subscriber_example.png)
+    ![姿勢購読の例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_ros_tut_gui_subscriber_example.png)
 
 | ノード | 入力フィールド | 値 |
 |---|---|---|
 | ROS2 Subscriber | messagePackage | geometry_msgs |
 | ROS2 Subscriber | messageName | Pose |
 | ROS2 Subscriber | topicName | object_pose |
-| Write Prim Attribute（上） | Prim / Attribute Name | /World/Cube / xformOp:translate |
-| Write Prim Attribute（下） | Prim / Attribute Name | /World/Cube / xformOp:orient |
+| Read Prim Local Transform | prim | /World/Cube |
+| Write Prim Local Transform | prim | /World/Cube |
 
 3. **Play** した状態で、ROS 2 ターミナルから姿勢を配信すると、キューブが指定した姿勢にテレポートします：
 

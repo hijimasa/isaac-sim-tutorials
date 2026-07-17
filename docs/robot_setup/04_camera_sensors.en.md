@@ -41,7 +41,7 @@ In this tutorial, you will learn how to create camera sensors in Isaac Sim and a
 ![Creating a camera](images/13_create_camera.png)
 
 !!! note "Displaying the Camera Icon"
-    By default, the camera icon is hidden. To display it, click the ![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_eyecon.png) at the top of the viewport and select **Show By Type > Cameras**.
+    By default, the camera icon is hidden. To display it, click the ![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_eyecon.png) at the top of the viewport and select **Show By Type > Cameras**.
 
 !!! tip "Creating a Camera from the Current View"
     Position the viewport camera to the desired angle and location, then select **Camera > Create from View** from the **Camera** button dropdown at the top left of the viewport. This creates a camera from the current viewport perspective, which is more intuitive than manually setting transforms.<br>

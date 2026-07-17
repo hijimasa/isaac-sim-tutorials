@@ -38,7 +38,7 @@ In this tutorial, you will learn how to set up a virtual environment for physics
     - **Rotation Order**: ZYX (default)<br>
       By default, rotations are applied in Z → Y → X order.
 
-    ![Preferences](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_preferences.png)
+    ![Preferences](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_preferences.png)
 
 ## Creating the Physics Scene
 
@@ -50,13 +50,13 @@ In this tutorial, you will learn how to set up a virtual environment for physics
     - **Enable GPU Dynamics**: Set to disabled (GPU Dynamics is a feature intended for scenes with a large number of objects. For a small scene like the one in this tutorial, CPU simulation is more stable and easier to debug)
     - **Broadphase Type**: Set to MBP
 
-    ![Physics Properties](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_base_ref_gui_physics_properties.png)
+    ![Physics Properties](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_base_ref_gui_physics_properties.png)
 
 ## Adding a Ground Plane
 
 1. Select **Create > Physics > Ground Plane** from the menu bar.
 
-2. Click the ![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_eyecon.png) at the top of the viewport and enable the Grid display from the menu that appears to visually confirm the ground position.
+2. Click the ![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_eyecon.png) at the top of the viewport and enable the Grid display from the menu that appears to visually confirm the ground position.
 
     ![How to show Grid](images/01_show_grid.png)
 
@@ -67,7 +67,7 @@ A new Stage comes with a **defaultLight** pre-placed by default. Without it, not
 To create an additional spotlight:
 
 1. To check light reflections, add a ground plane if one doesn't already exist. You can add one from the menu bar via **Create > Physics > Ground Plane**.
-2. Select **Create > Light > Sphere Light** from the menu bar.
+2. Select **Create > Lights > Sphere Light** from the menu bar.
 3. Position the light on the stage.
     - In the **Stage** tab in the upper right, select the newly created light in the context tree.
     - In the **Property** tab below, use the **Translate** tool in the **Transform** section to move it to a position above the ground plane (e.g., (0, 0, 1)).

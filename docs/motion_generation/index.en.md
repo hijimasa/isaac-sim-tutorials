@@ -12,6 +12,9 @@ Tutorials for manipulator motion generation in Isaac Sim (trajectory planning, i
 
 Isaac Sim provides **Lula** (high-performance library) and **cuRobo** (GPU-accelerated) for manipulator motion generation. Lula includes RMPflow, RRT, trajectory generation, and kinematics solvers; cuRobo adds batched collision-free IK and reactive control with mesh/Nvblox obstacles.
 
+!!! warning "Deprecated in Isaac Sim 6.0"
+    The Lula extensions covered here (`isaacsim.robot_motion.lula` / `isaacsim.robot_motion.motion_generation`) are deprecated in Isaac Sim 6.0 (they still work). Successors: [Motion Generation (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/motion_generation/index.html) (`isaacsim.robot_motion.experimental.motion_generation`), [cuMotion Integration](https://docs.isaacsim.omniverse.nvidia.com/latest/cumotion/index.html) (`isaacsim.robot_motion.cumotion`), and [PINK Integration](https://docs.isaacsim.omniverse.nvidia.com/latest/pink/index.html) (`isaacsim.robot_motion.pink`).
+
 ## Tutorials
 
 - [Motion Generation Overview](01_overview.md)

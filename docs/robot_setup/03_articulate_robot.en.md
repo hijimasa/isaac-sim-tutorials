@@ -127,7 +127,7 @@ Finally, add a **Velocity Controller** to control robot movement during simulati
 
 ### Adding the Velocity Controller
 
-1. Select **Tools > Robotics > Omnigraph Controllers > Joint Velocity** from the menu bar.
+1. Select **Tools > Robotics > OmniGraph Controllers > Joint Velocity** from the menu bar.
 2. When the dialog appears, configure the following:
     - **Robot Prim**: Click **+ Add** and select the Prim with the Articulation Root API (**World**, or **mock_robot** if using the `mock_robot_no_joints` asset).
     - **Graph Path**: Enter `/World/Graphs/Velocity_Controller` (or `mock_robot/Graphs/Velocity_Controller` if using the `mock_robot_no_joints` asset).
@@ -143,6 +143,9 @@ Finally, add a **Velocity Controller** to control robot movement during simulati
 
 !!! warning "Note about units"
     The controller uses **radians (rad/s)**, but USD drive properties display angles in **degrees**. Be aware of this difference when setting velocity and position values.
+
+!!! tip "Controllable with a Differential Controller as well"
+    This two-wheeled robot can also be controlled with a differential controller added via **Tools > Robotics > OmniGraph Controllers > Differential Controller**. The Differential Controller outputs wheel velocities in **left-wheel, right-wheel order**, so in the Articulation Controller's joint names (or indices) array, place `wheel_joint_left` before `wheel_joint_right`.
 
 ![Controller](images/12_test_controller.webp)
 

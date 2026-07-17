@@ -4,6 +4,9 @@ title: Kinematics ソルバー
 
 # Kinematics ソルバー
 
+!!! warning "Deprecated（非推奨）"
+    Isaac Sim 6.0 では、この API を含む Motion Generation 拡張機能は非推奨（deprecated）になりました。引き続き動作しますが、新規開発では公式の [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API の利用を検討してください。
+
 ## 概要
 
 [Motion Policy アルゴリズム](motion_policy.md) と同様に、**Kinematics ソルバー**は単一の実装を持つインターフェースクラスです。`KinematicsSolver` は順運動学（FK）・逆運動学（IK）を計算でき、NVIDIA の Lula ライブラリによる実装（[Lula Kinematics Solver](../05_lula_kinematics.md)）が提供されています。`KinematicsSolver` は独自の内部ロボット表現を持てるため、内部表現と Articulation の間のマッピング用インターフェース関数が用意されています。

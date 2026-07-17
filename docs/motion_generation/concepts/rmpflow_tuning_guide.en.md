@@ -7,6 +7,9 @@ title: RMPflow Tuning Guide
 !!! info "Preliminary version"
     This English page is a preliminary summary. The Japanese page is the primary, fully detailed document — see it for the complete walkthrough.
 
+!!! warning "Deprecated"
+    As of Isaac Sim 6.0, the Motion Generation extension (including the Lula implementation) is deprecated. For new development, consider the [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API. This page is still a valid tuning guide for RMPflow in [cuMotion](https://nvidia-isaac.github.io/cumotion/).
+
 ## Overview
 
 Parameters that work for one robot usually work for morphologically similar robots and across many tasks. Start from an example config (7-DOF Franka Panda or 6-DOF UR10); rescale length-unit parameters for very different sizes, and adjust `cspace_target_rmp/robust_position_term_thresh` if the joint count differs.

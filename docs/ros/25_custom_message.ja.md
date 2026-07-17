@@ -9,14 +9,14 @@ title: ROS 2 Python カスタムメッセージ
 このチュートリアルでは、**独自に定義したカスタムメッセージ**を、Isaac Sim 内の ROS 2 rclpy Python インターフェースから使う方法を学びます。
 
 !!! warning "Windows（WSL）非対応"
-    ROS 2 Python カスタムメッセージのワークフローは **Linux で完全サポート**されています。Windows（WSL）ではこのワークフローはサポートされていません（[セットアップページ](00_setup.md)の制限事項どおり、カスタムパッケージの Isaac Sim 側への組み込みは Windows 非対応です）。
+    ROS 2 Python カスタムメッセージのワークフローは **Linux で完全サポート**されています。Windows（WSL）ではこのワークフローはサポートされていません。なお、Windows でも **Pixi ベースのインストール**であればこのワークフローはサポートされます。
 
 ## はじめに
 
 ### 前提条件
 
 - [ROS 2 パッケージのビルドの基本](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Custom-ROS2-Interfaces.html)（カスタムインターフェースの作成）を理解していること
-- [セットアップページ](00_setup.md)の「rclpy・カスタムパッケージを Isaac Sim 内で使う場合」の手順（Python 3.11 ワークスペースのビルド）を完了していること
+- [セットアップページ](00_setup.md)の「rclpy・カスタムパッケージを Isaac Sim 内で使う場合」の手順（Python 3.12 ワークスペースのビルド）を完了し、ROS 2 ワークスペースがビルド・source 済みであること
 
 ### 所要時間
 
@@ -24,8 +24,8 @@ title: ROS 2 Python カスタムメッセージ
 
 ### 概要
 
-!!! note "なぜ Python 3.11 ビルドが必要か"
-    Isaac Sim は **Python 3.11 のみ**をサポートします。Isaac Sim 内（Script Editor やスタンドアロンスクリプト）で `rclpy` からカスタムメッセージを import するには、そのメッセージパッケージが **Python 3.11 でビルドされている**必要があります。Ubuntu 22.04 標準の Python 3.10 でビルドしたパッケージは、外部ノードでは使えますが Isaac Sim 内では import できません。
+!!! note "なぜ Python 3.12 ビルドが必要か"
+    Isaac Sim は **Python 3.12 のみ**をサポートします。Isaac Sim 内（Script Editor やスタンドアロンスクリプト）で `rclpy` からカスタムメッセージを import するには、そのメッセージパッケージが **Python 3.12 でビルドされている**必要があります。Ubuntu 22.04 標準の Python 3.10 でビルドしたパッケージは、外部ノードでは使えますが Isaac Sim 内では import できません。
 
 このチュートリアルでは、[IsaacSim-ros_workspaces](https://github.com/isaac-sim/IsaacSim-ros_workspaces) リポジトリに含まれる `custom_message` パッケージを使ってワークフローを確認します。このパッケージには `custom_message/msg/SampleMsg.msg` に次の定義のカスタムメッセージが含まれています：
 
@@ -35,11 +35,11 @@ int64 my_num
 ```
 
 !!! tip "自作パッケージの組み込み方"
-    自作の ROS 2 カスタムメッセージパッケージを Isaac Sim で使うには、Isaac Sim ROS Workspace フォルダの `humble_ws/src`（または `jazzy_ws/src`）にパッケージを置き、`./build_ros.sh` を実行してから、ワークスペースを source して Isaac Sim を起動します。カスタムパッケージ向けのインストールトラック（[セットアップページ](00_setup.md)参照）を完了していることを確認してください。
+    自作の ROS 2 カスタムメッセージパッケージを Isaac Sim で使うには、Isaac Sim ROS Workspace フォルダの `humble_ws/src`（または `jazzy_ws/src`）にパッケージを置きます。Ubuntu 24.04 で ROS 2 Jazzy を使っている場合は、公式の Setup ROS 2 Workspaces の手順に従ってワークスペースを Python 3.12 でビルドできます。それ以外の場合は `./build_ros.sh` を実行してから、ワークスペースを source して Isaac Sim を起動します（[セットアップページ](00_setup.md)参照）。
 
 ## ステップ 1：Script Editor から使う
 
-1. `custom_message` パッケージを含む Python 3.11 ワークスペースを source したターミナルから Isaac Sim を起動します。
+1. `custom_message` パッケージを含む Python 3.12 ワークスペースを source したターミナルから Isaac Sim を起動します。
 2. **Window > Script Editor** を開き、次のコードを入力します：
 
 ```python
@@ -102,7 +102,7 @@ print("Message assignment completed!")
 
 このチュートリアルでは以下のトピックを扱いました：
 
-1. **Python 3.11** でのカスタムメッセージパッケージのビルドが必要な理由
+1. **Python 3.12** でのカスタムメッセージパッケージのビルドが必要な理由
 2. **Script Editor** からの rclpy によるカスタムメッセージの使用
 3. **スタンドアロンスクリプト**からの使用（`enable_extension("isaacsim.ros2.bridge")` → rclpy import の順序）
 

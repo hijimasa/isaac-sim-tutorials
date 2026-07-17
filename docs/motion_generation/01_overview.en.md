@@ -7,6 +7,9 @@ title: Motion Generation Overview
 !!! info "Preliminary version"
     This English page is a preliminary summary. The Japanese page is the primary, fully detailed document — see it for the complete walkthrough.
 
+!!! warning "Deprecated in Isaac Sim 6.0"
+    The official Motion Generation (Lula) page is marked Deprecated in Isaac Sim 6.0. For new development, use the Robot Motion (Experimental) API (`isaacsim.robot_motion.experimental.motion_generation`), the cuMotion integration, or the PINK integration. Lula still works in 6.0.
+
 ## Overview
 
 **Lula** is a high-performance motion generation library for robotic manipulation. Isaac Sim exposes:
@@ -24,4 +27,4 @@ Isaac Sim also interfaces with **cuRobo**, a GPU-accelerated library adding batc
 
 ## Examples
 
-Interactive: `Windows > Examples > Robotics Examples` → Follow Target, RoboFactory, RoboParty (use **RESET**, not STOP/PLAY). Standalone: `follow_target_with_rmpflow.py` and `follow_target_with_ik.py` under `standalone_examples/api/isaacsim.robot.manipulators/franka/`.
+Interactive: `Windows > Examples > Robotics Examples` → Follow Target, RoboFactory, RoboParty (use **RESET**, not STOP/PLAY). Standalone: `follow_target_with_rmpflow.py` (Franka and UR10) and `follow_target_with_ik.py` (UR10) under `standalone_examples/api/isaacsim.robot.experimental.manipulators/`.

@@ -38,7 +38,7 @@ title: シーンベースの合成データセット生成
 
 カメラは 3 視点（トップダウン／パレット注視のランダム視点／フォークリフト運転席からの俯瞰）で、既定では **BasicWriter** が rgb・semantic_segmentation・bounding_box_3d を `<作業ディレクトリ>/_out_scene_based_sdg` に保存します。
 
-![シーンベース SDG](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_offline_data.png)
+![シーンベース SDG](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_offline_data.png)
 
 ## ステップ 1：実行してみる
 

@@ -176,7 +176,7 @@ In the **Set Joint Properties** section, set the **Joint Status** for each joint
 |---|---|---|
 | (all gripper joints) | **Fixed Joint** | Not controlled by the solver |
 
-![Lula Robot Description Editor](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_lula_robot_description_editor.png)
+![Lula Robot Description Editor](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_lula_robot_description_editor.png)
 
 !!! note "Why set gripper joints to Fixed?"
     The gripper and arm are typically controlled separately. The kinematics solver's configuration space (cspace) only needs to include the arm joints. Including gripper joints would add unnecessary computation and could cause the gripper to move during collision checking.
@@ -248,7 +248,7 @@ The quality of collision spheres has a significant impact on motion planning per
 
 4. Click **Save** to execute the export.
 
-    ![Exporting the Lula robot description file](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_lula_export_robot_description_file.png)
+    ![Exporting the Lula robot description file](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_lula_export_robot_description_file.png)
 
 !!! note "Contents of the exported file"
     The Lula robot description file (YAML) contains the joint configuration, configuration space definition, and collision sphere positions and sizes. This file is used by RMPFlow and Lula kinematics solvers.
@@ -263,7 +263,7 @@ If you plan to use cuMotion, also export an XRDF file.
 
 3. Click **Save** to execute the export.
 
-    ![Exporting the cuMotion XRDF file](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_lula_export_cucore_xrdf_file.png)
+    ![Exporting the cuMotion XRDF file](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_lula_export_cucore_xrdf_file.png)
 
 !!! note "What is XRDF?"
     XRDF (Extended Robot Description Format) is a robot description format used by cuMotion (CUDA-accelerated motion planning). It is required for GPU-accelerated high-speed motion planning.

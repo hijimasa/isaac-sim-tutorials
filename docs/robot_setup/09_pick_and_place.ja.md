@@ -174,7 +174,7 @@ Save As で保存すると、参照先ファイル（Physics Layer など）へ�
 
 最初のステップとして、グリッパーの開閉制御を学びます。これはマニピュレーションタスクの最も基本的な操作です。
 
-![グリッパー制御](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_gripper_control.webp)
+![グリッパー制御](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_gripper_control.webp)
 
 ### 2-1. スクリプトの作成
 
@@ -333,7 +333,7 @@ if i == 800:
 
 次に、**逆運動学（IK: Inverse Kinematics）** を使って、エンドエフェクタを目標位置に移動させる方法を学びます。
 
-![ターゲット追従](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_follow_target.webp)
+![ターゲット追従](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_follow_target.webp)
 
 !!! note "逆運動学（IK）とは"
     逆運動学とは、エンドエフェクタの目標位置・姿勢から、各ジョイントの角度を逆算する手法です。「手先をこの位置に持っていきたい」という目標に対して、各関節をどの角度にすればよいかを計算します。
@@ -778,13 +778,13 @@ simulation_app.close()
 | **動作の滑らかさ** | 瞬間的に目標角度に移動 | 滑らかな軌道で目標に到達 |
 | **収束失敗** | 解が見つからない場合がある | 常にアクションを出力（到達不能でも安全に停止） |
 
-![RMPFlow ターゲット追従](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_follow_target_rmp.webp)
+![RMPFlow ターゲット追従](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_follow_target_rmp.webp)
 
 ## ステップ 5：基本的なピック＆プレースタスク
 
 最後に、ここまでのすべてを組み合わせて、物体を掴んで（ピック）別の場所に置く（プレース）タスクを実装します。
 
-![ピック＆プレース](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
+![ピック＆プレース](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
 
 このステップでは 3 つのファイルを作成します：
 
@@ -1071,7 +1071,7 @@ end_effector_offset=np.array([0, 0, 0.20])
 5. **ピック＆プレースタスク**：RMPFlow とグリッパー制御を組み合わせた物体のマニピュレーション
 
 !!! tip "参考ドキュメント"
-    - [Pick and Place Example（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup_tutorials/tutorial_pickplace_example.html)
+    - [Pick and Place Example（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_pickplace_example.html)
     - [Motion Generation（公式ドキュメント）](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_motion_motion_generation.html)
 
 ## 次のステップ

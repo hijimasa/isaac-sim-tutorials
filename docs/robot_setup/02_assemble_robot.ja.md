@@ -78,7 +78,7 @@ title: シンプルなロボットの組み立て
 
 ### コリジョンメッシュの確認
 
-1. ビューポート上部の![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_eyecon.png)をクリックします。
+1. ビューポート上部の![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_eyecon.png)をクリックします。
 2. **Show By Type > Physics > Colliders > All** を選択します。
 3. Collision API が適用された静的オブジェクト（今回はグラウンドプレーン）の周りに紫色のアウトラインが表示されます。動的オブジェクト（今回はキューブと2つのシリンダー）には緑色のアウトラインが表示されます。
 
@@ -93,7 +93,7 @@ title: シンプルなロボットの組み立て
 5. **Property > Physics** タブ内の **Physics materials on selected models** を見つけます。
 6. ドロップダウンメニューから作成したマテリアルを選択して割り当てます。
 
-    ![マテリアル](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_materials.png)
+    ![マテリアル](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_materials.png)
 
 ## 外観マテリアルの設定
 

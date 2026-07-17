@@ -192,7 +192,7 @@ Isaac Sim 同梱のアセットを使用する場合は、`Samples > Rigging > M
 
 3. 各ジョイントの**青いスライダー**をドラッグして、ターゲット位置を変更します。DOF（自由度）の位置がターゲットに追従して変化することを確認します。
 
-    ![Physics Inspector](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_physics_inspector.png)
+    ![Physics Inspector](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_physics_inspector.png)
 
 4. 確認が完了したら、Physics Inspector ウィンドウを閉じます。
 

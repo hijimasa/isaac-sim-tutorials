@@ -70,6 +70,8 @@ keys = og.Controller.Keys
 Script Editor の別タブに次のスニペットを貼り付けて実行します。
 
 ```python
+import omni.graph.core as og
+
 # 属性から既存の値を取得
 existing_text = og.Controller.attribute("/action_graph/print.inputs:text").get()
 print("Existing Text: ", existing_text)
@@ -85,6 +87,8 @@ og.Controller.attribute("/action_graph/print.inputs:text").set("New Texts to pri
 3 つ目のタブで、既存グラフにノードと接続を追加します。
 
 ```python
+import omni.graph.core as og
+
 og.Controller.create_node("/action_graph/new_node_name", "omni.graph.nodes.ConstantString")
 og.Controller.attribute("/action_graph/new_node_name.inputs:value").set("This is a new node")
 og.Controller.connect("/action_graph/new_node_name.inputs:value", "/action_graph/print.inputs:text")
@@ -100,6 +104,9 @@ og.Controller.connect("/action_graph/new_node_name.inputs:value", "/action_graph
 2. Script Editor の新しいタブに次のコードを貼り付けます。
 
 ```python
+import omni.graph.core as og
+
+keys = og.Controller.Keys
 (demand_graph_handle, _, _, _) = og.Controller.edit(
     {
         "graph_path": "/ondemand_graph",
@@ -127,7 +134,7 @@ og.Controller.connect("/action_graph/new_node_name.inputs:value", "/action_graph
 5. グラフを手動でトリガーするには、別タブで `demand_graph_handle.evaluate()` を実行します。シミュレーションが実行中であることを確認して **Run** を押すと、「On Demand Graph」が 1 度だけ出力されます。
 
 !!! note "既存グラフのパイプラインステージ変更"
-    既存のグラフに対しては `demand_graph_handle.change_pipeline_stage(og.GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND)` でも設定できます。物理コールバックやレンダリングコールバックにグラフをアタッチする詳しい例は `standalone_examples/api/isaacsim.core.api/omnigraph_triggers.py` を参照してください。
+    既存のグラフに対しては `demand_graph_handle.change_pipeline_stage(og.GraphPipelineStage.GRAPH_PIPELINE_STAGE_ONDEMAND)` でも設定できます。物理コールバックやレンダリングコールバックにグラフをアタッチする詳しい例は `standalone_examples/api/isaacsim.core.experimental.api/omnigraph_triggers.py` を参照してください。
 
 ## まとめ
 

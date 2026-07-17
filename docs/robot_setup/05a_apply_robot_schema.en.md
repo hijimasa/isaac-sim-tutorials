@@ -86,7 +86,7 @@ By the same mechanism, the Grasp Editor consults `IsaacAttachmentPointAPI`, and 
 
 ## Step 2: Preparing the Layer Structure
 
-Isaac Sim's [Asset Structure Guideline](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html) recommends **storing the Robot Schema application in a dedicated layer**. The benefits are:
+Isaac Sim's [Asset Structure Guideline](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html) recommends **storing the Robot Schema application in a dedicated layer**. The benefits are:
 
 - You can add the Robot Schema without modifying the base asset (mesh and rigging)
 - You can adapt to future schema updates without regenerating the base
@@ -367,7 +367,7 @@ This tutorial covered the following topics:
 This brings a manually rigged robot to parity with one imported from URDF, and makes it usable from Asset Editor tools such as the Gain Tuner and Grasp Editor.
 
 !!! tip "Official Documentation"
-    For more detailed Robot Schema specifications (Surface Gripper, AttachmentPointAPI, robot composition, and so on), refer to the Isaac Sim official documentation: [Robot Schema](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/omniverse_usd/robot_schema.html).
+    For more detailed Robot Schema specifications (Surface Gripper, AttachmentPointAPI, robot composition, and so on), refer to the Isaac Sim official documentation: [Robot Schema](https://docs.isaacsim.omniverse.nvidia.com/latest/omniverse_usd/robot_schema.html).
 
 ## Next Steps
 

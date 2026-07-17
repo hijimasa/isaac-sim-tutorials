@@ -7,6 +7,9 @@ title: RMPflow (Theory)
 !!! info "Preliminary version"
     This English page is a preliminary summary. The Japanese page is the primary, fully detailed document — see it for the complete walkthrough.
 
+!!! warning "Deprecated"
+    As of Isaac Sim 6.0, the Motion Generation extension (including the Lula implementation) is deprecated. For new development, consider the [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API, which provides improved interfaces and additional features over Lula.
+
 ## Overview
 
 A **Riemannian Motion Policy (RMP)** is an acceleration policy plus an "inertia matrix" M(q, q̇) (related to a Riemannian metric). **RMPflow** combines multiple competing RMPs into one global acceleration policy using Riemannian geometry. Acceleration policies (q̈ = π(q, q̇)) are integrated (e.g. Euler) to produce position/velocity control.

@@ -4,6 +4,9 @@ title: ROS 2 汎用サービスサーバとクライアント
 
 # ROS 2 汎用サービスサーバとクライアント
 
+!!! warning "既知の問題：入力値が消える"
+    ROS2 Server / Client ノードの Property パネルで `messagePackage` や `messageName` を入力した際、パネルの外をクリックすると値が消えることがあります。その場合は値を入力し直してください。再入力後は値が保持され、自動生成される属性が表示されます。
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます：
@@ -57,16 +60,16 @@ title: ROS 2 汎用サービスサーバとクライアント
     - Request ノードの **On received** 実行出力 → Response ノードの **On received** 入力：**リクエストを受信したときだけ**応答を送るための接続
     - Playback Tick → Request ノード、Context → Request / Response 両ノード
 
-    ![汎用サーバーグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_server_1.PNG)
+    ![汎用サーバーグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_server_1.PNG)
 
 3. Property パネルでメッセージ型を `messagePackage` / `messageSubfolder` / `messageName` のパターンで指定します。たとえば `std_srvs/srv/SetBool` なら、messagePackage は `std_srvs`、messageSubfolder は `srv`、messageName は `SetBool` です。
 
 !!! warning "Request と Response で同じ型を指定すること"
     Server Handle で接続された **ROS2 Service Server Request と Response の両ノードに、同じメッセージフィールドを入力**する必要があります。有効な型を指定すると、Request ノードの**出力**にはサービスの**リクエスト**フィールドが、Response ノードの**入力**には**レスポンス**フィールドが再構成されます（再生は不要です）。
 
-![Request ノードの出力再構成](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_server_2.PNG)
+![Request ノードの出力再構成](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_server_2.PNG)
 
-![Response ノードの入力再構成](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_server_3.PNG)
+![Response ノードの入力再構成](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_server_3.PNG)
 
 4. Request ノードの **Service Name** プロパティは変更できます。クライアントはこの名前でサーバーと通信します。
 
@@ -74,7 +77,7 @@ title: ROS 2 汎用サービスサーバとクライアント
 
 設定完了後のサーバーの例：
 
-![サーバーの最終形](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_server_4.PNG)
+![サーバーの最終形](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_server_4.PNG)
 
 1. シミュレーションを **Play** します。サーバーがリクエストを受け付ける状態になります。
 2. **ROS2 Service Server Response** の入力フィールドに、クライアントへ返すサンプルメッセージと成否の bool 値を設定します。
@@ -100,7 +103,7 @@ title: ROS 2 汎用サービスサーバとクライアント
 1. Action Graph に **On Playback Tick**、**ROS2 Context**、**ROS2 Service Client**（任意の型のリクエストを送信し、応答を受信するノード）を追加・接続します。
 2. Property パネルでメッセージ型を同じパターンで指定します。Client ノードの**入力**にはリクエストフィールド、**出力**にはレスポンスフィールドが再構成されます：
 
-    ![Client ノードの再構成](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_client_1.PNG)
+    ![Client ノードの再構成](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_client_1.PNG)
 
 3. **Play** すると、クライアントは入力データに従ってリクエストの送信を開始します。サーバーの応答はノードの出力から取得できます。
 
@@ -110,7 +113,7 @@ title: ROS 2 汎用サービスサーバとクライアント
 
 1. 次のようなグラフを作成します：
 
-    ![サーバー＋クライアントグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_server_client_1.PNG)
+    ![サーバー＋クライアントグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_server_client_1.PNG)
 
 2. **Play** すると、クライアントとサーバーがリクエストとレスポンスを送受信し始めます。
 3. **ROS2 Service Server Response** を選択して、入力の **Response Message** フィールドでサーバーの応答メッセージを変更します。

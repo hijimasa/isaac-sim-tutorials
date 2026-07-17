@@ -170,7 +170,7 @@ Run the tutorial scripts using the Isaac Sim Python environment as follows:
 
 As the first step, learn how to control gripper open/close operations. This is the most basic operation for manipulation tasks.
 
-![Gripper control](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_gripper_control.webp)
+![Gripper control](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_gripper_control.webp)
 
 ### 2-1. Creating the Script
 
@@ -329,7 +329,7 @@ By applying small increments each step, the gripper opens and closes slowly and 
 
 Next, learn how to move the end-effector to a target position using **Inverse Kinematics (IK)**.
 
-![Follow target](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_follow_target.webp)
+![Follow target](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_follow_target.webp)
 
 !!! note "What is Inverse Kinematics (IK)?"
     Inverse kinematics is a method of computing joint angles from a desired end-effector position and orientation. Given the goal "move the hand to this position", it calculates the angle each joint should be at.
@@ -774,13 +774,13 @@ simulation_app.close()
 | **Motion smoothness** | Instantaneous movement to target angles | Smooth trajectory to reach the target |
 | **Convergence failure** | May fail to find a solution | Always outputs actions (safely stops if unreachable) |
 
-![RMPFlow follow target](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_follow_target_rmp.webp)
+![RMPFlow follow target](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_follow_target_rmp.webp)
 
 ## Step 5: Basic Pick and Place Task
 
 Finally, combine everything to implement a task that grasps an object (pick) and places it at another location (place).
 
-![Pick and place](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
+![Pick and place](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
 
 In this step, you will create 3 files:
 
@@ -1067,7 +1067,7 @@ This tutorial covered the following topics:
 5. **Pick and Place Task**: Object manipulation combining RMPFlow and gripper control
 
 !!! tip "Reference Documentation"
-    - [Pick and Place Example (Official Documentation)](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup_tutorials/tutorial_pickplace_example.html)
+    - [Pick and Place Example (Official Documentation)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_pickplace_example.html)
     - [Motion Generation (Official Documentation)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_motion_motion_generation.html)
 
 ## Next Steps

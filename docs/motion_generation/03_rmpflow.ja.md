@@ -4,6 +4,9 @@ title: Lula RMPflow
 
 # Lula RMPflow
 
+!!! warning "Isaac Sim 6.0 で非推奨（Deprecated）"
+    公式ドキュメントでは、このページは Isaac Sim 6.0 で **Deprecated** とマークされました。新規開発には後継の **Robot Motion (Experimental)** API の利用が推奨されています。Lula RMPflow は 6.0 でも引き続き動作します。
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます：
@@ -104,7 +107,7 @@ class FrankaRmpFlowExample():
 - `ArticulationMotionPolicy` は、`RmpFlow` とシミュレート Franka の Articulation との**変換レイヤ**として機能します。
 - 毎フレーム、エンドエフェクタのターゲットを `RmpFlow` に渡し（`set_end_effector_target`）、`get_next_articulation_action` でアクションを計算して適用します。
 
-![RMPflow](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rmpflow.webp)
+![RMPflow](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rmpflow.webp)
 
 !!! note "組み立てロボットの URDF"
     RMPflow は設定 URDF が与えるロボット構造を考慮します。グリッパを付けた UR10 のように部品を組み立てたロボットで作業する場合は、正しい構造・エンドエフェクタフレームのオフセット・追加の制御関節を反映するよう URDF を更新してください。最終的な組み立て URDF は USD to URDF Exporter で書き出せます。URDF を変更したら、Robot Description ファイルも見直してください。

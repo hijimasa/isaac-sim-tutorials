@@ -90,7 +90,7 @@ H1 にはリンク・ジョイント・メッシュなど多数のプリムが�
 3. 選択したまま右クリック > **Add > Physics > Joint State Angular** を選択
 4. 続けて右クリック > **Add > Physics > Angular Drive** を選択
 
-   ![Joint State / Drive API の追加](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_1.png)
+   ![Joint State / Drive API の追加](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_1.png)
 
 これにより、すべてのジョイントに次の 2 つの API が適用されます：
 
@@ -159,7 +159,7 @@ Isaac Sim は既定で「Stop ボタンを押すと初期状態にリセット�
 2. **Create > Physics > Joint > Fixed Joint** を選択
 3. ビューポートで **Play** ボタンを押す
 
-   ![姿勢確認のシミュレーション](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_2.webp)
+   ![姿勢確認のシミュレーション](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_2.webp)
 
 ロボットがまっすぐ立った状態で、設定した目標位置（軽く膝を曲げた構え）に各ジョイントが収束していくのが見えれば成功です。
 
@@ -237,7 +237,7 @@ USD のスティフネス・ダンピングは「**1 度ずれたときに発生
 3. **Joint** セクション：
     - **Maximum Joint Velocity** に `ω_rad × 180/π` の値（例：5729.578）
 
-   ![ジョイント設定の入力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_3.png)
+   ![ジョイント設定の入力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_3.png)
 
 ### 2-4. アーマチュアと摩擦の設定（Raw USD Properties）
 
@@ -281,7 +281,7 @@ print(prim.dof_properties)
 4. Script Editor の **Run** ボタン（または Ctrl + Enter）でスクリプトを実行
 5. 下部のコンソールに次の 2 種類の出力が現れます：
 
-   ![検証結果](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_4.png)
+   ![検証結果](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_4.png)
 
 - **`dof_names`**：自由度（DOF）に対応するジョイント名の一覧
 - **`dof_properties`**：各 DOF のプロパティをまとめた配列。1 行が 1 ジョイントに対応し、各列はおおむね次の意味です：

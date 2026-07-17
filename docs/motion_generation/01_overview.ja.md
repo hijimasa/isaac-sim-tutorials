@@ -4,6 +4,9 @@ title: モーション生成の概要
 
 # モーション生成の概要
 
+!!! warning "Isaac Sim 6.0 で非推奨（Deprecated）"
+    公式ドキュメントでは、このページ（Motion Generation）は Isaac Sim 6.0 で **Deprecated** とマークされました。新規開発には、後継の **Robot Motion (Experimental)** API（`isaacsim.robot_motion.experimental.motion_generation`）や **cuMotion 統合**・**PINK 統合** の利用が推奨されています。本セクションの Lula 系機能は 6.0 でも引き続き動作します。
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます：
@@ -16,7 +19,7 @@ title: モーション生成の概要
 
 ### 前提条件
 
-- Isaac Sim 5.1 が起動できること
+- Isaac Sim 6.0 が起動できること
 - マニピュレータ（アーム型ロボット）と Articulation の基礎を理解していること
 
 ### 所要時間
@@ -64,11 +67,14 @@ title: モーション生成の概要
 `<isaac_sim_root_dir>` に移動し、Linux なら `./python.sh`、Windows なら `python.bat` で実行します。
 
 ```bash
-# RMPflow でターゲットを追従
-./python.sh standalone_examples/api/isaacsim.robot.manipulators/franka/follow_target_with_rmpflow.py
+# RMPflow でターゲットを追従（Franka）
+./python.sh standalone_examples/api/isaacsim.robot.experimental.manipulators/franka/follow_target_with_rmpflow.py
 
-# IK でターゲットを追従
-./python.sh standalone_examples/api/isaacsim.robot.manipulators/franka/follow_target_with_ik.py
+# RMPflow でターゲットを追従（UR10）
+./python.sh standalone_examples/api/isaacsim.robot.experimental.manipulators/universal_robots/follow_target_with_rmpflow.py
+
+# IK でターゲットを追従（UR10）
+./python.sh standalone_examples/api/isaacsim.robot.experimental.manipulators/universal_robots/follow_target_with_ik.py
 ```
 
 ## まとめ

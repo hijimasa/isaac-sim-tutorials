@@ -55,7 +55,7 @@ Isaac Sim では、CAD や他の 3D ソフトからインポートしたロボ�
     USD のシーン構造（シーングラフ）に存在するプリムやメッシュは、**1 つひとつが描画コマンドや物理計算のオーバーヘッド**になります。リンクが 10 個でも、メッシュが 200 個に分割されていれば描画コストは約 200 個分です。**メッシュ統合**は描画コマンドを 1 つにまとめ、**インスタンシング**は同じデータを共有することでメモリ使用量を削減します。
 
 !!! note "推奨されるアセット構造"
-    Isaac Sim 公式の[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html)では、ロボットアセットを以下の 3 段階に分けて整理することが推奨されています：
+    Isaac Sim 公式の[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html)では、ロボットアセットを以下の 3 段階に分けて整理することが推奨されています：
 
     | 段階 | 内容 |
     |---|---|
@@ -77,7 +77,7 @@ Isaac Sim では、CAD や他の 3D ソフトからインポートしたロボ�
 2. 左側のリストから **Stage > Authoring** を選択
 3. **Inherit Parent Transform** のチェックを入れます
 
-   ![Inherit Parent Transform を有効化](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_2.png)
+   ![Inherit Parent Transform を有効化](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_2.png)
 
 !!! tip "なぜこの設定が必要か"
     USD のプリムは、最終的なワールド座標 = 親の Transform × 自身のローカル Transform で決まります。`Inherit Parent Transform` が無効だと、親を変更したときに**親の Transform を継承しない**ため、子のローカル Transform が変わらなくてもワールド位置が大きくズレます。最適化作業では多数のメッシュを別の親に移動するため、ここで一括して設定しておきます。
@@ -102,7 +102,7 @@ Isaac Sim では、CAD や他の 3D ソフトからインポートしたロボ�
 4. **Root Layer**（`Jetbot_optimized.usd`）を選択した状態で **Insert Sublayer** ボタンをクリック
 5. ファイル選択ダイアログで、作業用フォルダにコピーした `Jetbot_base.usd` を指定
 
-   ![サブレイヤーの挿入](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_3.png)
+   ![サブレイヤーの挿入](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_3.png)
 
 これで Jetbot のメッシュとマテリアルがビューポートに表示されます。**`Jetbot_optimized.usd` を Root Layer として作業を進めるので、以降の編集はすべてこのファイルに記録され、`Jetbot_base.usd` 自体は変更されません**。
 
@@ -121,7 +121,7 @@ Isaac Sim では、CAD や他の 3D ソフトからインポートしたロボ�
 
 1. **Stage** パネル上で右クリックして **Show Root** を選択し、`/`（ルート）レベルを表示します
 
-   ![Show Root の有効化](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_4.png)
+   ![Show Root の有効化](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_4.png)
 
 2. ルート上で右クリック > **Create > Xform** を選択し、新しい Xform を `Jetbot_Sim` にリネーム
 3. `Jetbot_Sim` の上で右クリック > **Set as Default Prim** を選択（このプリムがアセットの「玄関」になります）
@@ -146,15 +146,15 @@ Isaac Sim では、CAD や他の 3D ソフトからインポートしたロボ�
 1. `Jetbot` 配下のすべての子プリムを Shift クリックでまとめて選択
 2. 選択したまま `Jetbot_Sim` にドラッグ＆ドロップ
 
-   ![プリムの移動](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_5.png)
+   ![プリムの移動](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_5.png)
 
 3. 移動したプリムが**グレーアウト（非アクティブ）**になっている場合は、選択して右クリック > **Activate** で再度有効にします
 
-   ![プリムのアクティベート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_6.png)
+   ![プリムのアクティベート](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_6.png)
 
 4. `Jetbot_Sim/<リンク名>`（例：`Jetbot_Sim/left_wheel`）の**配下にコピーされたメッシュやマテリアル**を、リンク Xform 自体は残したまま**削除**します。リンク Xform は次のステップで Mesh Merge Tool が出力する統合メッシュを受け取る器として使うため、中身だけを空にしておきます。
 
-   ![Jetbot_Sim 配下の残骸を削除](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_6a.png)
+   ![Jetbot_Sim 配下の残骸を削除](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_6a.png)
 
 !!! note "なぜ Jetbot_Sim 側の中身を消すのか"
     リペアレント操作によって、元の `Jetbot/<リンク>` の子要素（メッシュ・マテリアルなど）も `Jetbot_Sim/<リンク>` 配下に一緒に移動してきます。これらは未マージのままで、これから Mesh Merge Tool で**新しい統合メッシュを作って差し替える**ため、ここで一度きれいに片付けておきます。元のメッシュデータはサブレイヤーである `Jetbot_base.usd`（および `Jetbot/<元のリンク>` 配下）に保持されているため、Mesh Merge Tool はそちらを入力として参照できます。
@@ -186,12 +186,12 @@ CAD インポート直後の Jetbot は、1 つのリンクが**数十個のメ�
 3. **Material Save Location** ( **Combine Materials** チェックボックス横の入力欄) に `/Jetbot_Sim/Looks` を指定（マテリアルを集約する保存先）
 4. **Merge** ボタンをクリック
 
-   ![Mesh Merge Tool の設定](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_7.png)
+   ![Mesh Merge Tool の設定](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_7.png)
 
 5. 統合結果が `/Merged/left_wheel` として一時的に作成されます
 6. 作成されたメッシュを選択し、**Properties** パネルの **Transform** セクションで位置・回転・スケールを**すべて 0（または恒等値）にクリア**
 
-   ![Transform のクリア](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_8.png)
+   ![Transform のクリア](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_8.png)
 
 !!! tip "Transform をクリアする理由"
     Mesh Merge Tool は、選択したプリムのワールド座標を基準にメッシュを焼き込みます。そのため、新しく作られた `/Merged/left_wheel` には**ワールド位置と同じ Transform**が入った状態になります。次のステップでこのメッシュを `Visuals` 配下に置いて参照させる場合、Transform をゼロに戻しておかないと、参照元と参照先で Transform が**二重に適用**されてしまいます。
@@ -204,30 +204,30 @@ CAD インポート直後の Jetbot は、1 つのリンクが**数十個のメ�
 2. `/Merged/left_wheel` を `/Visuals/left_wheel` にドラッグ＆ドロップで移動
 3. 空になった `/Merged` プリムを削除
 
-   ![Visuals 配下への配置](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_9.png)
+   ![Visuals 配下への配置](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_9.png)
 
 次に、シミュレーション側のリンク `Jetbot_Sim/left_wheel` に、`Visuals/left_wheel` を参照する Xform を追加します：
 
 4. `Jetbot_Sim/left_wheel` 配下に新しい Xform を作成し、`Visuals` にリネーム
 5. その Xform 上で右クリック > **Add > Reference** を選択
 
-   ![Reference の追加](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_10.png)
+   ![Reference の追加](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_10.png)
 
 6. ファイル選択ダイアログで、作業用フォルダにコピーした `Jetbot_base.usd` を選択（次のステップで Asset Path を空にして内部参照に変えるため、ここでの選択ファイルは「ダイアログを閉じる足場」として一時的に使うだけです）
 
-   ![ファイル選択](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_11.png)
+   ![ファイル選択](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_11.png)
 
 7. Prim Path に `/Visuals/left_wheel` と入力
 
-   ![Prim Path の入力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_12.png)
+   ![Prim Path の入力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_12.png)
 
 8. **Properties** パネルの **References** セクションを開き、**Asset Path** の値を消して空にする（同じステージ内を参照する「内部参照」になります）
 
-   ![Asset Path のクリア](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_12a.png)
+   ![Asset Path のクリア](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_12a.png)
 
 9. ビューポートに左車輪が正しく表示され、Stage 上は `Jetbot_Sim/left_wheel/Visuals` 配下に統合済みメッシュが現れることを確認
 
-   ![完成した参照構造](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_13.png)
+   ![完成した参照構造](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_13.png)
 
 !!! note "なぜ「内部参照」にするのか"
     `Jetbot_optimized.usd` の `Visuals` 配下にメッシュを置き、同じファイル内で参照する形にすると、外部ファイルへの依存なくアセット 1 つで完結します。次のインスタンシング設定もこの内部参照に対して適用します。
@@ -276,7 +276,7 @@ Jetbot の左右の車輪は**まったく同じ形状**です。同じメッシ
 2. **Properties** パネルで **Instanceable** にチェックを入れる
 3. Stage 上で参照アイコンに**青い「I」のマーク**が表示されることを確認
 
-   ![Instanceable インジケータ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_asset_optimization_16.png)
+   ![Instanceable インジケータ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_asset_optimization_16.png)
 
 !!! warning "Instanceable とコリジョン／マテリアルの個別設定"
     **Instanceable** が有効なプリムでは、その配下のメッシュごとにマテリアルやコリジョン近似を変更できなくなります。[チュートリアル 10](10_closed_loop_structures.md) のステップ 2-5、6-2 でも触れたように、後からリンクごとにマテリアルを差し替えたい場合は、対象プリムの Instanceable を**一時的にオフ**にしてから設定し、終わったら戻します。
@@ -376,7 +376,7 @@ Isaac Sim のデフォルトレンダラーは、**シーンに 10 個以上の�
 これらを組み合わせることで、Jetbot サンプルでは **40 FPS → 64 FPS（約 1.6 倍）** の改善が得られます。実機ロボットの USD アセットでも、メッシュ統合とインスタンシングは特に効果が大きいため、シミュレーションが重いと感じたらまずここから着手するのがおすすめです。
 
 !!! tip "アセット構造ガイドラインも合わせて参照"
-    本チュートリアルで作成した「ベース／最適化／機能（物理・センサー）」の分離構造は、Isaac Sim 公式の[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html) に基づいています。物理・センサー・ROS など機能ごとにレイヤーを分けると、アセットの再利用性とメンテナンス性がさらに高まります。
+    本チュートリアルで作成した「ベース／最適化／機能（物理・センサー）」の分離構造は、Isaac Sim 公式の[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html) に基づいています。物理・センサー・ROS など機能ごとにレイヤーを分けると、アセットの再利用性とメンテナンス性がさらに高まります。
 
 ## 次のステップ
 

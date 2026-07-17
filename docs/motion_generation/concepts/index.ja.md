@@ -8,6 +8,9 @@ title: モーション生成のコンセプト
 
 Isaac Sim のモーション生成 API の設計思想と、各アルゴリズムインターフェースの理論的背景を解説します。
 
+!!! warning "Deprecated（非推奨）"
+    Isaac Sim 6.0 では、本セクションが扱う Motion Generation 拡張機能（`isaacsim.robot_motion.motion_generation` / Lula）は非推奨（deprecated）になりました。引き続き動作しますが、新規開発では公式の [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) セクション（Motion Generation (Experimental) API・cuMotion・PINK）の利用を検討してください。
+
 ## 概要
 
 Motion Generation は、Isaac Sim 内のオブジェクトを制御する API を提供します。この API は、モーション制御アルゴリズムを Isaac Sim に組み込むための**抽象インターフェース**で構成され、次の 2 つの基本的な役割を持ちます。

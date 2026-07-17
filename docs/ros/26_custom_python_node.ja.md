@@ -38,7 +38,7 @@ title: ROS 2 Python カスタム OmniGraph ノード
 | **Ready-to-use extension** | チェック（すぐ使える Python エクステンションを生成） |
 | **Omnigraph node** | チェック（OmniGraph 用のファイル／フォルダを生成） |
 
-![VS Code エクステンションテンプレート](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_custom_omnigraph_node_python_vscode_extension_template.png)
+![VS Code エクステンションテンプレート](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_custom_omnigraph_node_python_vscode_extension_template.png)
 
 2. エクステンション設定ファイル（`custom.python.ros2_node/config/extension.toml`）を編集し、`[dependencies]` の下に Isaac Sim の ROS 2 ブリッジを依存として追加します：
 
@@ -100,13 +100,11 @@ OmniGraph 定義ファイル（`custom.python.ros2_node/custom/python/ros2_node/
 - **`OgnCustomPythonRos2NodePy`** — OmniGraph ノード本体。入力値と内部状態に基づいて出力を計算・設定します。
 
 ```python
+import omni.graph.core
 import rclpy
 import std_msgs.msg
-
-import omni.graph.core
-from isaacsim.core.nodes import BaseResetNode
-
 from custom.python.ros2_node.ogn.OgnCustomPythonRos2NodePyDatabase import OgnCustomPythonRos2NodePyDatabase
+from isaacsim.core.nodes import BaseResetNode
 
 
 class OgnCustomPythonRos2NodePyInternalState(BaseResetNode):
@@ -242,7 +240,7 @@ class OgnCustomPythonRos2NodePy:
 | **To String** | カスタムノードの出力を文字列に変換 |
 | **Print Text** | 出力をビューポートまたはターミナルに表示。Property パネルで **To Screen** にチェックを入れるとビューポートに表示される |
 
-![カスタムノードのグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_custom_omnigraph_node_python_node_graph.png)
+![カスタムノードのグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_custom_omnigraph_node_python_node_graph.png)
 
 2. シミュレーションを **Play** します。
 3. 新しい ROS 2 ターミナルから `/number` トピックに数値を配信します：
@@ -253,7 +251,7 @@ class OgnCustomPythonRos2NodePy:
 
 4. メッセージが受信されると、ビューポート左上にフィボナッチ数が表示されます（新しい値を受信しないと表示は徐々にフェードします）。
 
-    ![結果の表示](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_custom_omnigraph_node_python_results_display.png)
+    ![結果の表示](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_custom_omnigraph_node_python_results_display.png)
 
 5. 別の数値を配信して、Isaac Sim 側の表示が変わることを確認します。
 

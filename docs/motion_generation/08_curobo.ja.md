@@ -29,7 +29,7 @@ title: cuRobo と cuMotion
 
 **NVIDIA cuMotion**（Isaac 3.0 で Developer Preview として提供）は、マニピュレータ向けの本番向けモーション生成パッケージです。現行バージョンは cuRobo をバックエンドとして利用し、MoveIt 2 のプラグインと一連の ROS 2 パッケージを通じて衝突回避モーションプランニングを提供します。
 
-![cuRobo](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_advanced_cuRobo.gif)
+![cuRobo](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_advanced_cuRobo.gif)
 
 !!! warning "既知の制限"
     - cuRobo 内での NvBlox 例には既知の問題があります。cuRobo の更新で解決され次第、このチュートリアルも更新されます。

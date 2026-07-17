@@ -38,7 +38,7 @@ title: シミュレーション内ランダム化 — AMR ナビゲーション
 
 左右カメラ（`<..>/stereo_cam_<left/right>_sensor_frame/camera_sensor_<left/right>`）から LdrColor（rgb）アノテータのデータを収集し、既定では `<working_dir>/_out_nav_sdg_demo` に 9 フレーム分書き込みます。
 
-![各環境での収集データ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_replicator_amr_data.png)
+![各環境での収集データ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_replicator_amr_data.png)
 
 ## ステップ 1：実行してみる
 

@@ -4,6 +4,9 @@ title: RMPflow チューニングガイド
 
 # RMPflow チューニングガイド
 
+!!! warning "Deprecated（非推奨）"
+    Isaac Sim 6.0 では、Lula 実装を含む Motion Generation 拡張機能は非推奨（deprecated）になりました。新規開発では [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API の利用を検討してください。なお、本ページのチューニング手順は [cuMotion](https://nvidia-isaac.github.io/cumotion/) の RMPflow に対しても引き続き有効です。
+
 ## 概要
 
 完全な RMP セットを指定するパラメータ数は多く、新しいロボットやタスク向けに RMPflow ベースの Motion Policy を調整するのは一見難しく感じられます。しかし実際には、あるロボットでうまく動くパラメータは、**形態の似た他のロボットでもうまく動く**ことが多く、あるロボットでは幅広いタスクに使えるパラメータを選べるのが一般的です。

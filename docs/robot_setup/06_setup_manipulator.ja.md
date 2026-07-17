@@ -41,7 +41,7 @@ Isaac Sim には URDF をインポートする方法が2つあります：
 このチュートリアルでは、**ROS 2 が不要な Direct URDF Importer** を使用します。
 
 !!! note "ROS 2 URDF Importer を使いたい場合"
-    ROS 2 環境がインストール済みの場合は、**File > Import from ROS 2 URDF Node** から ROS 2 ノード経由でインポートすることもできます。この場合、`ros2 launch ur_description view_ur.launch.py ur_type:=ur10e` で URDF をパブリッシュし、Isaac Sim 側でノード名 `robot_state_publisher` を指定して取得します。詳細は [公式ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup_tutorials/tutorial_import_assemble_manipulator.html) を参照してください。
+    ROS 2 環境がインストール済みの場合は、**File > Import from ROS 2 URDF Node** から ROS 2 ノード経由でインポートすることもできます。この場合、`ros2 launch ur_description view_ur.launch.py ur_type:=ur10e` で URDF をパブリッシュし、Isaac Sim 側でノード名 `robot_state_publisher` を指定して取得します。詳細は [公式ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/tutorial_import_assemble_manipulator.html) を参照してください。
 
 ### 使用するアセット
 
@@ -354,7 +354,7 @@ Robot Assembler パネルで以下を設定します：
 3. **Assemble and Simulate** をクリックして、接続結果をシミュレーションでテストします。
 4. 問題がなければ **End Simulation And Finish** をクリックしてアセンブリを完了します。
 
-![Robot Assembler](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_connect_gripper_assembler.png)
+![Robot Assembler](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_connect_gripper_assembler.png)
 
 #### 3-2-5. バリアント機能の確認
 

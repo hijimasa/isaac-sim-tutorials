@@ -168,7 +168,7 @@ body_collision_controllers:
 ./rmpflow_configs/cobotta_rmpflow_config_basic.yaml
 ```
 
-![Lula Test Widget](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_lula_test_widget.webp)
+![Lula Test Widget](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_lula_test_widget.webp)
 
 ## ステップ 4：RMPflow パラメータを調整する
 

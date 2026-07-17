@@ -32,7 +32,7 @@ title: Cosmos 合成データ生成
 
 このチュートリアルでは、倉庫環境を自律走行する Carter Nova ロボットの前面カメラから、CosmosWriter で同期マルチモーダルデータをキャプチャします。
 
-![Cosmos 倉庫キャプチャ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.1_replicator_tut_viewport_cosmos_warehouse.webp)
+![Cosmos 倉庫キャプチャ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.1_replicator_tut_viewport_cosmos_warehouse.webp)
 
 ## CosmosWriter が生成するデータ
 

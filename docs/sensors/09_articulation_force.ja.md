@@ -9,7 +9,7 @@ title: Articulation Joint センサー
 このチュートリアルを修了すると、以下の内容を習得できます：
 
 - 関節力の能動成分（active）と受動成分（passive）を読み取る考え方
-- `Articulation` / `ArticulationView` の 3 つの関節力 API の違い
+- `Articulation` クラス（`isaacsim.core.experimental.prims`）の 2 つの関節力 API の違い
 - Script Editor から関節力を読み取る方法
 
 ## はじめに
@@ -25,80 +25,104 @@ title: Articulation Joint センサー
 
 ### 概要
 
-Articulation センサーを使うと、関節力の**能動成分と受動成分**を読み取れます。関節力の取得には `Articulation` または `ArticulationView` の API を使います。
+Articulation センサーを使うと、関節力の**能動成分と受動成分**を読み取れます。関節力の取得には `isaacsim.core.experimental.prims` 拡張機能の `Articulation` クラスの API を使います。
 
 | API | 返す内容 |
 |---|---|
-| `get_applied_joint_efforts` | `set_joint_efforts` でユーザーが設定したエフォート |
-| `get_measured_joint_forces` | 各関節の 6 次元空間力（関節全体の力）。固定関節から力を取得すれば**力・トルクセンサー**を模倣できる |
-| `get_measured_joint_efforts` | 各関節の力の**能動成分**（運動方向への射影） |
+| `get_link_incoming_joint_force()` | 各リンクの入力関節の 6 次元の力とトルク（それぞれ shape `(N, L, 3)`）。関節全体の空間力を表し、固定関節から力を取得すれば**力・トルクセンサー**を模倣できる |
+| `get_dof_projected_joint_forces()` | 各 DOF の関節力の**能動成分**（運動方向への射影）。駆動関節の測定エフォートの読み取りに便利 |
 
 !!! note "報告される力は「子リンクへの入力関節力」"
-    Articulation ツリーでは、各リンクは 1 つの親リンクを持ちます。`get_measured_joint_forces` と `get_measured_joint_efforts` が報告する関節力は、**子リンクを親リンクに接続する関節が及ぼす力・トルク・エフォート**に相当します。つまり、これらの API はリンクの入力関節力（incoming joint forces）を表します。
+    Articulation ツリーでは、各リンクは 1 つの親リンクを持ちます。`get_link_incoming_joint_force` と `get_dof_projected_joint_forces` が報告する関節力は、**子リンクを親リンクに接続する関節が及ぼす力・トルク・エフォート**に相当します。つまり、これらの API はリンクの入力関節力（incoming joint forces）を表します。
+
+!!! note "Isaac Sim 6.0 での API 変更"
+    Isaac Sim 6.0 では、従来の `SingleArticulation` / `ArticulationView`（`isaacsim.core.prims`）の
+    `get_measured_joint_forces` / `get_measured_joint_efforts` に代わり、
+    `isaacsim.core.experimental.prims.Articulation` の上記 API を使う形に公式チュートリアルが更新されました。
 
 ## ステップ：Script Editor で関節力を読み取る
 
 **Window > Script Editor** から Script Editor を開き、次のコードを実行します。Ant ロボットを読み込み、各関節の測定力とエフォートを読み取ります。
 
 ```python
-from isaacsim.core.prims import SingleArticulation
 import asyncio
-from isaacsim.core.api import World
-from isaacsim.core.utils.stage import (
+
+import omni
+import omni.timeline
+from isaacsim.core.experimental.objects import GroundPlane
+from isaacsim.core.experimental.prims import Articulation
+from isaacsim.core.experimental.utils.stage import (
     add_reference_to_stage,
     create_new_stage_async,
-    get_current_stage,
 )
 from isaacsim.storage.native import get_assets_root_path
 from pxr import UsdPhysics
 
+
 async def joint_force():
-    World.clear_instance()
     await create_new_stage_async()
-    my_world = World(stage_units_in_meters=1.0, backend="torch", device="cpu")
-    await my_world.initialize_simulation_context_async()
     await omni.kit.app.get_app().next_update_async()
+
+    # 物理シーンをセットアップする
+    stage = omni.usd.get_context().get_stage()
+    UsdPhysics.Scene.Define(stage, "/World/PhysicsScene")
+
+    # Ant ロボットを読み込み、地面を追加する
     assets_root_path = get_assets_root_path()
     asset_path = assets_root_path + "/Isaac/Robots/IsaacSim/Ant/ant.usd"
-    add_reference_to_stage(usd_path=asset_path, prim_path="/World/Ant")
+    add_reference_to_stage(usd_path=asset_path, path="/World/Ant")
+    GroundPlane("/World/GroundPlane")
     await omni.kit.app.get_app().next_update_async()
-    my_world.scene.add_default_ground_plane()
-    arti_view = SingleArticulation("/World/Ant/torso")
-    my_world.scene.add(arti_view)
-    await my_world.reset_async(soft=False)
-    stage = get_current_stage()
 
-    sensor_joint_forces = arti_view.get_measured_joint_forces()
-    sensor_actuation_efforts = arti_view.get_measured_joint_efforts()
-    # Articulation 内の関節名を走査し、関節と関連リンクの情報を取得して、
-    # 関節名と対応する子リンクのインデックスのマッピングを作成する。
-    joint_link_id = dict()
-    for joint_name in arti_view._articulation_view.joint_names:
-        joint_path = "/World/Ant/joints/" + joint_name
-        joint = UsdPhysics.Joint.Get(stage, joint_path)
-        body_1_path = joint.GetBody1Rel().GetTargets()[0]
-        body_1_name = stage.GetPrimAtPath(body_1_path).GetName()
-        child_link_index = arti_view._articulation_view.get_link_index(body_1_name)
-        joint_link_id[joint_name] = child_link_index
+    # Articulation をラップする
+    arti = Articulation("/World/Ant/torso")
 
-    print("joint link IDs", joint_link_id)
-    print(sensor_joint_forces[joint_link_id["front_left_leg"]])
-    print(sensor_actuation_efforts[joint_link_id["front_left_leg"]])
+    # 物理テンソル API を利用可能にするためシミュレーションを開始する
+    timeline = omni.timeline.get_timeline_interface()
+    timeline.play()
+    await omni.kit.app.get_app().next_update_async()
+
+    # 6 次元の関節力（リンクごとの力とトルク）を読み取る
+    forces, torques = arti.get_link_incoming_joint_force()
+    # DOF に射影された関節力（DOF ごとの能動成分）を読み取る
+    projected_forces = arti.get_dof_projected_joint_forces()
+
+    # 確認用に numpy に変換する
+    forces_np = forces.numpy()
+    torques_np = torques.numpy()
+    projected_np = projected_forces.numpy()
+
+    # 組み込み API で関節名とリンクインデックスの対応を取得する
+    print("Joint names:", arti.joint_names)
+    print("Link names:", arti.link_names)
+
+    # front_left_leg のリンクインデックスと関節インデックスを取得する
+    link_idx = int(arti.get_link_indices("front_left_leg").numpy()[0])
+    joint_idx = int(arti.get_joint_indices("front_left_leg").numpy()[0])
+
+    print("front_left_leg link forces:", forces_np[0, link_idx])
+    print("front_left_leg link torques:", torques_np[0, link_idx])
+    print("front_left_leg projected force:", projected_np[0, joint_idx])
+
+    timeline.stop()
+
 
 asyncio.ensure_future(joint_force())
 ```
 
 !!! tip "力・トルクセンサーの模倣"
-    実機の 6 軸力・トルクセンサーを模倣したい場合は、測定したい箇所に**固定関節**を挿入し、その関節に対して `get_measured_joint_forces` を呼び出すと、その関節を通過する 6 次元の力・トルクが取得できます。
+    実機の 6 軸力・トルクセンサーを模倣したい場合は、測定したい箇所に**固定関節**を挿入し、その関節に対して `get_link_incoming_joint_force` を呼び出すと、その関節を通過する 6 次元の力・トルクが取得できます。
 
 ## まとめ
 
 このチュートリアルでは、次の内容を学びました。
 
 - Articulation センサーで関節力の能動成分・受動成分を読み取れること
-- `get_applied_joint_efforts` / `get_measured_joint_forces` / `get_measured_joint_efforts` の違い
+- `get_link_incoming_joint_force` / `get_dof_projected_joint_forces` の違い
 - 報告される力が「子リンクへの入力関節力」であること
 - 固定関節を使って力・トルクセンサーを模倣する方法
+
+`Articulation` クラスの詳細は [isaacsim.core.experimental.prims の API ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/latest/py/source/extensions/isaacsim.core.experimental.prims/docs/index.html)を参照してください。
 
 ## 次のステップ
 

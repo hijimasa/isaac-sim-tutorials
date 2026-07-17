@@ -34,13 +34,13 @@ UI ウィンドウはメニューの **Tools > Replicator > Synthetic Data Recor
 このチュートリアルでは次のサンプルステージを使います：
 
 ```text
-https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0
 /Isaac/Samples/Replicator/Stage/full_warehouse_worker_and_anim_cameras.usd
 ```
 
 Content ブラウザの **Isaac Sim > Samples > Replicator > Stage > full_warehouse_worker_and_anim_cameras.usd** から開くか、上の URL をパスフィールドに貼り付けて読み込みます。
 
-![サンプルステージ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_replicator_tut_gui_sd_recorder_stage.jpg)
+![サンプルステージ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_replicator_tut_gui_sd_recorder_stage.jpg)
 
 このステージには**セマンティックアノテーションと複数のカメラが設定済み**で、一部のカメラはシミュレーション実行中にシーン内を動くアニメーション付きです。
 
@@ -53,23 +53,23 @@ Content ブラウザの **Isaac Sim > Samples > Replicator > Stage > full_wareho
 | **Writer フレーム** | センサー・データ・出力のパラメータ（Render Products / Parameters / Output / Config） |
 | **Control フレーム** | 記録の開始・停止・一時停止と、記録フレーム数などのパラメータ |
 
-![レコーダーウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_window.jpg)
+![レコーダーウィンドウ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_window.jpg)
 
 ### Writer フレーム
 
 **Render Products** — **Add New Render Product** ボタンでレンダープロダクト（記録対象のカメラ＋解像度の組）のリストを作ります。既定では、アクティブなビューポートカメラがカメラパスとして追加されます。Stage でカメラを選択した状態なら、選択したカメラが追加されます。同じカメラパスを異なる解像度で複数登録することもでき、各エントリの値は入力フィールドで手動編集できます。
 
-![Render Products](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_rp.jpg)
+![Render Products](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_rp.jpg)
 
 **Parameters** — 既定の組み込みライター（**BasicWriter**）とカスタムライターを選択できます。既定ライターのパラメータ（主にアノテータ）はチェックボックスで選びます。カスタムライターのパラメータは事前にわからないため、必要なパラメータをすべて含む **JSON ファイル**として用意し、**Parameters Path** にパスを入力します。
 
-![Writer パラメータ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_writer_params.jpg)
+![Writer パラメータ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_writer_params.jpg)
 
 **Output** — データの保存先ディレクトリと、今回の記録のフォルダ名を指定します。フォルダ名が衝突する場合は自動的に連番が付きます。**Use S3** を有効にして必要事項を入力すれば S3 バケットへの書き込みにも対応します（AWS 認証情報の設定が必要。S3 書き込み時はフォルダの連番命名は使えず Timestamp 固定になります）。
 
 **Config** — GUI のライター設定状態を JSON 設定ファイルとして保存・読み込みできます。既定では、最後に使った設定状態が読み込まれます。
 
-![Output と Config](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_out_conf.jpg)
+![Output と Config](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_out_conf.jpg)
 
 ### Control フレーム
 
@@ -83,7 +83,7 @@ Content ブラウザの **Isaac Sim > Samples > Replicator > Stage > full_wareho
 | **Control Timeline** | レコーダーと連動してタイムラインも開始・停止・一時停止・再開する |
 | **Verbose** | 詳細ログ（開始・停止・記録フレーム数などのイベント）を出力 |
 
-![Control フレーム](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_control.jpg)
+![Control フレーム](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_control.jpg)
 
 !!! note "RTSubframes はいつ増やすか"
     ランダム化したマテリアルの読み込みが間に合わない場合や、オブジェクトのテレポートによる残像（ゴースト）などの時間方向のレンダリングアーティファクトがある場合は、**RTSubframes** を増やします。1 フレームにつき複数のサブフレームをレンダリングするため品質が向上しますが、フレームあたりのレンダリング時間は長くなります。暗い照明条件での品質改善にも有効です。
@@ -92,21 +92,45 @@ Content ブラウザの **Isaac Sim > Samples > Replicator > Stage > full_wareho
 
 ## ステップ 2：カスタムライターを使う
 
-独自のデータ形式に対応するには、カスタムライターを登録して GUI から読み込みます。ここでは `MyCustomWriter` というカスタムライターを **Script Editor** で登録し、レコーダーから使えるようにします：
+独自のデータ形式に対応するには、カスタムライターを登録して GUI から読み込みます。
+
+!!! note "カスタムライターは `backend` 引数を受け取れる必要がある"
+    Synthetic Data Recorder は、選択されたディスク／クラウドのバックエンドを初期化したうえで `writer.initialize(backend=..., **parameters)` を呼び出します。近年の Isaac Sim / Replicator では、これらのキーワード引数は**ライターの構築時に**適用されます。そのためカスタムライターは、`backend` 引数（設定済みの `DiskBackend` または `S3Backend` インスタンス）を受け取るか、`**kwargs` で任意のキーワード引数を受け取れるようにしておく必要があります。`backend` が渡された場合は、生の出力パスから独自に `BackendDispatch` を作るのではなく、そのバックエンドを使って書き込むようにします。
+
+ここでは `MyCustomWriter` というカスタムライターを **Script Editor** で登録し、レコーダーから使えるようにします：
 
 ```python
 import numpy as np
-from omni.replicator.core import AnnotatorRegistry, BackendDispatch, Writer, WriterRegistry
+import omni.replicator.core as rep
+from omni.replicator.core import AnnotatorRegistry, BackendDispatch, Writer
+from omni.replicator.core import functional as F
+from omni.replicator.core.scripts.backends import BaseBackend
+
 
 class MyCustomWriter(Writer):
+    """rgb / normals 用の最小構成のディスクライター（Synthetic Data Recorder の ``DiskBackend`` と互換）"""
+
     def __init__(
         self,
-        output_dir,
-        rgb = True,
-        normals = False,
+        rgb: bool = True,
+        normals: bool = False,
+        output_dir: str | None = None,
+        backend: BaseBackend | None = None,
+        **kwargs,
     ):
         self.version = "0.0.1"
-        self.backend = BackendDispatch({"paths": {"out_dir": output_dir}})
+        self.data_structure = "renderProduct"
+
+        if backend is not None and not isinstance(backend, BaseBackend):
+            raise TypeError("`backend` must inherit from `omni.replicator.core.scripts.backends.BaseBackend`.")
+
+        if backend is not None:
+            self.backend = backend
+        elif output_dir:
+            self.backend = BackendDispatch(output_dir=output_dir)
+        else:
+            raise ValueError("Provide `backend` (for example from the recorder) or `output_dir`.")
+
         self.annotators = []
         if rgb:
             self.annotators.append(AnnotatorRegistry.get_annotator("rgb"))
@@ -115,8 +139,26 @@ class MyCustomWriter(Writer):
         self._frame_id = 0
 
     def write(self, data: dict):
-        for annotator in data.keys():
-            # レンダープロダクトが複数ある場合、データはサブフォルダに保存される
+        # renderProduct 構造のデータ（レンダープロダクトごとにサブフォルダへ保存）
+        if "renderProducts" in data:
+            for rp_name, annotators_data in data["renderProducts"].items():
+                rp_prefix = f"{rp_name}/"
+                if "rgb" in annotators_data:
+                    rgb_entry = annotators_data["rgb"]
+                    rgb_arr = rgb_entry["data"] if isinstance(rgb_entry, dict) and "data" in rgb_entry else rgb_entry
+                    self.backend.schedule(F.write_image, path=f"{rp_prefix}rgb/rgb_{self._frame_id}.png", data=rgb_arr)
+                if "normals" in annotators_data:
+                    n_entry = annotators_data["normals"]
+                    n_arr = n_entry["data"] if isinstance(n_entry, dict) and "data" in n_entry else n_entry
+                    colored = ((n_arr * 0.5 + 0.5) * 255).astype(np.uint8)
+                    self.backend.schedule(
+                        F.write_image, path=f"{rp_prefix}normals/normals_{self._frame_id}.png", data=colored
+                    )
+            self._frame_id += 1
+            return
+
+        # レガシー構造のデータ
+        for annotator in list(data.keys()):
             annotator_split = annotator.split("-")
             render_product_path = ""
             multi_render_prod = 0
@@ -130,24 +172,25 @@ class MyCustomWriter(Writer):
                 if multi_render_prod:
                     render_product_path += "rgb/"
                 filename = f"{render_product_path}rgb_{self._frame_id}.png"
-                print(f"[{self._frame_id}] Writing {self.backend.output_dir}/{filename} ..")
-                self.backend.write_image(filename, data[annotator])
+                print(f"[{self._frame_id}] Writing {filename} ..")
+                self.backend.schedule(F.write_image, path=filename, data=data[annotator])
 
             # 法線
             if annotator.startswith("normals"):
                 if multi_render_prod:
                     render_product_path += "normals/"
                 filename = f"{render_product_path}normals_{self._frame_id}.png"
-                print(f"[{self._frame_id}] Writing {self.backend.output_dir}/{filename} ..")
+                print(f"[{self._frame_id}] Writing {filename} ..")
                 colored_data = ((data[annotator] * 0.5 + 0.5) * 255).astype(np.uint8)
-                self.backend.write_image(filename, colored_data)
+                self.backend.schedule(F.write_image, path=filename, data=colored_data)
 
         self._frame_id += 1
 
     def on_final_frame(self):
         self._frame_id = 0
 
-WriterRegistry.register(MyCustomWriter)
+
+rep.writers.register_writer(MyCustomWriter)
 ```
 
 パラメータは JSON ファイル（`my_params.json`）として用意し、Parameters Path に指定します：
@@ -159,7 +202,7 @@ WriterRegistry.register(MyCustomWriter)
 }
 ```
 
-![カスタムライターの設定](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_custom_writer.jpg)
+![カスタムライターの設定](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_custom_writer.jpg)
 
 ## ステップ 3：Data Visualization ライター
 
@@ -192,7 +235,7 @@ Parameters フレームでこのカスタムライターを選択し、パラメ
 
 出力されるデータの例：
 
-![Data Visualization ライターの出力](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_datavis_writer.jpg)
+![Data Visualization ライターの出力](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_datavis_writer.jpg)
 
 対応アノテータは bounding_box_2d_tight / bounding_box_2d_loose / bounding_box_3d、背景は rgb / normals です。その他のパラメータはクラスの docstring を参照してください。
 
@@ -214,7 +257,7 @@ with rep.trigger.on_frame():
 
 このカメラをレンダープロダクトとしてレコーダーに追加すると、記録の各フレームでカメラが指定パラメータでランダム化されます。
 
-![ランダマイズカメラ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_gui_sd_recorder_rep_cam.jpg)
+![ランダマイズカメラ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_gui_sd_recorder_rep_cam.jpg)
 
 ## 記録ループの内部動作
 

@@ -90,7 +90,7 @@ title: ジョイントドライブゲインの調整
 
 **Tools > Robotics > Asset Editors > Gain Tuner**
 
-![Gain Tuner UI](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_gains_tuner_ui.png)
+![Gain Tuner UI](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_gains_tuner_ui.png)
 
 ウィンドウ上部の **Select Robot** ドロップダウンから、調整したいロボットを選択します。Robot Schema が適用されたアセットが自動的に候補に表示されます。
 
@@ -270,7 +270,7 @@ UR10e や Franka など、コントローラ側で**重力補償**を行うこ�
 
 Gain Tuner ウィンドウの **Save Gains to Physics Layer** ボタンをクリックします。
 
-このボタンは、ロボットアセットの推奨構造（[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html)）に従って、**物理設定を記録するレイヤー**を自動的に検出し、そのレイヤーに新しいゲインを書き込みます。
+このボタンは、ロボットアセットの推奨構造（[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html)）に従って、**物理設定を記録するレイヤー**を自動的に検出し、そのレイヤーに新しいゲインを書き込みます。
 
 !!! note "なぜ専用レイヤーに保存するのか"
     Isaac Sim のロボットアセットは、メッシュ・物理・センサーといった**役割ごとに USD レイヤーが分かれている**ことが推奨されています（[チュートリアル 10](10_closed_loop_structures.md) のレイヤー編集ワークフローを参照）。物理パラメータを物理レイヤーに集約しておくことで、メッシュ更新時にもゲイン調整を失わずに済みます。
@@ -301,7 +301,7 @@ Gain Tuner ウィンドウの **Save Gains to Physics Layer** ボタンをクリ
 
 Gain Tuner のプロット領域には、テスト実行後に以下が表示されます：
 
-![Gain Tuner プロット](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_ref_gui_gains_tuner_plots.png)
+![Gain Tuner プロット](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_ref_gui_gains_tuner_plots.png)
 
 | 表示要素 | 意味 |
 |---|---|
@@ -356,7 +356,7 @@ Gain Tuner のプロット領域には、テスト実行後に以下が表示さ
 これらの調整により、ロボットが安定かつ応答性良く動作するようになり、上位の制御アルゴリズムが期待通りに振る舞う土台が整います。
 
 !!! tip "より深く学ぶには"
-    Gain Tuner の数学的背景や PD 制御の理論については、Isaac Sim 公式ドキュメントの [Gain Tuner Extension](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html) を参照してください。また、トルク指令を直接書き込むカスタムコントローラを実装したい場合は、公式の "Adding a Controller" チュートリアルが参考になります。
+    Gain Tuner の数学的背景や PD 制御の理論については、Isaac Sim 公式ドキュメントの [Gain Tuner Extension](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/ext_isaacsim_robot_setup_gain_tuner.html) を参照してください。また、トルク指令を直接書き込むカスタムコントローラを実装したい場合は、公式の "Adding a Controller" チュートリアルが参考になります。
 
 ## 次のステップ
 

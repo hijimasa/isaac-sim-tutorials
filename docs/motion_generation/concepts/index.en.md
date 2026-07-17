@@ -9,6 +9,9 @@ title: Motion Generation Concepts
 !!! info "Preliminary version"
     This English page is a preliminary summary. The Japanese page is the primary, fully detailed document — see it for the complete walkthrough.
 
+!!! warning "Deprecated"
+    As of Isaac Sim 6.0, the Motion Generation extension (`isaacsim.robot_motion.motion_generation` / Lula) covered by this section is deprecated. It still works, but for new development consider the official [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) section (Motion Generation (Experimental) API, cuMotion, PINK).
+
 ## Overview
 
 The Motion Generation API provides abstract interfaces for adding motion-control algorithms to Isaac Sim: it simplifies integrating new algorithms and gives a standard structure for comparing them. Three interfaces are provided:

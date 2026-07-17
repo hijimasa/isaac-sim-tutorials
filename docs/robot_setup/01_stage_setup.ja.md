@@ -37,7 +37,7 @@ title: ステージのセットアップ
       2022.1以前のIsaac Simではステージ単位がセンチメートルでしたが、現在はデフォルトでメートルです。ただしOmniverse Kitのデフォルト単位は依然としてセンチメートルです。USD単位が100倍ずれているように見える場合はこの点を留意してください。
     - **Rotation Order**: ZYX（デフォルト）<br>
       デフォルトではZ軸→Y軸→X軸の順で回転が実行されます。
-    ![Preferences](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_preferences.png)
+    ![Preferences](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_preferences.png)
 
 ## Physics Scene の作成
 
@@ -49,13 +49,13 @@ title: ステージのセットアップ
     - **Enable GPU Dynamics**: オフに設定（GPU Dynamics は大量のオブジェクトを扱うシーン向けの機能です。本チュートリアルのような小規模なシーンでは CPU シミュレーションのほうが安定しており、デバッグもしやすくなります）
     - **Broadphase Type**: MBP に設定
 
-    ![Physics Properties](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_base_ref_gui_physics_properties.png)
+    ![Physics Properties](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_base_ref_gui_physics_properties.png)
 
 ## グラウンドプレーンの追加
 
 1. メニューバーの**Create > Physics > Ground Plane** を選択します。
 
-2. ビューポート上部の![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_eyecon.png)をクリックして表示されるメニューからGrid の表示を有効にして、地面の位置を視覚的に確認します。
+2. ビューポート上部の![Eye icon](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_eyecon.png)をクリックして表示されるメニューからGrid の表示を有効にして、地面の位置を視覚的に確認します。
 
     ![Gridの表示方法](images/01_show_grid.png)
 
@@ -65,7 +65,7 @@ title: ステージのセットアップ
 追加のスポットライトを作成するには：
 
 1. 光の反射を確認するため、まだ存在しない場合は地面平面を追加します。メニューバーの**Create > Physics > Ground Plane**から追加できます。
-2. メニューバーの**Create > Light > Sphere Light**を選択します。
+2. メニューバーの**Create > Lights > Sphere Light**を選択します。
 3. ステージ上でライトを配置します。
     - 右上の**Stage**タブで、コンテキストツリー内の新規作成したライトを選択します。
     - 下部の**Property**タブ、**Transform**セクションで**Translate**ツールを使用し、グラウンドプレーン上空の位置（例：(0, 0, 1)）に移動させます。

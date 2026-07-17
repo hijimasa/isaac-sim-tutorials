@@ -4,6 +4,9 @@ title: Lula Robot Description と XRDF エディタ
 
 # Lula Robot Description と XRDF エディタ
 
+!!! warning "Isaac Sim 6.0 で非推奨（Deprecated）"
+    公式ドキュメントでは、このページは Isaac Sim 6.0 で **Deprecated** とマークされました。新規開発には後継の **Robot Motion (Experimental)** API の利用が推奨されています。Robot Description Editor と Lula は 6.0 でも引き続き動作します。
+
 ## 学習目標
 
 このチュートリアルを修了すると、以下の内容を習得できます：
@@ -75,11 +78,15 @@ Lula アルゴリズムは、効率的な衝突回避のためにカスタム設
 !!! note "Instanceable Assets との互換性"
     Robot Description Editor は Instanceable Assets と互換性がありません。ただし、後で instanceable に変換したアセット用に生成した記述ファイルは、その instanceable アセットでも動作します。
 
+Robot Description Editor を使うには、ロボット階層内のすべてのジオメトリ prim で **Instanceable** チェックボックスがオフになっていることを確認してください。この設定は、ジオメトリ prim を選択したときの Property パネルにあります。
+
+![Instanceable チェックボックスをオフにする](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_6.0_full_tut_gui_lula_description_editor_instanceable_disable.png)
+
 ### 開始する
 
 エディタは **Tools > Robotics > Lula Robot Description Editor** にあります。ロボットの USD を開き、左側の **Play** ボタンを押します。**Selection Panel** の **Select Articulation** でロボットの Articulation の prim パスを選択すると、**Select Link** ドロップダウンに各リンク名が表示されます。
 
-![Robot Description Editor](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_lula_description_editor.png)
+![Robot Description Editor](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_lula_description_editor.png)
 
 ### 関節プロパティを設定する（Set Joint Properties）
 
@@ -102,7 +109,7 @@ Articulation を選択すると **Set Joint Properties** が展開されます�
 - **Connect Spheres** … 既存の 2 つの球を選び、指定した本数の球でつなぎます。位置とサイズは 2 球が定義する円錐台の体積を最もよく埋めるよう補間されます。
 - **Generate Spheres** … リンクの体積を定義するメッシュを選び、その体積を最もよく埋める N 個の球を自動生成します。数を指定するとプレビューが表示され、**Generate Spheres** ボタンで確定します。
 
-![衝突球の編集](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_lula_description_editor_spheres.png)
+![衝突球の編集](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_lula_description_editor_spheres.png)
 
 !!! tip "自動生成の注意"
     単純な円筒形状のリンクは、手動で **Connect Spheres** した方がよいことが多いです。自動生成は水密（water-tight）な三角形メッシュでのみ動作し、すべてのメッシュで機能する保証はありません。うまくいかない場合は手動で球を追加・接続してください。
@@ -115,17 +122,17 @@ Set Joint Properties と衝突球を作成したら、**Export To File > Export 
 
 **XRDF ファイル**
 
-**Export to File > Export to cuMotion XRDF** で XRDF を生成します。パスは `.yaml` または `.xrdf` で終わる必要があります。XRDF エクスポート時のエディタの挙動は次のとおりです。
+**Export to File > Export to cuMotion XRDF** で XRDF を生成します。パスは `.yaml` または `.xrdf` で終わる必要があります。バージョンのドロップダウンで XRDF フォーマットの **バージョン 1.0 または 2.0** を選択できます（1.0 は `collision`、2.0 は `world_collision` を使います）。XRDF エクスポート時のエディタの挙動は次のとおりです。
 
-- 衝突・自己衝突の両方に使う単一の衝突グループを、エディタで作成した球から作成する
+- 衝突グループ（1.0 では `collision`、2.0 では `world_collision`）と自己衝突（`self_collision`）の両方に使う単一の衝突グループを、エディタで作成した球から作成する
 - self_collision で、各リンクが親リンクと同じ親を持つリンクを無視するよう設定する
 - Tool Frames / Modifiers は書き込まない
 
-既存の XRDF ファイルとデータをマージすることもできます（**Merge With Existing XRDF**）。マージ時は既存ファイルの Tool Frames・Modifiers・条件付きの self_collision・エディタで表現されなかったフレームの衝突球をコピーします。
+既存の XRDF ファイルとデータをマージすることもできます（**Merge With Existing XRDF**）。マージ時は既存ファイルの Tool Frames・Modifiers・条件付きの self_collision（`self_collision > geometry` が衝突グループの geometry と一致する場合）・エディタで表現されなかったフレームの衝突球をコピーします。
 
 ### 設定ファイルをインポートする
 
-**Import From File > Import Lula Robot Description File** で既存の記述ファイルを、**Import XRDF File** で既存の XRDF をインポートできます。XRDF インポートでは衝突グループの球のみが読み込まれます（Modifiers / Tool Frames / self_collision グループは使われません）。いずれもインポートするとエディタ内の情報はすべて上書きされます。
+**Import From File > Import Lula Robot Description File** で既存の記述ファイルを、**Import XRDF File** で既存の XRDF をインポートできます。XRDF インポートはフォーマットバージョン 1.0・2.0 の両方に対応し（1.0 は `collision`、2.0 は `world_collision`）、衝突グループの球のみが読み込まれます（Modifiers / Tool Frames / self_collision グループは使われません）。いずれもインポートするとエディタ内の情報はすべて上書きされます。
 
 ## まとめ
 

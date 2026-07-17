@@ -90,7 +90,7 @@ string message          # 情報（エラーメッセージなど）
 1. 新しいステージで **Create > Shape > Cube** でキューブを作成します。
 2. Action Graph を作成し、次のように **ROS2 Service Prim** ノードを接続します：
 
-    ![プリムサービスグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/tutorial_ros2_prim_service.png)
+    ![プリムサービスグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/tutorial_ros2_prim_service.png)
 
 3. **Play** するとサービスが開始されます。
 4. 新しい ROS 2 ターミナル（`isaac_ros2_messages` を含むワークスペースを source 済み）で、次のコマンドを試します。

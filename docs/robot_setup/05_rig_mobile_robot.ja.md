@@ -56,7 +56,7 @@ Isaac Sim に同梱されているフォークリフトアセットを使用し�
 | 後輪 | Revolute Joint（回転） | 駆動 | 走行用の車輪回転 |
 | 後輪スイベル | Revolute Joint（回転） | 駆動 | 操舵用のピボット回転 |
 
-![フォークリフトの外観](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_1.png)
+![フォークリフトの外観](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_1.png)
 
 ## ステップ 2：USD 階層の整理
 
@@ -163,7 +163,7 @@ Isaac Sim に同梱されているフォークリフトアセットを使用し�
 
 ![Rigid Bodyの適用](images/21_add_rigid_body.png)
 
-![階層整理後のフォークリフト](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_2.png)
+![階層整理後のフォークリフト](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_2.png)
 
 ## ステップ 3：コリジョンメッシュの割り当て
 
@@ -208,7 +208,7 @@ Convex Decomposition（凸分割）の場合
     - **Translate**: すべて **0** に設定
 3. シリンダーに **Collider** を追加します。
 
-![シリンダーコリジョン近似](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_5.png)
+![シリンダーコリジョン近似](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_5.png)
 
 ## ステップ 4：ジョイントとドライブの追加
 
@@ -232,7 +232,7 @@ Convex Decomposition（凸分割）の場合
     - **Stiffness**: **100000**
 5. ジョイントを **lift_joint** にリネームし、整理用の Scope 内に配置します。
 
-![Prismatic Joint](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_6.png)
+![Prismatic Joint](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_6.png)
 
 ### 前輪ローラー用の Revolute Joint（回転ジョイント）
 
@@ -269,7 +269,7 @@ Convex Decomposition（凸分割）の場合
     - **Stiffness**: **100000**
 5. 作成したジョイントを **back_wheel_joints** Scope 内に整理します。
 
-![Revolute Joint](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_rig_forklift_7.png)
+![Revolute Joint](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_rig_forklift_7.png)
 
 ## ステップ 5：アーティキュレーションの追加
 

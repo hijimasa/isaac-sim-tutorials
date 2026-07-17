@@ -33,9 +33,9 @@ title: Infinigen を使った環境ベースの生成
 
 このチュートリアルでは、Infinigen で生成したダイニングルーム環境を背景として、テーブル（作業エリア）にラベル付きアセットとディストラクタを配置し、**浮遊状態**と**物理シミュレーション後の静止状態**の 2 シナリオでキャプチャします。1 つの環境でのキャプチャが終わると次の環境を読み込み、目標のキャプチャ数まで繰り返します。
 
-![Infinigen 環境の例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_viewport_infinigen_rooms.jpg)
+![Infinigen 環境の例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_viewport_infinigen_rooms.jpg)
 
-![収集データの例](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_replicator_tut_viewport_infinigen_assets.jpg)
+![収集データの例](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_replicator_tut_viewport_infinigen_assets.jpg)
 
 ## ステップ 1：Infinigen 環境を生成する
 

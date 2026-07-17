@@ -29,6 +29,9 @@ title: "ROS 2 ジョイント制御: Extension Python Scripting"
 
 ここまでのチュートリアルはモバイルロボット（Turtlebot）が中心でしたが、このチュートリアルでは**マニピュレータ**を扱います。ロボットアームの制御では、`/joint_states` トピックで現在のジョイント状態を配信し、`/joint_command` トピックで目標値を受け取るのが ROS 2 の定番構成です（MoveIt 2 などのモーションプランナもこの構成を前提とします）。この双方向の接続を、UI・ショートカット・Python スクリプトの 3 通りで構築します。
 
+!!! note "Isaac Sim 6.0 での注意：Publish Joint State への直接プリム入力は非推奨"
+    Isaac Sim 6.0 では、**ROS2 Publish Joint State** ノードにアーティキュレーションのプリム（**targetPrim**）を直接入力する方式は**非推奨（deprecated）**となり、将来のリリースで削除される予定です。推奨される構成は、**Isaac Read Joint State** ノード（`isaacsim.sensors.physics.nodes`）をグラフに追加してその **prim** 入力にアーティキュレーションルートを設定し、その出力（execOut / jointNames / jointPositions / jointVelocities / jointEfforts / jointDofTypes / stageMetersPerUnit / sensorTime）を ROS2 Publish Joint State の同名の入力に接続する方式です。公式チュートリアルは本ページ執筆時点（6.0.1）でも targetPrim を使う手順のままなので、本ページもそれに従います。詳細は公式の[移行ガイド（ROS 2 OmniGraph Nodes）](https://docs.isaacsim.omniverse.nvidia.com/latest/migration_guides/isaac_sim_6_0/ros2_omnigraph_migration.html)を参照してください。
+
 ## ステップ 1：UI で Joint State グラフを構築する
 
 1. Content ブラウザから **Isaac Sim > Robots > FrankaRobotics > FrankaPanda > franka.usd** を開きます。
@@ -48,7 +51,7 @@ title: "ROS 2 ジョイント制御: Extension Python Scripting"
 6. **On Playback Tick** の Tick 出力を、**ROS2 Publish Joint State**、**ROS2 Subscribe Joint State**、**Articulation Controller** の Execution 入力に接続します。
 7. **Isaac Read Simulation Time** の Simulation Time 出力を **ROS2 Publish Joint State** の Timestamp 入力に接続し、残りの接続を次の画像のとおりに設定します（サブスクライバの jointNames / positionCommand / velocityCommand / effortCommand 出力 → Articulation Controller の対応する入力）：
 
-    ![Joint State グラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_ros_tut_gui_ros2_manipulation_1.png)
+    ![Joint State グラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_ros_tut_gui_ros2_manipulation_1.png)
 
 8. **Play** を押すと、`/joint_states` への配信と `/joint_command` の購読が始まります。
 9. ROS 2 ブリッジの動作確認として、付属の Python スクリプトでジョイント指令を配信します。ROS 2 を source したターミナルで：
@@ -113,7 +116,7 @@ og.Controller.edit(
             # robotPath の指定は targetPrim の設定と等価
             # ("ArticulationController.inputs:usePath", True),  # 古いバージョンの Isaac Sim ではこの行を有効化
             ("ArticulationController.inputs:robotPath", "/panda"),
-            ("PublishJointState.inputs:targetPrim", "/panda")
+            ("PublishJointState.inputs:targetPrim", "/panda"),
         ],
     },
 )
@@ -147,11 +150,11 @@ import rclpy
 from sensor_msgs.msg import JointState
 
 rclpy.init()
-node = rclpy.create_node('position_velocity_publisher')
-pub = node.create_publisher(JointState, 'joint_command', 10)
+node = rclpy.create_node("position_velocity_publisher")
+pub = node.create_publisher(JointState, "joint_command", 10)
 
 # 別スレッドで spin する
-thread = threading.Thread(target=rclpy.spin, args=(node, ), daemon=True)
+thread = threading.Thread(target=rclpy.spin, args=(node,), daemon=True)
 thread.start()
 
 joint_state_position = JointState()
@@ -179,8 +182,8 @@ thread.join()
 ```python
 joint_state = JointState()
 joint_state.name = ["joint1", "joint2", "joint3", "wheel_left_joint", "wheel_right_joint"]
-joint_state.position = [0.2, 0.2, 0.2, float('nan'), float('nan')]
-joint_state.velocity = [float('nan'), float('nan'), float('nan'), 20.0, -20.0]
+joint_state.position = [0.2, 0.2, 0.2, float("nan"), float("nan")]
+joint_state.velocity = [float("nan"), float("nan"), float("nan"), 20.0, -20.0]
 ```
 
 ## まとめ

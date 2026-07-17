@@ -9,8 +9,8 @@ title: Contact センサー
 このチュートリアルを修了すると、以下の内容を習得できます：
 
 - Contact センサーが PhysX Contact Report API 上でどう動作するか
-- Contact センサーのプロパティ（radius / threshold / sensor period など）
-- GUI・Python コマンド・Python ラッパークラスでセンサーを作成する方法
+- Contact センサーのプロパティ（radius / threshold など）
+- GUI・Python API（`Contact` オーサリングクラス + `ContactSensor` ランタイムクラス）でセンサーを作成する方法
 - OmniGraph で接触データを読み取り・可視化する方法
 - 3 種類のデータ読み取り方法
 
@@ -27,6 +27,11 @@ title: Contact センサー
 
 ### 概要
 
+!!! note "Isaac Sim 6.0 での API 変更"
+    Isaac Sim 6.0 では、従来の `isaacsim.sensors.physics` 拡張機能の Contact センサーは非推奨（deprecated）となり、
+    `isaacsim.sensors.experimental.physics.ContactSensor` に置き換えられました。本ページのコードは新 API に対応しています。
+    詳細は[公式移行ガイド](https://docs.isaacsim.omniverse.nvidia.com/latest/migration_guides/isaac_sim_6_0/sensors_physics_to_experimental_physics.html)を参照してください。
+
 Contact センサーは、PhysX の **Contact Report API** を使い、物体の表面に配置した接触セルや圧力センサーのような読み値を生成します。Contact センサー API は、センサーが配置されたオブジェクトでフィルタした接触データを提供し、オプションでオブジェクトの特定領域内の接触だけを考慮するフィルタも設定できます。
 
 たとえば、足に接触センサーを持つ四足歩行ロボットを考えます。シミュレーション上では脚全体が 1 つの剛体として扱われますが、接触を測定したいのは足裏だけです。そこで**領域フィルタ**を追加すると、その境界外の接触を破棄できます。
@@ -34,11 +39,11 @@ Contact センサーは、PhysX の **Contact Report API** を使い、物体の
 Contact センサー API は、PhysX が計算時間節約のため接触のストリーミングを止めても、**接触データを保持し続けます**。単一セルの接触パッドで得られる実データに合わせて設計されていますが、完全な接触情報（接触ペア・法線・接触点）が必要な場合も、PhysX から取得したものと同じ情報をフィルタして返します。
 
 !!! note "Contact センサーのプロパティ"
-    - **radius** … 接触力を検知する距離を指定します。
+    - **radius** … 接触力を検知する距離を指定します。`-1` を指定すると prim のコリジョン形状を使用します。
     - **enabled** … センサーの動作/停止を切り替えます。
     - **min threshold** … 接触をトリガーする最小の力を指定します。
     - **max threshold** … センサーが出力する最大の力を指定します。
-    - **sensor period** … センサー測定の間隔（時間）を指定します。物理ステップより短い周期を指定すると常に最新の物理データを出力します。センサー周波数が物理周波数を超えることはできません。
+    - **sensorPeriod** … センサー測定の間隔（時間）を指定します。`isaacsim.robot.schema` 6.2.0 以降は非推奨で、非推奨の `isaacsim.sensors.physics` 拡張機能でのみ使用されます。新しい `isaacsim.sensors.experimental.physics` 拡張機能は毎物理ステップで読み取ります。
 
 ## ステップ 1：GUI でセンサーを作成する
 
@@ -90,7 +95,7 @@ Contact センサー API は、PhysX が計算時間節約のため接触のス�
 
 ## ステップ 3：Standalone Python でセンサーを作成する
 
-まず、PhysicsScene・GroundPlane・DynamicCuboid を追加してシーンを準備します（接触センサーは立方体に取り付けます）。
+まず、PhysicsScene・GroundPlane・コリジョンと剛体を設定した Cube prim を追加してシーンを準備します（接触センサーは立方体に取り付けます）。
 
 ```python
 from isaacsim import SimulationApp
@@ -98,59 +103,64 @@ from isaacsim import SimulationApp
 simulation_app = SimulationApp({"headless": False})
 
 import numpy as np
-from isaacsim.core.api.objects import DynamicCuboid
-from isaacsim.core.api.objects.ground_plane import GroundPlane
-from isaacsim.core.api.physics_context import PhysicsContext
+import omni.usd
+from isaacsim.core.experimental.objects import Cube, GroundPlane
+from isaacsim.core.experimental.prims import GeomPrim, RigidPrim
+from pxr import UsdPhysics
 
-PhysicsContext()
-GroundPlane(prim_path="/World/groundPlane", size=10, color=np.array([0.5, 0.5, 0.5]))
-DynamicCuboid(prim_path="/World/Cube",
-    position=np.array([-.5, -.2, 1.0]),
-    scale=np.array([.5, .5, .5]),
-    color=np.array([.2, .3, 0.]))
+# 物理シーンを作成する
+stage = omni.usd.get_context().get_stage()
+UsdPhysics.Scene.Define(stage, "/World/PhysicsScene")
+
+# 地面と、コリジョン・剛体を設定した動的な立方体を追加する
+GroundPlane("/World/groundPlane", sizes=10, colors=np.array([0.5, 0.5, 0.5]))
+Cube(
+    "/World/Cube",
+    positions=np.array([-0.5, -0.2, 1.0]),
+    scales=np.array([0.5, 0.5, 0.5]),
+    colors=np.array([0.2, 0.3, 0.0]),
+)
+RigidPrim("/World/Cube")
+GeomPrim("/World/Cube", apply_collision_apis=True)
 ```
 
-### Python コマンドで作成する
+### Python API で作成する
 
-`IsaacSensorCreateContactSensor` コマンドで作成します。必須パラメータは親パスのみです。
+`Contact.create()`（オーサリングクラス）でセンサー prim を作成し、返されたオーサリングオブジェクトを `ContactSensor`（ランタイムクラス）でラップしてデータにアクセスします。パスには親 prim のパスを含める必要があります。
 
 ```python
-import omni.kit.commands
-from pxr import Gf
+import numpy as np
+from isaacsim.sensors.experimental.physics import Contact, ContactSensor
 
-success, _isaac_sensor_prim = omni.kit.commands.execute(
-    "IsaacSensorCreateContactSensor",
-    path="Contact_Sensor",
-    parent="/World/Cube",
-    sensor_period=1,
-    min_threshold=0.0001,
-    max_threshold=100000,
-    translation=Gf.Vec3d(0, 0, 0),
+sensor = ContactSensor(
+    Contact.create(
+        "/World/Cube/Contact_Sensor",
+        min_threshold=0.0001,
+        max_threshold=100000,
+        translations=np.array([[0.0, 0.0, 0.0]]),
+    )
 )
 ```
 
-### Python ラッパークラスで作成する
+### Python ラッパーで作成する
 
-`ContactSensor` ラッパークラスを使うと、プロパティ設定やデータ取得のヘルパー関数が使えます。
+`Contact` オーサリングオブジェクトを直接構築して `ContactSensor` でラップすることもできます。`Contact` コンストラクタは、既存のセンサー prim をラップするか、デフォルト属性で新規作成します。`ContactSensor` ランタイムは `get_sensor_reading()` / `get_data()` / `get_raw_data()` を提供します。プロパティの setter/getter（`set_min_threshold` / `set_max_threshold` / `set_radius` など）は、構築後に `sensor.contact` でアクセスできるオーサリングオブジェクト側にあります。
 
 ```python
-from isaacsim.sensors.physics import ContactSensor
 import numpy as np
+from isaacsim.sensors.experimental.physics import Contact, ContactSensor
 
 sensor = ContactSensor(
-    prim_path="/World/Cube/Contact_Sensor",
-    name="Contact_Sensor",
-    frequency=60,
-    translation=np.array([0, 0, 0]),
-    min_threshold=0,
-    max_threshold=10000000,
-    radius=-1
+    Contact(
+        "/World/Cube/Contact_Sensor",
+        translations=np.array([[0.0, 0.0, 0.0]]),
+    )
 )
 ```
 
 !!! note "作成時の注意"
-    - `translation` と `position`、`frequency` と `dt` は同時に指定できません。
-    - 接触センサーは**コライダー API を持つ prim** にのみ作成でき、Contact Report API に依存します。コマンド・ラッパークラスのどちらも親 prim に Contact Report API を自動追加します。手動で追加する場合は次のようにします。
+    - `translations`（ローカル座標系）と `positions`（ワールド座標系）は同時に指定できません（排他）。
+    - 接触センサーの作成には**有効な剛体（Rigid Body）の祖先 prim** が必要で、Contact Report API に依存します。接触を発生させるジオメトリにはコリジョン API も必要です。`Contact.create()` はセンサー prim の作成時に剛体の祖先へ Contact Report API を適用します。既存のセンサー prim を `Contact(path)` でラップした場合は Python 側では適用されませんが、Play でセンサーが有効化される際に C++ ランタイムが接触レポートの有効化を保証します。手動で追加する場合は次のようにします。
 
     ```python
     import omni
@@ -162,59 +172,70 @@ sensor = ContactSensor(
     contact_report.CreateThresholdAttr(0.0)  # 接触レポートの最小しきい値を 0 に設定
     ```
 
+    実行時にセンサーパラメータを変更するには、`sensor.contact.set_min_threshold(value)` のように `sensor.contact` 経由のオーサリングオブジェクトを使います（`ContactSensor` 本体のショートハンドメソッドは 3.0.0 で削除されました）。
+
 ## ステップ 4：センサー出力を読み取る
 
 接触センサーは **PLAY 時に動的に作成**されます。シミュレーション実行中にセンサー prim を移動するとセンサーが無効になります。剛体の親を変えるなど階層的な変更をする場合は、シミュレータを停止 → 変更 → 再開してください。
 
 出力の読み取り方法は 3 つあります。
 
-- センサーインターフェースの `get_sensor_reading()`（**推奨**）
-- `ContactSensor` クラスの `get_current_frame()`
+- `ContactSensor.get_sensor_reading()` … キャッシュされた `ContactSensorReading` を返す
+- `ContactSensor.get_data()` … 構造化された辞書を返す
 - OmniGraph ノード **Isaac Read Contact Sensor**
 
 ### get_sensor_reading()
 
-`get_sensor_reading(sensor_path, use_latest_data=False)` は、接触センサー prim のパスと、`use_latest_data` フラグ（センサーが物理レートより遅い場合に現在の物理ステップからデータを取得）を受け取ります。戻り値の `CsSensorReading` オブジェクトは `is_valid` / `time` / `value` / `in_contact` を含みます。
+`ContactSensor.get_sensor_reading()` は、`is_valid` / `time` / `value`（力の大きさ）/ `in_contact` を含む `ContactSensorReading` を返します。
 
 ```python
-from isaacsim.sensors.physics import _sensor
+from isaacsim.sensors.experimental.physics import ContactSensor
 
-_contact_sensor_interface = _sensor.acquire_contact_sensor_interface()
-_contact_sensor_interface.get_sensor_reading("/World/Cube/Contact_Sensor", use_latest_data=True)
+sensor = ContactSensor("/World/Cube/Contact_Sensor")
+sensor.get_sensor_reading()
 ```
 
-### get_current_frame()
+### get_data()
 
-`get_current_frame()` は `get_sensor_reading()` と `get_contact_sensor_raw_data` のラッパーで、`in_contact` / `force` / `number_of_contacts` / `time` / `body0` / `body1` / `position` / `normal` / `impulse` / `contacts` / `physics_step` をキーとする辞書を返します。
+`ContactSensor` ランタイムクラスの `get_data()` メンバー関数は、`time` / `physics_step` / `in_contact` / `force` / `number_of_contacts` をキーとする構造化された辞書を返します。内部では接触状態の取得に `get_sensor_reading()` を、`number_of_contacts` の計算に `get_raw_data()` を呼び出します。`add_raw_contact_data_to_frame()` を呼んでおくと、辞書に `contacts` リストが追加され、各エントリで接触点ごとの `body0` / `body1` / `position` / `normal` / `impulse` が得られます。
 
 ```python
-value = sensor.get_current_frame()
+import numpy as np
+from isaacsim.sensors.experimental.physics import Contact, ContactSensor
+
+sensor = ContactSensor(
+    Contact(
+        "/World/Cube/Contact_Sensor",
+        translations=np.array([[0.0, 0.0, 0.0]]),
+    )
+)
+
+value = sensor.get_data()
 print(value)
 ```
 
-### get_contact_sensor_raw_data()
+### get_raw_data()
 
-生の接触 API データ `CsRawData`（`time` / `dt` / `body0` / `body1` / `position` / `normal` / `impulse`）のリストを出力します。生データはセンサーのしきい値を無視するため、しきい値未満の接触もここには現れます。
+現在の物理ステップの接触イベントごとの生の接触レコード（`time` / `dt` / `body0` / `body1` / `position` / `normal` / `impulse`）のリストを返します。生データはセンサーの `min_threshold` / `max_threshold` によるフィルタリングを無視するため、しきい値未満の接触もここには現れます。フレーム（`get_data()`）側に含めたい場合は `ContactSensor.add_raw_contact_data_to_frame()` で `contacts` リストを有効にします。
 
 ```python
-from isaacsim.sensors.physics import _sensor
+from isaacsim.sensors.experimental.physics import ContactSensor
 
-_contact_sensor_interface = _sensor.acquire_contact_sensor_interface()
-raw_data = _contact_sensor_interface.get_contact_sensor_raw_data("/World/Cube/Contact_Sensor")
+sensor = ContactSensor("/World/Cube/Contact_Sensor")
+raw_data = sensor.get_raw_data()
 print(str(raw_data))
 ```
-
-!!! warning
-    `get_contact_sensor_raw_data()` は非推奨で、将来のリリースで置き換えられる予定です。
 
 ## まとめ
 
 このチュートリアルでは、次の内容を学びました。
 
 - Contact センサーが PhysX Contact Report API 上で動作し、領域フィルタで特定部位の接触だけを検出できること
-- GUI・Python コマンド・`ContactSensor` ラッパークラスでの作成方法
+- GUI・Python API（`Contact` オーサリングクラス + `ContactSensor` ランタイムクラス）での作成方法
 - OmniGraph での読み取りと可視化
-- `get_sensor_reading()`（推奨）を含む 3 つの読み取り方法
+- `get_sensor_reading()` / `get_data()` / OmniGraph の 3 つの読み取り方法
+
+`ContactSensor` の詳細は [isaacsim.sensors.experimental.physics の API ドキュメント](https://docs.isaacsim.omniverse.nvidia.com/latest/py/source/extensions/isaacsim.sensors.experimental.physics/docs/index.html)を参照してください。
 
 ## 次のステップ
 

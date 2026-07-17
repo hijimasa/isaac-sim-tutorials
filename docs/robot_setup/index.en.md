@@ -16,7 +16,7 @@ The tutorials are organized into **Beginner, Intermediate, and Advanced** levels
 
 Learn fundamental concepts that apply to all robot types. Starting from stage setup, you will build a robot from primitive shapes, connect them with joints and articulations, attach cameras, and rig a real robot asset into a fully functional mobile robot.
 
-![Wheeled robot setup](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_rigging_mockrobot_interaction.webp)
+![Wheeled robot setup](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_rigging_mockrobot_interaction.webp)
 
 !!! example "[Tutorial 1: Stage Setup](01_stage_setup.md)"
     Learn how to configure stage properties, create a Physics Scene, and add a ground plane and lighting.
@@ -42,7 +42,7 @@ Learn fundamental concepts that apply to all robot types. Starting from stage se
 
 Build upon foundational knowledge to work with more complex robot structures. You will import a robot arm from URDF, connect a gripper, tune physics properties, generate configuration files, and implement pick and place tasks.
 
-![Manipulator setup](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
+![Manipulator setup](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
 
 !!! example "[Tutorial 6: Setup a Manipulator](06_setup_manipulator.md)"
     Learn how to import the UR10e robot and Robotiq 2F-140 gripper from URDF and connect them as a single articulation.
@@ -62,7 +62,7 @@ Build upon foundational knowledge to work with more complex robot structures. Yo
 
 Master advanced techniques for complex robot configurations. You will learn to rig closed-loop mechanisms, systematically tune joint drive gains, optimize asset performance, and rig legged robots for locomotion policies.
 
-![Legged robot rigging](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_2.webp)
+![Legged robot rigging](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_2.webp)
 
 !!! example "[Tutorial 10: Rig Closed-Loop Structures](10_closed_loop_structures.md)"
     Learn how to configure closed-loop articulation structures, mimic joints, and OmniGraph control for a Robotiq gripper.

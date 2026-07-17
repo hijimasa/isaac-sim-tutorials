@@ -11,12 +11,21 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  # 現在の「latest」に対応する Isaac Sim バージョン。
+  # 新しいメジャー/マイナー版に対応した際はここを更新する。
+  # 過去バージョン（例: 5.1.0）のスナップショットは gh-pages 上に
+  # mike が保持するため、この workflow では latest のみを再デプロイする。
+  DOCS_VERSION: 6.0.1
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,5 +43,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Build and deploy
-        run: mkdocs gh-deploy --force
+      - name: Configure git for mike
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build and deploy versioned docs (mike)
+        run: |
+          git fetch origin gh-pages --depth=1 || true
+          mike deploy --push --update-aliases "$DOCS_VERSION" latest
+          mike set-default --push latest

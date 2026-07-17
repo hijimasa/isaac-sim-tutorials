@@ -17,7 +17,7 @@ title: Isaac Sim OmniGraph チュートリアル
 
 ### 前提条件
 
-- Isaac Sim 5.1 が起動できること
+- Isaac Sim 6.0 が起動できること
 - ステージ・ビューポート・Content Browser の基本操作を理解していること
 
 !!! tip "OmniGraph の基礎も参照"
@@ -42,7 +42,7 @@ OmniGraph は Omniverse のビジュアルプログラミングフレームワ�
 4. JetBot を地面のすぐ上に配置します。
 5. コンテキストツリーで JetBot が `/World/jetbot` の下にあることを確認します。
 
-![ステージ上の JetBot](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_tut_viewport_omnigraph_jetbot.png)
+![ステージ上の JetBot](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_tut_viewport_omnigraph_jetbot.png)
 
 !!! note "動作確認とカメラメッシュの非表示"
     Play を押して JetBot が地面に落下・着地することを確認し、続行前に Stop を押します。デフォルトのレンダー設定によっては JetBot のカメラにプレースホルダーメッシュ（灰色のテレビカメラ状）が表示されます。非表示にするには、ビューポートのアイコンから **Show By Type > Cameras** を無効にします。
@@ -68,7 +68,7 @@ OmniGraph は Omniverse のビジュアルプログラミングフレームワ�
 
 Articulation Controller には、動かす関節をトークン（token：USD で識別子として使われる文字列型）またはインデックス値のリストで渡す必要があります。JetBot の `/World/jetbot/chassis` には `left_wheel_joint` と `right_wheel_joint` の 2 つの回転物理関節があります。
 
-![ステージツリー](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_tut_gui_omnigraph_jetbot_joints.png)
+![ステージツリー](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_tut_gui_omnigraph_jetbot_joints.png)
 
 1. 検索バーに `token` と入力し、**Constant Token** ノードを 2 つ追加します。
 2. 1 つを選択し、Property ペインで値を `left_wheel_joint` に設定します。もう 1 つは `right_wheel_joint` に設定します。
@@ -82,7 +82,7 @@ Articulation Controller には、動かす関節をトークン（token：USD �
 2. On Playback Tick の **Tick** 出力を、両コントローラノードの **Exec In** 入力に接続します。
 3. Differential Controller の **Velocity Command** 出力を、Articulation Controller の **Velocity Command** 入力に接続します。
 
-![JetBot のシンプルな差動制御グラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_omnigraph_jetbot_minimal.png)
+![JetBot のシンプルな差動制御グラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_omnigraph_jetbot_minimal.png)
 
 ### 動かしてみる
 
@@ -92,23 +92,23 @@ Articulation Controller には、動かす関節をトークン（token：USD �
 
 !!! tip "キーボード制御に挑戦"
     利用可能な OmniGraph ノードを調べて、キーボードで JetBot を制御するグラフを組んでみましょう。下図はその例です。<br>
-    ![JetBot のキーボード制御グラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isaac_tutorial_omnigraph_full.png)
+    ![JetBot のキーボード制御グラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isaac_tutorial_omnigraph_full.png)
 
 ## ステップ 3：OmniGraph ショートカットを使う
 
-グラフをゼロから組むのは、特に反復作業では手間がかかります。よく使うグラフには**ショートカット**が用意されており、数クリックで複数ノードと接続を持つ複雑なグラフを生成できます。ショートカットは **Tools > Robotics > Omnigraph Controllers** にあります（詳細は [よく使う OmniGraph ショートカット](05_shortcuts.md) を参照）。
+グラフをゼロから組むのは、特に反復作業では手間がかかります。よく使うグラフには**ショートカット**が用意されており、数クリックで複数ノードと接続を持つ複雑なグラフを生成できます。ショートカットは **Tools > Robotics > OmniGraph Controllers** にあります（詳細は [よく使う OmniGraph ショートカット](05_shortcuts.md) を参照）。
 
 メニューショートカットから差動コントローラグラフを使う手順です。
 
 1. JetBot を制御する既存の OmniGraph を削除（または無効化）します。
-2. **Tools > Robotics > Omnigraph Controllers > Differential Controller** をクリックします。
+2. **Tools > Robotics > OmniGraph Controllers > Differential Controller** をクリックします。
 3. パラメータの入力を求められます。**Articulation Root** に `/World/jetbot`、車輪間距離に `0.1125`、車輪半径に `0.03` を設定します。
 4. JetBot は制御可能な関節が 2 つだけなので、残りのフィールドは空のままで構いません。
 5. **Use Keyboard Control (WASD)** をオンにします。
 6. **OK** をクリックしてグラフを生成します。生成されたグラフは `/Graph/differential_controller` で開けます。
 7. Play を押し、キーボードの **WASD キー**で JetBot を動かせることを確認します。
 
-![生成された JetBot コントローラグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_tut_gui_jetbot_controller_graph.webp)
+![生成された JetBot コントローラグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_tut_gui_jetbot_controller_graph.webp)
 
 ## まとめ
 

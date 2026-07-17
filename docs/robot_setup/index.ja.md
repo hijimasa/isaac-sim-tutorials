@@ -16,7 +16,7 @@ title: ロボットセットアップチュートリアル
 
 すべてのロボットタイプに共通する基礎的な概念を学びます。ステージのセットアップから始まり、プリミティブ形状でロボットを組み立て、ジョイントとアーティキュレーションで動くロボットに仕上げ、カメラの取り付け、実際のロボットアセットのリギングまでを段階的に進めます。
 
-![車輪ロボットのセットアップ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_base_ref_gui_rigging_mockrobot_interaction.webp)
+![車輪ロボットのセットアップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_base_ref_gui_rigging_mockrobot_interaction.webp)
 
 !!! example "[チュートリアル 1: ステージのセットアップ](01_stage_setup.md)"
     ステージプロパティの確認、Physics Scene の作成、グラウンドプレーンとライティングの追加方法を学びます。
@@ -42,7 +42,7 @@ title: ロボットセットアップチュートリアル
 
 基礎知識をベースに、より複雑なロボット構造の扱い方を学びます。URDF からのロボットアームのインポート、グリッパーの接続、物理プロパティの調整、設定ファイルの生成、ピック＆プレースタスクの実装までを一通り体験します。
 
-![マニピュレータのセットアップ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
+![マニピュレータのセットアップ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_ur10e_pick_place_rmp.webp)
 
 !!! example "[チュートリアル 6: マニピュレータのセットアップ](06_setup_manipulator.md)"
     URDF から UR10e ロボットと Robotiq 2F-140 グリッパーをインポートし、単一のアーティキュレーションとして接続する方法を学びます。
@@ -62,7 +62,7 @@ title: ロボットセットアップチュートリアル
 
 複雑なロボット設定のための高度な技法を習得します。閉ループ機構のリギング、ジョイントドライブゲインの体系的な調整、アセットのパフォーマンス最適化、ロコモーションポリシーに合わせた脚ロボットのリギングを学びます。
 
-![脚ロボットのリギング](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_rigging_humanoid_2.webp)
+![脚ロボットのリギング](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_rigging_humanoid_2.webp)
 
 !!! example "[チュートリアル 10: 閉ループ構造のリギング](10_closed_loop_structures.md)"
     Robotiq グリッパーの閉ループアーティキュレーション構造の設定、ミミックジョイント、OmniGraph による制御方法を学びます。

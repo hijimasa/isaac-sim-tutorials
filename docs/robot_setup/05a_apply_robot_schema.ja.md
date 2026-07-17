@@ -9,7 +9,7 @@ title: Robot Schema の適用
 このチュートリアルを修了すると、以下の内容を習得できます：
 
 - **Robot Schema** が何であり、なぜ必要なのか
-- 4 つの主要 API（**RobotAPI / LinkAPI / JointAPI / ReferencePointAPI**）の役割
+- 主要な API（**RobotAPI / LinkAPI / JointAPI / SiteAPI** など）の役割
 - 手動でリギングしたロボットに Robot Schema を適用する方法（GUI と Python の両方）
 - 専用レイヤーに分離して非破壊的に適用するベストプラクティス
 - Gain Tuner などの Asset Editor 系ツールでロボットが認識されることの確認方法
@@ -27,7 +27,7 @@ title: Robot Schema の適用
 
 ### 概要
 
-[チュートリアル 5](05_rig_mobile_robot.md) では、フォークリフトに **Articulation Root** を適用してアーティキュレーションとして駆動できる状態まで仕上げました。これだけでも物理シミュレーション自体は動作しますが、Isaac Sim 5.1 以降の高度なツール群——たとえば **Gain Tuner**（[チュートリアル 11](11_joint_tuning.md)）、**Grasp Editor**、**XRDF Editor**、**Robot Wizard** など——は、対象アセットを「ロボット」として認識するために **Robot Schema** という追加スキーマが適用されていることを要求します。
+[チュートリアル 5](05_rig_mobile_robot.md) では、フォークリフトに **Articulation Root** を適用してアーティキュレーションとして駆動できる状態まで仕上げました。これだけでも物理シミュレーション自体は動作しますが、Isaac Sim の高度なツール群——たとえば **Gain Tuner**（[チュートリアル 11](11_joint_tuning.md)）、**Grasp Editor**、**Robot Description Editor（XRDF Editor）**、**Robot Wizard**、そして Isaac Sim 6.0 で追加された **Robot Inspector** や **Robot Poser** など——は、対象アセットを「ロボット」として認識するために **Robot Schema** という追加スキーマが適用されていることを要求します。
 
 このチュートリアルでは、手動リギングしたロボットに Robot Schema を適用し、後続のツールチェーンで使えるようにする方法を学びます。具体的には以下の流れで進めます：
 
@@ -57,36 +57,31 @@ Physics Schema は USD のオープン標準であり、汎用的に使えます
 
 ### 1-2. 4 つの主要 API
 
-Robot Schema は複数の API スキーマから構成されています。本チュートリアルでは特に重要な 4 つを扱います：
+Robot Schema は 5 つの適用型 API スキーマ（IsaacRobotAPI / IsaacLinkAPI / IsaacJointAPI / IsaacSiteAPI / IsaacAttachmentPointAPI）と 2 つの型付きスキーマ（IsaacNamedPose / IsaacSurfaceGripper）から構成されています。本チュートリアルでは特に重要な 4 つを扱います：
 
 | API スキーマ | 適用先 | 役割 | 主な属性／リレーション |
 |---|---|---|---|
-| **IsaacRobotAPI** | ロボットのルートプリム | 「これがロボット本体」と宣言。各種ツールはここを起点にロボットを認識する | `description`、`namespace`、`robotType`、`robotLinks`（リレーション）、`robotJoints`（リレーション） |
+| **IsaacRobotAPI** | ロボットのルートプリム | 「これがロボット本体」と宣言。各種ツールはここを起点にロボットを認識する | `isaac:description`、`isaac:namespace`、`isaac:robotType`、`isaac:license`、`isaac:source`、`isaac:version`、`isaac:changelog`、`robotLinks`（リレーション）、`robotJoints`（リレーション）、`namedPoses`（リレーション） |
 | **IsaacLinkAPI** | 各リンク（剛体）プリム | リンクとしての意味づけ。表示名のオーバーライドなど | `nameOverride` |
-| **IsaacJointAPI** | 各ジョイントプリム | ジョイントとしての意味づけ。DOF オフセットや加速度・ジャーク制限など | `nameOverride`、`Rot_X:DofOffset` 〜 `Tr_Z:DofOffset`、`AccelerationLimit`、`JerkLimit` |
-| **IsaacReferencePointAPI** | エンドエフェクタや工具取付点などの参照プリム | ツール取付点・センサー位置などの「ロボット上の意味のある点」を表現する | `description`、`forwardAxis` |
+| **IsaacJointAPI** | 各ジョイントプリム | ジョイントとしての意味づけ。DOF の並び順情報など | `nameOverride`、`isaac:physics:DofOffsetOpOrder`（Token 配列） |
+| **IsaacSiteAPI** | エンドエフェクタや工具取付点などの参照プリム | ツール取付点・センサー位置・エンドエフェクタフレームなどの「ロボット上の意味のある点（サイト）」を表現する | `isaac:Description`、`isaac:forwardAxis` |
 
-このほかに、グリッパーの吸着点を表す `IsaacAttachmentPointAPI` や、サーフェスグリッパー全体を表す `IsaacSurfaceGripper` プリム型があります。これらは必要に応じて適用します。
+このほかに、グリッパーの吸着点を表す `IsaacAttachmentPointAPI`、サーフェスグリッパー全体を表す `IsaacSurfaceGripper` プリム型、名前付きジョイント姿勢を保存する `IsaacNamedPose` プリム型（Robot Poser が使用）があります。これらは必要に応じて適用します。
 
-!!! tip "対応する Python シンボル"
-    各 API には `usd.schema.isaac.robot_schema` モジュール経由でアクセスできます：
-
-    | Python シンボル | 適用関数 |
-    |---|---|
-    | `Classes.ROBOT_API.value`（= `"IsaacRobotAPI"`） | `ApplyRobotAPI(prim)` |
-    | `Classes.LINK_API.value`（= `"IsaacLinkAPI"`） | `ApplyLinkAPI(prim)` |
-    | `Classes.JOINT_API.value`（= `"IsaacJointAPI"`） | `ApplyJointAPI(prim)` |
-    | `Classes.REFERENCE_POINT_API.value`（= `"IsaacReferencePointAPI"`） | `ApplyReferencePointAPI(prim)` |
+!!! note "Isaac Sim 6.0 でのスキーマ変更"
+    - **`IsaacSiteAPI` は旧 `IsaacReferencePointAPI` の後継**です。旧スキーマが適用されたロボットも動作しますが、非推奨（deprecated）警告が出力されます。
+    - IsaacJointAPI の DOF オフセットは、旧来の軸ごとの属性（`isaac:physics:Tr_X:DoFOffset` など）から **`isaac:physics:DofOffsetOpOrder` Token 配列**に変更されました。単一 DOF のジョイント（Revolute / Prismatic）や固定ジョイントではこの属性は不要です。
+    - 既存アセットの移行には、`usd.schema.isaac.robot_schema.utils` の **`UpdateDeprecatedSchemas(robot_prim)`**（ReferencePoint → Site、旧 DOF オフセット属性の移行を一括実行）が使えます。
 
 ### 1-3. ツールはどう Robot Schema を使うのか
 
-具体例として、Gain Tuner の動作を見てみましょう。Gain Tuner はステージ全体を走査し、**`IsaacRobotAPI` が適用されたプリムだけ**をドロップダウンメニューに列挙します（Isaac Sim 5.1 の `isaacsim.robot_setup.gain_tuner` 拡張の実装）。Robot Schema が適用されていなければ、たとえ Articulation Root が有効でも Gain Tuner からは「ロボットが見えない」状態になります。
+具体例として、Gain Tuner の動作を見てみましょう。Gain Tuner はステージ全体を走査し、**`IsaacRobotAPI` が適用されたプリムだけ**をドロップダウンメニューに列挙します（`isaacsim.robot_setup.gain_tuner` 拡張の実装）。Robot Schema が適用されていなければ、たとえ Articulation Root が有効でも Gain Tuner からは「ロボットが見えない」状態になります。
 
-同様の仕組みで、Grasp Editor は `IsaacAttachmentPointAPI` を、XRDF Editor は `IsaacJointAPI` の DOF オフセット情報を、それぞれ参照します。
+同様の仕組みで、Grasp Editor は `IsaacAttachmentPointAPI` を、Robot Description Editor（XRDF Editor）は `IsaacJointAPI` の DOF 並び順情報を、Isaac Sim 6.0 の **Robot Inspector**（`isaacsim.robot.schema.ui`）や **Robot Poser** は `IsaacRobotAPI` のリンク／ジョイントリストと `IsaacNamedPose` を、それぞれ参照します。
 
 ## ステップ 2：レイヤー構成の準備
 
-Isaac Sim の[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/robot_setup/asset_structure.html) では、**Robot Schema を専用レイヤーに分離して保存する**ことが推奨されています。これにより：
+Isaac Sim の[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html) では、**Robot Schema を専用レイヤーに分離して保存する**ことが推奨されています。これにより：
 
 - ベースアセット（メッシュやリギング）に手を加えずに Robot Schema を追加できる
 - スキーマの将来の更新があってもベースを再生成せずに対応できる
@@ -140,10 +135,10 @@ my_forklift/
 以下のスクリプトを Script Editor に貼り付け、**Run**（▶ ボタン）をクリックします：
 
 ```python
-from pxr import Usd, UsdGeom, Sdf
-import pxr
 import omni.usd
+import pxr
 import usd.schema.isaac.robot_schema as rs
+from pxr import Sdf, Usd, UsdGeom
 
 stage = omni.usd.get_context().get_stage()
 
@@ -154,30 +149,18 @@ schema_asset = f"configuration/{robot_asset}_robot_schema.usda"
 edit_layer = Sdf.Layer.FindOrOpen(f"{robot_asset_path}/{schema_asset}")
 if not edit_layer:
     edit_layer = Sdf.Layer.CreateNew(f"{robot_asset_path}/{schema_asset}")
-stage.GetRootLayer().subLayerPaths.append(schema_asset)
 
-# Switch the edit target to the Robot Schema layer and apply APIs in bulk
+# Add sublayer to the stage (relative path), only if not already present
+if schema_asset not in stage.GetRootLayer().subLayerPaths:
+    stage.GetRootLayer().subLayerPaths.append(schema_asset)
+
+# Make all edits in the edit layer
 with pxr.Usd.EditContext(stage, edit_layer):
     default_prim = stage.GetDefaultPrim()
 
-    # (1) Apply RobotAPI to the root prim
+    # Apply the Robot API to the default prim.
+    # This auto-populates the Links and Joints lists from the physics articulation.
     rs.ApplyRobotAPI(default_prim)
-    robot_links = default_prim.GetRelationship(rs.Relations.ROBOT_LINKS.name)
-    robot_joints = default_prim.GetRelationship(rs.Relations.ROBOT_JOINTS.name)
-
-    # (2) Walk all prims and apply Link / Joint APIs
-    for prim in Usd.PrimRange(default_prim):
-        # Apply LinkAPI to rigid bodies
-        if "PhysicsRigidBodyAPI" in prim.GetAppliedSchemas():
-            rs.ApplyLinkAPI(prim)
-            robot_links.AddTarget(prim.GetPath())
-
-        # Apply JointAPI to joints
-        if prim.IsA(pxr.UsdPhysics.Joint):
-            rs.ApplyJointAPI(prim)
-            # Fixed joints have no DOF, so exclude them from robot_joints
-            if not prim.IsA(pxr.UsdPhysics.FixedJoint):
-                robot_joints.AddTarget(prim.GetPath())
 
 # Save the Robot Schema layer and the stage
 edit_layer.Save()
@@ -188,11 +171,13 @@ print(f"Robot Schema saved to {schema_asset}")
 
 このスクリプトは以下を行います：
 
-1. ベースアセットと同じディレクトリに `configuration/<アセット名>_robot_schema.usda` という新規レイヤーを作成し、サブレイヤーとしてアタッチ
-2. デフォルトプリムに **RobotAPI** を適用、`robotLinks` と `robotJoints` のリレーションを生成
-3. ステージ内の全プリムを走査し、**剛体には LinkAPI**、**ジョイントには JointAPI** を適用
-4. リンクとジョイント（固定ジョイントを除く）をルートプリムの `robotLinks` / `robotJoints` リレーションに登録
-5. すべての変更を Robot Schema レイヤーに書き込んで保存
+1. ベースアセットと同じディレクトリに `configuration/<アセット名>_robot_schema.usda` という新規レイヤーを作成し、サブレイヤーとしてアタッチ（すでにアタッチ済みであればスキップ）
+2. デフォルトプリムに **RobotAPI** を適用
+3. `ApplyRobotAPI` が物理アーティキュレーションを自動走査し、発見した**剛体には LinkAPI**、**ジョイントには JointAPI** を適用したうえで、`robotLinks` / `robotJoints` リレーションに順序付きで自動登録
+4. すべての変更を Robot Schema レイヤーに書き込んで保存
+
+!!! note "Isaac Sim 6.0 での変更点"
+    以前は `Usd.PrimRange` で全プリムを走査して `ApplyLinkAPI` / `ApplyJointAPI` を手動で呼び出す必要がありましたが、Isaac Sim 6.0 では **`ApplyRobotAPI` がリンク／ジョイントの検出・適用・リスト登録まで自動で行います**。自動登録（auto-population）には物理情報（アーティキュレーション）がステージ上でオーサリングされている必要があります。物理を別レイヤーに分離しているアセットでは、適用作業の間だけ物理レイヤーをサブレイヤーとして追加し、保存前に取り外してください。
 
 ### 3-4. 実行結果の確認
 
@@ -200,8 +185,8 @@ Script Editor の出力に `Robot Schema saved to configuration/<...>_robot_sche
 
 ファイルマネージャーで `configuration/` フォルダを開き、新しい `*_robot_schema.usda` ファイルが作成されていることを確認します。
 
-!!! tip "スクリプトの再実行"
-    すでに Robot Schema が適用されているステージで再実行すると、`AddTarget` が重複登録される可能性があります。再実行する場合は、まず `configuration/*_robot_schema.usda` を削除してから行うか、適用済みかどうかをチェックする条件分岐を追加してください。
+!!! tip "スクリプトの再実行・ロボット構造の更新"
+    ロボットの構造が後から変わった場合（リンクやジョイントの追加など）は、ルートプリムに **RobotAPI を再適用**して自動登録をやり直すか、`usd.schema.isaac.robot_schema.utils` の **`RecalculateRobotSchema`**（既存の並び順を保持したまま、新規リンク／ジョイントを追記し、無効なターゲットを削除）を使ってください。GUI では、ルートプリム選択時の Properties パネルにある **Re-Calculate Robot Tree** ボタンでも同じ処理を実行できます。
 
 ## ステップ 4：GUI による適用（補足）
 
@@ -211,9 +196,13 @@ GUI でも Robot Schema を適用できます。少数のプリムだけ追加�
 
 1. Stage パネルでロボットのルート Xform（例：`/SMV_Forklift_B01_01`）を選択します
 2. Properties パネルの **+ Add** ボタンをクリック
-3. 表示されたメニューから **Edit API Schema** を選択
-4. ダイアログの検索欄に `IsaacRobotAPI` と入力し、選択して適用
-5. Properties パネルに紫色の **Robot** セクションが追加されたことを確認
+3. 表示されたメニューから **Isaac > Robot Schema > Robot API** を選択
+4. Properties パネルに紫色の **Robot** セクションが追加されたことを確認
+
+GUI からの適用でも Python と同様に、物理アーティキュレーションが自動走査され、発見された剛体・ジョイントに **IsaacLinkAPI / IsaacJointAPI** が適用されて `robotLinks` / `robotJoints` リストに自動登録されます。
+
+!!! warning "適用先レイヤーに注意"
+    アセットが[アセット構造ガイドライン](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup/asset_structure.html)に従っている場合、Robot Schema は**ベースレイヤーまたは専用の Robot Schema レイヤー**に適用してください（インターフェースレイヤーに直接オーサリングしない）。自動登録には物理情報が必要なため、適用作業の間だけ物理レイヤーをサブレイヤーとして追加し、保存前に取り外します。
 
 ### 4-2. 属性の編集
 
@@ -367,7 +356,7 @@ print(f"ReferencePointAPI applied to {ref_path}")
 これにより、手動リギングしたロボットも URDF インポート経由のロボットと同等に、Gain Tuner や Grasp Editor などの Asset Editor 系ツールから扱えるようになります。
 
 !!! tip "公式ドキュメント"
-    Robot Schema のより詳細な仕様（Surface Gripper、AttachmentPointAPI、ロボットの組み合わせ表現など）は、Isaac Sim 公式ドキュメントの [Robot Schema](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/omniverse_usd/robot_schema.html) を参照してください。
+    Robot Schema のより詳細な仕様（Surface Gripper、AttachmentPointAPI、ロボットの組み合わせ表現など）は、Isaac Sim 公式ドキュメントの [Robot Schema](https://docs.isaacsim.omniverse.nvidia.com/latest/omniverse_usd/robot_schema.html) を参照してください。
 
 ## 次のステップ
 

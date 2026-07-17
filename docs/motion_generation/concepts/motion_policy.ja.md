@@ -4,6 +4,9 @@ title: Motion Policy アルゴリズム
 
 # Motion Policy アルゴリズム
 
+!!! warning "Deprecated（非推奨）"
+    Isaac Sim 6.0 では、この API を含む Motion Generation 拡張機能は非推奨（deprecated）になりました。引き続き動作しますが、新規開発では公式の [Robot Motion (Experimental)](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_motion_experimental/index.html) API の利用を検討してください。
+
 ## 概要
 
 Isaac Sim の **Motion Policy** は、単一のロボットを単一のタスク空間ターゲットへ導く、**衝突を考慮した**アルゴリズムで、毎フレームアクションを出力します。`MotionPolicy` クラスは、実装が満たすべき要件を最小限にしつつ、`ArticulationMotionPolicy` クラスと組み合わせて数行でロボットを動かせる完全性を備えたインターフェースです。柔軟な実装として、NVIDIA の Lula ライブラリの [RMPflow](rmpflow.md) が 1 つ提供されています。

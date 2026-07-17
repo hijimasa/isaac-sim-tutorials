@@ -89,7 +89,7 @@ source path はローカル環境に合わせて更新します。例：
 4. **Extension Search Paths** の **+** アイコンをクリックし、前のステップでビルドしたエクステンションのパス（`kit-extension-template-cpp/_build/linux-x86_64/release/exts` 配下）を追加します。
 5. **Third Party** タブ（3）にエクステンションが表示されることを確認します。
 
-    ![エクステンションの追加](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_add_ext_to_isim.png)
+    ![エクステンションの追加](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_add_ext_to_isim.png)
 
 6. **Custom ROS2 OGN Example Extension** を有効化します。
 
@@ -109,7 +109,7 @@ Custom ROS2 OGN Example Extension を有効にした状態で：
 3. **Playback Tick** を検索してグラフに追加します。
 4. **On Playback Tick** の Tick を、両方の ROS 2 ノードの **Exec In** に接続します。
 
-    ![カスタム C++ ノードのグラフ](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_4.5_full_tut_gui_custom_cpp_nodes_graph.png)
+    ![カスタム C++ ノードのグラフ](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_4.5_full_tut_gui_custom_cpp_nodes_graph.png)
 
 5. **Play** すると、ノードが ROS 2 への配信を始めます。
 6. 新しいターミナルで ROS 2 ワークスペースを source し、トピックを確認します：

@@ -192,7 +192,7 @@ If using the Isaac Sim bundled asset, open `Samples > Rigging > Manipulator > co
 
 3. Drag the **blue sliders** for each joint to change the target position. Verify that the DOF (degrees of freedom) positions track the targets.
 
-    ![Physics Inspector](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/_images/isim_5.0_full_tut_gui_physics_inspector.png)
+    ![Physics Inspector](https://docs.isaacsim.omniverse.nvidia.com/latest/_images/isim_5.0_full_tut_gui_physics_inspector.png)
 
 4. Close the Physics Inspector window when verification is complete.
 
